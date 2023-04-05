@@ -12,7 +12,7 @@ module.exports = {
     colors: {
       thuiyellow: "#E3A51D",
       thuigray: "#323232",
-      thuidark: "#1E1E1E",
+      thuidark: "#0F0F0F",
       thuiwhite: "#fff",
     },
     extend: {},

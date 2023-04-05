@@ -3,7 +3,7 @@ import data from "../../constants/roadmap.json";
 
 export default function RoadmapSection() {
   return (
-    <div className="w-screen h-full bg-thuidark pt-[3%] pb-[3%] pr-[5%] pl-[5%]">
+    <div className="w-full h-full bg-thuidark bg-opacity-[0.955] pt-[10%] pb-[3%] pr-[5%] pl-[5%]">
       <div className="text-thuiyellow text-[50px] pb-[2%]">Road Map</div>
       <div className="flex flex-col gap-[50px] pl-[5%] pr-[5%]">
         <RoadmapCard title={"phase1"} data={data.phase_1} />

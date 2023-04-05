@@ -1,6 +1,9 @@
+import thui from "../public/images/thuiTitle.png";
+import Image from "next/image";
+
 export default function Title() {
   return (
-    <div className="min-w-[800px] max-w-[1200px] bg-thuigray pt-[3%] pb-[3%] pr-[5%] pl-[5%] rounded-[35px]">
+    <div className="min-w-[900px] max-w-[1200px] bg-thuigray pt-[3%] pb-[3%] pr-[5%] pl-[5%] rounded-[35px] relative">
       <div>
         <div className="text-[80px] font-bold text-thuiwhite tracking-[3px]">
           <span className="text-thuiyellow">JAOTHUI</span> NFT
@@ -12,7 +15,9 @@ export default function Title() {
           </div>
         </div>
       </div>
-      <div></div>
+      <div className="absolute top-[-108px] right-[-250px]">
+        <Image src={thui} height={450} alt={"thui image"} />
+      </div>
     </div>
   );
 }

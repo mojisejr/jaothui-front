@@ -1,4 +1,6 @@
+import Image from "next/image";
 import styles from "../styles/Home.module.css";
+import icon from "../public/images/icon.png";
 
 export interface RoadmapCardProps {
   title: string;
@@ -18,7 +20,14 @@ export default function RoadmapCard({ title, data }: RoadmapCardProps) {
         {data && data.length > 0 ? (
           <ul className="flex flex-col flex-wrap max-h-[250px] p-5">
             {data.map((d, index) => (
-              <li key={index}>{d}</li>
+              <li key={index}>
+                <div className="flex items-center">
+                  <div>
+                    <Image src={icon} width={70} alt={"icon"} />
+                  </div>
+                  <div>{d}</div>
+                </div>
+              </li>
             ))}
           </ul>
         ) : (
