@@ -13,6 +13,12 @@ const Home: NextPage = () => {
       <Header />
       <SectionLayout>
         <FirstSection />
+        <svg viewBox="0 0 500 200">
+          <path
+            d="M 0 30 C 150 100 280 0 500 20 L 500 0 L 0 0"
+            fill="#E3A51D"
+          ></path>
+        </svg>
         <DetailSection />
         <RoadmapSection />
         <PartnerSection />

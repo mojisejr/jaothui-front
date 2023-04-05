@@ -10,11 +10,11 @@ export default function RoadmapCard({ title, data }: RoadmapCardProps) {
   return (
     <div className="flex">
       <div
-        className={`${styles.vertical} flex-none text-thuiyellow text-[30px]`}
+        className={`${styles.vertical} flex-none text-thuiyellow text-[30px] font-bold`}
       >
         {upperTitle}
       </div>
-      <div className="flex-1 bg-thuiyellow rounded-xl pt-[0.5%] pb-[0.5%] pr-[2%] pl-[2%] gap-[0.5%] text-[35px]">
+      <div className="flex-1 bg-thuiyellow rounded-[35px] pt-[0.5%] pb-[0.5%] pr-[2%] pl-[2%] gap-[0.5%] text-[35px] font-thin">
         {data && data.length > 0 ? (
           <ul className="flex flex-col flex-wrap max-h-[250px] p-5">
             {data.map((d, index) => (
