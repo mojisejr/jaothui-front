@@ -9,6 +9,13 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    screens: {
+      mobileS: "375px",
+      tabletS: "768px",
+      tabletM: "1024px",
+      labtop: "1440px",
+      desktop: "1920px",
+    },
     colors: {
       thuiyellow: "#E3A51D",
       thuigray: "#323232",

@@ -16,14 +16,26 @@ export default function RoadmapCard({ title, data }: RoadmapCardProps) {
       >
         {upperTitle}
       </div>
-      <div className="flex-1 bg-thuiyellow rounded-[35px] pt-[0.5%] pb-[0.5%] pr-[2%] pl-[2%] gap-[0.5%] text-[35px] font-thin">
+      <div
+        className="flex-1 bg-thuiyellow rounded-[35px] pt-[0.5%] pb-[0.5%] pr-[2%] pl-[2%] gap-[0.5%] text-[18px] font-thin
+      tabletS:text-[30px]
+      "
+      >
         {data && data.length > 0 ? (
-          <ul className="flex flex-col flex-wrap max-h-[250px] p-5">
+          <ul
+            className="flex flex-col flex-wrap p-5
+          labtop:max-h-[300px]"
+          >
             {data.map((d, index) => (
               <li key={index}>
                 <div className="flex items-center">
                   <div>
-                    <Image src={icon} width={70} alt={"icon"} />
+                    <Image
+                      className="w-[25px]"
+                      src={icon}
+                      width={70}
+                      alt={"icon"}
+                    />
                   </div>
                   <div>{d}</div>
                 </div>

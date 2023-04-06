@@ -5,13 +5,16 @@ import first from "../../public/images/First1.png";
 
 export default function FirstSection() {
   return (
-    <div className="relative w-full h-screen bg-thuiyellow flex justify-center z-50">
+    <div
+      className="relative w-full h-full bg-thuiyellow flex justify-center z-50
+    tabletS:h-[600px]
+    tabletM:h-[700px]
+    labtop:h-screen
+    "
+    >
       <div className="mt-[10%]">
         <Title />
         <BuyBox />
-      </div>
-      <div className="absolute bottom-[-40%] left-0 z-40">
-        <Image src={first} width={1000} alt={"main"} />
       </div>
     </div>
   );

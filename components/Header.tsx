@@ -6,13 +6,27 @@ export default function Header() {
   return (
     <div
       id="header-container"
-      className="w-full flex h-full items-center pr-[20px] pl-[20px] pt-[10px] pb-[10px] justify-between bg-thuigray text-thuiyellow"
+      className="w-screen flex h-full items-center pr-[20px] pl-[20px] pt-[10px] pb-[10px] justify-between bg-thuigray text-thuiyellow
+      tabletM:pr-[30px]
+      tabletM:pl-[30px]
+      tabletM:pt-[20px]
+      tabletM:pb-[20px]
+      labtop:pr-[50px]
+      labtop:pl-[50px]
+      "
     >
       <div
         id="header-logo"
-        className="text-[60px] font-bold flex items-center gap-2"
+        className="text-[30px] font-bold flex items-center gap-2
+        labtop:text-[50px]"
       >
-        <Image src={logo} width={70} alt={"logo"} />
+        <Image
+          className="w-[50px]
+        labtop:w-[100px]"
+          src={logo}
+          width={70}
+          alt={"logo"}
+        />
         JAOTHUI
       </div>
       <div id="header-connect-wallet-btn">

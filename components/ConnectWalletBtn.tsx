@@ -36,7 +36,10 @@ export function ConnectWalletButton() {
               if (!connected) {
                 return (
                   <button
-                    className="bg-thuiyellow text-thuigray pl-[2%] pr-[2%] pt-[1%] pb-[1%] min-w-[300px] text-[30px] rounded-[30px]"
+                    className="bg-thuiyellow text-thuigray pl-[2%] pr-[2%] pt-[1%] pb-[1%] min-w-[100px] text-[15px] rounded-[30px]
+                    tabletS:text-[30px]
+                    tabletS:w-[250px]
+                    "
                     onClick={openConnectModal}
                     type="button"
                   >
@@ -48,7 +51,10 @@ export function ConnectWalletButton() {
               if (chain.unsupported) {
                 return (
                   <button
-                    className="bg-[#ff0330]  text-thuiwhite pl-[2%] pr-[2%] pt-[1%] pb-[1%] min-w-[300px] text-[30px] rounded-[30px]"
+                    className="bg-[#ff0330]  text-thuiwhite pl-[2%] pr-[2%] pt-[1%] pb-[1%] min-w-[100px] text-[15px] rounded-[30px]
+                    tabletS:text-[30px]
+                    tabletS:w-[250px]
+                    "
                     onClick={openChainModal}
                     type="button"
                   >
