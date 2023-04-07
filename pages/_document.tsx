@@ -5,8 +5,11 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <title>JaoThui NFT</title>
-          <meta name="description" content="JaoThui NFT Project Website." />
+          <title>JaoThui Official</title>
+          <meta
+            name="description"
+            content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+          />
           <link rel="shortcut icon" href="/favicon.ico" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
