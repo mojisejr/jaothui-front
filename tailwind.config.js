@@ -15,6 +15,7 @@ module.exports = {
       tabletM: "1024px",
       labtop: "1440px",
       desktop: "1920px",
+      desktopM: "2330px",
     },
     colors: {
       thuiyellow: "#E3A51D",

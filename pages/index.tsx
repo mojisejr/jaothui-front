@@ -10,7 +10,7 @@ import FooterSection from "../components/sections/Footer";
 
 const Home: NextPage = () => {
   return (
-    <div>
+    <div className="bg-thuidark">
       <Header />
       {/* <SectionLayout> */}
       <FirstSection />
