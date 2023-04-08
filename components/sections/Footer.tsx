@@ -1,13 +1,14 @@
+import Link from "next/link";
 import { AiFillFacebook, AiFillTwitterCircle } from "react-icons/ai";
 import { SiDiscord } from "react-icons/si";
 
 export default function FooterSection() {
   return (
     <div
-      className="relative w-full top-[-170px] h-full bg-thuidark bg-opacity-[0.955] pt-[2%] pr-[5%] pl-[5%] text-thuiwhite 
-    tabletS:top-[-300px]
-    tabletM:top-[-400px]
-    labtop:top-[-550px]
+      className="relative w-full top-[-90px] h-full bg-thuidark bg-opacity-[0.955] pt-[10%] pr-[5%] pl-[5%] text-thuiwhite 
+    tabletS:top-[-100px]
+    tabletM:top-[-140px]
+    labtop:top-[-156px]
     desktop:top-[-700px]
     "
     >
@@ -16,15 +17,24 @@ export default function FooterSection() {
         <div className="border-b-[3px] flex-1"></div>
       </div>
       <div className="flex flex-col gap-[20px] mt-[10px]">
-        <div className="flex items-center gap-[20px]">
-          <AiFillFacebook size={100} /> Facebook
-        </div>
-        <div className="flex items-center gap-[20px]">
-          <AiFillTwitterCircle size={100} /> Twitter
-        </div>
-        <div className="flex items-center gap-[20px]">
-          <SiDiscord size={100} /> Discord
-        </div>
+        <Link
+          className="flex items-center gap-[20px]"
+          href="https://www.facebook.com/jaothu"
+        >
+          <AiFillFacebook size={50} /> Facebook
+        </Link>
+        <Link
+          className="flex items-center gap-[20px]"
+          href="https://twitter.com/jaothui_nft"
+        >
+          <AiFillTwitterCircle size={50} /> Twitter
+        </Link>
+        <Link
+          className="flex items-center gap-[20px]"
+          href="https://discord.gg/tPZYZ5rjc7"
+        >
+          <SiDiscord size={50} /> Discord
+        </Link>
       </div>
     </div>
   );

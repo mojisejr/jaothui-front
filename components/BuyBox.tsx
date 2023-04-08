@@ -19,12 +19,12 @@ export default function BuyBox() {
       tabletS:top-[-40%]
       tabletS:left-[-33%]
       tabletS:w-[400px]
-      tabletM:top-[-50%]
-      tabletM:left-[-50%]
-      tabletM:w-[550px]
+      tabletM:top-[-60%]
+      tabletM:left-[-70%]
+      tabletM:w-[580px]
       labtop:top-[-80%]
       labtop:left-[-60%]
-      labtop:w-[750px]
+      labtop:w-[650px]
       "
         src={thui}
         width={400}

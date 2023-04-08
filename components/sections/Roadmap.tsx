@@ -4,10 +4,10 @@ import data from "../../constants/roadmap.json";
 export default function RoadmapSection() {
   return (
     <div
-      className="relative w-full h-full top-[-170px] bg-thuidark bg-opacity-[0.955] pt-[10%] pb-[10%] pr-[5%] pl-[5%]
-    tabletS:top-[-300px]
-    tabletM:top-[-400px]
-    labtop:top-[-550px]
+      className="relative w-full h-full top-[-90px] bg-thuidark bg-opacity-[0.955] pt-[10%] pb-[10%] pr-[5%] pl-[5%]
+    tabletS:top-[-100px]
+    tabletM:top-[-140px]
+    labtop:top-[-160px]
     desktop:top-[-700px]
     "
     >

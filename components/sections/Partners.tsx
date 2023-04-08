@@ -5,10 +5,11 @@ import bitkub from "../../public/images/bitkubLogo.png";
 export default function PartnerSection() {
   return (
     <div
-      className="relative w-full h-full top-[-170px] bg-thuigray pt-[3%] pb-[10%] pr-[5%] pl-[5%]
-    tabletS:top-[-300px]
-    tabletM:top-[-400px]
-    labtop:top-[-550px]
+      className="relative w-full h-full top-[-90px] bg-thuigray pt-[7%] pb-[10%] pr-[5%] pl-[5%]
+    tabletS:top-[-100px]
+    tabletM:top-[-140px]
+    labtop:top-[-160px]
+    labtop:h-[calc(100% + 155px)]
     desktop:top-[-700px]"
     >
       <div>

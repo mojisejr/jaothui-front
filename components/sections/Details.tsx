@@ -7,12 +7,12 @@ import SSR from "../../public/images/SSR.png";
 export default function DetailSection() {
   return (
     <div
-      className="relative h-full pt-[100px] pb-10 w-full top-[-170px] bg-thuigray flex flex-col justify-center items-center
-    tabletS:top-[-300px]
+      className="relative h-full pt-[100px] pb-10 w-full top-[-80px] bg-thuigray flex flex-col justify-center items-center
+    tabletS:top-[-100px]
     tabletS:pt-[150px]
-    tabletM:top-[-400px]
+    tabletM:top-[-140px]
     tabletM:pt-[180px]
-    labtop:top-[-550px]
+    labtop:top-[-160px]
     labtop:pt-[200px]
     labtop:pb-[100px]
     desktop:top-[-700px]
