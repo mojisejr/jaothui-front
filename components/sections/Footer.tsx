@@ -18,19 +18,19 @@ export default function FooterSection() {
       </div>
       <div className="flex flex-col gap-[20px] mt-[10px]">
         <Link
-          className="flex items-center gap-[20px]"
-          href="https://www.facebook.com/jaothu"
+          className="flex items-center gap-[20px] hover:text-thuiyellow transition-[2s]"
+          href="https://www.facebook.com/jaothui"
         >
           <AiFillFacebook size={50} /> Facebook
         </Link>
         <Link
-          className="flex items-center gap-[20px]"
+          className="flex items-center gap-[20px] hover:text-thuiyellow transition-[2s]"
           href="https://twitter.com/jaothui_nft"
         >
           <AiFillTwitterCircle size={50} /> Twitter
         </Link>
         <Link
-          className="flex items-center gap-[20px]"
+          className="flex items-center gap-[20px] hover:text-thuiyellow transition-[2s]"
           href="https://discord.gg/tPZYZ5rjc7"
         >
           <SiDiscord size={50} /> Discord
