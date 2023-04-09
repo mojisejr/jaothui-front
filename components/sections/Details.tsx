@@ -1,8 +1,12 @@
 import Image from "next/image";
-import N from "../../public/images/N.jpg";
-import R from "../../public/images/R.png";
-import SR from "../../public/images/SR.jpg";
-import SSR from "../../public/images/SSR.png";
+// import N from "../../public/images/N.jpg";
+// import R from "../../public/images/R.png";
+// import SR from "../../public/images/SR.jpg";
+// import SSR from "../../public/images/SSR.png";
+import N from "../../public/images/hiddenThui.jpeg";
+import R from "../../public/images/hiddenThui.jpeg";
+import SR from "../../public/images/hiddenThui.jpeg";
+import SSR from "../../public/images/hiddenThui.jpeg";
 
 export default function DetailSection() {
   return (
