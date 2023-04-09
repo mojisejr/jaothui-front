@@ -9,7 +9,7 @@ export default function FooterSection() {
     tabletS:top-[-100px]
     tabletM:top-[-140px]
     labtop:top-[-156px]
-    desktop:top-[-700px]
+    desktop:top-[-200px]
     "
     >
       <div className="flex gap-10 items-center">

@@ -8,7 +8,7 @@ export default function RoadmapSection() {
     tabletS:top-[-100px]
     tabletM:top-[-140px]
     labtop:top-[-160px]
-    desktop:top-[-700px]
+    desktop:top-[-200px]
     "
     >
       <div

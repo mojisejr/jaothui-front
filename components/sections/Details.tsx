@@ -19,7 +19,7 @@ export default function DetailSection() {
     labtop:top-[-160px]
     labtop:pt-[200px]
     labtop:pb-[100px]
-    desktop:top-[-700px]
+    desktop:top-[-200px]
     desktop:pt-[300px]
     desktop:pb-[200px]
     "

@@ -9,8 +9,7 @@ export default function PartnerSection() {
     tabletS:top-[-100px]
     tabletM:top-[-140px]
     labtop:top-[-160px]
-    labtop:h-[calc(100% + 155px)]
-    desktop:top-[-700px]"
+    desktop:top-[-200px]"
     >
       <div>
         <div className="text-thuiwhite text-[35px]">Partners</div>
