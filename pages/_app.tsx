@@ -5,10 +5,11 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { WagmiConfig, configureChains, createClient, mainnet } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
-import { bitkub_mainnet } from "../blockchain/chain";
+import { bitkub_mainnet, bitkub_testnet } from "../blockchain/chain";
+import { MenuProvider } from "../hooks/menuContext";
 
 const { chains, provider } = configureChains(
-  [bitkub_mainnet],
+  [bitkub_mainnet, bitkub_testnet],
   [publicProvider()]
 );
 
@@ -39,7 +40,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     return (
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains}>
-          <Component {...pageProps} />
+          <MenuProvider>
+            <Component {...pageProps} />
+          </MenuProvider>
         </RainbowKitProvider>
       </WagmiConfig>
     );

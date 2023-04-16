@@ -1,6 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-export function ConnectWalletButton() {
+export const ConnectWalletButton = () => {
   return (
     <ConnectButton.Custom>
       {({
@@ -65,7 +65,7 @@ export function ConnectWalletButton() {
 
               return (
                 <div
-                  className="text-[20px]"
+                  className="text-[15px] tabletS:text-[20px] labtop:text-[25px]"
                   style={{ display: "flex", gap: 12 }}
                 >
                   <button
@@ -93,11 +93,11 @@ export function ConnectWalletButton() {
                         )}
                       </div>
                     )}
-                    {chain.name}
+                    {/* {chain.name} */}
                   </button>
 
                   <button onClick={openAccountModal} type="button">
-                    {account.displayName}
+                    <div>{account.displayName}</div>
                     {account.displayBalance
                       ? ` (${account.displayBalance})`
                       : ""}
@@ -110,4 +110,4 @@ export function ConnectWalletButton() {
       }}
     </ConnectButton.Custom>
   );
-}
+};

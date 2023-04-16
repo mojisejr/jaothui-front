@@ -1,7 +1,7 @@
-import RoadmapCard from "../RoadmapCard";
-import data from "../../constants/roadmap.json";
+import RoadmapCard from "../../RoadmapCard";
+import data from "../../../constants/roadmap.json";
 
-export default function RoadmapSection() {
+const RoadmapSection = () => {
   return (
     <div
       className="relative w-full h-full top-[-90px] bg-thuidark bg-opacity-[0.955] pt-[10%] pb-[10%] pr-[5%] pl-[5%]
@@ -26,4 +26,6 @@ export default function RoadmapSection() {
       </div>
     </div>
   );
-}
+};
+
+export default RoadmapSection;

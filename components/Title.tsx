@@ -1,7 +1,7 @@
 import thui from "../public/images/thuiTitle.png";
 import Image from "next/image";
 
-export default function Title() {
+const Title = () => {
   return (
     <div
       className="w-full bg-thuigray pt-[6%] pb-[6%] pr-[6%] pl-[6%] rounded-[35px] relative text-center
@@ -66,4 +66,6 @@ export default function Title() {
       </div>
     </div>
   );
-}
+};
+
+export default Title;

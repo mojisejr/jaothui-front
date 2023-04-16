@@ -1,7 +1,7 @@
-import BuyBox from "../BuyBox";
-import Title from "../Title";
+import BuyBox from "../../BuyBox";
+import Title from "../../Title";
 
-export default function FirstSection() {
+const FirstSection = () => {
   return (
     <div
       className="relative w-full h-full bg-thuiyellow flex justify-center z-50 
@@ -16,4 +16,6 @@ export default function FirstSection() {
       </div>
     </div>
   );
-}
+};
+
+export default FirstSection;

@@ -7,7 +7,7 @@ export interface RoadmapCardProps {
   data: string[];
 }
 
-export default function RoadmapCard({ title, data }: RoadmapCardProps) {
+const RoadmapCard = ({ title, data }: RoadmapCardProps) => {
   const upperTitle = title.toUpperCase();
   return (
     <div className="flex">
@@ -48,4 +48,6 @@ export default function RoadmapCard({ title, data }: RoadmapCardProps) {
       </div>
     </div>
   );
-}
+};
+
+export default RoadmapCard;

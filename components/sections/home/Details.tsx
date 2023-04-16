@@ -3,12 +3,12 @@ import Image from "next/image";
 // import R from "../../public/images/R.png";
 // import SR from "../../public/images/SR.jpg";
 // import SSR from "../../public/images/SSR.png";
-import N from "../../public/images/hiddenThui.jpeg";
-import R from "../../public/images/hiddenThui.jpeg";
-import SR from "../../public/images/hiddenThui.jpeg";
-import SSR from "../../public/images/hiddenThui.jpeg";
+import N from "../../../public/images/hiddenThui.jpeg";
+import R from "../../../public/images/hiddenThui.jpeg";
+import SR from "../../../public/images/hiddenThui.jpeg";
+import SSR from "../../../public/images/hiddenThui.jpeg";
 
-export default function DetailSection() {
+const DetailSection = () => {
   return (
     <div
       className="relative h-full pt-[100px] pb-10 w-full top-[-80px] bg-thuigray flex flex-col justify-center items-center
@@ -52,7 +52,9 @@ export default function DetailSection() {
       <div className="absolute w-full h-full top-0 left-0 bg-[url('../public/images/thuiDetailBg.png')] bg-cover bg-no-repeat bg-bottom z-0"></div>
     </div>
   );
-}
+};
+
+export default DetailSection;
 
 function RarityExampleBox() {
   return (

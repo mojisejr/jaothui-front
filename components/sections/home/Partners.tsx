@@ -1,8 +1,4 @@
-import Image from "next/image";
-
-import bitkub from "../../public/images/bitkubLogo.png";
-
-export default function PartnerSection() {
+const PartnerSection = () => {
   return (
     <div
       className="relative w-full h-full top-[-90px] bg-thuigray pt-[7%] pb-[10%] pr-[5%] pl-[5%]
@@ -26,4 +22,6 @@ export default function PartnerSection() {
       </div>
     </div>
   );
-}
+};
+
+export default PartnerSection;

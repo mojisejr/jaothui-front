@@ -1,7 +1,7 @@
 import Image from "next/image";
 import thui from "../public/images/First1.png";
 
-export default function BuyBox() {
+const BuyBox = () => {
   return (
     <div
       className="relative p-5 flex flex-col items-center
@@ -56,4 +56,6 @@ export default function BuyBox() {
       </div>
     </div>
   );
-}
+};
+
+export default BuyBox;

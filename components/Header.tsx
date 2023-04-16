@@ -1,12 +1,18 @@
 import { ConnectWalletButton } from "./ConnectWalletBtn";
 import Image from "next/image";
 import logo from "../public/images/thuiLogo.png";
+import Link from "next/link";
+import { ImMenu } from "react-icons/im";
+import { useAccount } from "wagmi";
+import { useMenu } from "../hooks/menuContext";
 
-export default function Header() {
+const Header = () => {
+  const { isConnected } = useAccount();
+  const { open } = useMenu();
   return (
     <div
       id="header-container"
-      className="w-screen flex h-full items-center pr-[20px] pl-[20px] pt-[10px] pb-[10px] justify-between bg-thuigray text-thuiyellow
+      className="relative w-full flex h-full items-center pr-[20px] pl-[20px] pt-[10px] pb-[10px] justify-between bg-thuigray text-thuiyellow
       tabletM:pr-[30px]
       tabletM:pl-[30px]
       tabletM:pt-[20px]
@@ -15,7 +21,8 @@ export default function Header() {
       labtop:pl-[50px]
       "
     >
-      <div
+      <Link
+        href="/"
         id="header-logo"
         className="text-[30px] font-bold flex items-center gap-2
         labtop:text-[50px]"
@@ -28,21 +35,17 @@ export default function Header() {
           alt={"logo"}
         />
         JAOTHUI
-      </div>
-      <div id="header-connect-wallet-btn">
+      </Link>
+      <div id="header-connect-wallet-btn" className="flex items-center gap-1">
+        {isConnected ? (
+          <button className="hover:text-thuiwhite" onClick={() => open()}>
+            <ImMenu size={30} />
+          </button>
+        ) : null}
         <ConnectWalletButton />
       </div>
     </div>
   );
-}
+};
 
-// function ConnectWalletButton() {
-//   return (
-//     <div>
-//       <ConnectWalletButton />
-//     </div>
-//     // <div className="pr-[13px] pl-[13px] pt-[5px] pb-[5px] rounded-[50px] bg-thuiyellow text-thuidark text-[40px]">
-//     //   Connect Wallet
-//     // </div>
-//   );
-// }
+export default Header;

@@ -1,14 +1,17 @@
 import type { NextPage } from "next";
 import Header from "../components/Header";
-import FirstSection from "../components/sections/First";
-import RoadmapSection from "../components/sections/Roadmap";
-import DetailSection from "../components/sections/Details";
-import PartnerSection from "../components/sections/Partners";
-import FooterSection from "../components/sections/Footer";
+import FirstSection from "../components/sections/home/First";
+import RoadmapSection from "../components/sections/home/Roadmap";
+import DetailSection from "../components/sections/home/Details";
+import PartnerSection from "../components/sections/home/Partners";
+import FooterSection from "../components/sections/home/Footer";
+import MenuModal from "../components/MenuModal";
+import { useMenu } from "../hooks/menuContext";
 
 const Home: NextPage = () => {
+  const { isOpen } = useMenu();
   return (
-    <div className="bg-thuidark">
+    <div className="relative bg-thuidark">
       <Header />
       {/* <SectionLayout> */}
       <FirstSection />
@@ -26,6 +29,7 @@ const Home: NextPage = () => {
       <PartnerSection />
       <FooterSection />
       {/* </SectionLayout> */}
+      {isOpen ? <MenuModal /> : null}
     </div>
   );
 };
