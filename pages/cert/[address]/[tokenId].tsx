@@ -5,27 +5,33 @@ import Image from "next/image";
 import thui from "../../../public/images/N.jpg";
 import CertFooter from "../../../components/sections/cert/CertFooter";
 import { useAccount } from "wagmi";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useMenu } from "../../../hooks/menuContext";
 import MenuModal from "../../../components/MenuModal";
+import { useCertContext } from "../../../hooks/cert/certContext";
+import { CertNFTRawData } from "../../../blockchain/cert/interface";
+import { getMetadata } from "../../../helpers/getMetadata";
 
 const CertDetail = () => {
+  const [nft, setNft] = useState<CertNFTRawData[] | []>([]);
   const { isConnected } = useAccount();
   const { isOpen } = useMenu();
   const router = useRouter();
+  const { tokenId } = router.query;
+  const { getNFTMicrochip } = useCertContext();
 
   useEffect(() => {
     if (!isConnected) {
       router.replace("/");
     }
+    const nft = getNFTMicrochip(tokenId as string);
+    getMetadata([nft as CertNFTRawData], setNft);
   }, [isConnected, router]);
-
-  const { tokenId } = router.query;
 
   return (
     <div className="bg-thuiyellow flex flex-col justify-center items-center">
       <Header />
-      <ProfileBox tokenId={tokenId} />
+      {nft.length <= 0 ? <div>Loading..</div> : <ProfileBox certNft={nft[0]} />}
       <CertFooter />
       {isOpen ? <MenuModal /> : null}
     </div>
@@ -33,10 +39,10 @@ const CertDetail = () => {
 };
 
 interface ProfileBoxProps {
-  tokenId: string | string[] | undefined;
+  certNft: CertNFTRawData;
 }
 
-const ProfileBox = ({ tokenId }: ProfileBoxProps) => {
+const ProfileBox = ({ certNft }: ProfileBoxProps) => {
   return (
     <div className="m-10" id="container">
       <div
@@ -55,10 +61,16 @@ const ProfileBox = ({ tokenId }: ProfileBoxProps) => {
         desktop:text-3xl"
           id="title"
         >
-          #{tokenId}
+          #{certNft.microchip}
         </div>
         <div className="flex justify-center">
-          <Image className="max-w-[350px]" src={thui} alt={"image"} />
+          <Image
+            className="max-w-[350px]"
+            src={certNft.metadata.image}
+            width={250}
+            height={250}
+            alt={"image"}
+          />
         </div>
         <div
           className="flex justify-center 
@@ -69,27 +81,37 @@ const ProfileBox = ({ tokenId }: ProfileBoxProps) => {
           <ul>
             <li className="grid grid-cols-2">
               <div id="topic">name:</div>
-              <div id="content">บ่าวจอนจัด</div>
+              <div id="content">{certNft.name}</div>
               <div id="topic">Id:</div>
-              <div id="content">{tokenId}</div>
+              <div id="content">{certNft.microchip}</div>
+              <div id="topic">certNo:</div>
+              <div id="content">{certNft.metadata.attributes[2].value}</div>
               <div id="topic">Birthday:</div>
-              <div id="content">xx / xx / xx</div>
+              <div id="content">{"N/A"}</div>
               <div id="topic">Mother:</div>
-              <div id="content">สาวกระโปรงเหี่ยน</div>
+              <div id="content">
+                {certNft.motherTokenId == "0" ? "ไม่พบ" : certNft.motherTokenId}
+              </div>
               <div id="topic">MotherId:</div>
-              <div id="content">764040226302399</div>
+              <div id="content">
+                {certNft.motherTokenId == "0" ? "ไม่พบ" : certNft.motherTokenId}
+              </div>
               <div id="topic">Father:</div>
-              <div id="content">บ่าวจอนไหน</div>
+              <div id="content">
+                {certNft.fatherTokenId == "0" ? "ไม่พบ" : certNft.fatherTokenId}
+              </div>
               <div id="topic">FatherId:</div>
-              <div id="content">764040226302319</div>
+              <div id="content">
+                {certNft.fatherTokenId == "0" ? "ไม่พบ" : certNft.fatherTokenId}
+              </div>
               <div id="topic">Origin:</div>
-              <div id="content">ไทย</div>
+              <div id="content">{certNft.metadata.attributes[1].value}</div>
               <div id="topic">Height:</div>
-              <div id="content">175 ซม</div>
+              <div id="content">{certNft.height} ซม.</div>
               <div id="topic">Color:</div>
-              <div id="content">เผือก</div>
+              <div id="content">{certNft.metadata.attributes[3].value}</div>
               <div id="topic">Detail:</div>
-              <div id="content">N/A</div>
+              <div id="content">ไม่พบ</div>
               <div id="topic">Reward:</div>
               <div id="content" className="flex">
                 N/A

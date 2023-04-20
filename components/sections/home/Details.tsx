@@ -3,10 +3,10 @@ import Image from "next/image";
 // import R from "../../public/images/R.png";
 // import SR from "../../public/images/SR.jpg";
 // import SSR from "../../public/images/SSR.png";
-import N from "../../../public/images/hiddenThui.jpeg";
-import R from "../../../public/images/hiddenThui.jpeg";
-import SR from "../../../public/images/hiddenThui.jpeg";
-import SSR from "../../../public/images/hiddenThui.jpeg";
+import N from "../../../public/images/n.gif";
+import R from "../../../public/images/r.gif";
+import SR from "../../../public/images/sr.gif";
+import SSR from "../../../public/images/ssr.gif";
 
 const DetailSection = () => {
   return (

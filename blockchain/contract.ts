@@ -1,7 +1,7 @@
 import * as cert from "./cert/abi";
 
 const addresses = {
-  cert: "0xb237595f7dCC35f89441321d426426Defd4f08BC",
+  cert: "0xE24D41fDE7432dE0d418E40fd76096E0B06F175b",
 };
 
 export const contract = {

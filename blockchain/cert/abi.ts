@@ -140,12 +140,30 @@ export const abi = [
     stateMutability: "view",
     outputs: [
       {
+        type: "tuple[]",
+        name: "",
+        internalType: "struct JaothuiCertNFTV4.History[]",
+        components: [
+          { type: "string", name: "description", internalType: "string" },
+          { type: "uint256", name: "timestamp", internalType: "uint256" },
+        ],
+      },
+    ],
+    name: "getHistoryOf",
+    inputs: [{ type: "uint256", name: "_tokenId", internalType: "uint256" }],
+  },
+  {
+    type: "function",
+    stateMutability: "view",
+    outputs: [
+      {
         type: "tuple",
         name: "",
-        internalType: "struct JaothuiCertNFTV3.BUFFALO",
+        internalType: "struct JaothuiCertNFTV4.BUFFALO",
         components: [
           { type: "string", name: "name", internalType: "string" },
           { type: "string", name: "microchip", internalType: "string" },
+          { type: "uint16", name: "height", internalType: "uint16" },
           { type: "uint256", name: "motherTokenId", internalType: "uint256" },
           { type: "uint256", name: "fatherTokenId", internalType: "uint256" },
           { type: "uint256", name: "createdAt", internalType: "uint256" },
@@ -163,12 +181,37 @@ export const abi = [
     stateMutability: "view",
     outputs: [
       {
-        type: "tuple",
+        type: "tuple[]",
         name: "",
-        internalType: "struct JaothuiCertNFTV3.BUFFALO",
+        internalType: "struct JaothuiCertNFTV4.BUFFALO[]",
         components: [
           { type: "string", name: "name", internalType: "string" },
           { type: "string", name: "microchip", internalType: "string" },
+          { type: "uint16", name: "height", internalType: "uint16" },
+          { type: "uint256", name: "motherTokenId", internalType: "uint256" },
+          { type: "uint256", name: "fatherTokenId", internalType: "uint256" },
+          { type: "uint256", name: "createdAt", internalType: "uint256" },
+          { type: "uint256", name: "updatedAt", internalType: "uint256" },
+          { type: "string", name: "uri", internalType: "string" },
+          { type: "bool", name: "locked", internalType: "bool" },
+        ],
+      },
+    ],
+    name: "getInfosOf",
+    inputs: [{ type: "address", name: "_owner", internalType: "address" }],
+  },
+  {
+    type: "function",
+    stateMutability: "view",
+    outputs: [
+      {
+        type: "tuple",
+        name: "",
+        internalType: "struct JaothuiCertNFTV4.BUFFALO",
+        components: [
+          { type: "string", name: "name", internalType: "string" },
+          { type: "string", name: "microchip", internalType: "string" },
+          { type: "uint16", name: "height", internalType: "uint16" },
           { type: "uint256", name: "motherTokenId", internalType: "uint256" },
           { type: "uint256", name: "fatherTokenId", internalType: "uint256" },
           { type: "uint256", name: "createdAt", internalType: "uint256" },
@@ -180,10 +223,11 @@ export const abi = [
       {
         type: "tuple",
         name: "",
-        internalType: "struct JaothuiCertNFTV3.BUFFALO",
+        internalType: "struct JaothuiCertNFTV4.BUFFALO",
         components: [
           { type: "string", name: "name", internalType: "string" },
           { type: "string", name: "microchip", internalType: "string" },
+          { type: "uint16", name: "height", internalType: "uint16" },
           { type: "uint256", name: "motherTokenId", internalType: "uint256" },
           { type: "uint256", name: "fatherTokenId", internalType: "uint256" },
           { type: "uint256", name: "createdAt", internalType: "uint256" },
@@ -203,7 +247,7 @@ export const abi = [
       {
         type: "tuple[]",
         name: "",
-        internalType: "struct JaothuiCertNFTV3.REWARD[]",
+        internalType: "struct JaothuiCertNFTV4.REWARD[]",
         components: [
           { type: "string", name: "uri", internalType: "string" },
           { type: "uint256", name: "createdAt", internalType: "uint256" },
@@ -232,6 +276,7 @@ export const abi = [
       { type: "address", name: "_to", internalType: "address" },
       { type: "string", name: "_name", internalType: "string" },
       { type: "string", name: "_microchip", internalType: "string" },
+      { type: "uint16", name: "_height", internalType: "uint16" },
       { type: "string", name: "_baseUri", internalType: "string" },
     ],
   },

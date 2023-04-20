@@ -1,37 +1,34 @@
 import GridItem from "../../GridItem";
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
+import { getMetadata } from "../../../helpers/getMetadata";
 
-import thui from "../../../public/images/N.jpg";
-import thui2 from "../../../public/images/R.png";
-import thui3 from "../../../public/images/SR.jpg";
+import { useGetInfosOf } from "../../../blockchain/cert/read";
+import { useEffect, useState } from "react";
+import { CertNFTRawData } from "../../../blockchain/cert/interface";
+import { useCertContext } from "../../../hooks/cert/certContext";
 
 export interface CollectionProps {
   address: `0x${string}` | undefined;
 }
 
 const Collection = ({ address }: CollectionProps) => {
-  const mockData = [
-    {
-      tokenName: "บ่าวจอนสัน",
-      certNo: "อด13/66",
-      microcchip: "764040226302396",
-    },
-    {
-      tokenName: "บ่าวจอนนี่",
-      certNo: "หค15/88",
-      microcchip: "884040226302396",
-    },
-    {
-      tokenName: "บ่าวจอนจัด",
-      certNo: "จบ99/999",
-      microcchip: "124040226302396",
-    },
-  ];
+  const { certNFTs } = useCertContext();
+  const [buffaloList, setBuffaloList] = useState<CertNFTRawData[] | []>([]);
+
+  useEffect(() => {
+    getMetadata(certNFTs, setBuffaloList);
+  }, [certNFTs]);
 
   return (
     <div id="profile-collection-box">
-      <div id="profile-collection-header" className="">
+      <div
+        id="profile-collection-header"
+        className="
+      tabletS:flex
+      tabletS:justify-between
+      tabletS:items-center"
+      >
         <div
           id="header-title"
           className="text-thuiwhite text-xl
@@ -44,7 +41,8 @@ const Collection = ({ address }: CollectionProps) => {
         <div
           id="search-bar"
           className="flex items-center gap-3 mt-1 mb-1
-        tabletS:mt-3"
+        tabletS:mt-3
+        "
         >
           <input
             className="flex-1 rounded-md text-center
@@ -61,31 +59,24 @@ const Collection = ({ address }: CollectionProps) => {
           className="grid grid-cols-1 gap-4
         tabletM:grid-cols-3"
         >
-          <Link href={`/cert/${address}/${mockData[0].microcchip}`}>
-            <GridItem
-              image={thui}
-              tokenName={mockData[0].tokenName}
-              certNo={mockData[0].certNo}
-              microcchip={mockData[0].microcchip}
-            />
-          </Link>
-
-          <Link href={`/cert/${address}/${mockData[1].microcchip}`}>
-            <GridItem
-              image={thui2}
-              tokenName={mockData[1].tokenName}
-              certNo={mockData[1].certNo}
-              microcchip={mockData[1].microcchip}
-            />
-          </Link>
-          <Link href={`/cert/${address}/${mockData[2].microcchip}`}>
-            <GridItem
-              image={thui3}
-              tokenName={mockData[2].tokenName}
-              certNo={mockData[2].certNo}
-              microcchip={mockData[2].microcchip}
-            />
-          </Link>
+          {certNFTs && certNFTs.length <= 0 ? (
+            <div className="text-xl text-thuiyellow">
+              No certification found.
+            </div>
+          ) : (
+            <>
+              {buffaloList.map((data, index) => (
+                <Link href={`/cert/${address}/${data.microchip}`} key={index}>
+                  <GridItem
+                    image={data.metadata!.image}
+                    tokenName={data.name}
+                    certNo={data.metadata!.attributes[2].value}
+                    microcchip={data.microchip}
+                  />
+                </Link>
+              ))}
+            </>
+          )}
         </div>
       </div>
     </div>
