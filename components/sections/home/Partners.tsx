@@ -55,14 +55,14 @@ const PartnerSection = () => {
             height={500}
             alt={"maxyverse"}
           />
-          <Image
+          {/* <Image
             className="w-[100px]
             labtop:w-[200px]"
             src="/images/tpcxLogo.png"
             width={500}
             height={500}
             alt={"tpcx"}
-          />
+          /> */}
           <Image
             className="w-[80px]
             labtop:w-[150px]
