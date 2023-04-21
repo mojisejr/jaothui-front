@@ -23,3 +23,16 @@ export interface CertNFTRawData {
   metadata?: any;
   locked: boolean;
 }
+
+export interface CertNFTData {
+  name: string;
+  edition?: number;
+  image: string;
+  description: string;
+  attributes: CertNFTAttribute[];
+}
+
+export interface CertNFTAttribute {
+  trait_type: string;
+  value: string | number;
+}

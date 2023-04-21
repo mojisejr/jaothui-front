@@ -1,11 +1,12 @@
 import axios from "axios";
-import { CertNFTRawData } from "../blockchain/cert/interface";
+import { CertNFTData } from "../blockchain/cert/interface";
 
-async function getMetadata(infos: CertNFTRawData[], setBuffaloList: Function) {
+async function getMetadata(infos: CertNFTData[], setBuffaloList: Function) {
+  console.log(infos);
   if (infos.length <= 0 || infos[0] == null) return [];
   const metadata = await Promise.all(
     infos.map(async (m) => {
-      const response = await axios.get(m.tokenUri);
+      const response = await axios.get(m.image);
       const metadata = response.data;
       // console.log(data);
       const obj = {
@@ -15,7 +16,7 @@ async function getMetadata(infos: CertNFTRawData[], setBuffaloList: Function) {
       return obj;
     })
   );
-  setBuffaloList(metadata as CertNFTRawData[]);
+  setBuffaloList(metadata as CertNFTData[]);
 }
 
 export { getMetadata };

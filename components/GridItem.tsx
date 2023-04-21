@@ -3,8 +3,8 @@ import Image, { StaticImageData } from "next/image";
 export interface GridItemProp {
   image: string | StaticImageData;
   tokenName: string;
-  certNo: string;
-  microcchip: string;
+  certNo: string | number;
+  microcchip: string | number;
 }
 
 const GridItem = ({ image, tokenName, certNo, microcchip }: GridItemProp) => {

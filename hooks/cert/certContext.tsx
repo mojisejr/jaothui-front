@@ -5,13 +5,13 @@ import {
   useEffect,
   useState,
 } from "react";
-import { CertNFTRawData } from "../../blockchain/cert/interface";
-import { useGetInfosOf } from "../../blockchain/cert/read";
+import { CertNFTData, CertNFTRawData } from "../../blockchain/cert/interface";
+import { useGetInfosOf, useGetMetadataOf } from "../../blockchain/cert/read";
 import { useAccount } from "wagmi";
 
 type CertContextType = {
-  certNFTs: CertNFTRawData[] | [];
-  getNFTMicrochip: (microhip: string) => CertNFTRawData | {};
+  certNFTs: CertNFTData[] | [];
+  getNFTMicrochip: (microhip: string) => CertNFTData | {};
   refetchCert: (from: string) => void;
 };
 
@@ -28,28 +28,27 @@ type Props = {
 };
 
 export const CertProvider = ({ children }: Props) => {
-  const [certNFTs, setNft] = useState<CertNFTRawData[] | []>([]);
+  const [certNFTs, setNft] = useState<CertNFTData[] | []>([]);
   const { isConnected, address } = useAccount();
-  const { infos, refetchInfo } = useGetInfosOf(address!);
+  const { metadata, metaLoading, metaRefetch } = useGetMetadataOf(address!);
 
   useEffect(() => {
     if (!isConnected) {
       setNft([]);
     }
-    if (address) {
-      refetchInfo();
-      setNft(infos!);
-    }
-  }, [isConnected, address]);
+    setNft(metadata!);
+  }, [isConnected, address, metaLoading]);
 
   const getNFTMicrochip = (microchip: string) => {
-    const found = infos!.find((m: CertNFTRawData) => m.microchip == microchip);
+    const found = metadata!.find(
+      (m: CertNFTData) => m.attributes[0].value == microchip
+    );
     return found ? found : {};
   };
 
   const refetchCert = (from: string) => {
     console.log(`refetch cert from ${from}`);
-    refetchInfo();
+    metaRefetch();
   };
 
   const value = {

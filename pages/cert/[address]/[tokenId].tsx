@@ -2,36 +2,33 @@ import { useRouter } from "next/router";
 import Header from "../../../components/Header";
 import Image from "next/image";
 
-import thui from "../../../public/images/N.jpg";
 import CertFooter from "../../../components/sections/cert/CertFooter";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
 import { useMenu } from "../../../hooks/menuContext";
 import MenuModal from "../../../components/MenuModal";
 import { useCertContext } from "../../../hooks/cert/certContext";
-import { CertNFTRawData } from "../../../blockchain/cert/interface";
-import { getMetadata } from "../../../helpers/getMetadata";
+import { CertNFTData } from "../../../blockchain/cert/interface";
 import Link from "next/link";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
 const CertDetail = () => {
-  const [nft, setNft] = useState<CertNFTRawData[] | []>([]);
+  const [nft, setNft] = useState<CertNFTData | null>(null);
   const { isConnected } = useAccount();
   const { isOpen } = useMenu();
   const router = useRouter();
   const { tokenId } = router.query;
-  const { getNFTMicrochip, refetchCert } = useCertContext();
+  const { getNFTMicrochip } = useCertContext();
 
   useEffect(() => {
     if (!isConnected) {
       router.replace("/");
     }
 
+    console.log(nft);
+
     const found = getNFTMicrochip(tokenId as string);
-    if (nft.length <= 0) {
-      refetchCert("detail");
-      getMetadata([found as CertNFTRawData], setNft);
-    }
+    setNft(found! as CertNFTData);
   }, [isConnected, router, nft]);
 
   return (
@@ -41,7 +38,11 @@ const CertDetail = () => {
     desktop:text-2xl"
     >
       <Header />
-      {nft.length <= 0 ? <div>Loading..</div> : <ProfileBox certNft={nft[0]} />}
+      {nft == undefined || nft == null ? (
+        <div>Loading..</div>
+      ) : (
+        <ProfileBox certNft={nft} />
+      )}
       <CertFooter />
       {isOpen ? <MenuModal /> : null}
     </div>
@@ -49,7 +50,7 @@ const CertDetail = () => {
 };
 
 interface ProfileBoxProps {
-  certNft: CertNFTRawData;
+  certNft: CertNFTData;
 }
 
 const ProfileBox = ({ certNft }: ProfileBoxProps) => {
@@ -72,14 +73,14 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
         desktop:text-3xl"
           id="title"
         >
-          #{certNft.microchip}
+          #{certNft.attributes[0].value}
         </div>
         <div className="flex justify-center">
           <Image
             className="max-w-[350px]"
-            src={certNft.metadata.image}
-            width={250}
-            height={250}
+            src={certNft.image}
+            width={400}
+            height={400}
             alt={"image"}
           />
         </div>
@@ -94,38 +95,52 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
               <div id="topic">name:</div>
               <div id="content">{certNft.name}</div>
               <div id="topic">Id:</div>
-              <div id="content">{certNft.microchip}</div>
+              <div id="content">{certNft.attributes[0].value}</div>
               <div id="topic">certNo:</div>
-              <div id="content">{certNft.metadata.attributes[2].value}</div>
+              <div id="content">{certNft.attributes[5].value}</div>
               <div id="topic">Birthday:</div>
-              <div id="content">{"N/A"}</div>
-              <div id="topic">Mother:</div>
               <div id="content">
-                {certNft.motherTokenId == "0" ? "ไม่พบ" : certNft.motherTokenId}
+                {new Date(
+                  (certNft.attributes[2].value as number) * 1000
+                ).toDateString()}
               </div>
               <div id="topic">MotherId:</div>
               <div id="content">
-                {certNft.motherTokenId == "0" ? "ไม่พบ" : certNft.motherTokenId}
-              </div>
-              <div id="topic">Father:</div>
-              <div id="content">
-                {certNft.fatherTokenId == "0" ? "ไม่พบ" : certNft.fatherTokenId}
+                {certNft.attributes[3].value == "0"
+                  ? "ไม่พบ"
+                  : certNft.attributes[3].value}
               </div>
               <div id="topic">FatherId:</div>
               <div id="content">
-                {certNft.fatherTokenId == "0" ? "ไม่พบ" : certNft.fatherTokenId}
+                {certNft.attributes[4].value == "0"
+                  ? "ไม่พบ"
+                  : certNft.attributes[4].value}
               </div>
               <div id="topic">Origin:</div>
-              <div id="content">{certNft.metadata.attributes[1].value}</div>
+              <div id="content">{certNft.attributes[6].value}</div>
               <div id="topic">Height:</div>
-              <div id="content">{certNft.height} ซม.</div>
+              <div id="content">{certNft.attributes[1].value} ซม.</div>
               <div id="topic">Color:</div>
-              <div id="content">{certNft.metadata.attributes[3].value}</div>
+              <div id="content">{certNft.attributes[7].value}</div>
               <div id="topic">Detail:</div>
               <div id="content">ไม่พบ</div>
               <div id="topic">Reward:</div>
               <div id="content" className="flex">
                 N/A
+              </div>
+              <div id="topic">createdAt:</div>
+              <div id="content" className="flex">
+                {(certNft.attributes[8].value as number) <= 0
+                  ? "ไม่มี"
+                  : new Date(
+                      (certNft.attributes[8].value as number) * 1000
+                    ).toDateString()}
+              </div>
+              <div id="topic">updatedAt:</div>
+              <div id="content" className="flex">
+                {(certNft.attributes[9].value as number) <= 0
+                  ? "ไม่มี"
+                  : new Date(certNft.attributes[9].value).toDateString()}
               </div>
             </li>
           </ul>
