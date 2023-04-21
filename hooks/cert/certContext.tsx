@@ -12,11 +12,13 @@ import { useAccount } from "wagmi";
 type CertContextType = {
   certNFTs: CertNFTRawData[] | [];
   getNFTMicrochip: (microhip: string) => CertNFTRawData | {};
+  refetchCert: (from: string) => void;
 };
 
 const certContextDefaultValue: CertContextType = {
   certNFTs: [],
   getNFTMicrochip: () => ({}),
+  refetchCert: () => {},
 };
 
 const CertContext = createContext<CertContextType>(certContextDefaultValue);
@@ -36,8 +38,8 @@ export const CertProvider = ({ children }: Props) => {
     }
     if (address) {
       refetchInfo();
+      setNft(infos!);
     }
-    setNft(infos!);
   }, [isConnected, address]);
 
   const getNFTMicrochip = (microchip: string) => {
@@ -45,9 +47,15 @@ export const CertProvider = ({ children }: Props) => {
     return found ? found : {};
   };
 
+  const refetchCert = (from: string) => {
+    console.log(`refetch cert from ${from}`);
+    refetchInfo();
+  };
+
   const value = {
     certNFTs,
     getNFTMicrochip,
+    refetchCert,
   };
 
   return <CertContext.Provider value={value}>{children}</CertContext.Provider>;

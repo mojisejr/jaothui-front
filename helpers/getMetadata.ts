@@ -2,7 +2,7 @@ import axios from "axios";
 import { CertNFTRawData } from "../blockchain/cert/interface";
 
 async function getMetadata(infos: CertNFTRawData[], setBuffaloList: Function) {
-  if (infos.length <= 0) return [];
+  if (infos.length <= 0 || infos[0] == null) return [];
   const metadata = await Promise.all(
     infos.map(async (m) => {
       const response = await axios.get(m.tokenUri);

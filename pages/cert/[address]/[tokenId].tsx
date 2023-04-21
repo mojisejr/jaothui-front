@@ -11,6 +11,8 @@ import MenuModal from "../../../components/MenuModal";
 import { useCertContext } from "../../../hooks/cert/certContext";
 import { CertNFTRawData } from "../../../blockchain/cert/interface";
 import { getMetadata } from "../../../helpers/getMetadata";
+import Link from "next/link";
+import { FaArrowCircleLeft } from "react-icons/fa";
 
 const CertDetail = () => {
   const [nft, setNft] = useState<CertNFTRawData[] | []>([]);
@@ -18,18 +20,26 @@ const CertDetail = () => {
   const { isOpen } = useMenu();
   const router = useRouter();
   const { tokenId } = router.query;
-  const { getNFTMicrochip } = useCertContext();
+  const { getNFTMicrochip, refetchCert } = useCertContext();
 
   useEffect(() => {
     if (!isConnected) {
       router.replace("/");
     }
-    const nft = getNFTMicrochip(tokenId as string);
-    getMetadata([nft as CertNFTRawData], setNft);
-  }, [isConnected, router]);
+
+    const found = getNFTMicrochip(tokenId as string);
+    if (nft.length <= 0) {
+      refetchCert("detail");
+      getMetadata([found as CertNFTRawData], setNft);
+    }
+  }, [isConnected, router, nft]);
 
   return (
-    <div className="bg-thuiyellow flex flex-col justify-center items-center">
+    <div
+      className="bg-thuiyellow flex flex-col justify-center items-center
+      tebletM:text-xl
+    desktop:text-2xl"
+    >
       <Header />
       {nft.length <= 0 ? <div>Loading..</div> : <ProfileBox certNft={nft[0]} />}
       <CertFooter />
@@ -47,6 +57,7 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
     <div className="m-10" id="container">
       <div
         className="bg-thuigray text-thuiwhite grid grid-cols-1 rounded-md pr-10 pl-10 pt-5 pb-5 gap-5
+        shadow-xl
         tabletM:pt-10
         tabletM:pb-10
         tabletM:w-[600px]
@@ -118,6 +129,16 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
               </div>
             </li>
           </ul>
+        </div>
+        <div className="flex justify-end">
+          <Link
+            href="/cert"
+            className="flex items-center gap-2 text-thuiwhite p-2 bg-thuidark rounded-md
+            hover:bg-thuiyellow"
+          >
+            <FaArrowCircleLeft />
+            Back
+          </Link>
         </div>
       </div>
     </div>

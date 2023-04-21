@@ -13,11 +13,15 @@ export interface CollectionProps {
 }
 
 const Collection = ({ address }: CollectionProps) => {
-  const { certNFTs } = useCertContext();
+  const { certNFTs, refetchCert } = useCertContext();
   const [buffaloList, setBuffaloList] = useState<CertNFTRawData[] | []>([]);
 
   useEffect(() => {
-    getMetadata(certNFTs, setBuffaloList);
+    if (certNFTs.length <= 0) {
+      refetchCert("collection");
+    } else {
+      getMetadata(certNFTs, setBuffaloList);
+    }
   }, [certNFTs]);
 
   return (
@@ -65,16 +69,20 @@ const Collection = ({ address }: CollectionProps) => {
             </div>
           ) : (
             <>
-              {buffaloList.map((data, index) => (
-                <Link href={`/cert/${address}/${data.microchip}`} key={index}>
-                  <GridItem
-                    image={data.metadata!.image}
-                    tokenName={data.name}
-                    certNo={data.metadata!.attributes[2].value}
-                    microcchip={data.microchip}
-                  />
-                </Link>
-              ))}
+              {buffaloList.length <= 0 ? (
+                <div className="text-xl text-thuiyellow">Loading...</div>
+              ) : (
+                buffaloList.map((data, index) => (
+                  <Link href={`/cert/${address}/${data.microchip}`} key={index}>
+                    <GridItem
+                      image={data.metadata!.image}
+                      tokenName={data.name}
+                      certNo={data.metadata!.attributes[2].value}
+                      microcchip={data.microchip}
+                    />
+                  </Link>
+                ))
+              )}
             </>
           )}
         </div>
