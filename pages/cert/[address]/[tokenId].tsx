@@ -25,11 +25,9 @@ const CertDetail = () => {
       router.replace("/");
     }
 
-    console.log(nft);
-
     const found = getNFTMicrochip(tokenId as string);
     setNft(found! as CertNFTData);
-  }, [isConnected, router, nft]);
+  }, [isConnected, router]);
 
   return (
     <div
@@ -54,6 +52,24 @@ interface ProfileBoxProps {
 }
 
 const ProfileBox = ({ certNft }: ProfileBoxProps) => {
+  if (Object.keys(certNft).length === 0) {
+    return (
+      <div className="h-screen flex flex-col justify-center items-center gap-[20px]">
+        <div className="text-xl">Not Found ..</div>
+        <div>
+          <Link
+            href="/cert"
+            className="flex items-center gap-2 text-thuiwhite p-2 bg-thuidark rounded-md
+            hover:bg-thuiyellow"
+          >
+            <FaArrowCircleLeft />
+            Back
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="m-10" id="container">
       <div
@@ -77,7 +93,9 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
         </div>
         <div className="flex justify-center">
           <Image
-            className="max-w-[350px]"
+            className="w-[250px] max-w-[350px] rounded-md border-[2px] border-thuiyellow border-opacity-[50%]
+            tabletS:w-[400px]
+            "
             src={certNft.image}
             width={400}
             height={400}
@@ -85,18 +103,18 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
           />
         </div>
         <div
-          className="flex justify-center 
+          className="flex text-sm justify-center 
           tabletM:text-2xl 
           desktop:text-3xl"
           id="content-wrapper"
         >
           <ul>
             <li className="grid grid-cols-2">
-              <div id="topic">name:</div>
+              <div id="topic">Name:</div>
               <div id="content">{certNft.name}</div>
-              <div id="topic">Id:</div>
+              <div id="topic">ID:</div>
               <div id="content">{certNft.attributes[0].value}</div>
-              <div id="topic">certNo:</div>
+              <div id="topic">CertNo:</div>
               <div id="content">{certNft.attributes[5].value}</div>
               <div id="topic">Birthday:</div>
               <div id="content">
@@ -128,7 +146,7 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
               <div id="content" className="flex">
                 N/A
               </div>
-              <div id="topic">createdAt:</div>
+              <div id="topic">CreatedAt:</div>
               <div id="content" className="flex">
                 {(certNft.attributes[8].value as number) <= 0
                   ? "ไม่มี"
@@ -136,7 +154,7 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
                       (certNft.attributes[8].value as number) * 1000
                     ).toDateString()}
               </div>
-              <div id="topic">updatedAt:</div>
+              <div id="topic">UpdatedAt:</div>
               <div id="content" className="flex">
                 {(certNft.attributes[9].value as number) <= 0
                   ? "ไม่มี"

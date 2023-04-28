@@ -1,16 +1,16 @@
 import Image from "next/image";
-// import N from "../../public/images/N.jpg";
-// import R from "../../public/images/R.png";
-// import SR from "../../public/images/SR.jpg";
-// import SSR from "../../public/images/SSR.png";
 import N from "../../../public/images/n.gif";
 import R from "../../../public/images/r.gif";
 import SR from "../../../public/images/sr.gif";
 import SSR from "../../../public/images/ssr.gif";
+import { motion } from "framer-motion";
 
 const DetailSection = () => {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
       className="relative h-full pt-[100px] pb-10 w-full top-[-80px] bg-thuigray flex flex-col justify-center items-center
     tabletS:top-[-100px]
     tabletS:pt-[150px]
@@ -50,7 +50,7 @@ const DetailSection = () => {
         <RarityExampleBox />
       </div>
       <div className="absolute w-full h-full top-0 left-0 bg-[url('../public/images/thuiDetailBg.png')] bg-cover bg-no-repeat bg-bottom z-0"></div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,9 +1,13 @@
 import RoadmapCard from "../../RoadmapCard";
 import data from "../../../constants/roadmap.json";
+import { motion } from "framer-motion";
 
 const RoadmapSection = () => {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 100 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
       className="relative w-full h-full top-[-90px] bg-thuidark bg-opacity-[0.955] pt-[10%] pb-[10%] pr-[5%] pl-[5%]
     tabletS:top-[-100px]
     tabletM:top-[-140px]
@@ -24,7 +28,7 @@ const RoadmapSection = () => {
         <RoadmapCard title={"phase3"} data={data.phase_3} />
         <RoadmapCard title={"phase4"} data={data.phase_4} />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

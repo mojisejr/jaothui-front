@@ -1,7 +1,11 @@
 import Image from "next/image";
+import { motion } from "framer-motion";
 const PartnerSection = () => {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
       className="relative w-full h-full top-[-90px] bg-thuigray pt-[7%] pb-[10%] pr-[5%] pl-[5%]
     tabletS:top-[-100px]
     tabletM:top-[-140px]
@@ -82,7 +86,7 @@ const PartnerSection = () => {
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

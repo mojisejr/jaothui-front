@@ -1,10 +1,13 @@
 import thui from "../public/images/thuiTitle.png";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const Title = () => {
   return (
-    <div
-      className="w-full bg-thuigray pt-[6%] pb-[6%] pr-[6%] pl-[6%] rounded-[35px] relative text-center
+    <motion.div
+      whileHover={{ scale: 1.1 }}
+      transition={{ duration: 0.3 }}
+      className="w-full bg-thuigray pt-[6%] pb-[6%] pr-[6%] pl-[6%] rounded-[35px] relative text-center hover:shadow-xl
       tabletS:w-[600px]
       tabletS:text-left
       tabletS:pl-[8%]
@@ -64,7 +67,7 @@ const Title = () => {
           alt={"thui image"}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

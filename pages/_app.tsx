@@ -10,7 +10,7 @@ import { MenuProvider } from "../hooks/menuContext";
 import { CertProvider } from "../hooks/cert/certContext";
 
 const { chains, provider } = configureChains(
-  [bitkub_mainnet, bitkub_testnet],
+  [bitkub_testnet],
   [publicProvider()]
 );
 

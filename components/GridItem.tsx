@@ -1,4 +1,5 @@
 import Image, { StaticImageData } from "next/image";
+import { motion } from "framer-motion";
 
 export interface GridItemProp {
   image: string | StaticImageData;
@@ -9,7 +10,11 @@ export interface GridItemProp {
 
 const GridItem = ({ image, tokenName, certNo, microcchip }: GridItemProp) => {
   return (
-    <div className="w-full text-thuiwhite flex flex-col justify-center items-center">
+    <motion.div
+      whileHover={{ scale: 1.1 }}
+      transition={{ duration: 0.2 }}
+      className="w-full text-thuiwhite flex flex-col justify-center items-center"
+    >
       <div
         className="p-2 rounded-md transition-all 1.5s border-[1px] border-thuiwhite border-opacity-20
       hover:shadow-xl
@@ -34,7 +39,7 @@ const GridItem = ({ image, tokenName, certNo, microcchip }: GridItemProp) => {
           <div>{microcchip}</div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

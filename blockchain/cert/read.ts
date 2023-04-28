@@ -48,8 +48,6 @@ function useGetMetadataOf(_owner: string | `0x${string}`) {
   const metadata: CertNFTData[] =
     information.data == undefined ? [] : JSON.parse(information.data!);
 
-  console.log(metadata);
-
   return {
     metadata,
     metaRefetch: information.refetch,
