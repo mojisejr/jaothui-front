@@ -120,45 +120,45 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
               <div id="content">
                 {new Date(
                   (certNft.attributes[2].value as number) * 1000
-                ).toDateString()}
+                ).toLocaleDateString()}
               </div>
               <div id="topic">MotherId:</div>
               <div id="content">
                 {certNft.attributes[3].value == "0"
-                  ? "ไม่พบ"
+                  ? "N/A"
                   : certNft.attributes[3].value}
               </div>
               <div id="topic">FatherId:</div>
               <div id="content">
                 {certNft.attributes[4].value == "0"
-                  ? "ไม่พบ"
+                  ? "N/A"
                   : certNft.attributes[4].value}
               </div>
               <div id="topic">Origin:</div>
               <div id="content">{certNft.attributes[6].value}</div>
               <div id="topic">Height:</div>
-              <div id="content">{certNft.attributes[1].value} ซม.</div>
+              <div id="content">{certNft.attributes[1].value} cm.</div>
               <div id="topic">Color:</div>
               <div id="content">{certNft.attributes[7].value}</div>
               <div id="topic">Detail:</div>
-              <div id="content">ไม่พบ</div>
+              <div id="content">N/A</div>
               <div id="topic">Reward:</div>
               <div id="content" className="flex">
                 N/A
               </div>
-              <div id="topic">CreatedAt:</div>
+              <div id="topic">Created:</div>
               <div id="content" className="flex">
                 {(certNft.attributes[8].value as number) <= 0
-                  ? "ไม่มี"
+                  ? "N/A"
                   : new Date(
                       (certNft.attributes[8].value as number) * 1000
-                    ).toDateString()}
+                    ).toLocaleDateString()}
               </div>
-              <div id="topic">UpdatedAt:</div>
+              <div id="topic">Updated:</div>
               <div id="content" className="flex">
                 {(certNft.attributes[9].value as number) <= 0
-                  ? "ไม่มี"
-                  : new Date(certNft.attributes[9].value).toDateString()}
+                  ? "N/A"
+                  : new Date(certNft.attributes[9].value).toLocaleDateString()}
               </div>
             </li>
           </ul>
