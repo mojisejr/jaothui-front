@@ -5,13 +5,13 @@ import {
   useEffect,
   useState,
 } from "react";
-import { CertNFTData } from "../../blockchain/cert/interface";
+import { IMetadata } from "../../interfaces/iMetadata";
 import { useGetMetadataOf } from "../../blockchain/cert/read";
 import { useAccount } from "wagmi";
 
 type CertContextType = {
-  certNFTs: CertNFTData[] | [];
-  getNFTMicrochip: (microhip: string) => CertNFTData | {};
+  certNFTs: IMetadata[] | [];
+  getNFTMicrochip: (microhip: string) => IMetadata | {};
   refetchCert: (from: string) => void;
 };
 
@@ -28,7 +28,7 @@ type Props = {
 };
 
 export const CertProvider = ({ children }: Props) => {
-  const [certNFTs, setNft] = useState<CertNFTData[] | []>([]);
+  const [certNFTs, setNft] = useState<IMetadata[] | []>([]);
   const { isConnected, address } = useAccount();
   const { metadata, metaLoading, metaRefetch } = useGetMetadataOf(address!);
 
@@ -41,7 +41,7 @@ export const CertProvider = ({ children }: Props) => {
 
   const getNFTMicrochip = (microchip: string) => {
     const found = metadata!.find(
-      (m: CertNFTData) => m.attributes[0].value == microchip
+      (m: IMetadata) => m.attributes![0].value == microchip
     );
     return found ? found : {};
   };
