@@ -67,12 +67,12 @@ const Collection = ({ address }: CollectionProps) => {
                 <div className="text-xl text-thuiyellow">Loading...</div>
               ) : (
                 certNFTs.map((data, index) => (
-                  <Link href={`/cert/${data.attributes[0].value}`} key={index}>
+                  <Link href={`/cert/${data.attributes![0].value}`} key={index}>
                     <GridItem
-                      image={data.image}
+                      image={data.image!}
                       tokenName={data.name}
-                      certNo={data.attributes[5].value}
-                      microcchip={data.attributes[0].value}
+                      certNo={data.attributes![5].value}
+                      microcchip={data.attributes![0].value}
                     />
                   </Link>
                 ))
