@@ -1,11 +1,8 @@
 import GridItem from "../../GridItem";
 import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
-import { getMetadata } from "../../../helpers/getMetadata";
 
-import { useGetInfosOf } from "../../../blockchain/cert/read";
-import { useEffect, useState } from "react";
-import { CertNFTRawData } from "../../../blockchain/cert/interface";
+import { useEffect } from "react";
 import { useCertContext } from "../../../hooks/cert/certContext";
 
 export interface CollectionProps {
@@ -70,10 +67,7 @@ const Collection = ({ address }: CollectionProps) => {
                 <div className="text-xl text-thuiyellow">Loading...</div>
               ) : (
                 certNFTs.map((data, index) => (
-                  <Link
-                    href={`/cert/${address}/${data.attributes[0].value}`}
-                    key={index}
-                  >
+                  <Link href={`/cert/${data.attributes[0].value}`} key={index}>
                     <GridItem
                       image={data.image}
                       tokenName={data.name}

@@ -1,40 +1,6 @@
 import { useContractRead } from "wagmi";
 import { contract } from "../contract";
-import { CertNFTRawType, CertNFTRawData, CertNFTData } from "./interface";
-
-const useGetInfosOf = (owner: string | `0x${string}`) => {
-  const { data, isError, isLoading, isSuccess, refetch } = useContractRead({
-    abi: contract.cert.abi,
-    address: contract.cert.address as `0x${string}`,
-    functionName: "getInfosOf",
-    args: [owner],
-    onSuccess(data: [any[]]) {},
-  });
-
-  const meta = data && data!.map((m: any[]) => parseCertRawData(m));
-
-  return {
-    infos: meta,
-    refetchInfo: refetch,
-    infosLoading: isLoading,
-    infosError: isError,
-    infosSuccess: isSuccess,
-  };
-};
-
-const parseCertRawData = (data: any[]): CertNFTRawData => {
-  return {
-    name: data[0],
-    microchip: data[1],
-    height: data[2],
-    motherTokenId: data[3].toString(),
-    fatherTokenId: data[4].toString(),
-    createdAt: data[5].toString(),
-    updatedAt: data[6].toString(),
-    tokenUri: data[7],
-    locked: data[8],
-  };
-};
+import { IMetadata } from "../../interfaces/iMetadata";
 
 function useGetMetadataOf(_owner: string | `0x${string}`) {
   const information = useContractRead({
@@ -45,7 +11,7 @@ function useGetMetadataOf(_owner: string | `0x${string}`) {
     onSuccess(data: string) {},
   });
 
-  const metadata: CertNFTData[] =
+  const metadata: IMetadata[] =
     information.data == undefined ? [] : JSON.parse(information.data!);
 
   return {
@@ -57,4 +23,25 @@ function useGetMetadataOf(_owner: string | `0x${string}`) {
   };
 }
 
-export { useGetInfosOf, useGetMetadataOf };
+function useGetMetadataByMicrochip(michrocip: string) {
+  const information = useContractRead({
+    abi: contract.cert.abi,
+    address: contract.cert.address as `0x${string}`,
+    functionName: "getMetadataByMicrochip",
+    args: [michrocip],
+    onSuccess(data: string) {},
+  });
+
+  const metadata: IMetadata =
+    information.data == undefined ? null : JSON.parse(information.data!);
+
+  return {
+    metadata,
+    metaRefetch: information.refetch,
+    metaLoading: information.isLoading,
+    metaError: information.isError,
+    metaSuccess: information.isSuccess,
+  };
+}
+
+export { useGetMetadataOf, useGetMetadataByMicrochip };

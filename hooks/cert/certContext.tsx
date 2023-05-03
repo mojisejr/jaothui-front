@@ -5,8 +5,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import { CertNFTData, CertNFTRawData } from "../../blockchain/cert/interface";
-import { useGetInfosOf, useGetMetadataOf } from "../../blockchain/cert/read";
+import { CertNFTData } from "../../blockchain/cert/interface";
+import { useGetMetadataOf } from "../../blockchain/cert/read";
 import { useAccount } from "wagmi";
 
 type CertContextType = {
