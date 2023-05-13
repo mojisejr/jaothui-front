@@ -52,7 +52,7 @@ const BuyBox = () => {
       </div>
       <div className="flex justify-center mt-3 gap-2">
         <Link
-          className="pl-[10px] pr-[10px] pb-[5px] pt-[5px] rounded-[30px] bg-thuigray text-thuiyellow text-[35px]
+          className="pl-[10px] pr-[10px] pb-[5px] pt-[5px] rounded-[30px] bg-thuigray text-thuiyellow text-[25px]
           hover:text-thuiwhite
           hover:shadow-2xl
           transition-all 1s"
@@ -61,7 +61,7 @@ const BuyBox = () => {
           Whitepaper
         </Link>
         <button
-          className="pl-[10px] pr-[10px] pb-[5px] pt-[5px] rounded-[30px] bg-thuigray text-thuiyellow text-[35px]
+          className="pl-[10px] pr-[10px] pb-[5px] pt-[5px] rounded-[30px] bg-thuigray text-thuiyellow text-[25px]
           hover:text-thuiwhite
           hover:shadow-2xl
           transition-all 1s"
