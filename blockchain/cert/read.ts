@@ -44,4 +44,21 @@ function useGetMetadataByMicrochip(michrocip: string) {
   };
 }
 
-export { useGetMetadataOf, useGetMetadataByMicrochip };
+function useGetAllMetadata() {
+  const information = useContractRead({
+    abi: contract.cert.abi,
+    address: contract.cert.address as `0x${string}`,
+    functionName: "getAllMetadata",
+    onSuccess(data: string) {},
+  });
+
+  const metadata: IMetadata[] =
+    information.data == undefined ? [] : JSON.parse(information.data!);
+
+  return {
+    metadata,
+    metaRefetch: information.refetch,
+  };
+}
+
+export { useGetAllMetadata, useGetMetadataOf, useGetMetadataByMicrochip };

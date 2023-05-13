@@ -15,7 +15,7 @@ const Profile = () => {
       </div>
       <div
         id="profile-profile-content"
-        className="bg-thuidark rounded-md 
+        className="bg-thuidark p-[1.4rem] rounded-md 
         "
       >
         <div
@@ -26,7 +26,10 @@ const Profile = () => {
         >
           <div id="profile-name">name: Elon Thui</div>
           <div id="profile-email">email: elonthui@gmail.com</div>
-          <div id="profile-verified" className="text-[#00ff22]">
+          <div
+            id="profile-verified"
+            className="text-thuidark bg-[#00ff22] pl-2 pr-2 rounded-md"
+          >
             Verified
           </div>
         </div>

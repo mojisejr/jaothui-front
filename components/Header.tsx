@@ -6,10 +6,15 @@ import { ImMenu } from "react-icons/im";
 import { useAccount } from "wagmi";
 import { useMenu } from "../hooks/menuContext";
 import { motion } from "framer-motion";
+import BitkubNextConnectButton from "./BitkubNext";
+import { useBitkubNext } from "../hooks/bitkubNextContext";
+import { simplifyAddress } from "../helpers/simplifyAddress";
+import BitkubDisconnectButton from "./BitkubNextDiscon";
 
 const Header = () => {
   const { isConnected } = useAccount();
   const { open } = useMenu();
+  // const { isConnected, walletAddress } = useBitkubNext();
   return (
     <div
       id="header-container"
@@ -49,11 +54,14 @@ const Header = () => {
       </motion.div>
 
       <div id="header-connect-wallet-btn" className="flex items-center gap-1">
-        {isConnected ? (
-          <button className="hover:text-thuiwhite" onClick={() => open()}>
-            <ImMenu size={30} />
-          </button>
-        ) : null}
+        {/* {!isConnected ? (
+          <BitkubNextConnectButton />
+        ) : (
+          <BitkubDisconnectButton />
+        )} */}
+        <button className="hover:text-thuiwhite" onClick={() => open()}>
+          <ImMenu size={30} />
+        </button>
         <ConnectWalletButton />
       </div>
     </div>

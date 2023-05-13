@@ -1,5 +1,6 @@
 import Image from "next/image";
 import thui from "../public/images/First1.png";
+import Link from "next/link";
 
 const BuyBox = () => {
   return (
@@ -49,8 +50,22 @@ const BuyBox = () => {
           กับเทคโนโลยีดิจิทัล ด้วยคาแรคเตอร์ &apos;ควายไทย&apos;
         </div>
       </div>
-      <div className="flex justify-center mt-3">
-        <button className="p-[10px] rounded-[30px] bg-thuigray text-thuiyellow text-[35px]">
+      <div className="flex justify-center mt-3 gap-2">
+        <Link
+          className="pl-[10px] pr-[10px] pb-[5px] pt-[5px] rounded-[30px] bg-thuigray text-thuiyellow text-[25px]
+          hover:text-thuiwhite
+          hover:shadow-2xl
+          transition-all 1s"
+          href="/whitepaper.pdf"
+        >
+          Whitepaper
+        </Link>
+        <button
+          className="pl-[10px] pr-[10px] pb-[5px] pt-[5px] rounded-[30px] bg-thuigray text-thuiyellow text-[25px]
+          hover:text-thuiwhite
+          hover:shadow-2xl
+          transition-all 1s"
+        >
           Buy Now
         </button>
       </div>
