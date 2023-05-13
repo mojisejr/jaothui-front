@@ -41,10 +41,10 @@ const MenuModal = () => {
           <ul className="text-thuiwhite pr-[1rem] pl-[1rem] text-center">
             <li className="p-2">MENU</li>
             <li className="border-t-[1px] border-thuiwhite border-opacity-30 pt-3 pb-3 flex justify-center">
-              <MenuItem text="Buffalo Certify NFT" to={"/cert"} />
+              <MenuItem text="BUFFALO PEDIGREES" to={"/cert"} />
             </li>
             <li className="border-t-[1px] border-thuiwhite border-opacity-30 pt-3 pb-3 flex justify-center">
-              <MenuItem text="JAOTHUI PRIVILAGE" to={"/"} />
+              <MenuItem text="DASHBOARD" to={"/"} />
             </li>
           </ul>
         </div>

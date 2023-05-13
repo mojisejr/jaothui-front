@@ -10,6 +10,7 @@ import { useMenu } from "../hooks/menuContext";
 
 const Home: NextPage = () => {
   const { isOpen } = useMenu();
+
   return (
     <div className="relative bg-thuidark">
       <Header />

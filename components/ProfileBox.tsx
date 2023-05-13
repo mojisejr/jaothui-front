@@ -126,7 +126,8 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
         </div>
         <div className="flex justify-end">
           <Link
-            href={isConnected ? "/cert" : "/"}
+            // href={isConnected ? "/cert" : "/"}
+            href={"/cert"}
             className="flex items-center gap-2 text-thuiwhite p-2 bg-thuidark rounded-md
               hover:bg-thuiyellow"
           >

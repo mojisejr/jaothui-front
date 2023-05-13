@@ -2,6 +2,7 @@
   "name": "jaothui-front",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:3000",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +10,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@bitkub-blockchain/react-bitkubnext-oauth2": "^0.0.15",
     "@rainbow-me/rainbowkit": "^0.12.7",
+    "axios": "^1.4.0",
+    "cookies-next": "^2.1.1",
     "ethers": "^5",
     "framer-motion": "^10.12.4",
     "lodash.merge": "^4.6.2",
