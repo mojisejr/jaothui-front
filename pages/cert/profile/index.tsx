@@ -3,9 +3,13 @@ import ProfileMenu from "../../../components/sections/cert/ProfileMenu";
 import Header from "../../../components/Header";
 import { useAccount } from "wagmi";
 import PleaseConnectWallet from "../../../components/sections/cert/PleaseConnect";
+import MenuModal from "../../../components/MenuModal";
+import CertFooter from "../../../components/sections/cert/CertFooter";
+import { useMenu } from "../../../hooks/menuContext";
 
 const ProfilePage = () => {
   const { isConnected, address } = useAccount();
+  const { isOpen } = useMenu();
 
   return (
     <>
@@ -31,6 +35,8 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
+      {isOpen ? <MenuModal /> : null}
+      <CertFooter />
     </>
   );
 };

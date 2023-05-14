@@ -6,16 +6,13 @@ import Collection from "../../components/sections/cert/Collection";
 import CollectionV2 from "../../components/sections/cert/CollectionV2";
 import CertFooter from "../../components/sections/cert/CertFooter";
 
-import { useAccount } from "wagmi";
-import PleaseConnectWallet from "../../components/sections/cert/PleaseConnect";
 import MenuModal from "../../components/MenuModal";
 import { useMenu } from "../../hooks/menuContext";
 import { useGetAllMetadata } from "../../blockchain/cert/read";
 
 const CertMainPage: NextPage = () => {
-  const { isConnected, address } = useAccount();
   const { isOpen } = useMenu();
-  const { metadata, metaRefetch } = useGetAllMetadata();
+  const { metadata } = useGetAllMetadata();
 
   return (
     <>

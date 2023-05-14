@@ -46,7 +46,7 @@ const Collection = ({ address }: CollectionProps) => {
           tabletM:text-3xl
         "
         >
-          Collection
+          My Pedigrees
         </div>
         <div
           id="search-bar"

@@ -1,3 +1,5 @@
+import CertFooter from "./CertFooter";
+
 const PleaseConnectWallet = () => {
   return (
     <div className="p-10 h-screen w-full text-center text-thuiwhite text-3xl">
