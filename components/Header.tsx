@@ -10,6 +10,7 @@ import BitkubNextConnectButton from "./BitkubNext";
 import { useBitkubNext } from "../hooks/bitkubNextContext";
 import { simplifyAddress } from "../helpers/simplifyAddress";
 import BitkubDisconnectButton from "./BitkubNextDiscon";
+import Head from "next/head";
 
 const Header = () => {
   const { isConnected } = useAccount();
@@ -27,6 +28,9 @@ const Header = () => {
       labtop:pl-[50px]
       "
     >
+      <Head>
+        <title>JaoThui Official</title>
+      </Head>
       <motion.div whileHover={{ scale: 1.08 }} transition={{ duration: 0.2 }}>
         <Link
           href="/"
