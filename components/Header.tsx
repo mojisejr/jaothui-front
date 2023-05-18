@@ -3,18 +3,35 @@ import Image from "next/image";
 import logo from "../public/images/thuiLogo.png";
 import Link from "next/link";
 import { ImMenu } from "react-icons/im";
+import { FiSearch } from "react-icons/fi";
 import { useAccount } from "wagmi";
 import { useMenu } from "../hooks/menuContext";
+import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import BitkubNextConnectButton from "./BitkubNext";
 import { useBitkubNext } from "../hooks/bitkubNextContext";
 import { simplifyAddress } from "../helpers/simplifyAddress";
 import BitkubDisconnectButton from "./BitkubNextDiscon";
+import Head from "next/head";
+import { SyntheticEvent, useRef } from "react";
 
 const Header = () => {
   const { isConnected } = useAccount();
   const { open } = useMenu();
-  // const { isConnected, walletAddress } = useBitkubNext();
+  const searchRef = useRef<HTMLInputElement>(null);
+  const { push } = useRouter();
+
+  function handleSearch(e: SyntheticEvent) {
+    const value =
+      searchRef.current?.value == undefined ? 0 : +searchRef.current.value;
+
+    if (value <= 0) {
+      return;
+    }
+
+    push(`/cert/${value}`);
+  }
+
   return (
     <div
       id="header-container"
@@ -27,6 +44,9 @@ const Header = () => {
       labtop:pl-[50px]
       "
     >
+      <Head>
+        <title>JaoThui Official</title>
+      </Head>
       <motion.div whileHover={{ scale: 1.08 }} transition={{ duration: 0.2 }}>
         <Link
           href="/"
@@ -59,6 +79,25 @@ const Header = () => {
         ) : (
           <BitkubDisconnectButton />
         )} */}
+        <div
+          className="items-center gap-2 bg-thuiwhite rounded-md hidden
+        tabletM:flex"
+        >
+          <input
+            className="text-thuidark p-1 rounded-md outline-none"
+            type="number"
+            minLength={15}
+            maxLength={15}
+            placeholder="microchip Id (15 digits)"
+            ref={searchRef}
+          ></input>
+          <button
+            className="hover:text-thuidark"
+            onClick={(e) => handleSearch(e)}
+          >
+            <FiSearch size={30} />
+          </button>
+        </div>
         <button className="hover:text-thuiwhite" onClick={() => open()}>
           <ImMenu size={30} />
         </button>

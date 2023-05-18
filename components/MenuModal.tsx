@@ -44,7 +44,7 @@ const MenuModal = () => {
               <MenuItem text="BUFFALO PEDIGREES" to={"/cert"} />
             </li>
             <li className="border-t-[1px] border-thuiwhite border-opacity-30 pt-3 pb-3 flex justify-center">
-              <MenuItem text="DASHBOARD" to={"/"} />
+              <MenuItem text="DASHBOARD" to={"/cert/profile"} />
             </li>
           </ul>
         </div>

@@ -1,8 +1,7 @@
 import GridItem from "../../GridItem";
 import Link from "next/link";
-import { FaSearch } from "react-icons/fa";
 
-import { useEffect } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useCertContext } from "../../../hooks/cert/certContext";
 
 export interface CollectionProps {
@@ -12,11 +11,24 @@ export interface CollectionProps {
 const Collection = ({ address }: CollectionProps) => {
   const { certNFTs, refetchCert } = useCertContext();
 
+  const [sortState, setSortState] = useState<number>(0);
+  //@TODO: sort by all, male, female
+
+  function handleSorting(e: SyntheticEvent) {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      value: number;
+    };
+    setSortState(target.value);
+  }
+
+  useEffect(() => {}, [sortState]);
+
   useEffect(() => {
-    if (certNFTs.length <= 0) {
+    if (certNFTs.length <= 0 && address) {
       refetchCert("collection");
     }
-  }, [certNFTs]);
+  }, [certNFTs, address]);
 
   return (
     <div id="profile-collection-box">
@@ -34,7 +46,7 @@ const Collection = ({ address }: CollectionProps) => {
           tabletM:text-3xl
         "
         >
-          Collection
+          My Pedigrees
         </div>
         <div
           id="search-bar"
@@ -42,14 +54,18 @@ const Collection = ({ address }: CollectionProps) => {
         tabletS:mt-3
         "
         >
-          <input
-            className="flex-1 rounded-md text-center
-          tabletS:text-xl"
-            type="text"
-          ></input>
-          <button className="flex-none text-thuiwhite">
-            <FaSearch size={20} />
-          </button>
+          <label htmlFor="sort" className="space-x-2">
+            <span className="text-thuiwhite">sortBy:</span>
+            <select
+              onChange={(e) => handleSorting(e)}
+              id="sort"
+              className="p-2 rounded-md"
+            >
+              <option value={0}>All</option>
+              <option value={1}>Female</option>
+              <option value={2}>Male</option>
+            </select>
+          </label>
         </div>
       </div>
       <div id="grid" className="mt-3 p-3">

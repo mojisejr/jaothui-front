@@ -21,7 +21,9 @@ const CertDetail = () => {
     >
       <Header />
       {metadata == undefined || metadata == null ? (
-        <div>Loading..</div>
+        <div className="h-screen flex mt-[100px] text-[30px]">
+          <div>Not Found.</div>
+        </div>
       ) : (
         <ProfileBox certNft={metadata} />
       )}
