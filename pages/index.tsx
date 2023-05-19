@@ -7,9 +7,11 @@ import PartnerSection from "../components/sections/home/Partners";
 import FooterSection from "../components/sections/home/Footer";
 import MenuModal from "../components/MenuModal";
 import { useMenu } from "../hooks/menuContext";
+import { useGetMetadataOf } from "../blockchain/Metadata/read";
 
 const Home: NextPage = () => {
   const { isOpen } = useMenu();
+  useGetMetadataOf();
 
   return (
     <div className="relative bg-thuidark">

@@ -6,9 +6,12 @@ import Collection from "../../../components/sections/cert/Collection";
 import MenuModal from "../../../components/MenuModal";
 import CertFooter from "../../../components/sections/cert/CertFooter";
 import { useMenu } from "../../../hooks/menuContext";
+import { useBitkubNext } from "../../../hooks/bitkubNextContext";
+import { useGetMetadataOf } from "../../../blockchain/Metadata/read";
 
 const MyCert: FunctionComponent<PropsWithChildren> = () => {
-  const { isConnected, address } = useAccount();
+  // const { isConnected, address } = useAccount();
+  const { isConnected, walletAddress } = useBitkubNext();
   const { isOpen } = useMenu();
 
   return (
@@ -34,7 +37,8 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
               className="p-5 mb-2 flex flex-col gap-2
         tabletM:gap-[60px]"
             >
-              <Collection address={address} />
+              {/* <Collection address={address} /> */}
+              <Collection address={walletAddress} />
               {/* <CollectionV2 title={"Pedigree List"} certNFTs={metadata!} /> */}
             </div>
           </div>

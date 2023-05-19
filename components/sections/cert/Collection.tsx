@@ -3,13 +3,15 @@ import Link from "next/link";
 
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useCertContext } from "../../../hooks/cert/certContext";
+import { useGetMetadataOf } from "../../../blockchain/Metadata/read";
 
 export interface CollectionProps {
   address: `0x${string}` | undefined;
 }
 
 const Collection = ({ address }: CollectionProps) => {
-  const { certNFTs, refetchCert } = useCertContext();
+  // const { certNFTs, refetchCert } = useCertContext();
+  const { metadataOfOwner } = useGetMetadataOf();
 
   const [sortState, setSortState] = useState<number>(0);
   //@TODO: sort by all, male, female
@@ -25,10 +27,10 @@ const Collection = ({ address }: CollectionProps) => {
   useEffect(() => {}, [sortState]);
 
   useEffect(() => {
-    if (certNFTs.length <= 0 && address) {
-      refetchCert("collection");
+    if (metadataOfOwner.length <= 0 && address) {
+      // refetchCert("collection");
     }
-  }, [certNFTs, address]);
+  }, [metadataOfOwner, address]);
 
   return (
     <div id="profile-collection-box">
@@ -73,22 +75,22 @@ const Collection = ({ address }: CollectionProps) => {
           className="grid grid-cols-1 gap-4
         tabletM:grid-cols-3"
         >
-          {certNFTs && certNFTs.length <= 0 ? (
+          {metadataOfOwner && metadataOfOwner.length <= 0 ? (
             <div className="text-xl text-thuiyellow">
               No certification found.
             </div>
           ) : (
             <>
-              {certNFTs.length <= 0 ? (
+              {metadataOfOwner.length <= 0 ? (
                 <div className="text-xl text-thuiyellow">Loading...</div>
               ) : (
-                certNFTs.map((data, index) => (
-                  <Link href={`/cert/${data.attributes![0].value}`} key={index}>
+                metadataOfOwner.map((data, index) => (
+                  <Link href={`/cert/${data.microchip}`} key={index}>
                     <GridItem
                       image={data.image!}
                       tokenName={data.name}
-                      certNo={data.attributes![5].value}
-                      microcchip={data.attributes![0].value}
+                      certNo={data.certNo}
+                      microcchip={data.microcchip}
                     />
                   </Link>
                 ))

@@ -16,7 +16,8 @@ import Head from "next/head";
 import { SyntheticEvent, useRef } from "react";
 
 const Header = () => {
-  const { isConnected } = useAccount();
+  // const { isConnected } = useAccount();
+  const { isConnected, walletAddress } = useBitkubNext();
   const { open } = useMenu();
   const searchRef = useRef<HTMLInputElement>(null);
   const { push } = useRouter();
@@ -101,7 +102,12 @@ const Header = () => {
         <button className="hover:text-thuiwhite" onClick={() => open()}>
           <ImMenu size={30} />
         </button>
-        <ConnectWalletButton />
+        {/* <ConnectWalletButton /> */}
+        {!isConnected ? (
+          <BitkubNextConnectButton />
+        ) : (
+          <div>{simplifyAddress(walletAddress)}</div>
+        )}
       </div>
     </div>
   );
