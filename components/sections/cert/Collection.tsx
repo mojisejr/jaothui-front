@@ -2,7 +2,6 @@ import GridItem from "../../GridItem";
 import Link from "next/link";
 
 import { SyntheticEvent, useEffect, useState } from "react";
-import { useCertContext } from "../../../hooks/cert/certContext";
 import { useGetMetadataOf } from "../../../blockchain/Metadata/read";
 
 export interface CollectionProps {
