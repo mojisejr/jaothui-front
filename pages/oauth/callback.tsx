@@ -27,8 +27,10 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
 
   async function getAccessToken(code: string) {
     const { access_token, refresh_token } = await exchangeAuthorizationCode(
-      process.env.NEXT_PUBLIC_client_id_dev as string,
-      process.env.NEXT_PUBLIC_redirect_dev as string,
+      // process.env.NEXT_PUBLIC_client_id_dev as string,
+      // process.env.NEXT_PUBLIC_redirect_dev as string,
+      process.env.NEXT_PUBLIC_client_id_prod as string,
+      process.env.NEXT_PUBLIC_redirect_prod as string,
       code as string
     );
 
