@@ -7,7 +7,6 @@ import MenuModal from "../../../components/MenuModal";
 import CertFooter from "../../../components/sections/cert/CertFooter";
 import { useMenu } from "../../../hooks/menuContext";
 import { useBitkubNext } from "../../../hooks/bitkubNextContext";
-import { useGetMetadataOf } from "../../../blockchain/Metadata/read";
 
 const MyCert: FunctionComponent<PropsWithChildren> = () => {
   // const { isConnected, address } = useAccount();
@@ -26,7 +25,7 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
   
  `}
       >
-        {isConnected ? (
+        {walletAddress ? (
           <div
             id="profile-container"
             className="bg-thuigray rounded-md max-w-[1200px]
