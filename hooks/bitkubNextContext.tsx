@@ -47,7 +47,8 @@ export function BitkubNextProvider({ children }: Props) {
       setIsConnected(false);
     }
 
-    if (walletAddress !== "0x00") {
+    if (walletAddress != "0x00") {
+      console.log("wallet != 0x00");
       setIsConnected(true);
     }
   }, [accessToken, refreshToken, walletAddress]);
@@ -57,6 +58,12 @@ export function BitkubNextProvider({ children }: Props) {
     refreshToken: string,
     walletAddress: `0x${string}`
   ) {
+    console.log("login: ", {
+      accessToken,
+      refreshToken,
+      walletAddress,
+      isConnected,
+    });
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
     setWalletAddress(walletAddress);
