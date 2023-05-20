@@ -13,6 +13,8 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected, walletAddress } = useBitkubNext();
   const { isOpen } = useMenu();
 
+  console.log({ isConnected, walletAddress });
+
   return (
     <>
       <Header />
