@@ -10,19 +10,21 @@ import { exchangeRefreshToken } from "@bitkub-blockchain/react-bitkubnext-oauth2
 
 type bitkubNextContextType = {
   isConnected: boolean;
-  walletAddress: `0x${string}`;
+  walletAddress: `0x${string}` | "";
+  email?: string;
   disconnect: () => void;
   updateLogin: (
     accessToken: string,
     refreshToken: string,
-    walletAddress: `0x${string}`
+    walletAddress: `0x${string}`,
+    email: string
   ) => void;
   refreshAccessToken: () => void;
 };
 
 const bitkubNextContextDefaultValue: bitkubNextContextType = {
   isConnected: false,
-  walletAddress: "0x00",
+  walletAddress: "",
   disconnect: () => {},
   updateLogin: () => {},
   refreshAccessToken: () => {},
@@ -40,33 +42,31 @@ export function BitkubNextProvider({ children }: Props) {
   const [isConnected, setIsConnected] = useState(false);
   const [accessToken, setAccessToken] = useState<string>("none");
   const [refreshToken, setRefreshToken] = useState<string>("none");
-  const [walletAddress, setWalletAddress] = useState<`0x${string}`>("0x00");
+  const [walletAddress, setWalletAddress] = useState<`0x${string}` | "">(
+    "0x00"
+  );
+  const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
-    if (walletAddress == "0x00" || accessToken == "none") {
+    if (walletAddress == "" || accessToken == "none") {
       setIsConnected(false);
     }
 
-    if (walletAddress != "0x00") {
-      console.log("wallet != 0x00");
+    if (walletAddress != "" && isConnected) {
       setIsConnected(true);
     }
-  }, [accessToken, refreshToken, walletAddress]);
+  }, [accessToken, refreshToken, walletAddress, isConnected]);
 
   function updateLogin(
     accessToken: string,
     refreshToken: string,
-    walletAddress: `0x${string}`
+    walletAddress: `0x${string}`,
+    email: string
   ) {
-    console.log("login: ", {
-      accessToken,
-      refreshToken,
-      walletAddress,
-      isConnected,
-    });
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
     setWalletAddress(walletAddress);
+    setEmail(email);
     setIsConnected(true);
   }
 
@@ -84,11 +84,13 @@ export function BitkubNextProvider({ children }: Props) {
   function disconnect() {
     setAccessToken("none");
     setRefreshToken("none");
-    setWalletAddress("0x00");
+    setWalletAddress("");
+    setIsConnected(false);
   }
 
   const value = {
     walletAddress,
+    email,
     isConnected,
     updateLogin,
     disconnect,

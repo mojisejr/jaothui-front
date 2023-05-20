@@ -2,9 +2,14 @@ import { GiLawStar } from "react-icons/gi";
 import Link from "next/link";
 import { useRef } from "react";
 import { useMenu } from "../hooks/menuContext";
+import { simplifyAddress } from "../helpers/simplifyAddress";
+import { useBitkubNext } from "../hooks/bitkubNextContext";
+import BitkubNextConnectButton from "./BitkubNext";
+import BitkubDisconnectButton from "./BitkubNextDiscon";
 
 const MenuModal = () => {
   const modal = useRef<HTMLDivElement>(null);
+  const { isConnected, walletAddress } = useBitkubNext();
   const { close } = useMenu();
 
   function handleClose() {
@@ -44,8 +49,17 @@ const MenuModal = () => {
               <MenuItem text="BUFFALO PEDIGREES" to={"/cert"} />
             </li>
             <li className="border-t-[1px] border-thuiwhite border-opacity-30 pt-3 pb-3 flex justify-center">
-              <MenuItem text="DASHBOARD" to={"/cert/profile"} />
+              {isConnected ? (
+                <MenuItem text="DASHBOARD" to={"/cert/profile"} />
+              ) : (
+                <BitkubNextConnectButton />
+              )}
             </li>
+            {isConnected ? (
+              <li className="border-t-[1px] border-thuiwhite border-opacity-30 pt-3 pb-3 flex justify-center">
+                <BitkubDisconnectButton />
+              </li>
+            ) : null}
           </ul>
         </div>
       </div>

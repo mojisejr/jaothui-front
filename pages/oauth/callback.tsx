@@ -9,6 +9,7 @@ import { exchangeAuthorizationCode } from "@bitkub-blockchain/react-bitkubnext-o
 import axios from "axios";
 
 import { useBitkubNext } from "../../hooks/bitkubNextContext";
+import Image from "next/image";
 
 const Callback: FunctionComponent<PropsWithChildren> = () => {
   const { updateLogin } = useBitkubNext();
@@ -17,7 +18,7 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
 
   useEffect(() => {
     if (!query.code) {
-      setMessage("Authorization Failed..");
+      setMessage("Authenticating..!");
       replace("/");
     } else {
       setMessage("Authorization Successfully..!");
@@ -29,8 +30,12 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
     const { access_token, refresh_token } = await exchangeAuthorizationCode(
       // process.env.NEXT_PUBLIC_client_id_dev as string,
       // process.env.NEXT_PUBLIC_redirect_dev as string,
-      process.env.NEXT_PUBLIC_client_id_prod as string,
-      process.env.NEXT_PUBLIC_redirect_prod as string,
+      process.env.NODE_ENV == "production"
+        ? (process.env.NEXT_PUBLIC_client_id_prod as string)
+        : (process.env.NEXT_PUBLIC_client_id_dev as string),
+      process.env.NODE_ENV == "production"
+        ? (process.env.NEXT_PUBLIC_redirect_prod as string)
+        : (process.env.NEXT_PUBLIC_redirect_dev as string),
       code as string
     );
 
@@ -46,18 +51,19 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
       }
     );
 
-    const { wallet_address } = response.data.data;
+    const { wallet_address, email } = response.data.data;
     if (!wallet_address) {
       setMessage("no wallet found!");
       replace("/");
     } else {
-      updateLogin(access_token, refresh_token, wallet_address);
-      replace("/");
+      updateLogin(access_token, refresh_token, wallet_address, email);
+      replace("/cert/profile");
     }
   }
 
   return (
-    <div className="bg-thuiyellow h-screen w-screeen flex justify-center items-center">
+    <div className="bg-thuiyellow h-screen w-screeen flex flex-col justify-center items-center">
+      <Image src="/images/First1.png" width={350} height={350} alt="thui" />
       <div className="text-[60px]">{message}</div>
     </div>
   );

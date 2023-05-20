@@ -6,9 +6,16 @@ export interface GridItemProp {
   tokenName: string;
   certNo: string | number;
   microcchip: string | number;
+  sex: string;
 }
 
-const GridItem = ({ image, tokenName, certNo, microcchip }: GridItemProp) => {
+const GridItem = ({
+  image,
+  tokenName,
+  certNo,
+  microcchip,
+  sex,
+}: GridItemProp) => {
   return (
     <motion.div
       whileHover={{ scale: 1.1 }}
@@ -36,7 +43,8 @@ const GridItem = ({ image, tokenName, certNo, microcchip }: GridItemProp) => {
           <div>
             {tokenName} #{certNo}
           </div>
-          <div>{microcchip}</div>
+          <div>Sex: {sex}</div>
+          <div>ChipId: {microcchip}</div>
         </div>
       </div>
     </motion.div>

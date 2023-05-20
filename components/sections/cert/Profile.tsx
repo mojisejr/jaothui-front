@@ -1,4 +1,6 @@
+import { useBitkubNext } from "../../../hooks/bitkubNextContext";
 const Profile = () => {
+  const { email, walletAddress } = useBitkubNext();
   return (
     <div
       id="profile-profile-box"
@@ -24,8 +26,9 @@ const Profile = () => {
         tabletS:p-5
         tabletS:text-xl"
         >
-          <div id="profile-name">name: Elon Thui</div>
-          <div id="profile-email">email: elonthui@gmail.com</div>
+          {/* <div id="profile-name">name: Elon Thui</div> */}
+          <div id="profile-wallet">wallet: {walletAddress}</div>
+          <div id="profile-email">email: {email ? email : "N/A"}</div>
           <div
             id="profile-verified"
             className="text-thuidark bg-[#00ff22] pl-2 pr-2 rounded-md"

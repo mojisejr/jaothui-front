@@ -79,6 +79,8 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
               <div id="content">{certNft.certNo}</div>
               <div id="topic">Birthday:</div>
               <div id="content">{certNft.birthday}</div>
+              <div id="topic">Sex:</div>
+              <div id="content">{certNft.sex}</div>
               <div id="topic">MotherId:</div>
               <div id="content">
                 {certNft.motherId == "0" ? "N/A" : certNft.motherId}

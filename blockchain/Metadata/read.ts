@@ -4,6 +4,7 @@ import { useState } from "react";
 import { contract } from "../contract";
 import { useBitkubNext } from "../../hooks/bitkubNextContext";
 import { parseOutputMetadata } from "./helpers/metadataParser";
+import { IMetadata } from "../../interfaces/iMetadata";
 
 export function useGetAllMetadata() {
   const [data, setData] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export function useGetAllMetadata() {
     // args: [address],
     onSuccess(data: any[]) {
       const parsed = parseOutputMetadata(data);
-      console.log(parsed);
+      // console.log(parsed);
       setData(parsed);
     },
   });
@@ -27,16 +28,16 @@ export function useGetAllMetadata() {
 export function useGetMetadataOf() {
   // const { address } = useAccount();
   const { walletAddress } = useBitkubNext();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<IMetadata[]>([]);
 
   useContractRead({
     ...contract.metadata,
     functionName: "getMetadataOf",
     // args: [address],
     args: [walletAddress],
-    onSuccess(data: any[]) {
+    onSuccess(data: IMetadata[]) {
       const parsed = parseOutputMetadata(data);
-      console.log(parsed);
+      // console.log(parsed);
       setData(parsed);
     },
   });
@@ -54,8 +55,8 @@ export function useGetMetadataByMicrochip(michrocip: string) {
     functionName: "getMetadataByMicrochip",
     args: [michrocip],
     onSuccess(data: any[]) {
-      console.log("here");
-      console.log(data);
+      // console.log("here");
+      // console.log(data);
       const parsed = parseOutputMetadata([data]);
       setData(parsed);
     },
