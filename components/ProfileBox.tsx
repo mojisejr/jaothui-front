@@ -3,13 +3,15 @@ import Image from "next/image";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { IMetadata } from "../interfaces/iMetadata";
 import { useAccount } from "wagmi";
+import { useBitkubNext } from "../hooks/bitkubNextContext";
 
 export interface ProfileBoxProps {
   certNft: IMetadata;
 }
 
 const ProfileBox = ({ certNft }: ProfileBoxProps) => {
-  const { isConnected } = useAccount();
+  // const { isConnected } = useAccount();
+  const { isConnected } = useBitkubNext();
 
   if (Object.keys(certNft).length === 0) {
     return (
@@ -48,7 +50,7 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
           desktop:text-3xl"
           id="title"
         >
-          #{certNft.attributes![0].value}
+          #{certNft.microchip}
         </div>
         <div className="flex justify-center">
           <Image
@@ -72,54 +74,38 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
               <div id="topic">Name:</div>
               <div id="content">{certNft.name}</div>
               <div id="topic">ID:</div>
-              <div id="content">{certNft.attributes![0].value}</div>
+              <div id="content">{certNft.microchip}</div>
               <div id="topic">CertNo:</div>
-              <div id="content">{certNft.attributes![5].value}</div>
+              <div id="content">{certNft.certNo}</div>
               <div id="topic">Birthday:</div>
-              <div id="content">
-                {new Date(
-                  (certNft.attributes![2].value as number) * 1000
-                ).toLocaleDateString()}
-              </div>
+              <div id="content">{certNft.birthday}</div>
               <div id="topic">MotherId:</div>
               <div id="content">
-                {certNft.attributes![3].value == "0"
-                  ? "N/A"
-                  : certNft.attributes![3].value}
+                {certNft.motherId == "0" ? "N/A" : certNft.motherId}
               </div>
               <div id="topic">FatherId:</div>
               <div id="content">
-                {certNft.attributes![4].value == "0"
-                  ? "N/A"
-                  : certNft.attributes![4].value}
+                {certNft.fatherId == "0" ? "N/A" : certNft.fatherId}
               </div>
               <div id="topic">Origin:</div>
-              <div id="content">{certNft.attributes![6].value}</div>
+              <div id="content">{certNft.origin}</div>
               <div id="topic">Height:</div>
-              <div id="content">{certNft.attributes![1].value} cm.</div>
+              <div id="content">{certNft.height} cm.</div>
               <div id="topic">Color:</div>
-              <div id="content">{certNft.attributes![7].value}</div>
+              <div id="content">{certNft.color}</div>
               <div id="topic">Detail:</div>
-              <div id="content">{certNft.attributes![8].value}</div>
+              <div id="content">{certNft.detail}</div>
               <div id="topic">Reward:</div>
               <div id="content" className="flex">
                 N/A
               </div>
               <div id="topic">Created:</div>
               <div id="content" className="flex">
-                {(certNft.attributes![9].value as number) <= 0
-                  ? "N/A"
-                  : new Date(
-                      (certNft.attributes![9].value as number) * 1000
-                    ).toLocaleDateString()}
+                {certNft.createdAt}
               </div>
               <div id="topic">Updated:</div>
               <div id="content" className="flex">
-                {(certNft.attributes![10].value as number) <= 0
-                  ? "N/A"
-                  : new Date(
-                      certNft.attributes![10].value
-                    ).toLocaleDateString()}
+                {certNft.updatedAt}
               </div>
             </li>
           </ul>

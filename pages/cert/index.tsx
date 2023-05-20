@@ -8,11 +8,11 @@ import CertFooter from "../../components/sections/cert/CertFooter";
 
 import MenuModal from "../../components/MenuModal";
 import { useMenu } from "../../hooks/menuContext";
-import { useGetAllMetadata } from "../../blockchain/cert/read";
+import { useGetAllMetadata } from "../../blockchain/Metadata/read";
 
 const CertMainPage: NextPage = () => {
   const { isOpen } = useMenu();
-  const { metadata } = useGetAllMetadata();
+  const { allMetadata } = useGetAllMetadata();
 
   return (
     <>
@@ -37,7 +37,7 @@ const CertMainPage: NextPage = () => {
             tabletM:gap-[60px]"
           >
             {/* <Collection address={address} /> */}
-            <CollectionV2 title={"Pedigree List"} certNFTs={metadata!} />
+            <CollectionV2 title={"Pedigree List"} certNFTs={allMetadata!} />
           </div>
         </div>
       </div>

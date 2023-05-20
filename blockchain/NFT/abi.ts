@@ -1,4 +1,4 @@
-export const abi = [
+export const abiNFT = [
   {
     type: "constructor",
     stateMutability: "nonpayable",
@@ -7,6 +7,7 @@ export const abi = [
       { type: "address", name: "_adminProjectRouter", internalType: "address" },
       { type: "address", name: "_committee", internalType: "address" },
       { type: "address", name: "_transferRouter", internalType: "address" },
+      { type: "address", name: "_history", internalType: "address" },
       { type: "uint256", name: "_acceptedKycLevel", internalType: "uint256" },
     ],
   },
@@ -307,6 +308,13 @@ export const abi = [
   },
   {
     type: "function",
+    stateMutability: "view",
+    outputs: [{ type: "bool", name: "", internalType: "bool" }],
+    name: "blacklist",
+    inputs: [{ type: "address", name: "", internalType: "address" }],
+  },
+  {
+    type: "function",
     stateMutability: "nonpayable",
     outputs: [],
     name: "burn",
@@ -340,13 +348,6 @@ export const abi = [
   {
     type: "function",
     stateMutability: "view",
-    outputs: [{ type: "string", name: "", internalType: "string" }],
-    name: "getAllMetadata",
-    inputs: [],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
     outputs: [{ type: "address", name: "", internalType: "address" }],
     name: "getApproved",
     inputs: [{ type: "uint256", name: "tokenId", internalType: "uint256" }],
@@ -357,118 +358,6 @@ export const abi = [
     outputs: [{ type: "uint256", name: "", internalType: "uint256" }],
     name: "getCurrentTokenId",
     inputs: [],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
-    outputs: [
-      {
-        type: "tuple[]",
-        name: "",
-        internalType: "struct JaothuiCertKAP721.HISTORY[]",
-        components: [
-          { type: "string", name: "description", internalType: "string" },
-          { type: "address", name: "by", internalType: "address" },
-          { type: "uint256", name: "timestamp", internalType: "uint256" },
-        ],
-      },
-    ],
-    name: "getHistoryOf",
-    inputs: [{ type: "uint256", name: "_tokenId", internalType: "uint256" }],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
-    outputs: [
-      {
-        type: "tuple",
-        name: "",
-        internalType: "struct JaothuiCertKAP721.BUFFALO",
-        components: [
-          { type: "string", name: "name", internalType: "string" },
-          { type: "uint256", name: "microchip", internalType: "uint256" },
-          { type: "string", name: "certNo", internalType: "string" },
-          { type: "string", name: "origin", internalType: "string" },
-          { type: "string", name: "color", internalType: "string" },
-          { type: "string", name: "uri", internalType: "string" },
-          { type: "string", name: "detail", internalType: "string" },
-          { type: "uint256", name: "birthdate", internalType: "uint256" },
-          { type: "uint256", name: "height", internalType: "uint256" },
-          { type: "uint256", name: "motherTokenId", internalType: "uint256" },
-          { type: "uint256", name: "fatherTokenId", internalType: "uint256" },
-          { type: "uint256", name: "createdAt", internalType: "uint256" },
-          { type: "uint256", name: "updatedAt", internalType: "uint256" },
-        ],
-      },
-    ],
-    name: "getInfoOf",
-    inputs: [{ type: "uint256", name: "_tokenId", internalType: "uint256" }],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
-    outputs: [
-      {
-        type: "tuple[]",
-        name: "",
-        internalType: "struct JaothuiCertKAP721.BUFFALO[]",
-        components: [
-          { type: "string", name: "name", internalType: "string" },
-          { type: "uint256", name: "microchip", internalType: "uint256" },
-          { type: "string", name: "certNo", internalType: "string" },
-          { type: "string", name: "origin", internalType: "string" },
-          { type: "string", name: "color", internalType: "string" },
-          { type: "string", name: "uri", internalType: "string" },
-          { type: "string", name: "detail", internalType: "string" },
-          { type: "uint256", name: "birthdate", internalType: "uint256" },
-          { type: "uint256", name: "height", internalType: "uint256" },
-          { type: "uint256", name: "motherTokenId", internalType: "uint256" },
-          { type: "uint256", name: "fatherTokenId", internalType: "uint256" },
-          { type: "uint256", name: "createdAt", internalType: "uint256" },
-          { type: "uint256", name: "updatedAt", internalType: "uint256" },
-        ],
-      },
-    ],
-    name: "getInfosOf",
-    inputs: [{ type: "address", name: "_owner", internalType: "address" }],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
-    outputs: [{ type: "string", name: "", internalType: "string" }],
-    name: "getMetadata",
-    inputs: [{ type: "uint256", name: "_tokenId", internalType: "uint256" }],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
-    outputs: [{ type: "string", name: "", internalType: "string" }],
-    name: "getMetadataByMicrochip",
-    inputs: [{ type: "uint256", name: "_microchip", internalType: "uint256" }],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
-    outputs: [{ type: "string", name: "", internalType: "string" }],
-    name: "getMetadataOf",
-    inputs: [{ type: "address", name: "_owner", internalType: "address" }],
-  },
-  {
-    type: "function",
-    stateMutability: "view",
-    outputs: [
-      {
-        type: "tuple[]",
-        name: "",
-        internalType: "struct JaothuiCertKAP721.REWARD[]",
-        components: [
-          { type: "string", name: "uri", internalType: "string" },
-          { type: "uint256", name: "createdAt", internalType: "uint256" },
-        ],
-      },
-    ],
-    name: "getRewardInfoOf",
-    inputs: [{ type: "uint256", name: "_tokenId", internalType: "uint256" }],
   },
   {
     type: "function",
@@ -509,26 +398,11 @@ export const abi = [
   },
   {
     type: "function",
-    stateMutability: "view",
-    outputs: [{ type: "uint256", name: "", internalType: "uint256" }],
-    name: "microchipToTokenId",
-    inputs: [{ type: "uint256", name: "", internalType: "uint256" }],
-  },
-  {
-    type: "function",
     stateMutability: "nonpayable",
     outputs: [],
     name: "mintWithMetadata",
     inputs: [
       { type: "address", name: "_to", internalType: "address" },
-      { type: "string", name: "_name", internalType: "string" },
-      { type: "uint256", name: "_microchip", internalType: "uint256" },
-      { type: "string", name: "_certNo", internalType: "string" },
-      { type: "string", name: "_origin", internalType: "string" },
-      { type: "string", name: "_color", internalType: "string" },
-      { type: "uint256", name: "_birthdate", internalType: "uint256" },
-      { type: "uint256", name: "_height", internalType: "uint256" },
-      { type: "string", name: "_detail", internalType: "string" },
       { type: "string", name: "_imageUri", internalType: "string" },
       { type: "string", name: "_tokenUri", internalType: "string" },
     ],
@@ -635,6 +509,13 @@ export const abi = [
     type: "function",
     stateMutability: "nonpayable",
     outputs: [],
+    name: "setHistory",
+    inputs: [{ type: "address", name: "_history", internalType: "address" }],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
     name: "setKYC",
     inputs: [{ type: "address", name: "_kyc", internalType: "address" }],
   },
@@ -645,8 +526,19 @@ export const abi = [
     name: "setTokenURI",
     inputs: [
       { type: "uint256", name: "_tokenId", internalType: "uint256" },
-      { type: "string", name: "_tokenURI", internalType: "string" },
+      { type: "string", name: "_tokenUri", internalType: "string" },
       { type: "string", name: "_imageUri", internalType: "string" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
+    name: "setTokenURIBatch",
+    inputs: [
+      { type: "uint256[]", name: "_tokenIds", internalType: "uint256[]" },
+      { type: "string[]", name: "_tokenUris", internalType: "string[]" },
+      { type: "string[]", name: "_imageUris", internalType: "string[]" },
     ],
   },
   {
@@ -678,6 +570,18 @@ export const abi = [
     outputs: [{ type: "uint256", name: "", internalType: "uint256" }],
     name: "tokenByIndex",
     inputs: [{ type: "uint256", name: "index", internalType: "uint256" }],
+  },
+  {
+    type: "function",
+    stateMutability: "view",
+    outputs: [
+      { type: "string", name: "image", internalType: "string" },
+      { type: "string", name: "uri", internalType: "string" },
+      { type: "uint256", name: "createdAt", internalType: "uint256" },
+      { type: "uint256", name: "updatedAt", internalType: "uint256" },
+    ],
+    name: "tokenIdToUri",
+    inputs: [{ type: "uint256", name: "", internalType: "uint256" }],
   },
   {
     type: "function",
@@ -752,36 +656,5 @@ export const abi = [
     outputs: [],
     name: "unpause",
     inputs: [],
-  },
-  {
-    type: "function",
-    stateMutability: "nonpayable",
-    outputs: [],
-    name: "updateBuffaloNameOf",
-    inputs: [
-      { type: "uint256", name: "_tokenId", internalType: "uint256" },
-      { type: "string", name: "_name", internalType: "string" },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "nonpayable",
-    outputs: [],
-    name: "updateParentOf",
-    inputs: [
-      { type: "uint256", name: "_tokenId", internalType: "uint256" },
-      { type: "uint256", name: "_motherTokenId", internalType: "uint256" },
-      { type: "uint256", name: "_fatherTokenId", internalType: "uint256" },
-    ],
-  },
-  {
-    type: "function",
-    stateMutability: "nonpayable",
-    outputs: [],
-    name: "updateRewardOf",
-    inputs: [
-      { type: "uint256", name: "_tokenId", internalType: "uint256" },
-      { type: "string", name: "_uri", internalType: "string" },
-    ],
   },
 ];
