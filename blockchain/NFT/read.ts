@@ -11,7 +11,7 @@ export function useTokenOfOwnerAll() {
     functionName: "tokenOfOwnerAll",
     args: [walletAddress],
     onSuccess(data: BigNumber) {
-      console.log(data.toString());
+      // console.log(data.toString());
     },
   });
 }

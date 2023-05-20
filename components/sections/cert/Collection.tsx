@@ -3,16 +3,17 @@ import Link from "next/link";
 
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useGetMetadataOf } from "../../../blockchain/Metadata/read";
+import { IMetadata } from "../../../interfaces/iMetadata";
 
 export interface CollectionProps {
-  address: `0x${string}` | undefined;
+  address: `0x${string}` | "" | undefined;
 }
 
 const Collection = ({ address }: CollectionProps) => {
   // const { certNFTs, refetchCert } = useCertContext();
   const { metadataOfOwner } = useGetMetadataOf();
-
   const [sortState, setSortState] = useState<number>(0);
+  const [currentData, setCurrentData] = useState<IMetadata[]>(metadataOfOwner);
   //@TODO: sort by all, male, female
 
   function handleSorting(e: SyntheticEvent) {
@@ -20,16 +21,31 @@ const Collection = ({ address }: CollectionProps) => {
     const target = e.target as typeof e.target & {
       value: number;
     };
+
+    switch (+target.value) {
+      case 1: {
+        const sorted = metadataOfOwner.filter((f) => f.sex == "female");
+        console.log(sorted);
+        setCurrentData(sorted);
+        break;
+      }
+      case 2: {
+        const sorted = metadataOfOwner.filter((f) => f.sex == "male");
+        setCurrentData(sorted);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
     setSortState(target.value);
   }
 
-  useEffect(() => {}, [sortState]);
-
   useEffect(() => {
-    if (metadataOfOwner.length <= 0 && address) {
-      // refetchCert("collection");
+    if (metadataOfOwner.length > 0 && sortState == 0) {
+      setCurrentData(metadataOfOwner);
     }
-  }, [metadataOfOwner, address]);
+  }, [metadataOfOwner, sortState]);
 
   return (
     <div id="profile-collection-box">
@@ -75,21 +91,20 @@ const Collection = ({ address }: CollectionProps) => {
         tabletM:grid-cols-3"
         >
           {metadataOfOwner && metadataOfOwner.length <= 0 ? (
-            <div className="text-xl text-thuiyellow">
-              No certification found.
-            </div>
+            <div className="text-xl text-thuiyellow">Loading..</div>
           ) : (
             <>
-              {metadataOfOwner.length <= 0 ? (
+              {currentData.length <= 0 ? (
                 <div className="text-xl text-thuiyellow">Loading...</div>
               ) : (
-                metadataOfOwner.map((data, index) => (
+                currentData.map((data, index) => (
                   <Link href={`/cert/${data.microchip}`} key={index}>
                     <GridItem
                       image={data.image!}
                       tokenName={data.name}
                       certNo={data.certNo}
-                      microcchip={data.microcchip}
+                      microcchip={data.microchip}
+                      sex={data.sex}
                     />
                   </Link>
                 ))

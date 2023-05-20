@@ -74,40 +74,37 @@ const Header = () => {
         </Link>
       </motion.div>
 
-      <div id="header-connect-wallet-btn" className="flex items-center gap-1">
-        {/* {!isConnected ? (
-          <BitkubNextConnectButton />
-        ) : (
-          <BitkubDisconnectButton />
-        )} */}
+      <div id="header-connect-wallet-btn" className="flex items-center gap-3">
+        {isConnected ? <div>{simplifyAddress(walletAddress)}</div> : null}
+        <button className="hover:text-thuiwhite" onClick={() => open()}>
+          <ImMenu size={30} />
+        </button>
         <div
-          className="items-center gap-2 bg-thuiwhite rounded-md hidden
+          className="items-center gap-2 rounded-2xl hidden p-1 bg-thuiyellow
         tabletM:flex"
         >
           <input
-            className="text-thuidark p-1 rounded-md outline-none"
-            type="number"
+            className="text-thuiwhite pl-2 pr-2 pt-1 pb-1 rounded-2xl outline-none bg-thuiyellow placeholder:text-thuidark placeholder:text-opacity-80"
+            type="text"
             minLength={15}
             maxLength={15}
             placeholder="microchip Id (15 digits)"
             ref={searchRef}
           ></input>
           <button
-            className="hover:text-thuidark"
+            className="hover:text-thuiwhite text-thuidark pr-1"
             onClick={(e) => handleSearch(e)}
           >
             <FiSearch size={30} />
           </button>
         </div>
-        <button className="hover:text-thuiwhite" onClick={() => open()}>
-          <ImMenu size={30} />
-        </button>
+
         {/* <ConnectWalletButton /> */}
-        {!isConnected ? (
+        {/* {!isConnected ? (
           <BitkubNextConnectButton />
         ) : (
           <div>{simplifyAddress(walletAddress)}</div>
-        )}
+        )} */}
       </div>
     </div>
   );

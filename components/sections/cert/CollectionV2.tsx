@@ -12,6 +12,7 @@ export interface CollectionProps {
 
 const CollectionV2 = ({ title, certNFTs }: CollectionProps) => {
   const [sortState, setSortState] = useState<number>(0);
+  const [currentData, setCurrentData] = useState<IMetadata[]>(certNFTs);
   //@TODO: sort by all, male, female
 
   function handleSorting(e: SyntheticEvent) {
@@ -19,10 +20,31 @@ const CollectionV2 = ({ title, certNFTs }: CollectionProps) => {
     const target = e.target as typeof e.target & {
       value: number;
     };
+
+    switch (+target.value) {
+      case 1: {
+        const sorted = certNFTs.filter((f) => f.sex == "female");
+        console.log(sorted);
+        setCurrentData(sorted);
+        break;
+      }
+      case 2: {
+        const sorted = certNFTs.filter((f) => f.sex == "male");
+        setCurrentData(sorted);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
     setSortState(target.value);
   }
 
-  useEffect(() => {}, [sortState]);
+  useEffect(() => {
+    if (certNFTs.length > 0 && sortState == 0) {
+      setCurrentData(certNFTs);
+    }
+  }, [certNFTs, sortState]);
 
   return (
     <div id="profile-collection-box">
@@ -67,22 +89,23 @@ const CollectionV2 = ({ title, certNFTs }: CollectionProps) => {
           className="grid grid-cols-1 gap-4
         tabletM:grid-cols-3"
         >
-          {certNFTs && certNFTs.length <= 0 ? (
+          {currentData && currentData.length <= 0 ? (
             <div className="text-xl text-thuiyellow">
               No certification found.
             </div>
           ) : (
             <>
-              {certNFTs.length <= 0 ? (
+              {currentData.length <= 0 ? (
                 <div className="text-xl text-thuiyellow">Loading...</div>
               ) : (
-                certNFTs.map((data, index) => (
+                currentData.map((data, index) => (
                   <Link href={`/cert/${data.microchip}`} key={index}>
                     <GridItem
                       image={data.image!}
                       tokenName={data.name}
                       certNo={data.certNo}
                       microcchip={data.microchip}
+                      sex={data.sex}
                     />
                   </Link>
                 ))

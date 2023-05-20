@@ -13,8 +13,6 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected, walletAddress } = useBitkubNext();
   const { isOpen } = useMenu();
 
-  console.log({ isConnected, walletAddress });
-
   return (
     <>
       <Header />
@@ -27,7 +25,7 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
   
  `}
       >
-        {walletAddress ? (
+        {isConnected ? (
           <div
             id="profile-container"
             className="bg-thuigray rounded-md max-w-[1200px]
@@ -44,7 +42,9 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
             </div>
           </div>
         ) : (
-          <PleaseConnectWallet />
+          <div>
+            <PleaseConnectWallet />
+          </div>
         )}
       </div>
       {isOpen ? <MenuModal /> : null}

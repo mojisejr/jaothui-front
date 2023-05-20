@@ -6,9 +6,12 @@ import PleaseConnectWallet from "../../../components/sections/cert/PleaseConnect
 import MenuModal from "../../../components/MenuModal";
 import CertFooter from "../../../components/sections/cert/CertFooter";
 import { useMenu } from "../../../hooks/menuContext";
+import { useBitkubNext } from "../../../hooks/bitkubNextContext";
 
 const ProfilePage = () => {
-  const { isConnected, address } = useAccount();
+  // const { isConnected, address } = useAccount();
+
+  const { isConnected } = useBitkubNext();
   const { isOpen } = useMenu();
 
   return (
