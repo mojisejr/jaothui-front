@@ -5,8 +5,10 @@ const BitkubNextConnectButton: FunctionComponent<PropsWithChildren> = () => {
   return (
     //@ts-ignore
     <ReactBitkubNextOauth2
-      clientId={process.env.NEXT_PUBLIC_client_id_dev as string}
-      redirectURI={process.env.NEXT_PUBLIC_redirect_dev as string}
+      // clientId={process.env.NEXT_PUBLIC_client_id_dev as string}
+      // redirectURI={process.env.NEXT_PUBLIC_redirect_dev as string}
+      clientId={process.env.NEXT_PUBLIC_client_prod as string}
+      redirectURI={process.env.NEXT_PUBLIC_redirect_prod as string}
       mode="redirect"
     >
       <button
