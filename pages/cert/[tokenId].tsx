@@ -6,12 +6,14 @@ import { useMenu } from "../../hooks/menuContext";
 import MenuModal from "../../components/MenuModal";
 import ProfileBox from "../../components/ProfileBox";
 import { useGetMetadataByMicrochip } from "../../blockchain/Metadata/read";
+import { useGetRewardByMicrochip } from "../../blockchain/Reward/read";
 
 const CertDetail = () => {
   const { isOpen } = useMenu();
   const router = useRouter();
   const { tokenId } = router.query;
   const { metadata } = useGetMetadataByMicrochip(tokenId! as string);
+  const { rewards } = useGetRewardByMicrochip(tokenId! as string);
 
   return (
     <div
@@ -25,7 +27,7 @@ const CertDetail = () => {
           <div>Loading..</div>
         </div>
       ) : (
-        <ProfileBox certNft={metadata![0]} />
+        <ProfileBox certNft={metadata![0]} rewards={rewards} />
       )}
       <CertFooter />
       {isOpen ? <MenuModal /> : null}

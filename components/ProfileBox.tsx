@@ -1,16 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FaArrowCircleLeft } from "react-icons/fa";
+import { RiMedalFill } from "react-icons/ri";
 import { IMetadata } from "../interfaces/iMetadata";
 import { useAccount } from "wagmi";
 import { useBitkubNext } from "../hooks/bitkubNextContext";
 import CountryFlag from "./CountryFlag";
+import { RewardData } from "../interfaces/iReward";
 
 export interface ProfileBoxProps {
   certNft: IMetadata;
+  rewards: RewardData[];
 }
 
-const ProfileBox = ({ certNft }: ProfileBoxProps) => {
+const ProfileBox = ({ certNft, rewards }: ProfileBoxProps) => {
   // const { isConnected } = useAccount();
   const { isConnected } = useBitkubNext();
 
@@ -113,7 +116,19 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
               <div id="content">{certNft.detail}</div>
               <div id="topic">Reward:</div>
               <div id="content" className="flex">
-                N/A
+                {/* N/A */}
+                {rewards.length <= 0
+                  ? "N/A"
+                  : rewards.map((r, index) => (
+                      <Link
+                        className="text-thuiyellow hover:text-thuiwhite"
+                        key={index}
+                        href={r.ipfs}
+                        target="_blank"
+                      >
+                        <RiMedalFill size={30} />
+                      </Link>
+                    ))}
               </div>
               <div id="topic">Created:</div>
               <div id="content" className="flex">

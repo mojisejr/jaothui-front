@@ -18,7 +18,8 @@ const CertMainPage: NextPage = () => {
     <>
       <Header />
       <div
-        className={`w-full bg-thuiyellow h-full p-3 flex  justify-center items-center
+        className={`w-full  h-full p-3 flex  justify-center items-center
+        bg-thuiyellow
       tabletS:p-[30px]
       tabletS:h-screen
       tabletM:h-full
