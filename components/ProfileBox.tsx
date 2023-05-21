@@ -4,6 +4,7 @@ import { FaArrowCircleLeft } from "react-icons/fa";
 import { IMetadata } from "../interfaces/iMetadata";
 import { useAccount } from "wagmi";
 import { useBitkubNext } from "../hooks/bitkubNextContext";
+import CountryFlag from "./CountryFlag";
 
 export interface ProfileBoxProps {
   certNft: IMetadata;
@@ -15,7 +16,10 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
 
   if (Object.keys(certNft).length === 0) {
     return (
-      <div className="h-screen flex flex-col justify-center items-center gap-[20px]">
+      <div
+        className="h-screen flex flex-col justify-center items-center gap-[20px]
+      "
+      >
         <div className="text-xl">Not Found ..</div>
         <div>
           <Link
@@ -34,8 +38,9 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
   return (
     <div className="m-10" id="container">
       <div
-        className="bg-thuigray text-thuiwhite grid grid-cols-1 rounded-md pr-10 pl-10 pt-5 pb-5 gap-5
-          shadow-xl
+        className="relative bg-thuigray text-thuiwhite grid grid-cols-1 rounded-md pr-10 pl-10 pt-5 pb-5 gap-5
+        border-[1px] border-thuiyellow
+        shadow-[0px_13px_27px_-5px_rgba(0,0,0,0.60)]
           tabletM:pt-10
           tabletM:pb-10
           tabletM:w-[600px]
@@ -44,6 +49,12 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
           desktop:w-[800px]"
         id="inner"
       >
+        <div
+          id="card-hole"
+          className="absolute top-3 right-3 w-[25px] h-[25px] bg-thuiyellow rounded-[200px]
+        shadow-[inset_-2px_2px_2px_1px_rgba(0,0,0,0.30)]
+        "
+        ></div>
         <div
           className="text-center text-xl
             tabletM:text-2xl
@@ -90,7 +101,10 @@ const ProfileBox = ({ certNft }: ProfileBoxProps) => {
                 {certNft.fatherId == "0" ? "N/A" : certNft.fatherId}
               </div>
               <div id="topic">Origin:</div>
-              <div id="content">{certNft.origin}</div>
+              {/* <div id="content">{certNft.origin}</div> */}
+              <div id="content">
+                <CountryFlag country={certNft.origin} size="48x36" />
+              </div>
               <div id="topic">Height:</div>
               <div id="content">{certNft.height} cm.</div>
               <div id="topic">Color:</div>

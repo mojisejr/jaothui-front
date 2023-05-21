@@ -20,9 +20,9 @@ const BitkubNextConnectButton: FunctionComponent<PropsWithChildren> = () => {
       mode="redirect"
     >
       <button
-        className="bg-thuiyellow text-thuigray pl-[2%] pr-[2%] pt-[1%] pb-[1%] min-w-[100px] text-[15px] rounded-[30px]
+        className="bg-thuiyellow text-thuigray pl-2 pr-2 pt-1 pb-1 min-w-[100px] text-[25px] rounded-[30px]
         hover:text-thuiwhite
-                          tabletS:text-[20px]
+                          tabletS:text-[30px]
                           tabletS:w-[250px]"
       >
         Connect Wallet

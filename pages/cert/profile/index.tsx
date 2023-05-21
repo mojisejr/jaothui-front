@@ -26,9 +26,16 @@ const ProfilePage = () => {
         {isConnected ? (
           <div
             id="profile-container"
-            className="bg-thuigray p-[2rem] rounded-md max-w-[800px] space-y-5 shadow-xl
+            className="relative bg-thuigray p-[2rem] rounded-md max-w-[800px] space-y-5 
+            shadow-[0px_13px_27px_-5px_rgba(0,0,0,0.60)]
             labtop:w-[800px]"
           >
+            <div
+              id="card-hole"
+              className="absolute top-3 right-3 w-[25px] h-[25px] bg-thuiyellow rounded-[200px]
+        shadow-[inset_-2px_2px_2px_1px_rgba(0,0,0,0.30)]
+        "
+            ></div>
             <Profile />
             <ProfileMenu />
           </div>

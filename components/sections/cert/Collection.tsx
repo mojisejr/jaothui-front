@@ -51,7 +51,7 @@ const Collection = ({ address }: CollectionProps) => {
     <div id="profile-collection-box">
       <div
         id="profile-collection-header"
-        className="
+        className=" 
       tabletS:flex
       tabletS:justify-between
       tabletS:items-center"
@@ -105,6 +105,7 @@ const Collection = ({ address }: CollectionProps) => {
                       certNo={data.certNo}
                       microcchip={data.microchip}
                       sex={data.sex}
+                      country={data.origin}
                     />
                   </Link>
                 ))

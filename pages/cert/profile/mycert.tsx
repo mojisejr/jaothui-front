@@ -29,6 +29,7 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
           <div
             id="profile-container"
             className="bg-thuigray rounded-md max-w-[1200px]
+            shadow-[0px_13px_27px_-5px_rgba(0,0,0,0.60)] 
     tabletS:p-3"
           >
             <div
