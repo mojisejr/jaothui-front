@@ -1,5 +1,6 @@
 import Image, { StaticImageData } from "next/image";
 import { motion } from "framer-motion";
+import CountryFlag from "./CountryFlag";
 
 export interface GridItemProp {
   image: string | StaticImageData;
@@ -7,6 +8,7 @@ export interface GridItemProp {
   certNo: string | number;
   microcchip: string | number;
   sex: string;
+  country: string;
 }
 
 const GridItem = ({
@@ -15,6 +17,7 @@ const GridItem = ({
   certNo,
   microcchip,
   sex,
+  country = "thai",
 }: GridItemProp) => {
   return (
     <motion.div
@@ -23,7 +26,7 @@ const GridItem = ({
       className="w-full text-thuiwhite flex flex-col justify-center items-center"
     >
       <div
-        className="p-2 rounded-md transition-all 1.5s border-[1px] border-thuiwhite border-opacity-20
+        className="relative p-2 rounded-md transition-all 1.5s border-[1px] border-thuiwhite border-opacity-20
       hover:shadow-xl
       hover:bg-thuidark
       hover:text-thuiyellow
@@ -39,6 +42,10 @@ const GridItem = ({
           src={image}
           alt="buffalo-image"
         />
+        <div className="flag absolute bottom-2 right-2">
+          <CountryFlag country={country} size="48x36" />
+        </div>
+
         <div className="pt-2">
           <div>
             {tokenName} #{certNo}

@@ -56,7 +56,7 @@ const MenuModal = () => {
               )}
             </li>
             {isConnected ? (
-              <li className="border-t-[1px] border-thuiwhite border-opacity-30 pt-3 pb-3 flex justify-center">
+              <li className="border-t-[1px] border-thuiwhite border-opacity-30 pt-3 pb-3 flex justify-center ">
                 <BitkubDisconnectButton />
               </li>
             ) : null}

@@ -50,7 +50,7 @@ const CollectionV2 = ({ title, certNFTs }: CollectionProps) => {
     <div id="profile-collection-box">
       <div
         id="profile-collection-header"
-        className="
+        className=" 
       tabletS:flex
       tabletS:justify-between
       tabletS:items-center"
@@ -106,6 +106,7 @@ const CollectionV2 = ({ title, certNFTs }: CollectionProps) => {
                       certNo={data.certNo}
                       microcchip={data.microchip}
                       sex={data.sex}
+                      country={data.origin}
                     />
                   </Link>
                 ))

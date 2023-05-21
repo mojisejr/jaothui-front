@@ -19,7 +19,6 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
   useEffect(() => {
     if (!query.code) {
       setMessage("Authenticating..!");
-      replace("/");
     } else {
       setMessage("Authorization Successfully..!");
       getAccessToken(query.code as string);
@@ -56,15 +55,16 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
       setMessage("no wallet found!");
       replace("/");
     } else {
+      setMessage("Loading Dashboard..");
       updateLogin(access_token, refresh_token, wallet_address, email);
       replace("/cert/profile");
     }
   }
 
   return (
-    <div className="bg-thuiyellow h-screen w-screeen flex flex-col justify-center items-center">
+    <div className="bg-thuiyellow h-screen w-screeen flex flex-col justify-center items-center p-10">
       <Image src="/images/First1.png" width={350} height={350} alt="thui" />
-      <div className="text-[60px]">{message}</div>
+      <div className="text-[20px]">{message}</div>
     </div>
   );
 };

@@ -1,6 +1,9 @@
+import { simplifyAddress } from "../../../helpers/simplifyAddress";
 import { useBitkubNext } from "../../../hooks/bitkubNextContext";
+
 const Profile = () => {
   const { email, walletAddress } = useBitkubNext();
+
   return (
     <div
       id="profile-profile-box"
@@ -27,11 +30,21 @@ const Profile = () => {
         tabletS:text-xl"
         >
           {/* <div id="profile-name">name: Elon Thui</div> */}
-          <div id="profile-wallet">wallet: {walletAddress}</div>
+          <div id="profile-wallet">
+            wallet:{" "}
+            <span>
+              <span className="hidden tabletS:inline-block">
+                {walletAddress}
+              </span>
+              <span className="tabletS:hidden">
+                {simplifyAddress(walletAddress)}
+              </span>
+            </span>
+          </div>
           <div id="profile-email">email: {email ? email : "N/A"}</div>
           <div
             id="profile-verified"
-            className="text-thuidark bg-[#00ff22] pl-2 pr-2 rounded-md"
+            className="text-thuidark bg-[#00ff22] pl-2 pr-2 rounded-md self-start"
           >
             Verified
           </div>
