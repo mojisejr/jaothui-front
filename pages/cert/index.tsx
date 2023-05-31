@@ -1,8 +1,6 @@
 import { NextPage } from "next";
 
 import Header from "../../components/Header";
-import Profile from "../../components/sections/cert/Profile";
-import Collection from "../../components/sections/cert/Collection";
 import CollectionV2 from "../../components/sections/cert/CollectionV2";
 import CertFooter from "../../components/sections/cert/CertFooter";
 

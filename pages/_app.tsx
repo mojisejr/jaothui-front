@@ -8,6 +8,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { bitkub_mainnet, bitkub_testnet } from "../blockchain/chain";
 import { MenuProvider } from "../hooks/menuContext";
 import { BitkubNextProvider } from "../hooks/bitkubNextContext";
+import { NewAssetProvider } from "../hooks/newAssetContext";
 
 const { chains, provider } = configureChains(
   [bitkub_testnet],
@@ -43,7 +44,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <RainbowKitProvider chains={chains}>
           <BitkubNextProvider>
             <MenuProvider>
-              <Component {...pageProps} />
+              <NewAssetProvider>
+                <Component {...pageProps} />
+              </NewAssetProvider>
             </MenuProvider>
           </BitkubNextProvider>
         </RainbowKitProvider>
