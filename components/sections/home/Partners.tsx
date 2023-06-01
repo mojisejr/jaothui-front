@@ -18,12 +18,19 @@ const PartnerSection = () => {
           {/* <div className="text-thuiwhite text-3xl">To be announcement</div> */}
           <Image
             className="w-[100px]
-            labtop:w-[150px]
-            "
-            src="/images/bittoonLogo.png"
+            labtop:w-[200px]"
+            src="/images/bitkubLogo.png"
             width={500}
             height={500}
-            alt={"bittoon"}
+            alt={"bitkub"}
+          />
+          <Image
+            className="w-[100px]
+            labtop:w-[200px]"
+            src="/images/tpcxLogo.png"
+            width={500}
+            height={500}
+            alt={"tpcx"}
           />
           <Image
             className="w-[150px]
@@ -40,6 +47,15 @@ const PartnerSection = () => {
             width={500}
             height={500}
             alt={"stockerdao"}
+          />
+          <Image
+            className="w-[100px]
+            labtop:w-[150px]
+            "
+            src="/images/bittoonLogo.png"
+            width={500}
+            height={500}
+            alt={"bittoon"}
           />
           <Image
             className="w-[150px]
@@ -59,14 +75,7 @@ const PartnerSection = () => {
             height={500}
             alt={"maxyverse"}
           />
-          {/* <Image
-            className="w-[100px]
-            labtop:w-[200px]"
-            src="/images/tpcxLogo.png"
-            width={500}
-            height={500}
-            alt={"tpcx"}
-          /> */}
+
           <Image
             className="w-[80px]
             labtop:w-[150px]
@@ -75,14 +84,6 @@ const PartnerSection = () => {
             width={500}
             height={500}
             alt={"360"}
-          />
-          <Image
-            className="w-[100px]
-            labtop:w-[200px]"
-            src="/images/chickLogo.png"
-            width={500}
-            height={500}
-            alt={"chickendao"}
           />
         </div>
       </div>
