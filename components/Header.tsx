@@ -4,19 +4,17 @@ import logo from "../public/images/thuiLogo.png";
 import Link from "next/link";
 import { ImMenu } from "react-icons/im";
 import { FiSearch } from "react-icons/fi";
-import { useAccount } from "wagmi";
 import { useMenu } from "../hooks/menuContext";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
-import BitkubNextConnectButton from "./BitkubNext";
 import { useBitkubNext } from "../hooks/bitkubNextContext";
 import { simplifyAddress } from "../helpers/simplifyAddress";
-import BitkubDisconnectButton from "./BitkubNextDiscon";
 import Head from "next/head";
 import { SyntheticEvent, useRef } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Header = () => {
-  // const { isConnected } = useAccount();
   const { isConnected, walletAddress } = useBitkubNext();
   const { open } = useMenu();
   const searchRef = useRef<HTMLInputElement>(null);
@@ -48,6 +46,7 @@ const Header = () => {
       <Head>
         <title>JaoThui Official</title>
       </Head>
+
       <motion.div whileHover={{ scale: 1.08 }} transition={{ duration: 0.2 }}>
         <Link
           href="/"
@@ -105,6 +104,9 @@ const Header = () => {
         ) : (
           <div>{simplifyAddress(walletAddress)}</div>
         )} */}
+      </div>
+      <div className="absolute top-0 left-0">
+        <ToastContainer position="top-center" autoClose={3000} />
       </div>
     </div>
   );

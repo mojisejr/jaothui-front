@@ -1,5 +1,4 @@
 import { FunctionComponent, PropsWithChildren } from "react";
-import { useAccount } from "wagmi";
 import PleaseConnectWallet from "../../../components/sections/cert/PleaseConnect";
 import Header from "../../../components/Header";
 import Collection from "../../../components/sections/cert/Collection";
@@ -9,7 +8,6 @@ import { useMenu } from "../../../hooks/menuContext";
 import { useBitkubNext } from "../../../hooks/bitkubNextContext";
 
 const MyCert: FunctionComponent<PropsWithChildren> = () => {
-  // const { isConnected, address } = useAccount();
   const { isConnected, walletAddress } = useBitkubNext();
   const { isOpen } = useMenu();
 
@@ -37,9 +35,7 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
               className="p-5 mb-2 flex flex-col gap-2
         tabletM:gap-[60px]"
             >
-              {/* <Collection address={address} /> */}
               <Collection address={walletAddress} />
-              {/* <CollectionV2 title={"Pedigree List"} certNFTs={metadata!} /> */}
             </div>
           </div>
         ) : (

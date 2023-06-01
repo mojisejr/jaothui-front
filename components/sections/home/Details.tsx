@@ -4,6 +4,7 @@ import R from "../../../public/images/r.gif";
 import SR from "../../../public/images/sr.gif";
 import SSR from "../../../public/images/ssr.gif";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const DetailSection = () => {
   return (
@@ -47,6 +48,15 @@ const DetailSection = () => {
           จะมีการนำเข้าควายจากต่างประเทศมาทดแทน
           นั่นอาจทำให้เอกลักษณ์ความเป็นควายไทยสูญหายไปในที่สุด
         </div>
+        <Link
+          href="/whitepaper.pdf"
+          className="pl-4 pr-4 pt-2 pb-2 bg-thuiyellow text-thuiwhite text-[30px] rounded-[50px]
+          shadow-2xl
+          hover:text-thuidark
+          "
+        >
+          WHITEPAPER V0.2
+        </Link>
         <RarityExampleBox />
       </div>
       <div className="absolute w-full h-full top-0 left-0 bg-[url('../public/images/thuiDetailBg.png')] bg-cover bg-no-repeat bg-bottom z-0"></div>

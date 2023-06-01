@@ -22,7 +22,7 @@ const MenuModal = () => {
   return (
     <div
       ref={modal}
-      className="blackdrop absolute top-0 left-0 w-screen h-full bg-thuidark z-[50] bg-opacity-60"
+      className="blackdrop fixed top-0 left-0 w-screen h-full bg-thuidark z-[50] bg-opacity-60"
       id="blackdrop"
     >
       <div
