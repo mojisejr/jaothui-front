@@ -78,7 +78,7 @@ const Header = () => {
         <button className="hover:text-thuiwhite" onClick={() => open()}>
           <ImMenu size={30} />
         </button>
-        <div
+        {/* <div
           className="items-center gap-2 rounded-2xl hidden p-1 bg-thuiyellow
         tabletM:flex"
         >
@@ -96,7 +96,7 @@ const Header = () => {
           >
             <FiSearch size={30} />
           </button>
-        </div>
+        </div> */}
 
         {/* <ConnectWalletButton /> */}
         {/* {!isConnected ? (

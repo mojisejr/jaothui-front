@@ -3,17 +3,19 @@ import Image from "next/image";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { RiMedalFill } from "react-icons/ri";
 import { IMetadata } from "../interfaces/iMetadata";
-import { useAccount } from "wagmi";
 import { useBitkubNext } from "../hooks/bitkubNextContext";
 import CountryFlag from "./CountryFlag";
 import { RewardData } from "../interfaces/iReward";
+import { ApprovedBy } from "../interfaces/iApprovedBy";
+import { HiOutlineDocumentText } from "react-icons/hi";
 
 export interface ProfileBoxProps {
   certNft: IMetadata;
   rewards: RewardData[];
+  approvedBy: ApprovedBy[];
 }
 
-const ProfileBox = ({ certNft, rewards }: ProfileBoxProps) => {
+const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
   // const { isConnected } = useAccount();
   const { isConnected } = useBitkubNext();
 
@@ -105,15 +107,22 @@ const ProfileBox = ({ certNft, rewards }: ProfileBoxProps) => {
               </div>
               <div id="topic">Origin:</div>
               {/* <div id="content">{certNft.origin}</div> */}
-              <div id="content">
+              <div id="content" className="flex gap-2 items-center">
                 <CountryFlag country={certNft.origin} size="48x36" />
+                <Link
+                  className="text-thuiyellow hover:text-thuiwhite"
+                  target="_blank"
+                  href={certNft.dna}
+                >
+                  <HiOutlineDocumentText size={20} />
+                </Link>
               </div>
               <div id="topic">Height:</div>
               <div id="content">{certNft.height} cm.</div>
               <div id="topic">Color:</div>
               <div id="content">{certNft.color}</div>
-              <div id="topic">Detail:</div>
-              <div id="content">{certNft.detail}</div>
+              {/* <div id="topic">Detail:</div>
+              <div id="content">{certNft.detail}</div> */}
               <div id="topic">Reward:</div>
               <div id="content" className="flex">
                 {/* N/A */}
@@ -130,14 +139,32 @@ const ProfileBox = ({ certNft, rewards }: ProfileBoxProps) => {
                       </Link>
                     ))}
               </div>
+              <div>Approved By:</div>
+              {approvedBy == undefined || approvedBy.length <= 0 ? null : (
+                <div
+                  id="approvedBy-wrapper"
+                  className="p-2 border-[1px] border-thuiwhite rounded-xl col-span-2 mt-1 mb-1"
+                >
+                  {approvedBy.map((a, index) => (
+                    <Image
+                      key={index}
+                      src={a.uri}
+                      width={60}
+                      height={60}
+                      alt="approvedBy"
+                    />
+                  ))}
+                </div>
+              )}
+
               <div id="topic">Created:</div>
               <div id="content" className="flex">
                 {certNft.createdAt}
               </div>
-              <div id="topic">Updated:</div>
+              {/* <div id="topic">Updated:</div>
               <div id="content" className="flex">
                 {certNft.updatedAt}
-              </div>
+              </div> */}
             </li>
           </ul>
         </div>

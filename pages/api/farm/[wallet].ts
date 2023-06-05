@@ -4,7 +4,10 @@ import axios from "axios";
 import { Farm } from "../../../interfaces/MyFarm/iFarm";
 import { Asset } from "../../../interfaces/MyFarm/iAsset";
 
-const url = "http://localhost:3001";
+const url =
+  process.env.production == "DEV"
+    ? process.env.NEXT_PUBLIC_backend_url_dev
+    : process.env.NEXT_PUBLIC_backend_url_prod;
 
 type Data = {
   farm: Farm;

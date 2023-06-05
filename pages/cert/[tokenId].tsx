@@ -5,7 +5,10 @@ import CertFooter from "../../components/sections/cert/CertFooter";
 import { useMenu } from "../../hooks/menuContext";
 import MenuModal from "../../components/MenuModal";
 import ProfileBox from "../../components/ProfileBox";
-import { useGetMetadataByMicrochip } from "../../blockchain/Metadata/read";
+import {
+  useGetApprovalDataByMicrochip,
+  useGetMetadataByMicrochip,
+} from "../../blockchain/Metadata/read";
 import { useGetRewardByMicrochip } from "../../blockchain/Reward/read";
 
 const CertDetail = () => {
@@ -14,6 +17,7 @@ const CertDetail = () => {
   const { tokenId } = router.query;
   const { metadata } = useGetMetadataByMicrochip(tokenId! as string);
   const { rewards } = useGetRewardByMicrochip(tokenId! as string);
+  const { approvedBy } = useGetApprovalDataByMicrochip(tokenId! as string);
 
   return (
     <div
@@ -27,7 +31,11 @@ const CertDetail = () => {
           <div>Loading..</div>
         </div>
       ) : (
-        <ProfileBox certNft={metadata![0]} rewards={rewards} />
+        <ProfileBox
+          certNft={metadata![0]}
+          rewards={rewards}
+          approvedBy={approvedBy}
+        />
       )}
       <CertFooter />
       {isOpen ? <MenuModal /> : null}

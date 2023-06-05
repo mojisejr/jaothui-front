@@ -4,9 +4,10 @@ import { abiReward } from "./Reward/abi";
 
 const addresses = {
   nft: "0x6287E9675852de46e90d5f52636d859b312c2e92",
-  metadata: "0xD1ce4F8935E80B7701F5C151E9c13B16d90ff374",
+  metadata: "0x50B72Bf0E824d8500D84bd539BE06e33f6124837",
   reward: "0xB7874879259Ee3E5699f6521594b531bA28C70Ea",
 };
+//history 0x0De3eC4b7bC7846AF4Fd16eeDF8ecaeB118B86E3
 
 export const contract = {
   nft: {
