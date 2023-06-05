@@ -1,9 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import { isEmpty } from "../../../helpers/dataValidator";
 
-const url = "http://localhost:3001";
+const url =
+  process.env.production == "DEV"
+    ? process.env.NEXT_PUBLIC_backend_url_dev
+    : process.env.NEXT_PUBLIC_backend_url_prod;
 
 type Data = {
   success: boolean;
@@ -26,7 +28,7 @@ export default async function handler(
       role: "User",
     };
 
-    console.log(data);
+    console.log("USERDATA", data);
 
     const user = await axios.post(`${url}/user/`, data);
     res.json({ success: true });

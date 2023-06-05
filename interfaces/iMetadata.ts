@@ -9,6 +9,7 @@ export interface IMetadata {
   height: string;
   microchip: string;
   certNo: string;
+  dna: string;
   rarity: string;
   fatherId: string;
   motherId: string;

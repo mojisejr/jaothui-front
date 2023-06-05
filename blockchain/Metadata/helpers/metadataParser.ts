@@ -12,6 +12,7 @@ export function parseOutputMetadata(metadata: any[]) {
       microchip: m[8][0].toString(),
       certNo: m[8][1],
       rarity: m[8][2],
+      dna: m[8][3],
       fatherId: m[9][0].toString(),
       motherId: m[9][1].toString(),
       createdAt: new Date(+m[10].toString() * 1000).toLocaleDateString(),

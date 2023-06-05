@@ -3,7 +3,10 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import { Buffalo } from "../../../../../interfaces/MyFarm/iBuffalo";
 
-const url = "http://localhost:3001";
+const url =
+  process.env.production == "DEV"
+    ? process.env.NEXT_PUBLIC_backend_url_dev
+    : process.env.NEXT_PUBLIC_backend_url_prod;
 
 type Error = {
   error: string;

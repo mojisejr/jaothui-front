@@ -85,6 +85,13 @@ export const abiMetadata = [
     type: "function",
     stateMutability: "nonpayable",
     outputs: [],
+    name: "addApprover",
+    inputs: [{ type: "string", name: "_uri", internalType: "string" }],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
     name: "addMetadata",
     inputs: [
       { type: "uint256", name: "_tokenId", internalType: "uint256" },
@@ -138,6 +145,13 @@ export const abiMetadata = [
   {
     type: "function",
     stateMutability: "view",
+    outputs: [{ type: "string[]", name: "", internalType: "string[]" }],
+    name: "getAllApprover",
+    inputs: [],
+  },
+  {
+    type: "function",
+    stateMutability: "view",
     outputs: [
       {
         type: "tuple[]",
@@ -160,6 +174,7 @@ export const abiMetadata = [
               { type: "uint256", name: "microchip", internalType: "uint256" },
               { type: "string", name: "certNo", internalType: "string" },
               { type: "string", name: "rarity", internalType: "string" },
+              { type: "string", name: "dna", internalType: "string" },
             ],
           },
           {
@@ -192,6 +207,33 @@ export const abiMetadata = [
     stateMutability: "view",
     outputs: [
       {
+        type: "tuple[]",
+        name: "",
+        internalType: "struct JaothuiMetadataManager.ApprovedBy[]",
+        components: [
+          { type: "string", name: "uri", internalType: "string" },
+          { type: "uint256", name: "approvedAt", internalType: "uint256" },
+        ],
+      },
+    ],
+    name: "getApprovedByTokenId",
+    inputs: [
+      { type: "uint256", name: "_tokenId", internalType: "uint256" },
+      { type: "bool", name: "microchip", internalType: "bool" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "view",
+    outputs: [{ type: "string", name: "", internalType: "string" }],
+    name: "getApproverByIndex",
+    inputs: [{ type: "uint256", name: "_index", internalType: "uint256" }],
+  },
+  {
+    type: "function",
+    stateMutability: "view",
+    outputs: [
+      {
         type: "tuple",
         name: "",
         internalType: "struct JaothuiMetadataManager.BUFFALO",
@@ -212,6 +254,7 @@ export const abiMetadata = [
               { type: "uint256", name: "microchip", internalType: "uint256" },
               { type: "string", name: "certNo", internalType: "string" },
               { type: "string", name: "rarity", internalType: "string" },
+              { type: "string", name: "dna", internalType: "string" },
             ],
           },
           {
@@ -264,6 +307,7 @@ export const abiMetadata = [
               { type: "uint256", name: "microchip", internalType: "uint256" },
               { type: "string", name: "certNo", internalType: "string" },
               { type: "string", name: "rarity", internalType: "string" },
+              { type: "string", name: "dna", internalType: "string" },
             ],
           },
           {
@@ -316,6 +360,7 @@ export const abiMetadata = [
               { type: "uint256", name: "microchip", internalType: "uint256" },
               { type: "string", name: "certNo", internalType: "string" },
               { type: "string", name: "rarity", internalType: "string" },
+              { type: "string", name: "dna", internalType: "string" },
             ],
           },
           {
@@ -402,6 +447,23 @@ export const abiMetadata = [
     type: "function",
     stateMutability: "nonpayable",
     outputs: [],
+    name: "removeApprovedByFromTokenId",
+    inputs: [
+      { type: "uint256", name: "_tokenId", internalType: "uint256" },
+      { type: "uint256", name: "_approvedIndex", internalType: "uint256" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
+    name: "removeApprover",
+    inputs: [{ type: "uint256", name: "_index", internalType: "uint256" }],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
     name: "renounceRole",
     inputs: [
       { type: "bytes32", name: "role", internalType: "bytes32" },
@@ -422,10 +484,46 @@ export const abiMetadata = [
     type: "function",
     stateMutability: "nonpayable",
     outputs: [],
+    name: "setApprovedBy",
+    inputs: [
+      { type: "uint256", name: "_tokenId", internalType: "uint256" },
+      { type: "uint256", name: "_approverIndex", internalType: "uint256" },
+      { type: "bool", name: "microchip", internalType: "bool" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
+    name: "setApprovedByTokenIdBatch",
+    inputs: [
+      { type: "uint256", name: "_tokenId", internalType: "uint256" },
+      {
+        type: "uint256[]",
+        name: "_approverIndexes",
+        internalType: "uint256[]",
+      },
+      { type: "bool", name: "microchip", internalType: "bool" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
     name: "setCertId",
     inputs: [
       { type: "uint256", name: "_tokenId", internalType: "uint256" },
       { type: "string", name: "_certNo", internalType: "string" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
+    name: "setDNA",
+    inputs: [
+      { type: "uint256", name: "_tokenId", internalType: "uint256" },
+      { type: "string", name: "_dnaUri", internalType: "string" },
     ],
   },
   {
@@ -503,6 +601,19 @@ export const abiMetadata = [
     type: "function",
     stateMutability: "view",
     outputs: [
+      { type: "string", name: "uri", internalType: "string" },
+      { type: "uint256", name: "approvedAt", internalType: "uint256" },
+    ],
+    name: "tokenIdToApproval",
+    inputs: [
+      { type: "uint256", name: "", internalType: "uint256" },
+      { type: "uint256", name: "", internalType: "uint256" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "view",
+    outputs: [
       { type: "string", name: "name", internalType: "string" },
       { type: "string", name: "origin", internalType: "string" },
       { type: "string", name: "color", internalType: "string" },
@@ -519,6 +630,7 @@ export const abiMetadata = [
           { type: "uint256", name: "microchip", internalType: "uint256" },
           { type: "string", name: "certNo", internalType: "string" },
           { type: "string", name: "rarity", internalType: "string" },
+          { type: "string", name: "dna", internalType: "string" },
         ],
       },
       {
@@ -542,5 +654,15 @@ export const abiMetadata = [
     outputs: [{ type: "uint256", name: "", internalType: "uint256" }],
     name: "totalMetadata",
     inputs: [],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
+    name: "updateApprover",
+    inputs: [
+      { type: "uint256", name: "_index", internalType: "uint256" },
+      { type: "string", name: "_uri", internalType: "string" },
+    ],
   },
 ];
