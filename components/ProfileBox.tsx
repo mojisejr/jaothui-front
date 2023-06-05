@@ -86,7 +86,7 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
           id="content-wrapper"
         >
           <ul>
-            <li className="grid grid-cols-2">
+            <li className="grid grid-cols-2 gap-2">
               <div id="topic">Name:</div>
               <div id="content">{certNft.name}</div>
               <div id="topic">ID:</div>
