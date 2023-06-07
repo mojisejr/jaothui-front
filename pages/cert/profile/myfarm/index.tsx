@@ -12,7 +12,6 @@ import CertFooter from "../../../../components/sections/cert/CertFooter";
 import MyFarmDashboard from "../../../../components/sections/myfarm/Dashboard";
 import { FiSearch } from "react-icons/fi";
 
-import axios from "axios";
 import { useMenu } from "../../../../hooks/menuContext";
 import { useBitkubNext } from "../../../../hooks/bitkubNextContext";
 import { useRouter } from "next/router";
@@ -83,16 +82,16 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
                   </button>
                 </div>
               </div>
-              {farmData != undefined ? (
+              {!isFarmLoading ? (
                 <div>
-                  {isFarmLoading ? (
-                    <div className="text-thuiwhite">Loading..</div>
+                  {farmData == undefined ? (
+                    <CreateFarm />
                   ) : (
                     <MyFarmDashboard asset={farmData} />
                   )}
                 </div>
               ) : (
-                <CreateFarm />
+                <div className="text-thuiwhite">Loading..</div>
               )}
             </div>
           </div>
