@@ -42,11 +42,10 @@ const Profile = () => {
             </span>
           </div>
           <div id="profile-email">email: {email ? email : "N/A"}</div>
-          <div
-            id="profile-verified"
-            className="text-thuidark bg-[#00ff22] pl-2 pr-2 rounded-md"
-          >
-            Verified
+          <div id="profile-verified" className="flex">
+            <div className="text-thuidark bg-[#00ff22] pl-2 pr-2 pt-1 pb-1 rounded-md">
+              Verified
+            </div>
           </div>
         </div>
       </div>
