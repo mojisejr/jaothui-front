@@ -7,6 +7,7 @@ import {
 } from "react";
 
 import { exchangeRefreshToken } from "@bitkub-blockchain/react-bitkubnext-oauth2";
+import { useCookies } from "react-cookie";
 
 type bitkubNextContextType = {
   isConnected: boolean;
@@ -45,6 +46,8 @@ export function BitkubNextProvider({ children }: Props) {
   const [walletAddress, setWalletAddress] = useState<`0x${string}` | "">(
     "0x00"
   );
+  const [cookies, setCookie, removeCookie] = useCookies(["access_token"]);
+
   const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
@@ -54,6 +57,7 @@ export function BitkubNextProvider({ children }: Props) {
 
     if (walletAddress != "" && isConnected) {
       setIsConnected(true);
+      setCookie("access_token", accessToken);
     }
   }, [accessToken, refreshToken, walletAddress, isConnected]);
 

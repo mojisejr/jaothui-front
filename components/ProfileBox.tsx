@@ -8,6 +8,8 @@ import CountryFlag from "./CountryFlag";
 import { RewardData } from "../interfaces/iReward";
 import { ApprovedBy } from "../interfaces/iApprovedBy";
 import { HiOutlineDocumentText } from "react-icons/hi";
+import { isEmpty } from "../helpers/dataValidator";
+import { toast } from "react-toastify";
 
 export interface ProfileBoxProps {
   certNft: IMetadata;
@@ -109,13 +111,22 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
               {/* <div id="content">{certNft.origin}</div> */}
               <div id="content" className="flex gap-2 items-center">
                 <CountryFlag country={certNft.origin} size="48x36" />
-                <Link
-                  className="text-thuiyellow hover:text-thuiwhite"
-                  target="_blank"
-                  href={certNft.dna}
-                >
-                  <HiOutlineDocumentText size={20} />
-                </Link>
+                {!isEmpty(certNft.dna) ? (
+                  <Link
+                    className="text-thuiyellow hover:text-thuiwhite"
+                    target="_blank"
+                    href={certNft.dna}
+                  >
+                    <HiOutlineDocumentText size={20} />
+                  </Link>
+                ) : (
+                  <button
+                    className="text-thuiyellow hover:text-thuiwhite"
+                    onClick={() => toast.error("Not Found")}
+                  >
+                    <HiOutlineDocumentText size={20} />
+                  </button>
+                )}
               </div>
               <div id="topic">Height:</div>
               <div id="content">{certNft.height} cm.</div>
@@ -140,7 +151,9 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
                     ))}
               </div>
               <div>Approved By:</div>
-              {approvedBy == undefined || approvedBy.length <= 0 ? null : (
+              {approvedBy == undefined || approvedBy.length <= 0 ? (
+                <div>N/A</div>
+              ) : (
                 <div
                   id="approvedBy-wrapper"
                   className="p-2 border-[1px] border-thuiwhite rounded-xl col-span-2 mt-1 mb-1"
@@ -149,8 +162,8 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
                     <Image
                       key={index}
                       src={a.uri}
-                      width={60}
-                      height={60}
+                      width={85}
+                      height={85}
                       alt="approvedBy"
                     />
                   ))}

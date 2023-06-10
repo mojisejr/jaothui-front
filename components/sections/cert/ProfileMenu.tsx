@@ -1,5 +1,6 @@
 import { FunctionComponent, PropsWithChildren } from "react";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 const ProfileMenu = () => {
   return (
@@ -16,7 +17,9 @@ const ProfileMenu = () => {
           className="p-5 bg-[url('/images/banner2.png')] w-full bg-cover rounded-md 
           hover:shadow-xl"
         >
-          <Link href="#">JAOTHUI NFT PRIVILEGE</Link>
+          <Link href="#" onClick={() => toast.success("Coming Soon!!")}>
+            JAOTHUI NFT PRIVILEGE
+          </Link>
         </li>
         <li
           className="p-5 bg-[url('/images/banner3.png')] w-full bg-cover rounded-md

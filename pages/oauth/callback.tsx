@@ -9,10 +9,12 @@ import { exchangeAuthorizationCode } from "@bitkub-blockchain/react-bitkubnext-o
 import axios from "axios";
 
 import { useBitkubNext } from "../../hooks/bitkubNextContext";
+// import { useAuth } from "../../hooks/useAuth";
 import Image from "next/image";
 
 const Callback: FunctionComponent<PropsWithChildren> = () => {
   const { updateLogin } = useBitkubNext();
+  // const { save } = useAuth();
   const { query, replace } = useRouter();
   const [message, setMessage] = useState("Authorizing...");
 
@@ -27,8 +29,6 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
 
   async function getAccessToken(code: string) {
     const { access_token, refresh_token } = await exchangeAuthorizationCode(
-      // process.env.NEXT_PUBLIC_client_id_dev as string,
-      // process.env.NEXT_PUBLIC_redirect_dev as string,
       process.env.NODE_ENV == "production"
         ? (process.env.NEXT_PUBLIC_client_id_prod as string)
         : (process.env.NEXT_PUBLIC_client_id_dev as string),
@@ -57,6 +57,7 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
     } else {
       setMessage("Loading Dashboard..");
       updateLogin(access_token, refresh_token, wallet_address, email);
+      // await save({ wallet: wallet_address, refreshToken: refresh_token });
       replace("/cert/profile");
     }
   }
