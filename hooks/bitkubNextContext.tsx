@@ -7,7 +7,10 @@ import {
 } from "react";
 
 import { exchangeRefreshToken } from "@bitkub-blockchain/react-bitkubnext-oauth2";
-import { useCookies } from "react-cookie";
+import { deleteCookies } from "../helpers/clearCookies";
+import { getUserData } from "../helpers/getUserData";
+import { getCookies } from "cookies-next";
+import { isEmpty } from "../helpers/dataValidator";
 
 type bitkubNextContextType = {
   isConnected: boolean;
@@ -46,20 +49,82 @@ export function BitkubNextProvider({ children }: Props) {
   const [walletAddress, setWalletAddress] = useState<`0x${string}` | "">(
     "0x00"
   );
-  const [cookies, setCookie, removeCookie] = useCookies(["access_token"]);
 
   const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
     if (walletAddress == "" || accessToken == "none") {
-      setIsConnected(false);
+      //in case of refresh token is available
+      getUserDataFromAccessToken();
     }
 
     if (walletAddress != "" && isConnected) {
       setIsConnected(true);
-      setCookie("access_token", accessToken);
     }
   }, [accessToken, refreshToken, walletAddress, isConnected]);
+
+  async function getUserDataFromAccessToken() {
+    const { access_token, refresh_token, wallet } = getCookies();
+    console.log("access token from cookies: ", {
+      access_token,
+      refresh_token,
+      wallet,
+    });
+
+    const userData = await getUserData(access_token!);
+    console.log("user data from cookie's access token: ", userData);
+
+    if (
+      userData.success &&
+      !isEmpty(userData.wallet_address) &&
+      userData.wallet_address == wallet
+    ) {
+      console.log("cookie is useable setting data to hooks");
+      setWalletAddress(userData.wallet_address);
+      setAccessToken(access_token!);
+      setRefreshToken(refresh_token!);
+      setEmail(userData.email);
+      setIsConnected(true);
+    } else if (!isEmpty(refresh_token)) {
+      // check if refresh token is OK ?
+      console.log("cookie is invalid starting exchangeRefreshToken");
+      try {
+        const refreshedTokens = await exchangeRefreshToken(
+          process.env.NEXT_PUBLIC_client_id_dev as string,
+          refresh_token!
+        );
+        console.log("refreshed Token: ", refreshedTokens);
+
+        if (isEmpty(refreshedTokens)) {
+          console.log("somthing went wrong cannot find any refreshing tokens");
+          setIsConnected(false);
+        } else {
+          console.log("refreshed token success fetching user data");
+          const userData = await getUserData(refreshedTokens.access_token);
+          if (
+            userData.success &&
+            !isEmpty(userData.wallet_address) &&
+            userData.wallet_address == wallet
+          ) {
+            console.log("user data found from refreshed tokens", userData);
+            setWalletAddress(userData.wallet_address);
+            setAccessToken(refreshedTokens.access_token!);
+            setRefreshToken(refreshedTokens.refresh_token!);
+            setEmail(userData.email);
+            setIsConnected(true);
+          } else {
+            console.log("user data not found from refresh token");
+            setIsConnected(false);
+          }
+        }
+      } catch (error) {
+        console.log("invalid refresh token or token expired");
+        setIsConnected(false);
+      }
+    } else {
+      setIsConnected(false);
+    }
+  }
 
   function updateLogin(
     accessToken: string,
@@ -89,6 +154,7 @@ export function BitkubNextProvider({ children }: Props) {
     setAccessToken("none");
     setRefreshToken("none");
     setWalletAddress("");
+    deleteCookies();
     setIsConnected(false);
   }
 
