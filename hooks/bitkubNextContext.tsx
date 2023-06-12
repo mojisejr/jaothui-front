@@ -65,14 +65,10 @@ export function BitkubNextProvider({ children }: Props) {
 
   async function getUserDataFromAccessToken() {
     const { access_token, refresh_token, wallet } = getCookies();
-    console.log("access token from cookies: ", {
-      access_token,
-      refresh_token,
-      wallet,
-    });
+    console.log("access token from cookies: ");
 
     const userData = await getUserData(access_token!);
-    console.log("user data from cookie's access token: ", userData);
+    console.log("user data from cookie's access token");
 
     if (
       userData.success &&
@@ -106,7 +102,7 @@ export function BitkubNextProvider({ children }: Props) {
             !isEmpty(userData.wallet_address) &&
             userData.wallet_address == wallet
           ) {
-            console.log("user data found from refreshed tokens", userData);
+            console.log("user data found from refreshed tokens");
             setWalletAddress(userData.wallet_address);
             setAccessToken(refreshedTokens.access_token!);
             setRefreshToken(refreshedTokens.refresh_token!);
