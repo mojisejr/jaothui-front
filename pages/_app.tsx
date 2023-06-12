@@ -9,7 +9,6 @@ import { bitkub_mainnet, bitkub_testnet } from "../blockchain/chain";
 import { MenuProvider } from "../hooks/menuContext";
 import { BitkubNextProvider } from "../hooks/bitkubNextContext";
 import { NewAssetProvider } from "../hooks/newAssetContext";
-import { CookiesProvider } from "react-cookie";
 
 const { chains, provider } = configureChains(
   [bitkub_mainnet],
@@ -43,15 +42,13 @@ function MyApp({ Component, pageProps }: AppProps) {
     return (
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains}>
-          <CookiesProvider>
-            <BitkubNextProvider>
-              <MenuProvider>
-                <NewAssetProvider>
-                  <Component {...pageProps} />
-                </NewAssetProvider>
-              </MenuProvider>
-            </BitkubNextProvider>
-          </CookiesProvider>
+          <BitkubNextProvider>
+            <MenuProvider>
+              <NewAssetProvider>
+                <Component {...pageProps} />
+              </NewAssetProvider>
+            </MenuProvider>
+          </BitkubNextProvider>
         </RainbowKitProvider>
       </WagmiConfig>
     );

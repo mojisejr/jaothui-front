@@ -6,11 +6,22 @@ import {
 } from "react";
 import { useRouter } from "next/router";
 import { exchangeAuthorizationCode } from "@bitkub-blockchain/react-bitkubnext-oauth2";
-import axios from "axios";
 
 import { useBitkubNext } from "../../hooks/bitkubNextContext";
 // import { useAuth } from "../../hooks/useAuth";
 import Image from "next/image";
+import { isEmpty } from "../../helpers/dataValidator";
+import { getUserData } from "../../helpers/getUserData";
+import { setCookies } from "../../helpers/setCookies";
+
+const clientId =
+  process.env.NODE_ENV == "production"
+    ? (process.env.NEXT_PUBLIC_client_id_prod as string)
+    : (process.env.NEXT_PUBLIC_client_id_dev as string);
+const redirectUrl =
+  process.env.NODE_ENV == "production"
+    ? (process.env.NEXT_PUBLIC_redirect_prod as string)
+    : (process.env.NEXT_PUBLIC_redirect_dev as string);
 
 const Callback: FunctionComponent<PropsWithChildren> = () => {
   const { updateLogin } = useBitkubNext();
@@ -28,35 +39,34 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
   }, [query]);
 
   async function getAccessToken(code: string) {
+    //1. get AccessToken
     const { access_token, refresh_token } = await exchangeAuthorizationCode(
-      process.env.NODE_ENV == "production"
-        ? (process.env.NEXT_PUBLIC_client_id_prod as string)
-        : (process.env.NEXT_PUBLIC_client_id_dev as string),
-      process.env.NODE_ENV == "production"
-        ? (process.env.NEXT_PUBLIC_redirect_prod as string)
-        : (process.env.NEXT_PUBLIC_redirect_dev as string),
+      clientId,
+      redirectUrl,
       code as string
     );
 
-    const response = await axios.get(
-      "https://api.bitkubnext.io/accounts/auth/info",
-      {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "*",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${access_token}`,
-        },
-      }
-    );
+    //2. get user data
+    const userData = await getUserData(access_token);
 
-    const { wallet_address, email } = response.data.data;
-    if (!wallet_address) {
+    //3. check if logged in ?
+    if (!userData.success && isEmpty(userData.wallet_address)) {
+      //wallet not found
       setMessage("no wallet found!");
       replace("/");
     } else {
+      //wallet founded
       setMessage("Loading Dashboard..");
-      updateLogin(access_token, refresh_token, wallet_address, email);
+      updateLogin(
+        access_token,
+        refresh_token,
+        userData.wallet_address,
+        userData.email
+      );
+
+      //set cookies
+      setCookies(access_token, refresh_token, userData.wallet_address);
+
       // await save({ wallet: wallet_address, refreshToken: refresh_token });
       replace("/cert/profile");
     }
