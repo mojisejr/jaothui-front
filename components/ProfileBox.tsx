@@ -101,11 +101,11 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
               <div id="content">{certNft.sex}</div>
               <div id="topic">MotherId:</div>
               <div id="content">
-                {certNft.motherId == "0" ? "N/A" : certNft.motherId}
+                {certNft.motherId == "" ? "N/A" : certNft.motherId}
               </div>
               <div id="topic">FatherId:</div>
               <div id="content">
-                {certNft.fatherId == "0" ? "N/A" : certNft.fatherId}
+                {certNft.fatherId == "" ? "N/A" : certNft.fatherId}
               </div>
               <div id="topic">Origin:</div>
               {/* <div id="content">{certNft.origin}</div> */}
@@ -156,16 +156,38 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
               ) : (
                 <div
                   id="approvedBy-wrapper"
-                  className="p-2 border-[1px] border-thuiwhite rounded-xl col-span-2 mt-1 mb-1"
+                  className="flex p-2 border-[1px] border-thuiwhite rounded-xl col-span-2 mt-1 mb-1 gap-2"
                 >
                   {approvedBy.map((a, index) => (
-                    <Image
-                      key={index}
-                      src={a.uri}
-                      width={85}
-                      height={85}
-                      alt="approvedBy"
-                    />
+                    <>
+                      {a.doc == "" || a.doc == undefined ? (
+                        <button onClick={() => toast.error("Not Found")}>
+                          <Image
+                            src={a.uri}
+                            width={85}
+                            height={85}
+                            alt="approvedBy"
+                          />
+                        </button>
+                      ) : (
+                        <Link
+                          href={
+                            a.doc == "" || a.doc == undefined
+                              ? "/notfound"
+                              : a.doc
+                          }
+                          target="blank"
+                          key={index}
+                        >
+                          <Image
+                            src={a.uri}
+                            width={85}
+                            height={85}
+                            alt="approvedBy"
+                          />
+                        </Link>
+                      )}
+                    </>
                   ))}
                 </div>
               )}

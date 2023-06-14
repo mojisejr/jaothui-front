@@ -1,9 +1,11 @@
 export function parseOutputApproval(approval: any[]) {
   const data = approval.map((m) => {
     return {
-      uri: m[0][0],
-      approvedAt: m[0][1],
+      uri: m[0],
+      doc: m[1],
+      approvedAt: m[2],
     };
   });
+  console.log(data);
   return data;
 }

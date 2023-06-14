@@ -9,7 +9,7 @@ export function parseOutputMetadata(metadata: any[]) {
       sex: m[5],
       birthday: new Date(+m[6].toString() * 1000).toLocaleDateString(),
       height: m[7].toString(),
-      microchip: m[8][0].toString(),
+      microchip: m[8][0],
       certNo: m[8][1],
       rarity: m[8][2],
       dna: m[8][3],

@@ -34,7 +34,7 @@ const GridItem = ({
       "
       >
         <Image
-          className="w-full rounded-md border-[1px] border-thuiwhite border-opacity-5
+          className="w-full rounded-md border-[1px] max-h-[200px] border-thuiwhite border-opacity-5
       max-w-[350px]
       "
           width={250}
