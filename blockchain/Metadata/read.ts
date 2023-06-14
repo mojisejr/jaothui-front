@@ -80,7 +80,8 @@ export function useGetApprovalDataByMicrochip(microchip: string) {
       if (data.length <= 0 || data == undefined) {
         setData([]);
       } else {
-        const parsed = parseOutputApproval([data]);
+        console.log(data);
+        const parsed = parseOutputApproval(data);
         setData(parsed);
       }
     },

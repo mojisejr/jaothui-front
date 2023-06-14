@@ -98,10 +98,10 @@ export const abiMetadata = [
       {
         type: "tuple",
         name: "_input",
-        internalType: "struct JaothuiMetadataManager.InputMetadata",
+        internalType: "struct JaothuiMetadataManagerV2.InputMetadata",
         components: [
           { type: "string", name: "name", internalType: "string" },
-          { type: "uint256", name: "microchip", internalType: "uint256" },
+          { type: "string", name: "microchip", internalType: "string" },
           { type: "string", name: "certNo", internalType: "string" },
           { type: "string", name: "origin", internalType: "string" },
           { type: "string", name: "color", internalType: "string" },
@@ -111,6 +111,7 @@ export const abiMetadata = [
           { type: "string", name: "rarity", internalType: "string" },
           { type: "uint256", name: "birthdate", internalType: "uint256" },
           { type: "uint256", name: "height", internalType: "uint256" },
+          { type: "uint256", name: "issuedAt", internalType: "uint256" },
         ],
       },
     ],
@@ -125,10 +126,10 @@ export const abiMetadata = [
       {
         type: "tuple[]",
         name: "_inputs",
-        internalType: "struct JaothuiMetadataManager.InputMetadata[]",
+        internalType: "struct JaothuiMetadataManagerV2.InputMetadata[]",
         components: [
           { type: "string", name: "name", internalType: "string" },
-          { type: "uint256", name: "microchip", internalType: "uint256" },
+          { type: "string", name: "microchip", internalType: "string" },
           { type: "string", name: "certNo", internalType: "string" },
           { type: "string", name: "origin", internalType: "string" },
           { type: "string", name: "color", internalType: "string" },
@@ -138,6 +139,7 @@ export const abiMetadata = [
           { type: "string", name: "rarity", internalType: "string" },
           { type: "uint256", name: "birthdate", internalType: "uint256" },
           { type: "uint256", name: "height", internalType: "uint256" },
+          { type: "uint256", name: "issuedAt", internalType: "uint256" },
         ],
       },
     ],
@@ -156,7 +158,7 @@ export const abiMetadata = [
       {
         type: "tuple[]",
         name: "",
-        internalType: "struct JaothuiMetadataManager.BUFFALO[]",
+        internalType: "struct JaothuiMetadataManagerV2.BUFFALO[]",
         components: [
           { type: "string", name: "name", internalType: "string" },
           { type: "string", name: "origin", internalType: "string" },
@@ -169,29 +171,22 @@ export const abiMetadata = [
           {
             type: "tuple",
             name: "certify",
-            internalType: "struct JaothuiMetadataManager.CERTIFY",
+            internalType: "struct JaothuiMetadataManagerV2.CERTIFY",
             components: [
-              { type: "uint256", name: "microchip", internalType: "uint256" },
+              { type: "string", name: "microchip", internalType: "string" },
               { type: "string", name: "certNo", internalType: "string" },
               { type: "string", name: "rarity", internalType: "string" },
               { type: "string", name: "dna", internalType: "string" },
+              { type: "uint256", name: "issuedAt", internalType: "uint256" },
             ],
           },
           {
             type: "tuple",
             name: "relation",
-            internalType: "struct JaothuiMetadataManager.RELATION",
+            internalType: "struct JaothuiMetadataManagerV2.RELATION",
             components: [
-              {
-                type: "uint256",
-                name: "motherTokenId",
-                internalType: "uint256",
-              },
-              {
-                type: "uint256",
-                name: "fatherTokenId",
-                internalType: "uint256",
-              },
+              { type: "string", name: "motherTokenId", internalType: "string" },
+              { type: "string", name: "fatherTokenId", internalType: "string" },
             ],
           },
           { type: "uint256", name: "createdAt", internalType: "uint256" },
@@ -209,9 +204,10 @@ export const abiMetadata = [
       {
         type: "tuple[]",
         name: "",
-        internalType: "struct JaothuiMetadataManager.ApprovedBy[]",
+        internalType: "struct JaothuiMetadataManagerV2.ApprovedBy[]",
         components: [
           { type: "string", name: "uri", internalType: "string" },
+          { type: "string", name: "docUri", internalType: "string" },
           { type: "uint256", name: "approvedAt", internalType: "uint256" },
         ],
       },
@@ -236,7 +232,7 @@ export const abiMetadata = [
       {
         type: "tuple",
         name: "",
-        internalType: "struct JaothuiMetadataManager.BUFFALO",
+        internalType: "struct JaothuiMetadataManagerV2.BUFFALO",
         components: [
           { type: "string", name: "name", internalType: "string" },
           { type: "string", name: "origin", internalType: "string" },
@@ -249,29 +245,22 @@ export const abiMetadata = [
           {
             type: "tuple",
             name: "certify",
-            internalType: "struct JaothuiMetadataManager.CERTIFY",
+            internalType: "struct JaothuiMetadataManagerV2.CERTIFY",
             components: [
-              { type: "uint256", name: "microchip", internalType: "uint256" },
+              { type: "string", name: "microchip", internalType: "string" },
               { type: "string", name: "certNo", internalType: "string" },
               { type: "string", name: "rarity", internalType: "string" },
               { type: "string", name: "dna", internalType: "string" },
+              { type: "uint256", name: "issuedAt", internalType: "uint256" },
             ],
           },
           {
             type: "tuple",
             name: "relation",
-            internalType: "struct JaothuiMetadataManager.RELATION",
+            internalType: "struct JaothuiMetadataManagerV2.RELATION",
             components: [
-              {
-                type: "uint256",
-                name: "motherTokenId",
-                internalType: "uint256",
-              },
-              {
-                type: "uint256",
-                name: "fatherTokenId",
-                internalType: "uint256",
-              },
+              { type: "string", name: "motherTokenId", internalType: "string" },
+              { type: "string", name: "fatherTokenId", internalType: "string" },
             ],
           },
           { type: "uint256", name: "createdAt", internalType: "uint256" },
@@ -289,7 +278,7 @@ export const abiMetadata = [
       {
         type: "tuple",
         name: "",
-        internalType: "struct JaothuiMetadataManager.BUFFALO",
+        internalType: "struct JaothuiMetadataManagerV2.BUFFALO",
         components: [
           { type: "string", name: "name", internalType: "string" },
           { type: "string", name: "origin", internalType: "string" },
@@ -302,29 +291,22 @@ export const abiMetadata = [
           {
             type: "tuple",
             name: "certify",
-            internalType: "struct JaothuiMetadataManager.CERTIFY",
+            internalType: "struct JaothuiMetadataManagerV2.CERTIFY",
             components: [
-              { type: "uint256", name: "microchip", internalType: "uint256" },
+              { type: "string", name: "microchip", internalType: "string" },
               { type: "string", name: "certNo", internalType: "string" },
               { type: "string", name: "rarity", internalType: "string" },
               { type: "string", name: "dna", internalType: "string" },
+              { type: "uint256", name: "issuedAt", internalType: "uint256" },
             ],
           },
           {
             type: "tuple",
             name: "relation",
-            internalType: "struct JaothuiMetadataManager.RELATION",
+            internalType: "struct JaothuiMetadataManagerV2.RELATION",
             components: [
-              {
-                type: "uint256",
-                name: "motherTokenId",
-                internalType: "uint256",
-              },
-              {
-                type: "uint256",
-                name: "fatherTokenId",
-                internalType: "uint256",
-              },
+              { type: "string", name: "motherTokenId", internalType: "string" },
+              { type: "string", name: "fatherTokenId", internalType: "string" },
             ],
           },
           { type: "uint256", name: "createdAt", internalType: "uint256" },
@@ -333,7 +315,7 @@ export const abiMetadata = [
       },
     ],
     name: "getMetadataByMicrochip",
-    inputs: [{ type: "uint256", name: "_microchip", internalType: "uint256" }],
+    inputs: [{ type: "string", name: "_microchip", internalType: "string" }],
   },
   {
     type: "function",
@@ -342,7 +324,7 @@ export const abiMetadata = [
       {
         type: "tuple[]",
         name: "",
-        internalType: "struct JaothuiMetadataManager.BUFFALO[]",
+        internalType: "struct JaothuiMetadataManagerV2.BUFFALO[]",
         components: [
           { type: "string", name: "name", internalType: "string" },
           { type: "string", name: "origin", internalType: "string" },
@@ -355,29 +337,22 @@ export const abiMetadata = [
           {
             type: "tuple",
             name: "certify",
-            internalType: "struct JaothuiMetadataManager.CERTIFY",
+            internalType: "struct JaothuiMetadataManagerV2.CERTIFY",
             components: [
-              { type: "uint256", name: "microchip", internalType: "uint256" },
+              { type: "string", name: "microchip", internalType: "string" },
               { type: "string", name: "certNo", internalType: "string" },
               { type: "string", name: "rarity", internalType: "string" },
               { type: "string", name: "dna", internalType: "string" },
+              { type: "uint256", name: "issuedAt", internalType: "uint256" },
             ],
           },
           {
             type: "tuple",
             name: "relation",
-            internalType: "struct JaothuiMetadataManager.RELATION",
+            internalType: "struct JaothuiMetadataManagerV2.RELATION",
             components: [
-              {
-                type: "uint256",
-                name: "motherTokenId",
-                internalType: "uint256",
-              },
-              {
-                type: "uint256",
-                name: "fatherTokenId",
-                internalType: "uint256",
-              },
+              { type: "string", name: "motherTokenId", internalType: "string" },
+              { type: "string", name: "fatherTokenId", internalType: "string" },
             ],
           },
           { type: "uint256", name: "createdAt", internalType: "uint256" },
@@ -441,7 +416,7 @@ export const abiMetadata = [
     stateMutability: "view",
     outputs: [{ type: "uint256", name: "", internalType: "uint256" }],
     name: "microchipToTokenId",
-    inputs: [{ type: "uint256", name: "", internalType: "uint256" }],
+    inputs: [{ type: "string", name: "", internalType: "string" }],
   },
   {
     type: "function",
@@ -488,6 +463,7 @@ export const abiMetadata = [
     inputs: [
       { type: "uint256", name: "_tokenId", internalType: "uint256" },
       { type: "uint256", name: "_approverIndex", internalType: "uint256" },
+      { type: "string", name: "_doc", internalType: "string" },
       { type: "bool", name: "microchip", internalType: "bool" },
     ],
   },
@@ -503,7 +479,19 @@ export const abiMetadata = [
         name: "_approverIndexes",
         internalType: "uint256[]",
       },
+      { type: "string", name: "_doc", internalType: "string" },
       { type: "bool", name: "microchip", internalType: "bool" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
+    name: "setApprovedDoc",
+    inputs: [
+      { type: "uint256", name: "_tokenId", internalType: "uint256" },
+      { type: "uint256", name: "_index", internalType: "uint256" },
+      { type: "string", name: "_doc", internalType: "string" },
     ],
   },
   {
@@ -540,6 +528,16 @@ export const abiMetadata = [
     type: "function",
     stateMutability: "nonpayable",
     outputs: [],
+    name: "setHeight",
+    inputs: [
+      { type: "uint256", name: "_tokenId", internalType: "uint256" },
+      { type: "uint256", name: "_newHeight", internalType: "uint256" },
+    ],
+  },
+  {
+    type: "function",
+    stateMutability: "nonpayable",
+    outputs: [],
     name: "setHistory",
     inputs: [{ type: "address", name: "_history", internalType: "address" }],
   },
@@ -569,8 +567,8 @@ export const abiMetadata = [
     name: "setParent",
     inputs: [
       { type: "uint256", name: "_tokenId", internalType: "uint256" },
-      { type: "uint256", name: "_fatherId", internalType: "uint256" },
-      { type: "uint256", name: "_motherId", internalType: "uint256" },
+      { type: "string", name: "_fatherId", internalType: "string" },
+      { type: "string", name: "_motherId", internalType: "string" },
     ],
   },
   {
@@ -602,6 +600,7 @@ export const abiMetadata = [
     stateMutability: "view",
     outputs: [
       { type: "string", name: "uri", internalType: "string" },
+      { type: "string", name: "docUri", internalType: "string" },
       { type: "uint256", name: "approvedAt", internalType: "uint256" },
     ],
     name: "tokenIdToApproval",
@@ -625,21 +624,22 @@ export const abiMetadata = [
       {
         type: "tuple",
         name: "certify",
-        internalType: "struct JaothuiMetadataManager.CERTIFY",
+        internalType: "struct JaothuiMetadataManagerV2.CERTIFY",
         components: [
-          { type: "uint256", name: "microchip", internalType: "uint256" },
+          { type: "string", name: "microchip", internalType: "string" },
           { type: "string", name: "certNo", internalType: "string" },
           { type: "string", name: "rarity", internalType: "string" },
           { type: "string", name: "dna", internalType: "string" },
+          { type: "uint256", name: "issuedAt", internalType: "uint256" },
         ],
       },
       {
         type: "tuple",
         name: "relation",
-        internalType: "struct JaothuiMetadataManager.RELATION",
+        internalType: "struct JaothuiMetadataManagerV2.RELATION",
         components: [
-          { type: "uint256", name: "motherTokenId", internalType: "uint256" },
-          { type: "uint256", name: "fatherTokenId", internalType: "uint256" },
+          { type: "string", name: "motherTokenId", internalType: "string" },
+          { type: "string", name: "fatherTokenId", internalType: "string" },
         ],
       },
       { type: "uint256", name: "createdAt", internalType: "uint256" },
