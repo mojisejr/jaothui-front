@@ -11,7 +11,7 @@ export function useGetRewardByMicrochip(microchip: string) {
     ...contract.reward,
     functionName: "getRewardByMicrochip",
     // args: [microchip],
-    args: ["172645837162534"],
+    args: [microchip],
     onSuccess(data: [string, boolean, BigNumber][]) {
       if (data.length > 0) {
         const rewardData: RewardData[] = data.map((r) => {
