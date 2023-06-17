@@ -135,7 +135,7 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
               {/* <div id="topic">Detail:</div>
               <div id="content">{certNft.detail}</div> */}
               <div id="topic">Reward:</div>
-              <div id="content" className="flex">
+              <div id="content" className="flex flex-wrap max-w-[200px] gap-1">
                 {/* N/A */}
                 {rewards.length <= 0
                   ? "N/A"
