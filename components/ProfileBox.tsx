@@ -94,7 +94,9 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
               <div id="topic">ID:</div>
               <div id="content">{certNft.microchip}</div>
               <div id="topic">CertNo:</div>
-              <div id="content">{certNft.certNo}</div>
+              <div id="content">
+                {certNft.certNo == "" ? "N/A" : certNft.certNo}
+              </div>
               <div id="topic">Birthday:</div>
               <div id="content">{certNft.birthday}</div>
               <div id="topic">Sex:</div>
@@ -129,7 +131,9 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
                 )}
               </div>
               <div id="topic">Height:</div>
-              <div id="content">{certNft.height} cm.</div>
+              <div id="content">
+                {certNft.height == "0" ? "N/A" : `${certNft.height} cm.`}
+              </div>
               <div id="topic">Color:</div>
               <div id="content">{certNft.color}</div>
               {/* <div id="topic">Detail:</div>
