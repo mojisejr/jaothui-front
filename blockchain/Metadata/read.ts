@@ -6,6 +6,7 @@ import { useBitkubNext } from "../../hooks/bitkubNextContext";
 import { parseOutputMetadata } from "./helpers/metadataParser";
 import { IMetadata } from "../../interfaces/iMetadata";
 import { parseOutputApproval } from "./helpers/approvedByParser";
+import { BigNumber } from "ethers";
 
 export function useGetAllMetadata() {
   const [data, setData] = useState<any[]>([]);
@@ -69,18 +70,25 @@ export function useGetMetadataByMicrochip(michrocip: string) {
 
 export function useGetApprovalDataByMicrochip(microchip: string) {
   const [data, setData] = useState<any[]>([]);
+  const [tokenId, setTokenId] = useState<string>();
+
+  useContractRead({
+    ...contract.metadata,
+    functionName: "microchipToTokenId",
+    args: [microchip],
+    onSuccess(data: BigNumber) {
+      setTokenId(data.toString());
+    },
+  });
 
   useContractRead({
     ...contract.metadata,
     functionName: "getApprovedByTokenId",
-    args: [microchip, true],
+    args: [tokenId, false],
     onSuccess(data: any[]) {
-      // console.log("here");
-      // console.log(data);
       if (data.length <= 0 || data == undefined) {
         setData([]);
       } else {
-        console.log(data);
         const parsed = parseOutputApproval(data);
         setData(parsed);
       }
