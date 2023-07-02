@@ -12,9 +12,9 @@ const BuyBox = () => {
 
   function handleSearch(e: SyntheticEvent) {
     const value =
-      searchRef.current?.value == undefined ? 0 : +searchRef.current.value;
+      searchRef.current?.value == undefined ? "" : searchRef.current.value;
 
-    if (value <= 0) {
+    if (value == "") {
       return;
     }
 
