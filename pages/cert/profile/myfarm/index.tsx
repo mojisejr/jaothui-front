@@ -17,6 +17,7 @@ import { useBitkubNext } from "../../../../hooks/bitkubNextContext";
 import { useRouter } from "next/router";
 import { useFarm } from "../../../../hooks/useFarm";
 import CreateFarm from "../../../../components/sections/myfarm/CreateFarm";
+import FertilizationTable from "../../../../components/sections/myfarm/FertilizationTable";
 
 const MyFarm: FunctionComponent<PropsWithChildren> = () => {
   const { push } = useRouter();
@@ -87,11 +88,14 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
                   {farmData == undefined ? (
                     <CreateFarm />
                   ) : (
-                    <MyFarmDashboard asset={farmData} />
+                    <>
+                      <MyFarmDashboard asset={farmData} />
+                      <FertilizationTable farm={farmData.farm} />
+                    </>
                   )}
                 </div>
               ) : (
-                <div className="text-thuiwhite">Loading..</div>
+                <div className="text-thuiwhite text-xl">Loading..</div>
               )}
             </div>
           </div>

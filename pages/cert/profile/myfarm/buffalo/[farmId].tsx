@@ -46,7 +46,7 @@ tabletM:p-[60px]
                 <BuffaloManagement buffalo={data} update={mutate} />
               </>
             ) : (
-              <div>not found</div>
+              <>{isLoading ? <div>Loading..</div> : <div>Not Found</div>}</>
             )}
           </>
         )}
