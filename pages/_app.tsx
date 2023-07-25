@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import "@rainbow-me/rainbowkit/styles.css";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
+import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
 import { bitkub_mainnet, bitkub_testnet } from "../blockchain/chain";
 import { MenuProvider } from "../hooks/menuContext";
@@ -15,14 +16,18 @@ const { chains, provider } = configureChains(
   [publicProvider()]
 );
 
-const { connectors } = getDefaultWallets({
-  appName: "JAOTHUI NFT",
-  chains,
-});
+// const { connectors } = getDefaultWallets({
+//   appName: "JAOTHUI NFT",
+//   chains,
+// });
 
 const wagmiClient = createClient({
   autoConnect: true,
-  connectors,
+  connectors: [
+    new InjectedConnector({
+      chains,
+    }),
+  ],
   provider,
 });
 

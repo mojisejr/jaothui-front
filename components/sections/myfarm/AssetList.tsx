@@ -28,12 +28,20 @@ function MobileTable({ farmId, buffalos }: AssetListProps) {
     push(`/cert/profile/myfarm/buffalo/${farmId}?microchip=${microchip}`);
   }
   return (
-    <table className="w-full text-center">
-      <thead className="underline bg-thuidark">
-        <th className="p-2">chip</th>
-        <th className="p-2">name</th>
-        <th className="p-2">sex</th>
-        <th className="p-2">preg</th>
+    <table className="w-full text-center  rounded-md overflow-hidden">
+      <thead className="bg-thuiyellow">
+        <th scope="col" className="px-6 py-3">
+          chip
+        </th>
+        <th scope="col" className="px-6 py-3">
+          name
+        </th>
+        <th scope="col" className="px-6 py-3">
+          sex
+        </th>
+        <th scope="col" className="px-6 py-3">
+          preg
+        </th>
       </thead>
       <tbody>
         {buffalos.length <= 0 ? (
@@ -43,15 +51,15 @@ function MobileTable({ farmId, buffalos }: AssetListProps) {
             {buffalos.map((m) => (
               <tr
                 key={m.microchip}
-                className="hover:bg-thuiyellow hover:cursor-pointer odd:bg-thuidark odd:bg-opacity-80 border-[1px]"
+                className="hover:bg-thuiyellow hover:cursor-pointer odd:bg-thuidark odd:bg-opacity-80"
                 onClick={(e) => handleItemClicked(e, m.microchip)}
               >
-                <td className="p-2">
+                <td className="px-6 py-3">
                   {`${m.microchip.slice(0, 3)}..${m.microchip.slice(12, 15)}`}
                 </td>
-                <td className="p-2">{m.name}</td>
-                <td className="p-2">{m.sex == "male" ? "m" : "f"}</td>
-                <td className="p-2">
+                <td className="px-6 py-3">{m.name}</td>
+                <td className="px-6 py-3">{m.sex == "male" ? "m" : "f"}</td>
+                <td className="px-6 py-3">
                   {m.pregnant == true && m.sex == "female" ? "Yes" : "-"}
                 </td>
               </tr>
@@ -70,13 +78,20 @@ function TabletsTable({ farmId, buffalos }: AssetListProps) {
     push(`/cert/profile/myfarm/buffalo/${farmId}?microchip=${microchip}`);
   }
   return (
-    <table className="w-full text-center text-[20px]">
-      <thead className="underline bg-thuidark border-[1px]">
-        <th className="p-2">id</th>
-        <th className="p-2">chip</th>
-        <th className="p-2">name</th>
-        <th className="p-2">sex</th>
-        <th className="p-2">preg</th>
+    <table className="w-full text-center text-[20px] rounded-md overflow-hidden">
+      <thead className="underline bg-thuiyellow">
+        <th scope="col" className="px-6 py-3">
+          chip
+        </th>
+        <th scope="col" className="px-6 py-3">
+          name
+        </th>
+        <th scope="col" className="px-6 py-3">
+          sex
+        </th>
+        <th scope="col" className="px-6 py-3">
+          preg
+        </th>
       </thead>
       <tbody>
         {buffalos.length <= 0 ? (
@@ -86,14 +101,13 @@ function TabletsTable({ farmId, buffalos }: AssetListProps) {
             {buffalos.map((m) => (
               <tr
                 key={m.microchip}
-                className="hover:bg-thuiyellow hover:cursor-pointer odd:bg-thuidark odd:bg-opacity-80 border-[1px]"
+                className="hover:bg-thuiwhite hover:cursor-pointer hover:bg-opacity-30  transition-all 0.6s odd:bg-thuidark odd:bg-opacity-80"
                 onClick={(e) => handleItemClicked(e, m.microchip)}
               >
-                <td className="p-2 border-[1px]">{m.id}</td>
-                <td className="p-2 border-[1px]">{m.microchip}</td>
-                <td className="p-2 border-[1px]">{m.name}</td>
-                <td className="p-2 border-[1px]">{m.sex}</td>
-                <td className="p-2 border-[1px]">
+                <td className="px-6 py-3">{m.microchip}</td>
+                <td className="px-6 py-3">{m.name}</td>
+                <td className="px-6 py-3">{m.sex}</td>
+                <td className="px-6 py-3">
                   {m.pregnant == true && m.sex == "female" ? "Yes" : "-"}
                 </td>
               </tr>
