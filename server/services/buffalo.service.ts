@@ -1,6 +1,5 @@
 import axios from "axios";
 import { baseUrl } from "../config";
-import { timeStamp } from "console";
 
 interface createBuffaloByFarmIdDTO {
   microchip: string;
@@ -19,7 +18,7 @@ export const createBuffaloByFarmId = async (
   input: createBuffaloByFarmIdDTO
 ) => {
   const response = await axios.post(
-    `${baseUrl}/${process.env.buffalo_path}/${farmId}/`,
+    `${baseUrl}/${process.env.NEXT_PUBLIC_buffalo_path}/${farmId}/`,
     input
   );
 
@@ -31,7 +30,7 @@ export const getBuffaloByMicrochip = async (
   microchip: string
 ) => {
   const response = await axios.get(
-    `${baseUrl}/${process.env.buffalo_microchip_path}/${farmId}/${microchip}`
+    `${baseUrl}/${process.env.NEXT_PUBLIC_buffalo_microchip_path}/${farmId}/${microchip}`
   );
 
   return response.data;
@@ -39,14 +38,14 @@ export const getBuffaloByMicrochip = async (
 
 export const markBuffaloAsDead = async (buffaloId: number) => {
   const response = await axios.put(
-    `${baseUrl}/${process.env.buffalo_path}/${buffaloId}/dead`
+    `${baseUrl}/${process.env.NEXT_PUBLIC_buffalo_path}/${buffaloId}/dead`
   );
   return response.data;
 };
 
 export const markBuffaloAsSold = async (buffaloId: number) => {
   const response = await axios.put(
-    `${baseUrl}/${process.env.buffalo_path}/${buffaloId}/sold`
+    `${baseUrl}/${process.env.NEXT_PUBLIC_buffalo_path}/${buffaloId}/sold`
   );
   return response.data;
 };
@@ -56,7 +55,7 @@ export const markBuffaloAsOvulation = async (
   timestamp: string
 ) => {
   const response = await axios.put(
-    `${baseUrl}/${process.env.fertilizer_path}/${buffaloId}?ovulation=${timestamp}`
+    `${baseUrl}/${process.env.NEXT_PUBLIC_fertilizer_path}/${buffaloId}?ovulation=${timestamp}`
   );
 
   return response.data;
@@ -67,10 +66,10 @@ export const markBuffaloAsPregnant = async (
   timestamp: string
 ) => {
   console.log(
-    `${baseUrl}/${process.env.fertilizer_path}/${buffaloId}/preg?preg=${timestamp}`
+    `${baseUrl}/${process.env.NEXT_PUBLIC_fertilizer_path}/${buffaloId}/preg?preg=${timestamp}`
   );
   const response = await axios.put(
-    `${baseUrl}/${process.env.fertilizer_path}/${buffaloId}/preg?preg=${timestamp}`
+    `${baseUrl}/${process.env.NEXT_PUBLIC_fertilizer_path}/${buffaloId}/preg?preg=${timestamp}`
   );
   return response.data;
 };
@@ -80,7 +79,7 @@ export const markBuffaloAsUnpregnant = async (
   endTimestamp: string
 ) => {
   const response = await axios.put(
-    `${baseUrl}/${process.env.fertilizer_path}/${buffaloId}/unpreg?end=${endTimestamp}`
+    `${baseUrl}/${process.env.NEXT_PUBLIC_fertilizer_path}/${buffaloId}/unpreg?end=${endTimestamp}`
   );
   return response.data;
 };
