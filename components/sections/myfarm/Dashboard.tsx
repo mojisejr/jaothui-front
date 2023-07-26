@@ -1,7 +1,7 @@
-import { SyntheticEvent } from "react";
+import { SyntheticEvent, useEffect } from "react";
 import ModalBackdrop from "../../ModalBackdrop";
 import AddAsset from "./AddAsset";
-import { useNewAsset } from "../../../hooks/newAssetContext";
+import { useNewAsset } from "../../../contexts/newAssetContext";
 import Link from "next/link";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { FaClipboardList } from "react-icons/fa";
@@ -12,6 +12,7 @@ const MyFarmDashboard = (data: any) => {
     e.preventDefault();
     open();
   }
+
   return (
     <div
       className="bg-thuidark p-3 min-w-[300px] rounded-md
@@ -26,7 +27,9 @@ const MyFarmDashboard = (data: any) => {
       "
       >
         <div>Total Asset</div>
-        <div className="col-span-2 justify-self-end">100%</div>
+        <div className="col-span-2 justify-self-end">
+          {data.asset.asset.percent}%
+        </div>
         <div>Buffalo</div>
         <div className="justify-self-center">
           {data == undefined ? "N/A" : data.asset.asset.allAsset}

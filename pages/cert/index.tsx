@@ -5,7 +5,7 @@ import CollectionV2 from "../../components/sections/cert/CollectionV2";
 import CertFooter from "../../components/sections/cert/CertFooter";
 
 import MenuModal from "../../components/MenuModal";
-import { useMenu } from "../../hooks/menuContext";
+import { useMenu } from "../../contexts/menuContext";
 import { useGetAllMetadata } from "../../blockchain/Metadata/read";
 
 const CertMainPage: NextPage = () => {

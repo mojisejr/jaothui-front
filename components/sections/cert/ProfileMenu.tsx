@@ -1,4 +1,3 @@
-import { FunctionComponent, PropsWithChildren } from "react";
 import Link from "next/link";
 import { toast } from "react-toastify";
 

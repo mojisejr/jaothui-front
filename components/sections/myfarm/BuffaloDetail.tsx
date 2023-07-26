@@ -2,18 +2,14 @@ import Link from "next/link";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
 import { RxCrossCircled } from "react-icons/rx";
-import { useBitkubNext } from "../../../hooks/bitkubNextContext";
+import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import { Buffalo } from "../../../interfaces/MyFarm/iBuffalo";
-import useSwr from "swr";
-import { get } from "../../../helpers/get";
-import { useEffect, useState } from "react";
 
 export interface BuffaloDetailProps {
   certNft: Buffalo;
 }
 
 const BuffaloDetail = ({ certNft }: BuffaloDetailProps) => {
-  // const { isConnected } = useAccount();
   const { isConnected } = useBitkubNext();
 
   if (Object.keys(certNft).length === 0) {
@@ -95,8 +91,14 @@ const BuffaloDetail = ({ certNft }: BuffaloDetailProps) => {
               <div id="content">{certNft.height} cm.</div>
               <div id="topic">Color:</div>
               <div id="content">{certNft.color}</div>
-              <div id="topic">Detail:</div>
-              <p id="content">{certNft.details}</p>
+              <div id="topic">Ovulation:</div>
+              <div id="content">
+                {certNft.ovulation ? (
+                  <TiTick className="text-[#00ff00]" size={30} />
+                ) : (
+                  <RxCrossCircled className="text-[#ff0000]" size={30} />
+                )}
+              </div>
               <div id="topic">Pregant:</div>
               <div id="content">
                 {certNft.pregnant ? (
@@ -114,14 +116,10 @@ const BuffaloDetail = ({ certNft }: BuffaloDetailProps) => {
                   <RxCrossCircled className="text-[#ff0000]" size={30} />
                 )}
               </div>
-              <div id="topic">Dead:</div>
-              <div id="content">
-                {certNft.dead ? (
-                  <TiTick className="text-[#00ff00]" size={30} />
-                ) : (
-                  <RxCrossCircled className="text-[#ff0000]" size={30} />
-                )}
-              </div>
+              <div id="topic">Detail:</div>
+              <p id="content">
+                {certNft.details == "" ? "N/A" : certNft.details}
+              </p>
             </li>
           </ul>
         </div>

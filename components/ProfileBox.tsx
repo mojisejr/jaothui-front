@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { RiMedalFill } from "react-icons/ri";
 import { IMetadata } from "../interfaces/iMetadata";
-import { useBitkubNext } from "../hooks/bitkubNextContext";
+import { useBitkubNext } from "../contexts/bitkubNextContext";
 import CountryFlag from "./CountryFlag";
 import { RewardData } from "../interfaces/iReward";
 import { ApprovedBy } from "../interfaces/iApprovedBy";

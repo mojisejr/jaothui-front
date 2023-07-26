@@ -12,12 +12,13 @@ import CertFooter from "../../../../components/sections/cert/CertFooter";
 import MyFarmDashboard from "../../../../components/sections/myfarm/Dashboard";
 import { FiSearch } from "react-icons/fi";
 
-import { useMenu } from "../../../../hooks/menuContext";
-import { useBitkubNext } from "../../../../hooks/bitkubNextContext";
+import { useMenu } from "../../../../contexts/menuContext";
+import { useBitkubNext } from "../../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
 import { useFarm } from "../../../../hooks/useFarm";
 import CreateFarm from "../../../../components/sections/myfarm/CreateFarm";
 import FertilizationTable from "../../../../components/sections/myfarm/FertilizationTable";
+import LoadingScreen from "../../../../components/LoadingScreen";
 
 const MyFarm: FunctionComponent<PropsWithChildren> = () => {
   const { push } = useRouter();
@@ -25,7 +26,6 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected } = useBitkubNext();
   const { isOpen } = useMenu();
   const { farmData, isFarmLoading } = useFarm();
-  // const { farmData } = useMyFarm();
 
   function handleSearch(e: SyntheticEvent) {
     const value =
@@ -107,6 +107,7 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
       </div>
       {isOpen ? <MenuModal /> : null}
       <CertFooter />
+      {isFarmLoading ? <LoadingScreen /> : null}
     </>
   );
 };

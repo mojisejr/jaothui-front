@@ -1,6 +1,6 @@
 import { useState, useRef, SyntheticEvent, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNewAsset } from "../../../hooks/newAssetContext";
+import { useNewAsset } from "../../../contexts/newAssetContext";
 import { useFarm } from "../../../hooks/useFarm";
 
 import Select from "react-select";
@@ -8,6 +8,7 @@ import axios from "axios";
 
 import { AiFillCloseSquare } from "react-icons/ai";
 import { toast } from "react-toastify";
+import { useAddAsset } from "../../../hooks/useAddAsset";
 
 type FormData = {
   name: string;
@@ -31,10 +32,17 @@ export interface FarmProps {
 }
 
 const AddAsset = ({ farmId }: FarmProps) => {
-  const [isLoading, setLoading] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const { close, open, isOpen } = useNewAsset();
+  const { adding, added, newAsset } = useAddAsset();
   const { refetchFarm } = useFarm();
+
+  useEffect(() => {
+    if (added) {
+      refetchFarm();
+      reset();
+    }
+  }, [added]);
 
   const {
     register,
@@ -45,22 +53,38 @@ const AddAsset = ({ farmId }: FarmProps) => {
   } = useForm<FormData>();
 
   const onSubmit = handleSubmit(async (data) => {
-    setLoading(true);
-    if (farmId) {
-      axios
-        .post(`/api/buffalo/${farmId}`, data)
-        .then(() => {
-          setLoading(false);
-          toast.success("Add Asset Successfully!");
-          refetchFarm();
-          reset();
-        })
-        .catch((error) => {
-          setLoading(false);
-          toast.error("Add Asset Failed!");
-          refetchFarm();
-        });
-    }
+    newAsset({
+      farmId: farmId,
+      data: {
+        microchip: data.id.toString(),
+        name: data.name,
+        sex: data.sex,
+        height: +data.height,
+        color: data.color,
+        details: data.detail,
+        motherId:
+          data.motherId?.toString()! == "" ? null : data.motherId?.toString()!,
+        fatherId:
+          data.fatherId?.toString()! == "" ? null : data.fatherId?.toString()!,
+        birthday: new Date(data.birthday).toISOString(),
+      },
+    });
+    // setLoading(true);
+    // if (farmId) {
+    //   axios
+    //     .post(`/api/buffalo/${farmId}`, data)
+    //     .then(() => {
+    //       setLoading(false);
+    //       toast.success("Add Asset Successfully!");
+    //       refetchFarm();
+    //       reset();
+    //     })
+    //     .catch((error) => {
+    //       setLoading(false);
+    //       toast.error("Add Asset Failed!");
+    //       refetchFarm();
+    //     });
+    // }
   });
 
   function onClose(e: SyntheticEvent) {
@@ -193,7 +217,7 @@ const AddAsset = ({ farmId }: FarmProps) => {
             Reset
           </button>
         </div>
-        {isLoading ? <LoadingOnAdding /> : null}
+        {adding ? <LoadingOnAdding /> : null}
       </form>
     </div>
   );

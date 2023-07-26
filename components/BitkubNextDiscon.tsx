@@ -1,4 +1,4 @@
-import { useBitkubNext } from "../hooks/bitkubNextContext";
+import { useBitkubNext } from "../contexts/bitkubNextContext";
 import { simplifyAddress } from "../helpers/simplifyAddress";
 import { useRouter } from "next/router";
 

@@ -1,6 +1,6 @@
 import { useContractRead } from "wagmi";
 import { contract } from "../contract";
-import { useBitkubNext } from "../../hooks/bitkubNextContext";
+import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import { BigNumber } from "ethers";
 
 export function useTokenOfOwnerAll() {

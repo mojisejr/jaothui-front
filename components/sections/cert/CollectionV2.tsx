@@ -1,6 +1,5 @@
 import GridItem from "../../GridItem";
 import Link from "next/link";
-import { FaSearch } from "react-icons/fa";
 import { IMetadata } from "../../../interfaces/iMetadata";
 
 import { SyntheticEvent, useEffect, useState } from "react";

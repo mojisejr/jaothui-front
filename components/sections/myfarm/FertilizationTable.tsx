@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Farm } from "../../../interfaces/MyFarm/iFarm";
-import { Buffalo } from "../../../interfaces/MyFarm/iBuffalo";
 import { Fertilization } from "../../../interfaces/MyFarm/iFertilization";
-import { IoOpen, IoOpenOutline } from "react-icons/io5";
+import { IoOpenOutline } from "react-icons/io5";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";

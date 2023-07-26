@@ -4,8 +4,8 @@ import Header from "../../../components/Header";
 import Collection from "../../../components/sections/cert/Collection";
 import MenuModal from "../../../components/MenuModal";
 import CertFooter from "../../../components/sections/cert/CertFooter";
-import { useMenu } from "../../../hooks/menuContext";
-import { useBitkubNext } from "../../../hooks/bitkubNextContext";
+import { useMenu } from "../../../contexts/menuContext";
+import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 
 const MyCert: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected, walletAddress } = useBitkubNext();

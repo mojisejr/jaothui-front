@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Header from "../../components/Header";
 
 import CertFooter from "../../components/sections/cert/CertFooter";
-import { useMenu } from "../../hooks/menuContext";
+import { useMenu } from "../../contexts/menuContext";
 import MenuModal from "../../components/MenuModal";
 import ProfileBox from "../../components/ProfileBox";
 import {

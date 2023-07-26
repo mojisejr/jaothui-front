@@ -1,7 +1,9 @@
 import { Buffalo } from "../../../interfaces/MyFarm/iBuffalo";
-import { SyntheticEvent, useRef } from "react";
-import axios from "axios";
+import { SyntheticEvent, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+import { trpc } from "../../../utils/trpc";
+import LoadingScreen from "../../LoadingScreen";
+import { useRouter } from "next/router";
 
 interface BuffaloManagementProps {
   buffalo: Buffalo;
@@ -9,26 +11,91 @@ interface BuffaloManagementProps {
 }
 
 const BuffaloManagement = ({ buffalo, update }: BuffaloManagementProps) => {
+  const { replace } = useRouter();
+  const {
+    mutate: markAsOvul,
+    isLoading: ovulMarking,
+    isError: ovulError,
+    isSuccess: ovulated,
+  } = trpc.buffalo.markOvul.useMutation();
+
+  const {
+    mutate: markAsPreg,
+    isLoading: pregMarking,
+    isError: pregError,
+    isSuccess: pregnant,
+  } = trpc.buffalo.markPreg.useMutation();
+
+  const {
+    mutate: markAsUnPreg,
+    isLoading: unPregMarking,
+    isError: unPregError,
+    isSuccess: unpregnant,
+  } = trpc.buffalo.markUnPreg.useMutation();
+
+  const {
+    mutate: markAsSold,
+    isLoading: selling,
+    isError: sellError,
+    isSuccess: sold,
+  } = trpc.buffalo.markAsSold.useMutation();
+
+  const {
+    mutate: markAsDead,
+    isLoading: deadMarking,
+    isError: deadError,
+    isSuccess: alreadyDead,
+  } = trpc.buffalo.markAsDead.useMutation();
+
+  useEffect(() => {
+    if (ovulated) toast.success(`${buffalo.id}, is ovulated!`);
+    if (ovulError)
+      toast.error(`${buffalo.id}, Marking as ovulation failed!, try again`);
+    if (pregnant) toast.success(`${buffalo.id}, is pregnant!`);
+    if (pregError)
+      toast.error(`${buffalo.id}, Marking as pregnant failed!, try again`);
+    if (unpregnant) toast.success(`${buffalo.id}, is set to unpregnant!`);
+    if (unPregError)
+      toast.error(`${buffalo.id}, Marking as unpregnant failed!, try again`);
+    if (alreadyDead) {
+      toast.success(`${buffalo.id}, Marked as dead!`);
+      replace("/cert/profile/myfarm/list");
+    }
+    if (deadError)
+      toast.error(`${buffalo.id}, Marking as dead failed!, try again`);
+    if (sold) {
+      toast.success(`${buffalo.id}, Marked as sold!`);
+      replace("/cert/profile/myfarm/list");
+    }
+    if (sellError) toast.error(`${buffalo.id}, Selling failed!, try again`);
+    update();
+  }, [
+    sold,
+    alreadyDead,
+    ovulated,
+    pregnant,
+    unpregnant,
+    sellError,
+    deadError,
+    pregError,
+    unPregError,
+    ovulError,
+  ]);
+
   const ovalationRef = useRef<HTMLInputElement>(null);
   const pregnantRef = useRef<HTMLInputElement>(null);
-  console.log(buffalo);
 
   async function handleSetOvulation(e: SyntheticEvent) {
     e.preventDefault();
     //@get latest fertilizer data
 
     if (ovalationRef.current?.value !== "") {
-      axios
-        .post(
-          `/api/buffalo/fertilizer/${buffalo.id}?ovulation=${new Date(
-            ovalationRef.current?.value as string
-          ).toISOString()}`
-        )
-        .then(() => {
-          toast.success("Update Ovulation Successful!");
-          update();
-        })
-        .catch(() => toast.error("Updata Ovulation Failed!"));
+      markAsOvul({
+        buffaloId: buffalo.id as number,
+        timestamp: new Date(
+          ovalationRef.current?.value as string
+        ).toISOString(),
+      });
     }
   }
 
@@ -39,40 +106,25 @@ const BuffaloManagement = ({ buffalo, update }: BuffaloManagementProps) => {
         ? buffalo.fertilization?.filter((f) => f.done == false)
         : [];
     if (pregnantRef.current?.value !== "") {
-      axios
-        .put(
-          `/api/buffalo/fertilizer/${fert![0].id}/preg?preg=${new Date(
-            pregnantRef.current?.value as string
-          ).toISOString()}`
-        )
-        .then(() => {
-          toast.success("Update Pregnancy Successful!");
-          update();
-        })
-        .catch(() => toast.error("Update Pregnancy Failed!"));
+      markAsPreg({
+        buffaloId: fert![0].id as number,
+        timestamp: new Date(pregnantRef.current?.value as string).toISOString(),
+      });
     }
   }
 
   function handleDead(e: SyntheticEvent) {
     e.preventDefault();
-    axios
-      .put(`/api/buffalo/manage/${buffalo.id}/dead`)
-      .then(() => {
-        toast.success("Mark as dead Successful!");
-        update();
-      })
-      .catch(() => toast.error("Mark as dead Failed!"));
+    markAsDead({
+      buffaloId: buffalo.id as number,
+    });
   }
 
   function handleSold(e: SyntheticEvent) {
     e.preventDefault();
-    axios
-      .put(`/api/buffalo/manage/${buffalo.id}/sold`)
-      .then(() => {
-        toast.success("Mark as sold Successful!");
-        update();
-      })
-      .catch(() => toast.error("Mark as sold Failed!"));
+    markAsSold({
+      buffaloId: buffalo.id as number,
+    });
   }
 
   function handleUnpreg(e: SyntheticEvent) {
@@ -81,17 +133,10 @@ const BuffaloManagement = ({ buffalo, update }: BuffaloManagementProps) => {
       buffalo !== undefined
         ? buffalo.fertilization?.filter((f) => f.done == false)
         : [];
-    axios
-      .put(
-        `/api/buffalo/fertilizer/${
-          fert![0].id
-        }/unpreg?end=${new Date().toISOString()}`
-      )
-      .then(() => {
-        toast.success("Update Unpregnancy Successful!");
-        update();
-      })
-      .catch(() => toast.error("Update Unpregnancy Failed!"));
+    markAsUnPreg({
+      buffaloId: fert![0].id as number,
+      timestamp: new Date().toISOString(),
+    });
   }
 
   return (
@@ -169,6 +214,9 @@ const BuffaloManagement = ({ buffalo, update }: BuffaloManagementProps) => {
           ) : null}
         </div>
       </div>
+      {ovulMarking || pregMarking || unPregMarking || selling || deadMarking ? (
+        <LoadingScreen />
+      ) : null}
     </div>
   );
 };

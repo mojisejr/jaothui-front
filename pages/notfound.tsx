@@ -1,7 +1,6 @@
 import Header from "../components/Header";
-import CollectionV2 from "../components/sections/cert/CollectionV2";
 import CertFooter from "../components/sections/cert/CertFooter";
-import { useMenu } from "../hooks/menuContext";
+import { useMenu } from "../contexts/menuContext";
 import MenuModal from "../components/MenuModal";
 
 const NotFoundPage = () => {
