@@ -7,7 +7,7 @@ import PartnerSection from "../components/sections/home/Partners";
 import FooterSection from "../components/sections/home/Footer";
 import MenuModal from "../components/MenuModal";
 import { useMenu } from "../contexts/menuContext";
-import { trpc } from "../utils/trpc";
+import CookieConsent from "react-cookie-consent";
 
 const Home: NextPage = () => {
   const { isOpen } = useMenu();
@@ -31,6 +31,9 @@ const Home: NextPage = () => {
       <FooterSection />
       {/* </SectionLayout> */}
       {isOpen ? <MenuModal /> : null}
+      <CookieConsent buttonText="Accept">
+        Jaothui Website uses cookies to enhance the user experience.{" "}
+      </CookieConsent>
     </div>
   );
 };
