@@ -6,10 +6,19 @@ import MenuModal from "../../../components/MenuModal";
 import CertFooter from "../../../components/sections/cert/CertFooter";
 import { useMenu } from "../../../contexts/menuContext";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const ProfilePage = () => {
   const { isConnected } = useBitkubNext();
   const { isOpen } = useMenu();
+  const { replace } = useRouter();
+
+  useEffect(() => {
+    if (!isConnected) {
+      replace("/");
+    }
+  }, [isConnected]);
 
   return (
     <>

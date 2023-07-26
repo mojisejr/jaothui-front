@@ -107,7 +107,7 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
       </div>
       {isOpen ? <MenuModal /> : null}
       <CertFooter />
-      {isFarmLoading ? <LoadingScreen /> : null}
+      {isFarmLoading && isConnected ? <LoadingScreen /> : null}
     </>
   );
 };
