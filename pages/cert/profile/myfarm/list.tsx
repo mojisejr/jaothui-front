@@ -12,13 +12,15 @@ import CertFooter from "../../../../components/sections/cert/CertFooter";
 import { FiSearch } from "react-icons/fi";
 
 import axios from "axios";
-import { useMenu } from "../../../../hooks/menuContext";
-import { useBitkubNext } from "../../../../hooks/bitkubNextContext";
+import { useMenu } from "../../../../contexts/menuContext";
+import { useBitkubNext } from "../../../../contexts/bitkubNextContext";
 import useSwr from "swr";
 import { useRouter } from "next/router";
 import AssetList from "../../../../components/sections/myfarm/AssetList";
 import Link from "next/link";
 import { FaArrowCircleLeft } from "react-icons/fa";
+import LoadingScreen from "../../../../components/LoadingScreen";
+import { trpc } from "../../../../utils/trpc";
 
 const get = (url: string) => axios.get(url).then((response) => response.data);
 
@@ -27,7 +29,7 @@ const BuffaloList: FunctionComponent<PropsWithChildren> = () => {
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected, walletAddress } = useBitkubNext();
   const { isOpen } = useMenu();
-  const { data, error, isLoading } = useSwr(`/api/farm/${walletAddress}`, get);
+  const { data, isLoading } = trpc.farm.get.useQuery({ wallet: walletAddress });
 
   function handleSearch(e: SyntheticEvent) {
     const value =
@@ -117,6 +119,7 @@ const BuffaloList: FunctionComponent<PropsWithChildren> = () => {
       </div>
       {isOpen ? <MenuModal /> : null}
       <CertFooter />
+      {isLoading ? <LoadingScreen /> : null}
     </>
   );
 };

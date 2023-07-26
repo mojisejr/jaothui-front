@@ -7,7 +7,7 @@ import {
 import { useRouter } from "next/router";
 import { exchangeAuthorizationCode } from "@bitkub-blockchain/react-bitkubnext-oauth2";
 
-import { useBitkubNext } from "../../hooks/bitkubNextContext";
+import { useBitkubNext } from "../../contexts/bitkubNextContext";
 // import { useAuth } from "../../hooks/useAuth";
 import Image from "next/image";
 import { isEmpty } from "../../helpers/dataValidator";

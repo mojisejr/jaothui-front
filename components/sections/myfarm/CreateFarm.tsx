@@ -1,13 +1,13 @@
 import { SyntheticEvent } from "react";
 import { useCreateFarm } from "../../../hooks/useCreateFarm";
-import { useBitkubNext } from "../../../hooks/bitkubNextContext";
+import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 const CreateFarm = () => {
   const { walletAddress } = useBitkubNext();
   const { create } = useCreateFarm();
 
   function handleCreate(e: SyntheticEvent) {
     e.preventDefault();
-    create(walletAddress);
+    create({ wallet: walletAddress });
   }
   return (
     <div className="flex justify-center mt-10">

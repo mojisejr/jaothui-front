@@ -1,5 +1,5 @@
 import { simplifyAddress } from "../../../helpers/simplifyAddress";
-import { useBitkubNext } from "../../../hooks/bitkubNextContext";
+import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 
 const Profile = () => {
   const { email, walletAddress } = useBitkubNext();

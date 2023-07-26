@@ -1,8 +1,7 @@
 import { useContractRead } from "wagmi";
-import { useAccount } from "wagmi";
 import { useState } from "react";
 import { contract } from "../contract";
-import { useBitkubNext } from "../../hooks/bitkubNextContext";
+import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import { parseOutputMetadata } from "./helpers/metadataParser";
 import { IMetadata } from "../../interfaces/iMetadata";
 import { parseOutputApproval } from "./helpers/approvedByParser";

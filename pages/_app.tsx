@@ -7,9 +7,10 @@ import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
 import { bitkub_mainnet, bitkub_testnet } from "../blockchain/chain";
-import { MenuProvider } from "../hooks/menuContext";
-import { BitkubNextProvider } from "../hooks/bitkubNextContext";
-import { NewAssetProvider } from "../hooks/newAssetContext";
+import { MenuProvider } from "../contexts/menuContext";
+import { BitkubNextProvider } from "../contexts/bitkubNextContext";
+import { NewAssetProvider } from "../contexts/newAssetContext";
+import { trpc } from "../utils/trpc";
 
 const { chains, provider } = configureChains(
   [bitkub_mainnet],
@@ -31,7 +32,7 @@ const wagmiClient = createClient({
   provider,
 });
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
   const [showChild, setShowChild] = useState(false);
   useEffect(() => {
     setShowChild(true);
@@ -58,6 +59,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       </WagmiConfig>
     );
   }
-}
+};
 
-export default MyApp;
+export default trpc.withTRPC(MyApp);

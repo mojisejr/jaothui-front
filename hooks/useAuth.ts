@@ -1,6 +1,6 @@
 import useSWRMutation from "swr/mutation";
 import useSwr from "swr";
-import { useBitkubNext } from "./bitkubNextContext";
+import { useBitkubNext } from "../contexts/bitkubNextContext";
 import { get } from "../helpers/get";
 import axios from "axios";
 

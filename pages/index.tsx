@@ -6,7 +6,8 @@ import DetailSection from "../components/sections/home/Details";
 import PartnerSection from "../components/sections/home/Partners";
 import FooterSection from "../components/sections/home/Footer";
 import MenuModal from "../components/MenuModal";
-import { useMenu } from "../hooks/menuContext";
+import { useMenu } from "../contexts/menuContext";
+import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   const { isOpen } = useMenu();

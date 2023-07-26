@@ -1,9 +1,8 @@
 import { GiLawStar } from "react-icons/gi";
 import Link from "next/link";
 import { useRef } from "react";
-import { useMenu } from "../hooks/menuContext";
-import { simplifyAddress } from "../helpers/simplifyAddress";
-import { useBitkubNext } from "../hooks/bitkubNextContext";
+import { useMenu } from "../contexts/menuContext";
+import { useBitkubNext } from "../contexts/bitkubNextContext";
 import BitkubNextConnectButton from "./BitkubNext";
 import BitkubDisconnectButton from "./BitkubNextDiscon";
 

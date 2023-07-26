@@ -1,10 +1,8 @@
-import { FunctionComponent, PropsWithChildren } from "react";
+import { FunctionComponent, PropsWithChildren, useEffect } from "react";
 import { useRouter } from "next/router";
 
-import axios from "axios";
-import useSwr from "swr";
-import { useBitkubNext } from "../../../../../hooks/bitkubNextContext";
-import { useMenu } from "../../../../../hooks/menuContext";
+import { useBitkubNext } from "../../../../../contexts/bitkubNextContext";
+import { useMenu } from "../../../../../contexts/menuContext";
 
 import CertFooter from "../../../../../components/sections/cert/CertFooter";
 import MenuModal from "../../../../../components/MenuModal";
@@ -12,17 +10,18 @@ import PleaseConnectWallet from "../../../../../components/sections/cert/PleaseC
 import Header from "../../../../../components/Header";
 import BuffaloDetail from "../../../../../components/sections/myfarm/BuffaloDetail";
 import BuffaloManagement from "../../../../../components/sections/myfarm/BuffaloManagement";
-
-const get = (url: string) => axios.get(url).then((response) => response.data);
+import LoadingScreen from "../../../../../components/LoadingScreen";
+import { trpc } from "../../../../../utils/trpc";
 
 const MyFarmBuffalo: FunctionComponent<PropsWithChildren> = () => {
-  const { isConnected, walletAddress } = useBitkubNext();
+  const { isConnected } = useBitkubNext();
   const { isOpen } = useMenu();
   const { query } = useRouter();
-  const { data, error, isLoading, mutate } = useSwr(
-    `/api/buffalo/microchip/${query.farmId}/${query.microchip}`,
-    get
-  );
+
+  const { data, isLoading, refetch } = trpc.buffalo.getByMicrochip.useQuery({
+    farmId: +query.farmId!,
+    microchip: query.microchip as string,
+  });
 
   return (
     <>
@@ -43,16 +42,23 @@ tabletM:p-[60px]
             {data != undefined ? (
               <>
                 <BuffaloDetail certNft={data} />
-                <BuffaloManagement buffalo={data} update={mutate} />
+                <BuffaloManagement buffalo={data} update={refetch} />
               </>
             ) : (
-              <>{isLoading ? <div>Loading..</div> : <div>Not Found</div>}</>
+              <>
+                {isLoading ? (
+                  <div className="text-3xl">Loading..</div>
+                ) : (
+                  <div className="text-3xl">Not Found</div>
+                )}
+              </>
             )}
           </>
         )}
       </div>
-      {isOpen ? <MenuModal /> : null}
       <CertFooter />
+      {isOpen ? <MenuModal /> : null}
+      {isLoading ? <LoadingScreen /> : null}
     </>
   );
 };

@@ -1,13 +1,11 @@
-import { ConnectWalletButton } from "./ConnectWalletBtn";
 import Image from "next/image";
 import logo from "../public/images/thuiLogo.png";
 import Link from "next/link";
 import { ImMenu } from "react-icons/im";
-import { FiSearch } from "react-icons/fi";
-import { useMenu } from "../hooks/menuContext";
+import { useMenu } from "../contexts/menuContext";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
-import { useBitkubNext } from "../hooks/bitkubNextContext";
+import { useBitkubNext } from "../contexts/bitkubNextContext";
 import { simplifyAddress } from "../helpers/simplifyAddress";
 import Head from "next/head";
 import { SyntheticEvent, useRef } from "react";
