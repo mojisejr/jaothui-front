@@ -31,8 +31,10 @@ const Home: NextPage = () => {
       <FooterSection />
       {/* </SectionLayout> */}
       {isOpen ? <MenuModal /> : null}
-      <CookieConsent buttonText="Accept">
-        Jaothui Website uses cookies to enhance the user experience.{" "}
+      <CookieConsent buttonText="Thank You, I Accept">
+        Welcome to Jaothui Website! We want to provide you with the best user
+        experience possible, so we use cookies to enhance your browsing
+        experience.
       </CookieConsent>
     </div>
   );
