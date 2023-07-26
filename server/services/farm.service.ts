@@ -11,14 +11,15 @@ interface CreateFarmByWalletDTO {
 
 export const getFarmByWallet = async (input: GetFarmByWalletDTO) => {
   const response = await axios.get(
-    `${baseUrl}/${process.env.farm_path}/${input.wallet}`
+    `${baseUrl}/${process.env.NEXT_PUBLIC_farm_path}/${input.wallet}`
   );
+
   return response.data;
 };
 
 export const createFarmByWallet = async (input: CreateFarmByWalletDTO) => {
   const response = await axios.post(
-    `${baseUrl}/${process.env.farm_path}/${input.wallet}`
+    `${baseUrl}/${process.env.NEXT_PUBLIC_farm_path}/${input.wallet}`
   );
 
   return response.data;

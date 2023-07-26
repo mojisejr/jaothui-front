@@ -9,7 +9,7 @@ interface registerUserDTO {
 
 export const registerUser = async (data: registerUserDTO) => {
   const response = await axios.post(
-    `${baseUrl}/${process.env.register_path}`,
+    `${baseUrl}/${process.env.NEXT_PUBLIC_register_path}`,
     data
   );
 
