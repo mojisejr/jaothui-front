@@ -54,7 +54,7 @@ export const markBuffaloAsOvulation = async (
   buffaloId: number,
   timestamp: string
 ) => {
-  const response = await axios.put(
+  const response = await axios.post(
     `${baseUrl}/${process.env.NEXT_PUBLIC_fertilizer_path}/${buffaloId}?ovulation=${timestamp}`
   );
 

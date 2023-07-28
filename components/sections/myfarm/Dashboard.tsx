@@ -28,7 +28,7 @@ const MyFarmDashboard = (data: any) => {
       >
         <div>Total Asset</div>
         <div className="col-span-2 justify-self-end">
-          {data.asset.asset.percent}%
+          {data.asset.asset.percent == "NaN" ? "0" : data.asset.asset.percent}%
         </div>
         <div>Buffalo</div>
         <div className="justify-self-center">

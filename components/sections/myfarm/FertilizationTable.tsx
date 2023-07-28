@@ -79,16 +79,16 @@ const FertilizationTable = ({ farm }: FertilizationProps) => {
           <table className="w-full">
             <thead className="bg-thuiyellow">
               <tr>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-2 py-3">
                   chipId
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-2 py-3">
                   ovulation
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-2 py-3">
                   pregnancy
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-2 py-3">
                   open
                 </th>
               </tr>
@@ -101,18 +101,18 @@ const FertilizationTable = ({ farm }: FertilizationProps) => {
                       key={d.microchip}
                       className="hover:bg-thuiwhite hover:bg-opacity-30  transition-all 0.6s"
                     >
-                      <td className="px-6 py-3">{d.microchip}</td>
-                      <td className="px-6 py-3 leading-tight">
+                      <td className="px-2 py-3">{d.microchip}</td>
+                      <td className="px-2 py-3 leading-tight">
                         <div>{d.ovulation.time}</div>
                         <div className="text-xs">{d.ovulation.relative}</div>
                       </td>
-                      <td className="px-6 py-3">
+                      <td className="px-2 py-3">
                         <div>{d.pregnant.status ? d.pregnant.time : "N/A"}</div>
                         <div className="text-xs">
                           {d.pregnant.status ? d.pregnant.relative : null}
                         </div>
                       </td>
-                      <td className="px-6 py-3">
+                      <td className="px-2 py-3">
                         <Link
                           href={`/cert/profile/myfarm/buffalo/${farm.id}?microchip=${d.microchip}`}
                         >

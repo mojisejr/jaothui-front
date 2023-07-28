@@ -48,23 +48,30 @@ const BuffaloManagement = ({ buffalo, update }: BuffaloManagementProps) => {
   } = trpc.buffalo.markAsDead.useMutation();
 
   useEffect(() => {
-    if (ovulated) toast.success(`${buffalo.id}, is ovulated!`);
+    if (ovulated) toast.success(`${buffalo.microchip}, is ovulated!`);
     if (ovulError)
-      toast.error(`${buffalo.id}, Marking as ovulation failed!, try again`);
-    if (pregnant) toast.success(`${buffalo.id}, is pregnant!`);
+      toast.error(
+        `${buffalo.microchip}, Marking as ovulation failed!, try again`
+      );
+    if (pregnant) toast.success(`${buffalo.microchip}, is pregnant!`);
     if (pregError)
-      toast.error(`${buffalo.id}, Marking as pregnant failed!, try again`);
-    if (unpregnant) toast.success(`${buffalo.id}, is set to unpregnant!`);
+      toast.error(
+        `${buffalo.microchip}, Marking as pregnant failed!, try again`
+      );
+    if (unpregnant)
+      toast.success(`${buffalo.microchip}, is set to unpregnant!`);
     if (unPregError)
-      toast.error(`${buffalo.id}, Marking as unpregnant failed!, try again`);
+      toast.error(
+        `${buffalo.microchip}, Marking as unpregnant failed!, try again`
+      );
     if (alreadyDead) {
-      toast.success(`${buffalo.id}, Marked as dead!`);
+      toast.success(`${buffalo.microchip}, Marked as dead!`);
       replace("/cert/profile/myfarm/list");
     }
     if (deadError)
-      toast.error(`${buffalo.id}, Marking as dead failed!, try again`);
+      toast.error(`${buffalo.microchip}, Marking as dead failed!, try again`);
     if (sold) {
-      toast.success(`${buffalo.id}, Marked as sold!`);
+      toast.success(`${buffalo.microchip}, Marked as sold!`);
       replace("/cert/profile/myfarm/list");
     }
     if (sellError) toast.error(`${buffalo.id}, Selling failed!, try again`);
@@ -151,7 +158,7 @@ const BuffaloManagement = ({ buffalo, update }: BuffaloManagementProps) => {
           <div className="border-[1px] rounded-md p-2 flex flex-col gap-2">
             {!buffalo.ovulation ? (
               <div className="flex gap-2 items-center justify-between">
-                <div className="text-[20px]">Ovalation:</div>
+                <div className="text-[20px]">Ovulation:</div>
                 <input
                   className="text-thuiyellow p-2 rounded-md"
                   type="date"

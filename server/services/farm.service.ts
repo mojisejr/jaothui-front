@@ -13,7 +13,6 @@ export const getFarmByWallet = async (input: GetFarmByWalletDTO) => {
   const response = await axios.get(
     `${baseUrl}/${process.env.NEXT_PUBLIC_farm_path}/${input.wallet}`
   );
-
   return response.data;
 };
 

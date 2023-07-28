@@ -27,6 +27,11 @@ const options = [
   { value: "male", label: "♂︎ Male" },
 ];
 
+const color = [
+  { value: "Black", label: "Black" },
+  { value: "Albino", label: "Albino" },
+];
+
 export interface FarmProps {
   farmId: number;
 }
@@ -149,10 +154,11 @@ const AddAsset = ({ farmId }: FarmProps) => {
           {...register("name")}
           required
         ></input>
-        <div>Id: </div>
+        <div>ChipId or Id: </div>
         <input
           className="p-2 rounded-md"
-          type="number"
+          type="string"
+          maxLength={15}
           {...register("id")}
           required
         ></input>
@@ -172,13 +178,15 @@ const AddAsset = ({ farmId }: FarmProps) => {
         <div>Father ID:</div>
         <input
           className="p-2 rounded-md"
-          type="number"
+          type="text"
+          maxLength={15}
           {...register("fatherId")}
         ></input>
         <div>Mother ID:</div>
         <input
           className="p-2 rounded-md"
-          type="number"
+          type="text"
+          maxLength={15}
           {...register("motherId")}
         ></input>
         <div>Height: </div>
@@ -189,12 +197,18 @@ const AddAsset = ({ farmId }: FarmProps) => {
           required
         ></input>
         <div>Color: </div>
+        <Select
+          options={color}
+          onChange={(e: any) => setValue("color", e.value)}
+          required
+        />
+        {/* <div>Color: </div>
         <input
           className="p-2 rounded-md"
           type="text"
           {...register("color")}
           required
-        ></input>
+        ></input> */}
         <div>Detail: </div>
         <textarea
           className="p-2 rounded-md resize-none"

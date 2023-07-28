@@ -28,11 +28,11 @@ const MyFarmBuffalo: FunctionComponent<PropsWithChildren> = () => {
       <Header />
       <div
         className={`w-full bg-thuiyellow h-screen p-3 flex flex-col  justify-center items-center
-tabletS:p-[30px]
-tabletS:h-screen
-tabletM:h-full
-tabletM:p-[60px]
-
+        min-h-[60vh]
+        tabletS:p-[30px]
+        tabletS:h-screen
+        tabletM:h-full
+        tabletM:p-[60px]
 `}
       >
         {!isConnected ? (

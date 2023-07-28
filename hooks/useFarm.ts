@@ -20,6 +20,7 @@ export function useFarm() {
   return {
     farmData: data as FarmData,
     refetchFarm: refetch,
+    isFarmSuccess: isSuccess,
     isFarmLoading: isLoading,
     isFarmError: isError,
   };
