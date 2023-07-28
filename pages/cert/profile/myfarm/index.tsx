@@ -2,6 +2,7 @@ import {
   FunctionComponent,
   PropsWithChildren,
   SyntheticEvent,
+  useEffect,
   useRef,
 } from "react";
 
@@ -19,13 +20,14 @@ import { useFarm } from "../../../../hooks/useFarm";
 import CreateFarm from "../../../../components/sections/myfarm/CreateFarm";
 import FertilizationTable from "../../../../components/sections/myfarm/FertilizationTable";
 import LoadingScreen from "../../../../components/LoadingScreen";
+import { useCreateFarm } from "../../../../hooks/useCreateFarm";
 
 const MyFarm: FunctionComponent<PropsWithChildren> = () => {
   const { push } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected } = useBitkubNext();
   const { isOpen } = useMenu();
-  const { farmData, isFarmLoading } = useFarm();
+  const { farmData, isFarmError } = useFarm();
 
   function handleSearch(e: SyntheticEvent) {
     const value =
@@ -45,6 +47,7 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
       <Header />
       <div
         className={`w-full bg-thuiyellow  p-3 flex  justify-center items-center
+        min-h-[60vh]
     tabletS:p-[30px]
     tabletS:h-screen
     tabletM:h-full
@@ -83,20 +86,16 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
                   </button>
                 </div>
               </div>
-              {!isFarmLoading ? (
-                <div>
-                  {farmData == undefined ? (
-                    <CreateFarm />
-                  ) : (
-                    <>
-                      <MyFarmDashboard asset={farmData} />
-                      <FertilizationTable farm={farmData.farm} />
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div className="text-thuiwhite text-xl">Loading..</div>
-              )}
+              <div>
+                {farmData == undefined ? (
+                  <CreateFarm />
+                ) : (
+                  <>
+                    <MyFarmDashboard asset={farmData} />
+                    <FertilizationTable farm={farmData.farm} />
+                  </>
+                )}
+              </div>
             </div>
           </div>
         ) : (
@@ -107,7 +106,6 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
       </div>
       {isOpen ? <MenuModal /> : null}
       <CertFooter />
-      {isFarmLoading && isConnected ? <LoadingScreen /> : null}
     </>
   );
 };

@@ -5,19 +5,24 @@ import { isEmpty } from "../helpers/dataValidator";
 import { toast } from "react-toastify";
 import { trpc } from "../utils/trpc";
 import { useEffect } from "react";
+import { useFarm } from "./useFarm";
 
 export function useCreateFarm() {
-  const { mutate, isError, isSuccess } = trpc.farm.create.useMutation();
+  const { mutate, isError, isSuccess, isLoading, error } =
+    trpc.farm.create.useMutation();
+  const { refetchFarm } = useFarm();
 
   useEffect(() => {
     if (isSuccess) {
       toast.success("Farm Created Successfully");
+      void refetchFarm();
     }
 
     if (isError) {
       toast.error("Create Farm Failed!");
     }
   }, [isError, isSuccess]);
+
   // const { trigger } = useSWRMutation(
   //   `/api/farm/${walletAddress}`,
   //   createUserAndFarm,
@@ -34,6 +39,9 @@ export function useCreateFarm() {
 
   return {
     create: mutate,
+    farmCreating: isLoading,
+    farmCreated: isSuccess,
+    farmCreationError: isError,
   };
 }
 

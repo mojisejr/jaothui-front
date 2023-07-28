@@ -47,6 +47,7 @@ const BuffaloList: FunctionComponent<PropsWithChildren> = () => {
       <Header />
       <div
         className={`w-full bg-thuiyellow p-3 flex  justify-center items-center
+        min-h-[60vh]
       tabletS:p-[30px]
       tabletS:h-screen
       tabletM:h-full

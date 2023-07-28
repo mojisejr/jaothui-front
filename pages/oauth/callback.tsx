@@ -13,6 +13,7 @@ import Image from "next/image";
 import { isEmpty } from "../../helpers/dataValidator";
 import { getUserData } from "../../helpers/getUserData";
 import { setCookies } from "../../helpers/setCookies";
+import { trpc } from "../../utils/trpc";
 
 const clientId =
   process.env.NODE_ENV == "production"
@@ -25,7 +26,8 @@ const redirectUrl =
 
 const Callback: FunctionComponent<PropsWithChildren> = () => {
   const { updateLogin } = useBitkubNext();
-  // const { save } = useAuth();
+  const { mutate: save } = trpc.user.create.useMutation();
+
   const { query, replace } = useRouter();
   const [message, setMessage] = useState("Authorizing...");
 
@@ -56,6 +58,12 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
       replace("/");
     } else {
       //wallet founded
+      save({
+        wallet: userData.wallet_address as string,
+        email: userData.email as string,
+        name: null,
+        tel: null,
+      });
       setMessage("Loading Dashboard..");
       updateLogin(
         access_token,

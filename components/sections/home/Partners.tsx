@@ -14,76 +14,27 @@ const PartnerSection = () => {
     >
       <div>
         <div className="text-thuiwhite text-[35px]">Partners</div>
-        <div className="grid grid-cols-4 place-items-center">
-          {/* <div className="text-thuiwhite text-3xl">To be announcement</div> */}
+        <div className="grid tabletS:grid-cols-3 grid-cols-1 place-items-center">
           <Image
-            className="w-[100px]
-            labtop:w-[200px]"
-            src="/images/bitkubLogo.png"
+            className=""
+            src="/images/STP.png"
             width={500}
             height={500}
-            alt={"bitkub"}
+            alt={"STP"}
           />
           <Image
-            className="w-[100px]
-            labtop:w-[200px]"
-            src="/images/tpcxLogo.png"
+            className=""
+            src="/images/NP.png"
             width={500}
             height={500}
-            alt={"tpcx"}
+            alt={"NP"}
           />
           <Image
-            className="w-[150px]
-            labtop:w-[200px]"
-            src="/images/digLogo.png"
+            className=""
+            src="/images/PP.png"
             width={500}
             height={500}
-            alt={"digdragon"}
-          />
-          <Image
-            className="w-[150px]
-            labtop:w-[200px]"
-            src="/images/stockerLogo.png"
-            width={500}
-            height={500}
-            alt={"stockerdao"}
-          />
-          <Image
-            className="w-[100px]
-            labtop:w-[150px]
-            "
-            src="/images/bittoonLogo.png"
-            width={500}
-            height={500}
-            alt={"bittoon"}
-          />
-          <Image
-            className="w-[150px]
-            labtop:w-[200px]
-            "
-            src="/images/tripsterLogo.png"
-            width={500}
-            height={500}
-            alt={"tripster"}
-          />
-          <Image
-            className="w-[150px]
-            labtop:w-[300px]
-            "
-            src="/images/maxyLogo.png"
-            width={500}
-            height={500}
-            alt={"maxyverse"}
-          />
-
-          <Image
-            className="w-[80px]
-            labtop:w-[150px]
-            "
-            src="/images/nft360.png"
-            width={500}
-            height={500}
-            alt={"360"}
+            alt={"PP"}
           />
         </div>
       </div>
