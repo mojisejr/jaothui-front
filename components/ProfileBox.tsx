@@ -63,12 +63,19 @@ const ProfileBox = ({ certNft, rewards, approvedBy = [] }: ProfileBoxProps) => {
         "
         ></div>
         <div
-          className="text-center text-xl
+          className="text-center text-xl flex items-center justify-center gap-2
             tabletM:text-2xl
           desktop:text-3xl"
           id="title"
         >
           #{certNft.microchip}
+          <Link
+            className="text-thuiyellow hover:text-thuiwhite"
+            href="https://www.bkcscan.com/address/0x41f291b116459aE967bCd616F64e762f8468Ea0E/read-contract#address-tabs"
+            target="_blank"
+          >
+            <HiOutlineDocumentText size={20} />
+          </Link>
         </div>
         <div className="flex justify-center">
           <Image
