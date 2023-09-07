@@ -128,9 +128,9 @@ const AddAsset = ({ farmId }: FarmProps) => {
   return (
     <div
       ref={modalRef}
-      className="modal relative min-w-[300px] max-w-[800px] max-h-[700px] overflow-y-auto bg-thuigray p-[20px] rounded-md
-      shadow-[0px_13px_27px_-5px_rgba(0,0,0,0.60)] 
-    "
+      className="relative min-w-[300px] max-w-[800px] max-h-[700px] overflow-y-auto bg-thuigray p-[20px] rounded-md
+      shadow-[0px_13px_27px_-5px_rgba(0,0,0,0.60)]
+      "
     >
       <div className="flex justify-between pb-2">
         <div className="text-thuiwhite text-2xl underline">ADD NEW ASSET</div>
