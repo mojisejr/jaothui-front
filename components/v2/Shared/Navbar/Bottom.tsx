@@ -11,13 +11,13 @@ const BottomNav = () => {
         <Link href="/">
           <AiFillHome className="text-base-200 hover:text-base-300" size={24} />
         </Link>
-        <Link href="/pedigree">
+        <Link href="/cert">
           <BsFillCollectionFill
             className="text-base-200 hover:text-base-300"
             size={24}
           />
         </Link>
-        <Link href="/cert">
+        <Link href="/">
           <img
             className="w-[50px]"
             src="/images/thuiLogo.png"
