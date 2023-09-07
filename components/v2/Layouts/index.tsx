@@ -43,20 +43,24 @@ const Layout = ({ children }: LayoutProps) => {
               </label>
             </div>
             <div className="navbar-center">
-              <div className="tabs tabs-boxed">
+              <div className="tabs bg-base-200 rounded-full p-1">
                 <Link
                   href="/"
                   className={`tab ${
-                    pathname.includes("arttoy") ? null : "tab-active"
-                  } font-bold`}
+                    pathname.includes("arttoy")
+                      ? null
+                      : "bg-primary text-neutral"
+                  } font-bold rounded-full`}
                 >
                   PED
                 </Link>
                 <Link
                   href="/arttoy"
                   className={`tab ${
-                    pathname.includes("arttoy") ? "tab-active" : null
-                  } font-bold`}
+                    pathname.includes("arttoy")
+                      ? "bg-primary text-neutral"
+                      : null
+                  } font-bold rounded-full`}
                 >
                   ART
                 </Link>
