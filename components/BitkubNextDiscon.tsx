@@ -1,3 +1,4 @@
+import { AiOutlineDisconnect } from "react-icons/ai";
 import { useBitkubNext } from "../contexts/bitkubNextContext";
 import { simplifyAddress } from "../helpers/simplifyAddress";
 import { useRouter } from "next/router";
@@ -13,11 +14,10 @@ export const BitkubDisconnectButton = () => {
 
   return (
     <button
-      className="bg-thuiyellow text-thuigray pl-2 pr-2 pt-1 pb-1 min-w-[100px] text-[25px] rounded-[30px] hover:text-thuiwhite
-                          tabletS:text-[25px]
-                          tabletS:w-[250px]"
+      className="btn-primary font-bold hover:text-base-200 hover:bg-accent flex gap-2 px-3 py-2 rounded-xl items-center"
       onClick={handleDisconnect}
     >
+      <AiOutlineDisconnect size={24} />
       Disconnect
     </button>
   );

@@ -3,8 +3,8 @@ import { toast } from "react-toastify";
 
 const ProfileMenu = () => {
   return (
-    <div className="flex flex-col justify-center items-center text-thuiwhite">
-      <div className="text-xl">Menu</div>
+    <div className="flex flex-col justify-center items-center text-thuiwhite py-2">
+      <div className="text-xl font-bold text-neutral">Menu</div>
       <ul className="flex flex-col justify-center items-center text-2xl mt-4 gap-3 w-full text-center">
         <li
           className="p-5 bg-[url('/images/banner1.png')] w-full bg-cover rounded-md
