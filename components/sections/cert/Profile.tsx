@@ -7,12 +7,14 @@ const Profile = () => {
   return (
     <div
       id="profile-profile-box"
-      className="text-thuiwhite flex flex-col gap-2
+      className="text-base-200 flex flex-col gap-2
       "
     >
       <div
         id="profile-profile-header"
         className="text-xl
+        text-neutral
+        font-bold
       tabletS:text-2xl
       tabletM:text-3xl"
       >
@@ -20,7 +22,7 @@ const Profile = () => {
       </div>
       <div
         id="profile-profile-content"
-        className="bg-thuidark p-[1.4rem] rounded-md 
+        className="bg-neutral p-[1.4rem] rounded-md shadow
         "
       >
         <div

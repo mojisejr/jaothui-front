@@ -9,11 +9,11 @@ import { exchangeAuthorizationCode } from "@bitkub-blockchain/react-bitkubnext-o
 
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 // import { useAuth } from "../../hooks/useAuth";
-import Image from "next/image";
 import { isEmpty } from "../../helpers/dataValidator";
 import { getUserData } from "../../helpers/getUserData";
 import { setCookies } from "../../helpers/setCookies";
 import { trpc } from "../../utils/trpc";
+import Loading from "../../components/v2/Shared/Indicators/Loading";
 
 const clientId =
   process.env.NODE_ENV == "production"
@@ -81,9 +81,9 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
   }
 
   return (
-    <div className="bg-thuiyellow h-screen w-screeen flex flex-col justify-center items-center p-10">
-      <Image src="/images/First1.png" width={350} height={350} alt="thui" />
-      <div className="text-[20px]">{message}</div>
+    <div className="bg-base-200 h-screen w-screeen flex flex-col justify-center items-center p-10">
+      <Loading size="lg" />
+      <div className="font-bold">{message}</div>
     </div>
   );
 };

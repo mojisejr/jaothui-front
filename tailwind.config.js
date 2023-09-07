@@ -23,7 +23,35 @@ module.exports = {
       thuidark: "#0F0F0F",
       thuiwhite: "#fff",
     },
-    extend: {},
+    extend: {
+      animation: {
+        scroll: "infinite-scroll 6s linear infinite",
+      },
+      keyframes: {
+        "infinite-scroll": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-100%)" },
+        },
+      },
+    },
   },
-  plugins: [],
+  daisyui: {
+    themes: [
+      {
+        theme: {
+          primary: "#E3A51D",
+          secondary: "#374151",
+          accent: "#65a30d",
+          neutral: "#1f2937",
+          "base-100": "#f3f4f6",
+          info: "#155e75",
+          success: "#166534",
+          warning: "#ea580c",
+          error: "#dc2626",
+        },
+      },
+    ],
+  },
+
+  plugins: [require("daisyui")],
 };

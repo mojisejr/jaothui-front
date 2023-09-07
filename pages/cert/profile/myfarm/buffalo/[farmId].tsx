@@ -12,6 +12,9 @@ import BuffaloDetail from "../../../../../components/sections/myfarm/BuffaloDeta
 import BuffaloManagement from "../../../../../components/sections/myfarm/BuffaloManagement";
 import LoadingScreen from "../../../../../components/LoadingScreen";
 import { trpc } from "../../../../../utils/trpc";
+import Layout from "../../../../../components/v2/Layouts";
+import Loading from "../../../../../components/v2/Shared/Indicators/Loading";
+import BitkubNextConnectButton from "../../../../../components/BitkubNext";
 
 const MyFarmBuffalo: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected } = useBitkubNext();
@@ -25,39 +28,39 @@ const MyFarmBuffalo: FunctionComponent<PropsWithChildren> = () => {
 
   return (
     <>
-      <Header />
-      <div
-        className={`w-full bg-thuiyellow h-screen p-3 flex flex-col  justify-center items-center
-        min-h-[60vh]
-        tabletS:p-[30px]
-        tabletS:h-screen
-        tabletM:h-full
-        tabletM:p-[60px]
+      <Layout>
+        <div
+          className={`w-full bg-base-200 h-screen p-3 flex flex-col  justify-center items-center
+        min-h-screen
 `}
-      >
-        {!isConnected ? (
-          <PleaseConnectWallet />
-        ) : (
-          <>
-            {data != undefined ? (
-              <>
-                <BuffaloDetail certNft={data} />
-                <BuffaloManagement buffalo={data} update={refetch} />
-              </>
-            ) : (
-              <>
-                {isLoading ? (
-                  <div className="text-3xl">Loading..</div>
-                ) : (
-                  <div className="text-3xl">Not Found</div>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </div>
-      <CertFooter />
-      {isOpen ? <MenuModal /> : null}
+        >
+          {!isConnected ? (
+            <div>
+              <div className="py-2">Please Connect Wallet</div>
+              <BitkubNextConnectButton />
+            </div>
+          ) : (
+            <>
+              {data != undefined ? (
+                <>
+                  <BuffaloDetail certNft={data} />
+                  <BuffaloManagement buffalo={data} update={refetch} />
+                </>
+              ) : (
+                <>
+                  {isLoading ? (
+                    <div className="text-3xl">
+                      <Loading size="lg" />
+                    </div>
+                  ) : (
+                    <div className="text-3xl">Not Found</div>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </div>
+      </Layout>
       {isLoading ? <LoadingScreen /> : null}
     </>
   );

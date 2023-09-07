@@ -1,19 +1,11 @@
 import Link from "next/link";
 import { AiFillFacebook, AiFillTwitterCircle } from "react-icons/ai";
 import { SiDiscord } from "react-icons/si";
-import { motion } from "framer-motion";
 
 const FooterSection = () => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="relative w-full top-[-90px] h-full bg-thuidark bg-opacity-[0.955] pt-[10%] pr-[5%] pl-[5%] text-thuiwhite 
-    tabletS:top-[-100px]
-    tabletM:top-[-140px]
-    labtop:top-[-156px]
-    desktop:top-[-200px]
+    <div
+      className="w-full h-full bg-thuidark bg-opacity-[0.955] py-10 mb-10 pr-[5%] pl-[5%] text-thuiwhite 
     "
     >
       <div className="flex gap-10 items-center">
@@ -40,7 +32,7 @@ const FooterSection = () => {
           <SiDiscord size={50} /> Discord
         </Link>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

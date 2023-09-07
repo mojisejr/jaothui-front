@@ -1,5 +1,6 @@
 import { ReactBitkubNextOauth2 } from "@bitkub-blockchain/react-bitkubnext-oauth2";
 import { FunctionComponent, PropsWithChildren } from "react";
+import { TbPlugConnected } from "react-icons/tb";
 
 const BitkubNextConnectButton: FunctionComponent<PropsWithChildren> = () => {
   const clientId =
@@ -17,12 +18,8 @@ const BitkubNextConnectButton: FunctionComponent<PropsWithChildren> = () => {
       redirectURI={redirectURI}
       mode="redirect"
     >
-      <button
-        className="bg-thuiyellow text-thuigray pl-2 pr-2 pt-1 pb-1 min-w-[100px] text-[25px] rounded-[30px]
-        hover:text-thuiwhite
-        tabletS:text-[30px]
-        tabletS:w-[250px]"
-      >
+      <button className="btn-primary font-bold hover:text-base-200 hover:bg-accent flex gap-2 px-3 py-2 rounded-xl items-center">
+        <TbPlugConnected size={24} />
         Connect Wallet
       </button>
     </ReactBitkubNextOauth2>

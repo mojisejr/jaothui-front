@@ -37,7 +37,6 @@ const BuffaloDetail = ({ certNft }: BuffaloDetailProps) => {
     <div className="m-3 flex flex-col gap-2" id="container">
       <div
         className="relative bg-thuigray text-thuiwhite grid grid-cols-1 rounded-md pr-10 pl-10 pt-5 pb-5 gap-5
-        border-[1px] border-thuiyellow
         shadow-[0px_13px_27px_-5px_rgba(0,0,0,0.60)]
           tabletM:pt-10
           tabletM:pb-10
@@ -49,7 +48,7 @@ const BuffaloDetail = ({ certNft }: BuffaloDetailProps) => {
       >
         <div
           id="card-hole"
-          className="absolute top-3 right-3 w-[25px] h-[25px] bg-thuiyellow rounded-[200px]
+          className="absolute top-3 right-3 w-[25px] h-[25px] bg-base-200 rounded-[200px]
         shadow-[inset_-2px_2px_2px_1px_rgba(0,0,0,0.30)]
         "
         ></div>

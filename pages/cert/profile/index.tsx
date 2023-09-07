@@ -8,51 +8,31 @@ import { useMenu } from "../../../contexts/menuContext";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import Layout from "../../../components/v2/Layouts";
+import BitkubNextConnectButton from "../../../components/BitkubNext";
 
 const ProfilePage = () => {
   const { isConnected } = useBitkubNext();
-  const { isOpen } = useMenu();
-  const { replace } = useRouter();
-
-  useEffect(() => {
-    if (!isConnected) {
-      replace("/");
-    }
-  }, [isConnected]);
 
   return (
     <>
-      <Header />
-      <div
-        className={`w-full bg-thuiyellow h-screen p-3 flex  justify-center items-start
-    tabletS:p-[30px]
-    tabletM:p-[60px] 
-   `}
-      >
-        {isConnected ? (
-          <div
-            id="profile-container"
-            className="relative bg-thuigray p-[2rem] rounded-md max-w-[800px] space-y-5 
-            shadow-[0px_13px_27px_-5px_rgba(0,0,0,0.60)]
-            labtop:w-[800px]"
-          >
-            <div
-              id="card-hole"
-              className="absolute top-3 right-3 w-[25px] h-[25px] bg-thuiyellow rounded-[200px]
-        shadow-[inset_-2px_2px_2px_1px_rgba(0,0,0,0.30)]
-        "
-            ></div>
-            <Profile />
-            <ProfileMenu />
+      <Layout>
+        <div className="min-h-screen">
+          <div className="grid grids-col-1 place-items-center py-10">
+            {isConnected ? (
+              <div className="px-4 py-6 bg-base-200 rounded-xl shadow-xl">
+                <Profile />
+                <ProfileMenu />
+              </div>
+            ) : (
+              <div>
+                <div className="py-2">Please Connect Wallet</div>
+                <BitkubNextConnectButton />
+              </div>
+            )}
           </div>
-        ) : (
-          <div>
-            <PleaseConnectWallet />
-          </div>
-        )}
-      </div>
-      {isOpen ? <MenuModal /> : null}
-      <CertFooter />
+        </div>
+      </Layout>
     </>
   );
 };
