@@ -3,7 +3,7 @@ import CarouselMenu from "./CarouselMenu";
 const MainTitle = () => {
   return (
     <>
-      <div className="hero-content text-center text-base-200 mb-20">
+      <div className="hero-content text-center text-base-200 mb-[8rem]">
         <div className="max-w-md">
           <div className="flex justify-center">
             <img src="images/herov2.png" alt="hero-image" />
