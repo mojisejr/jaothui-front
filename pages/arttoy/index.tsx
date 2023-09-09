@@ -29,7 +29,7 @@ const Arttoy: NextPage = () => {
             <div className="text-xl font-bold">NFT Profile</div>
             {/* <a className="text-sm">ดูทั้งหมด{">"}</a> */}
           </div>
-          <div className="grid grid-cols-1 gap-6 place-items-center tabletS:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-">
             <NFTCard rarity={0} />
             <NFTCard rarity={1} />
             <NFTCard rarity={2} />

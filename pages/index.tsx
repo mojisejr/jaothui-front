@@ -1,10 +1,11 @@
 import type { NextPage } from "next";
-import { useMenu } from "../contexts/menuContext";
 import CookieConsent from "react-cookie-consent";
 import Layout from "../components/v2/Layouts";
 import Hero from "../components/v2/Home/Hero";
 import MainTitle from "../components/v2/Home/Hero/MainTitle";
 import Pedigree from "../components/v2/Home/Pedigree";
+import ProductList from "../components/v2/Products/ProductsList";
+import FoodProductList from "../components/v2/Products/FoodProductList";
 
 const Home: NextPage = () => {
   return (
@@ -14,6 +15,8 @@ const Home: NextPage = () => {
           <MainTitle />
         </Hero>
         <Pedigree />
+        <ProductList />
+        <FoodProductList />
       </Layout>
       <CookieConsent buttonText="Thank You, I Accept">
         Welcome to Jaothui Website! We want to provide you with the best user
