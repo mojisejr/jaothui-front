@@ -5,12 +5,14 @@ interface ProductCardProps {
   image?: string;
   title: string;
   price: number | string;
+  unit: string;
   priceUnit: string;
   detail: string;
 }
 
 const ProductCard = ({
   image = "/images/mproduct.png",
+  unit,
   title,
   price,
   priceUnit,
@@ -24,7 +26,7 @@ const ProductCard = ({
           <div className="w-full rounded-xl shadow p-3 flex justify-between items-center">
             <div>
               <div className="font-bold text-xl">{title}</div>
-              <div className="">{`${priceUnit} ${price} บาท`}</div>
+              <div className="">{`${priceUnit} ${price} ${unit}`}</div>
               <div className="text-xl font-bold text-base-300 text-center">
                 {detail}
               </div>

@@ -44,6 +44,7 @@ const FoodProductList = () => {
               ? data.map((d, index) => (
                   <ProductCard
                     image="/images/mfoodproduct.png"
+                    unit="บาท"
                     key={index}
                     title={d.title}
                     price={d.price}
