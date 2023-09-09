@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Layout from "../../components/v2/Layouts";
 import NFTCard from "../../components/v2/Arttoy/Card/nft";
+import ArttoyProductList from "../../components/v2/Arttoy/ArttoyList";
 
 const Arttoy: NextPage = () => {
   return (
@@ -17,13 +18,7 @@ const Arttoy: NextPage = () => {
           </div>
         </div>
         {/**Arttoy Box */}
-        <div className="px-[22px]">
-          <div className="flex justify-between items-center py-2">
-            <div className="text-xl font-bold">Arttoy</div>
-            {/* <a className="text-sm">ดูทั้งหมด{">"}</a> */}
-          </div>
-          <div className="text-xl py-6">Coming soon.</div>
-        </div>
+        <ArttoyProductList />
         <div className="px-[22px] py-6">
           <div className="flex justify-between items-center py-2">
             <div className="text-xl font-bold">NFT Profile</div>
