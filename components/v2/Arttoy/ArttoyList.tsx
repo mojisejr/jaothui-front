@@ -1,40 +1,44 @@
 import Link from "next/link";
-import ProductCard from "./ProductCard";
+import ProductCard from "../Products/ProductCard";
 
 const data = [
   {
-    title: "น้ำเชื้อ",
-    price: "----",
-    priceUnit: "หลอดละ",
-    detail: "Comingsoon..",
+    image: "/images/marttoy1.png",
+    title: "Model: 0001-23",
+    price: "White",
+    priceUnit: "Color:",
+    detail: "รายละเอียด",
   },
   {
-    title: "น้ำเชื้อ",
-    price: "----",
-    priceUnit: "หลอดละ",
-    detail: "Comingsoon..",
+    image: "/images/marttoy2.png",
+    title: "Model: 0003-23",
+    price: "Gold",
+    priceUnit: "Color:",
+    detail: "รายละเอียด",
   },
   {
-    title: "น้ำเชื้อ",
-    price: "----",
-    priceUnit: "หลอดละ",
-    detail: "Comingsoon..",
+    image: "/images/marttoy3.png",
+    title: "Model: H001-23",
+    price: "White",
+    priceUnit: "Color:",
+    detail: "รายละเอียด",
   },
   {
-    title: "น้ำเชื้อ",
-    price: "----",
-    priceUnit: "หลอดละ",
-    detail: "Comingsoon..",
+    image: "/images/marttoy4.png",
+    title: "Model: B001-23",
+    price: "Black",
+    priceUnit: "Color:",
+    detail: "รายละเอียด",
   },
 ];
 
-const ProductList = () => {
+const ArttoyProductList = () => {
   return (
     <>
       <>
         <div className="py-6">
           <div className="flex justify-between items-center px-[22px] py-2">
-            <div className="text-xl font-bold">Products</div>
+            <div className="text-xl font-bold">Arttoy</div>
             <Link href="#" className="text-sm">
               ดูทั้งหมด{">"}
             </Link>
@@ -43,8 +47,9 @@ const ProductList = () => {
             {data
               ? data.map((d, index) => (
                   <ProductCard
+                    image={d.image}
                     key={index}
-                    unit="บาท"
+                    unit=""
                     title={d.title}
                     price={d.price}
                     priceUnit={d.priceUnit}
@@ -59,4 +64,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default ArttoyProductList;
