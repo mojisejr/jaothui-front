@@ -45,7 +45,7 @@ const CertMainPage: NextPage = () => {
   return (
     <>
       <Layout>
-        <div className="py-6">
+        <div className="py-6 min-h-screen">
           <div className="flex justify-between items-center px-[22px] py-2">
             <div className="text-xl font-bold">Pedigrees</div>
             <div
@@ -68,7 +68,7 @@ const CertMainPage: NextPage = () => {
               </label>
             </div>
           </div>
-          <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2">
+          <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-4">
             {data ? (
               currentData.map((d, index) => (
                 <PedigreeCard key={index} data={d} />
