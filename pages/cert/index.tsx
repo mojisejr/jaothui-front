@@ -45,7 +45,7 @@ const CertMainPage: NextPage = () => {
   return (
     <>
       <Layout>
-        <div className="py-6 min-h-screen">
+        <div className="py-6">
           <div className="flex justify-between items-center px-[22px] py-2">
             <div className="text-xl font-bold">Pedigrees</div>
             <div
