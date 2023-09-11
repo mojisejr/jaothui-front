@@ -5,6 +5,7 @@ import { BiSearchAlt2 } from "react-icons/bi";
 import { AiFillCaretRight } from "react-icons/ai";
 import LoginWithLineButton from "../Shared/Buttons/LoginWithLine";
 import Link from "next/link";
+import Image from "next/image";
 import FooterSection from "../../sections/home/Footer";
 import BitkubNextConnectButton from "../../BitkubNext";
 import { useRouter } from "next/router";
@@ -101,9 +102,11 @@ const Layout = ({ children }: LayoutProps) => {
           <ul className="menu p-4 w-52 min-h-full bg-neutral text-thuiwhite rounded-tr-3xl shadow-2xl">
             <li>
               <Link href="/" className="flex">
-                <img
+                <Image
                   className="w-[30px]"
-                  src="images/thuiLogo.png"
+                  src="/images/thuiLogo.png"
+                  width={30}
+                  height={30}
                   alt="jaothui-logo"
                 />
                 <div className="font-bold text-lg">JAOTHUI</div>
