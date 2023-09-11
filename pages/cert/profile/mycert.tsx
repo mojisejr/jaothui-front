@@ -53,7 +53,7 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
   return (
     <>
       <Layout>
-        <div className={`w-full bg-base-200 min-h-screen`}>
+        <div className="w-full bg-base-200">
           {isConnected ? (
             <div className="py-6">
               <div className="flex justify-between items-center px-[22px] py-2">
