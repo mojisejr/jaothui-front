@@ -6,6 +6,7 @@ import PedigreeCard from "../../components/v2/Shared/Card/PedigreeCard";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { IMetadata } from "../../interfaces/iMetadata";
 import Loading from "../../components/v2/Shared/Indicators/Loading";
+import NotFound from "../../components/v2/Shared/Utils/Notfound";
 
 const CertMainPage: NextPage = () => {
   const { allMetadata: data } = useGetAllMetadata();
@@ -68,15 +69,19 @@ const CertMainPage: NextPage = () => {
               </label>
             </div>
           </div>
-          <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-4">
-            {data ? (
-              currentData.map((d, index) => (
-                <PedigreeCard key={index} data={d} />
-              ))
-            ) : (
-              <Loading size="lg" />
-            )}
-          </div>
+          {currentData.length <= 0 ? (
+            <NotFound />
+          ) : (
+            <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-4">
+              {currentData ? (
+                currentData.map((d, index) => (
+                  <PedigreeCard key={index} data={d} />
+                ))
+              ) : (
+                <Loading size="lg" />
+              )}
+            </div>
+          )}
         </div>
       </Layout>
     </>

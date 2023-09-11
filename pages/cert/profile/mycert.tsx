@@ -12,6 +12,7 @@ import { IMetadata } from "../../../interfaces/iMetadata";
 import { useGetMetadataOf } from "../../../blockchain/Metadata/read";
 import PedigreeCard from "../../../components/v2/Shared/Card/PedigreeCard";
 import Loading from "../../../components/v2/Shared/Indicators/Loading";
+import NotFound from "../../../components/v2/Shared/Utils/Notfound";
 
 const MyCert: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected, walletAddress } = useBitkubNext();
@@ -78,15 +79,19 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
                   </label>
                 </div>
               </div>
-              <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2">
-                {currentData ? (
-                  currentData.map((d, index) => (
-                    <PedigreeCard key={index} data={d} />
-                  ))
-                ) : (
-                  <Loading size="lg" />
-                )}
-              </div>
+              {currentData.length <= 0 ? (
+                <NotFound />
+              ) : (
+                <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2">
+                  {currentData ? (
+                    currentData.map((d, index) => (
+                      <PedigreeCard key={index} data={d} />
+                    ))
+                  ) : (
+                    <Loading size="lg" />
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <div>
