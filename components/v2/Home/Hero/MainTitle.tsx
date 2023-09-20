@@ -1,18 +1,25 @@
 import CarouselMenu from "./CarouselMenu";
+import Image from "next/image";
 
 const MainTitle = () => {
   return (
     <>
-      <div className="hero-content text-center text-base-200 mb-[8rem]">
+      <div className="flex flex-col items-center text-center text-base-200 pt-8 pb-10">
         <div className="max-w-md">
           <div className="flex justify-center">
-            <img src="images/herov2.png" alt="hero-image" />
+            <img
+              className="w-[320px] tabletM:w-[400px]"
+              src="images/herov2.png"
+              alt="hero-image"
+            />
           </div>
-          <h1 className="text-5xl">
-            JAOTHUI <span className="text-primary font-bold">NFT</span>
-          </h1>
-          <div className="tracking-tighter">
-            ยกระดับควายไทย ยกระดับการพัฒนาและอนุรักษ์
+          <div className="py-3">
+            <h1 className="text-6xl">
+              JAOTHUI <span className="text-primary font-bold">NFT</span>
+            </h1>
+            <div className="tracking-tighter text-xl">
+              ยกระดับควายไทย ยกระดับการพัฒนาและอนุรักษ์
+            </div>
           </div>
           <div className="py-9">
             <CarouselMenu />

@@ -12,13 +12,13 @@ import "swiper/css/navigation";
 const CarouselMenu = () => {
   return (
     <>
-      <div className="w-[320px]">
+      <div className="w-full">
         <Swiper
           effect={"coverflow"}
           grabCursor={true}
           centeredSlides={true}
           loop={true}
-          slidesPerView={2}
+          slidesPerView={3}
           mousewheel={true}
           coverflowEffect={{
             slideShadows: true,
@@ -32,7 +32,7 @@ const CarouselMenu = () => {
           <SwiperSlide>
             <div className="flex flex-col justify-center items-center">
               <button className="btn btn-circle btn-lg hover:btn-primary">
-                <GiMicrochip size={30} />
+                <GiMicrochip size={40} />
               </button>
               <div>Microchip</div>
             </div>
@@ -41,7 +41,7 @@ const CarouselMenu = () => {
           <SwiperSlide>
             <div className="flex flex-col justify-center items-center">
               <button className="btn btn-circle btn-lg hover:btn-primary">
-                <BsPostcard size={30} />
+                <BsPostcard size={40} />
               </button>
               <div>Name</div>
             </div>
@@ -50,7 +50,7 @@ const CarouselMenu = () => {
           <SwiperSlide>
             <div className="flex flex-col justify-center items-center">
               <button className="btn btn-circle btn-lg hover:btn-primary">
-                <BsGenderAmbiguous size={30} />
+                <BsGenderAmbiguous size={40} />
               </button>
               <div>Sex</div>
             </div>
@@ -59,7 +59,7 @@ const CarouselMenu = () => {
           <SwiperSlide>
             <div className="flex flex-col justify-center items-center">
               <button className="btn btn-circle btn-lg hover:btn-primary">
-                <GiTrophyCup size={30} />
+                <GiTrophyCup size={40} />
               </button>
               <div>Reward</div>
             </div>
@@ -68,7 +68,7 @@ const CarouselMenu = () => {
           <SwiperSlide>
             <div className="flex flex-col justify-center items-center">
               <button className="btn btn-circle btn-lg hover:btn-primary">
-                <FaBirthdayCake size={30} />
+                <FaBirthdayCake size={40} />
               </button>
               <div>Birthday</div>
             </div>
@@ -77,7 +77,7 @@ const CarouselMenu = () => {
           <SwiperSlide>
             <div className="flex flex-col justify-center items-center">
               <button className="btn btn-circle btn-lg hover:btn-primary">
-                <FaDna size={30} />
+                <FaDna size={40} />
               </button>
               <div>GNOME</div>
             </div>

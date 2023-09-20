@@ -6,7 +6,7 @@ interface HeroProps {
 const Hero = ({ children }: HeroProps) => {
   return (
     <>
-      <div className="hero min-h-screen bg-[#000]">{children}</div>
+      <div className="min-h-screen bg-[#000]">{children}</div>
     </>
   );
 };
