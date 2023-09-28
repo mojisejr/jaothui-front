@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
-import Layout from "../../components/v2/Layouts";
-import NFTCard from "../../components/v2/Arttoy/Card/nft";
-import ArttoyProductList from "../../components/v2/Arttoy/ArttoyList";
+import Layout from "../../components/Layouts";
+import NFTCard from "../../components/Arttoy/Card/nft";
+import ArttoyProductList from "../../components/Arttoy/ArttoyList";
 import { trpc } from "../../utils/trpc";
-import Loading from "../../components/v2/Shared/Indicators/Loading";
+import Loading from "../../components/Shared/Indicators/Loading";
 
 const Arttoy: NextPage = () => {
   const { isLoading: arttoyLoading } = trpc.store.get.useQuery();

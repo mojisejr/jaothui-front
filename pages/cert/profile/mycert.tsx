@@ -6,13 +6,13 @@ import {
   useState,
 } from "react";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
-import Layout from "../../../components/v2/Layouts";
-import BitkubNextConnectButton from "../../../components/BitkubNext";
+import Layout from "../../../components/Layouts";
+import BitkubNextConnectButton from "../../../components/Shared/BitkubNext";
 import { IMetadata } from "../../../interfaces/iMetadata";
 import { useGetMetadataOf } from "../../../blockchain/Metadata/read";
-import PedigreeCard from "../../../components/v2/Shared/Card/PedigreeCard";
-import Loading from "../../../components/v2/Shared/Indicators/Loading";
-import NotFound from "../../../components/v2/Shared/Utils/Notfound";
+import PedigreeCard from "../../../components/Shared/Card/PedigreeCard";
+import Loading from "../../../components/Shared/Indicators/Loading";
+import NotFound from "../../../components/Shared/Utils/Notfound";
 
 const MyCert: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected, walletAddress } = useBitkubNext();

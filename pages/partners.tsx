@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import Layout from "../components/v2/Layouts";
+import Layout from "../components/Layouts";
 import Image from "next/image";
 
 const Partners: NextPage = () => {

@@ -5,26 +5,17 @@ import {
   useRef,
 } from "react";
 
-import PleaseConnectWallet from "../../../../components/sections/cert/PleaseConnect";
-import Header from "../../../../components/Header";
-import MenuModal from "../../../../components/MenuModal";
-import CertFooter from "../../../../components/sections/cert/CertFooter";
 import { FiSearch } from "react-icons/fi";
 
-import axios from "axios";
 import { useMenu } from "../../../../contexts/menuContext";
 import { useBitkubNext } from "../../../../contexts/bitkubNextContext";
-import useSwr from "swr";
 import { useRouter } from "next/router";
-import AssetList from "../../../../components/sections/myfarm/AssetList";
+import AssetList from "../../../../components/MyFarm/AssetList";
 import Link from "next/link";
 import { FaArrowCircleLeft } from "react-icons/fa";
-import LoadingScreen from "../../../../components/LoadingScreen";
 import { trpc } from "../../../../utils/trpc";
-import Layout from "../../../../components/v2/Layouts";
-import BitkubNextConnectButton from "../../../../components/BitkubNext";
-
-const get = (url: string) => axios.get(url).then((response) => response.data);
+import Layout from "../../../../components/Layouts";
+import BitkubNextConnectButton from "../../../../components/Shared/BitkubNext";
 
 const BuffaloList: FunctionComponent<PropsWithChildren> = () => {
   const { push } = useRouter();

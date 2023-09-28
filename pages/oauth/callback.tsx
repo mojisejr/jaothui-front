@@ -8,12 +8,11 @@ import { useRouter } from "next/router";
 import { exchangeAuthorizationCode } from "@bitkub-blockchain/react-bitkubnext-oauth2";
 
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
-// import { useAuth } from "../../hooks/useAuth";
 import { isEmpty } from "../../helpers/dataValidator";
 import { getUserData } from "../../helpers/getUserData";
 import { setCookies } from "../../helpers/setCookies";
 import { trpc } from "../../utils/trpc";
-import Loading from "../../components/v2/Shared/Indicators/Loading";
+import Loading from "../../components/Shared/Indicators/Loading";
 
 const clientId =
   process.env.NODE_ENV == "production"

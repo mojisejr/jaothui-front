@@ -1,12 +1,12 @@
 import { NextPage } from "next";
 
 import { useGetAllMetadata } from "../../blockchain/Metadata/read";
-import Layout from "../../components/v2/Layouts";
-import PedigreeCard from "../../components/v2/Shared/Card/PedigreeCard";
+import Layout from "../../components/Layouts";
+import PedigreeCard from "../../components/Shared/Card/PedigreeCard";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { IMetadata } from "../../interfaces/iMetadata";
-import Loading from "../../components/v2/Shared/Indicators/Loading";
-import NotFound from "../../components/v2/Shared/Utils/Notfound";
+import Loading from "../../components/Shared/Indicators/Loading";
+import NotFound from "../../components/Shared/Utils/Notfound";
 
 const CertMainPage: NextPage = () => {
   const { allMetadata: data } = useGetAllMetadata();
