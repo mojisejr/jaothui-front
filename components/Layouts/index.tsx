@@ -70,7 +70,9 @@ const Layout = ({ children }: LayoutProps) => {
               </div>
             </div>
             <div className="navbar-end flex items-center gap-2">
-              <CartButton />
+              <Link href="/cart">
+                <CartButton />
+              </Link>
               <div className="dropdown dropdown-end">
                 <label tabIndex={0} className="btn btn-primary btn-circle">
                   <BiSearchAlt2 size={24} />
