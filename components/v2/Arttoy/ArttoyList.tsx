@@ -1,38 +1,40 @@
 import Link from "next/link";
-import ProductCard from "../Products/ProductCard";
+import ProductCard from "../Store/ProductCard";
+import { trpc } from "../../../utils/trpc";
 
-const data = [
-  {
-    image: "/images/marttoy1.png",
-    title: "Model: 0001-23",
-    price: "White",
-    priceUnit: "Color:",
-    detail: "รายละเอียด",
-  },
-  {
-    image: "/images/marttoy2.png",
-    title: "Model: 0003-23",
-    price: "Gold",
-    priceUnit: "Color:",
-    detail: "รายละเอียด",
-  },
-  {
-    image: "/images/marttoy3.png",
-    title: "Model: H001-23",
-    price: "White",
-    priceUnit: "Color:",
-    detail: "รายละเอียด",
-  },
-  {
-    image: "/images/marttoy4.png",
-    title: "Model: B001-23",
-    price: "Black",
-    priceUnit: "Color:",
-    detail: "รายละเอียด",
-  },
-];
+// const data = [
+//   {
+//     image: "/images/marttoy1.png",
+//     title: "Model: 0001-23",
+//     price: "White",
+//     priceUnit: "Color:",
+//     detail: "รายละเอียด",
+//   },
+//   {
+//     image: "/images/marttoy2.png",
+//     title: "Model: 0003-23",
+//     price: "Gold",
+//     priceUnit: "Color:",
+//     detail: "รายละเอียด",
+//   },
+//   {
+//     image: "/images/marttoy3.png",
+//     title: "Model: H001-23",
+//     price: "White",
+//     priceUnit: "Color:",
+//     detail: "รายละเอียด",
+//   },
+//   {
+//     image: "/images/marttoy4.png",
+//     title: "Model: B001-23",
+//     price: "Black",
+//     priceUnit: "Color:",
+//     detail: "รายละเอียด",
+//   },
+// ];
 
 const ArttoyProductList = () => {
+  const { data, isLoading } = trpc.store.get.useQuery();
   return (
     <>
       <>
@@ -45,16 +47,8 @@ const ArttoyProductList = () => {
           </div>
           <div className="p-1 grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-1">
             {data
-              ? data.map((d, index) => (
-                  <ProductCard
-                    image={d.image}
-                    key={index}
-                    unit=""
-                    title={d.title}
-                    price={d.price}
-                    priceUnit={d.priceUnit}
-                    detail={d.detail}
-                  />
+              ? data.map((product) => (
+                  <ProductCard key={product._id} product={product!} />
                 ))
               : "Nothing to show"}
           </div>

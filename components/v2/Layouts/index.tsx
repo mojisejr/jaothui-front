@@ -11,6 +11,7 @@ import BitkubNextConnectButton from "../../BitkubNext";
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import BitkubDisconnectButton from "../../BitkubNextDiscon";
+import CartButton from "../Cart/Buttons/CartButton";
 
 interface LayoutProps {
   children: ReactNode;
@@ -67,7 +68,8 @@ const Layout = ({ children }: LayoutProps) => {
                 </Link>
               </div>
             </div>
-            <div className="navbar-end">
+            <div className="navbar-end flex items-center gap-2">
+              <CartButton />
               <div className="dropdown dropdown-end">
                 <label tabIndex={0} className="btn btn-primary btn-circle">
                   <BiSearchAlt2 size={24} />

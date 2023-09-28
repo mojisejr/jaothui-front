@@ -12,7 +12,7 @@ import "swiper/css/navigation";
 const CarouselMenu = () => {
   return (
     <>
-      <div className="w-full">
+      <div className="w-full ">
         <Swiper
           effect={"coverflow"}
           grabCursor={true}

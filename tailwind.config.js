@@ -11,6 +11,7 @@ module.exports = {
   theme: {
     screens: {
       mobileS: "375px",
+      mobileM: "425px",
       tabletS: "768px",
       tabletM: "1024px",
       labtop: "1440px",
