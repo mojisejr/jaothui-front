@@ -23,7 +23,8 @@ export const stripeCheckOut = async (
 };
 
 export const createCheckoutParam = (
-  lineItems: Stripe.Checkout.SessionCreateParams.LineItem[]
+  lineItems: Stripe.Checkout.SessionCreateParams.LineItem[],
+  basePath: string
 ) => {
   const params: Stripe.Checkout.SessionCreateParams = {
     submit_type: "pay",
@@ -31,8 +32,8 @@ export const createCheckoutParam = (
     payment_method_types: ["card"],
     billing_address_collection: "required",
     line_items: lineItems,
-    success_url: "http://localhost:3000/payment/success",
-    cancel_url: "http://localhost:3000/payment/cancel",
+    success_url: `${basePath}/payment/success`,
+    cancel_url: `${basePath}/payment/cancel`,
   };
   return params;
 };

@@ -3,6 +3,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { trpc } from "../../../utils/trpc";
 import { useEffect } from "react";
 import Loading from "../../Shared/Indicators/Loading";
+import { useRouter } from "next/router";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUB_KEY as string
@@ -31,7 +32,9 @@ const CheckoutCard = () => {
 
   const handleCheckout = async () => {
     if (itemInCart.length <= 0) return;
-    checkout({ items: itemInCart });
+    if (window !== undefined && window.location.origin) {
+      checkout({ items: itemInCart, basePath: window.location.origin });
+    }
   };
   return (
     <>

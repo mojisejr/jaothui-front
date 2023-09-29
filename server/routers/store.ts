@@ -21,11 +21,13 @@ export const storeRouter = router({
     }
   }),
   checkout: publicProcedure
-    .input(z.object({ items: z.array(ItemInCartInput) }))
+    .input(
+      z.object({ items: z.array(ItemInCartInput), basePath: z.string().url() })
+    )
     .mutation(async ({ ctx, input }) => {
       const lineItems = createLineItems(input.items);
       // console.log("lineItems: ", lineItems);
-      const checkoutParams = createCheckoutParam(lineItems);
+      const checkoutParams = createCheckoutParam(lineItems, input.basePath);
       // console.log("checkoutParams: ", checkoutParams);
       const checkoutSession = await stripeCheckOut(checkoutParams);
       // console.log("session: ", checkoutSession);
