@@ -2,11 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaArrowCircleLeft, FaStamp } from "react-icons/fa";
 import { RiMedalFill } from "react-icons/ri";
-import { IMetadata } from "../../../../interfaces/iMetadata";
-import { useBitkubNext } from "../../../../contexts/bitkubNextContext";
-import CountryFlag from "../../../CountryFlag";
-import { RewardData } from "../../../../interfaces/iReward";
-import { ApprovedBy } from "../../../../interfaces/iApprovedBy";
+import { IMetadata } from "../../../interfaces/iMetadata";
+import { useBitkubNext } from "../../../contexts/bitkubNextContext";
+import CountryFlag from "../../Shared/CountryFlag";
+import { RewardData } from "../../../interfaces/iReward";
+import { ApprovedBy } from "../../../interfaces/iApprovedBy";
+
 import { HiExternalLink, HiOutlineDocumentText } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { BiRfid, BiRuler } from "react-icons/bi";

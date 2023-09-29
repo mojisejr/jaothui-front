@@ -10,6 +10,7 @@ const data: Product[] = [
     slug: "se0001-23",
     price: 200,
     modelno: "N/A",
+    discount: null,
     desc: [],
   },
 ];
