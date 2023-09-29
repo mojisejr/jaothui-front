@@ -3,9 +3,10 @@ import { Product } from "../../interfaces/Store/Product";
 
 interface ProductCartProps {
   product: Product;
+  canAddToCart: boolean;
 }
 
-const ProductCard = ({ product }: ProductCartProps) => {
+const ProductCard = ({ product, canAddToCart = false }: ProductCartProps) => {
   return (
     <>
       <div className="w-full max-w-[320px] rounded-xl shadow-xl">
@@ -27,7 +28,9 @@ const ProductCard = ({ product }: ProductCartProps) => {
                   />
                 ))}
             <PriceTag actual={product.price} discount={product.discount} />
-            <AddToCartButton product={product} qty={1} />
+            {canAddToCart ? (
+              <AddToCartButton product={product} qty={1} />
+            ) : null}
           </div>
         </div>
       </div>
@@ -40,16 +43,30 @@ const PriceTag = ({
   discount,
 }: {
   actual: number;
-  discount?: number;
+  discount: number | null;
 }) => {
   return (
     <>
-      {discount != undefined ? (
-        <div className="font-bold">
-          <span className="line-through">{`฿${actual}`}</span> ฿{discount}
+      {discount != null ? (
+        <div className="font-bold flex gap-2 items-center">
+          <span className="line-through text-sm">
+            {new Intl.NumberFormat("th-TH", {
+              style: "currency",
+              currency: "THB",
+            }).format(actual)}
+          </span>
+          {new Intl.NumberFormat("th-TH", {
+            style: "currency",
+            currency: "THB",
+          }).format(discount)}
         </div>
       ) : (
-        <div className="font-bold">฿{actual}</div>
+        <div className="font-bold">
+          {new Intl.NumberFormat("th-TH", {
+            style: "currency",
+            currency: "THB",
+          }).format(actual)}
+        </div>
       )}
     </>
   );

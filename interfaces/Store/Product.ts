@@ -2,11 +2,11 @@ export interface Product {
   _id: string;
   // category: "arttoy" | "semen" | "food";
   images: string[];
-  slug?: string;
+  slug: string | null;
   name: string;
   modelno: string;
   price: number;
-  discount?: number;
+  discount: number | null;
   desc: ProductAttr[];
 }
 

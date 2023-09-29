@@ -1,9 +1,10 @@
 import type { NextPage } from "next";
 import Layout from "../../components/Layouts";
 import NFTCard from "../../components/Arttoy/Card/nft";
-import ArttoyProductList from "../../components/Arttoy/ArttoyList";
+import ArttoyProductList from "../../components/Store/ArttoyList";
 import { trpc } from "../../utils/trpc";
 import Loading from "../../components/Shared/Indicators/Loading";
+import { ToastContainer } from "react-toastify";
 
 const Arttoy: NextPage = () => {
   const { isLoading: arttoyLoading } = trpc.store.get.useQuery();

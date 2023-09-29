@@ -11,6 +11,7 @@ import BitkubNextConnectButton from "../Shared/BitkubNext";
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import BitkubDisconnectButton from "../Shared/BitkubNextDiscon";
+import { ToastContainer } from "react-toastify";
 
 import CartButton from "../Cart/Buttons/CartButton";
 

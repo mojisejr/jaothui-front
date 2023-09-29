@@ -27,7 +27,9 @@ const FoodProductList = () => {
           </div>
           <div className="grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 p-1 gap-1">
             {data
-              ? data.map((d, index) => <ProductCard key={index} product={d} />)
+              ? data.map((d, index) => (
+                  <ProductCard key={index} product={d} canAddToCart={false} />
+                ))
               : "Nothing to show"}
           </div>
         </div>

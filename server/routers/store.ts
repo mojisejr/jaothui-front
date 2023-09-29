@@ -1,6 +1,13 @@
 import { publicProcedure, router } from "../trpc";
 import { getProducts } from "../services/store.service";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import { ItemInCartInput } from "../../interfaces/Store/ItemInCart";
+import {
+  createLineItems,
+  createCheckoutParam,
+  stripeCheckOut,
+} from "../services/stripe.service";
 
 export const storeRouter = router({
   get: publicProcedure.query(async ({ ctx }) => {
@@ -13,4 +20,15 @@ export const storeRouter = router({
       });
     }
   }),
+  checkout: publicProcedure
+    .input(z.object({ items: z.array(ItemInCartInput) }))
+    .mutation(async ({ ctx, input }) => {
+      const lineItems = createLineItems(input.items);
+      // console.log("lineItems: ", lineItems);
+      const checkoutParams = createCheckoutParam(lineItems);
+      // console.log("checkoutParams: ", checkoutParams);
+      const checkoutSession = await stripeCheckOut(checkoutParams);
+      // console.log("session: ", checkoutSession);
+      return checkoutSession;
+    }),
 });

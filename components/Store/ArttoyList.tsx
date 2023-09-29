@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ProductCard from "../Store/ProductCard";
+import ProductCard from "./ProductCard";
 import { trpc } from "../../utils/trpc";
 
 // const data = [
@@ -48,7 +48,11 @@ const ArttoyProductList = () => {
           <div className="p-1 grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-1">
             {data
               ? data.map((product) => (
-                  <ProductCard key={product._id} product={product!} />
+                  <ProductCard
+                    key={product._id}
+                    product={product!}
+                    canAddToCart={true}
+                  />
                 ))
               : "Nothing to show"}
           </div>

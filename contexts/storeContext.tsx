@@ -9,18 +9,7 @@ import {
 } from "react";
 import { ItemInCart } from "../interfaces/Store/ItemInCart";
 import _ from "lodash";
-import { toast } from "react-toastify";
 import { Product } from "../interfaces/Store/Product";
-
-//1. add selected items in to the cart (add)
-//2. fetch the itmes there are in the cart (view)
-//3. add more or remove selected items in the cart (edit/delete)
-
-//to add and remove item in array and stil got same previous position
-//1. check index of before changes if 0 just edit
-//2. filter out the old one
-//3. split array at the index - 1
-//4. concat head and tail with the middle(updated one)
 
 //** store session in localstorage */
 interface StoreProviderProps {
@@ -30,21 +19,25 @@ interface StoreProviderProps {
 type StoreContextTypes = {
   itemInCart: ItemInCart[];
   itemInCartCount: number;
+  totalPrice: number;
   setItemInCart: Dispatch<SetStateAction<ItemInCart[]>>;
   addToCart: (item: ItemInCart) => void;
   removeFromCart: (item: ItemInCart) => void;
   incQty: (item: Product, qty: number) => void;
   decQty: (item: Product, qty: number) => void;
+  clearCart: () => void;
 };
 
 const defaultStoreContextType: StoreContextTypes = {
   itemInCart: [],
+  totalPrice: 0,
   itemInCartCount: 0,
   setItemInCart: () => ({}),
   addToCart: () => ({}),
   removeFromCart: () => ({}),
   incQty: () => ({}),
   decQty: () => ({}),
+  clearCart: () => ({}),
 };
 
 const StoreContext = createContext<StoreContextTypes>(defaultStoreContextType);
@@ -52,9 +45,19 @@ const StoreContext = createContext<StoreContextTypes>(defaultStoreContextType);
 const StoreProvider = ({ children }: StoreProviderProps) => {
   const [itemInCart, setItemInCart] = useState<ItemInCart[]>([]);
   const [itemInCartCount, setItemInCartCount] = useState<number>(0);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
 
   const addToCart = (item: ItemInCart) => {
     let alreadyInCart = itemInCart.find((inCart) => inCart._id === item._id);
+
+    setTotalPrice((prev) => {
+      if (item.discount) {
+        return prev + item.qty * item.discount;
+      } else {
+        return prev + item.qty * item.price;
+      }
+    });
+
     if (alreadyInCart) {
       _.remove(itemInCart, alreadyInCart);
       const updatedItemInCart = _.concat(itemInCart, {
@@ -71,6 +74,15 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
 
   const removeFromCart = (item: ItemInCart) => {
     let alreadyInCart = itemInCart.find((inCart) => inCart._id === item._id);
+
+    setTotalPrice((prev) => {
+      if (item.discount) {
+        return prev - item.qty * item.discount;
+      } else {
+        return prev - item.qty * item.price;
+      }
+    });
+
     if (alreadyInCart) {
       _.remove(itemInCart, alreadyInCart);
       const itemLeft = itemInCart.filter(
@@ -84,7 +96,14 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   const incQty = (item: Product, qty: number = 1) => {
     let alreadyInCart = itemInCart.find((inCart) => inCart._id === item._id);
     const index = _.indexOf(itemInCart, alreadyInCart);
-    // itemInCart[index] = ;
+
+    setTotalPrice((prev) => {
+      if (item.discount) {
+        return prev + qty * item.discount;
+      } else {
+        return prev + qty * item.price;
+      }
+    });
 
     if (alreadyInCart) {
       setItemInCart((prev) => {
@@ -102,6 +121,14 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
     let alreadyInCart = itemInCart.find((inCart) => inCart._id === item._id);
     const index = _.indexOf(itemInCart, alreadyInCart);
 
+    setTotalPrice((prev) => {
+      if (item.discount) {
+        return prev - qty * item.discount;
+      } else {
+        return prev - qty * item.price;
+      }
+    });
+
     if (alreadyInCart && alreadyInCart.qty > 1) {
       setItemInCart((prev) => {
         prev[index] = {
@@ -114,16 +141,24 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
     }
   };
 
+  const clearCart = () => {
+    setItemInCart([]);
+    setItemInCartCount(0);
+    setTotalPrice(0);
+  };
+
   return (
     <StoreContext.Provider
       value={{
         itemInCart,
         itemInCartCount,
+        totalPrice,
         setItemInCart,
         addToCart,
         removeFromCart,
         incQty,
         decQty,
+        clearCart,
       }}
     >
       {children}
