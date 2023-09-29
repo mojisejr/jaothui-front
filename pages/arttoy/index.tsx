@@ -30,7 +30,7 @@ const Arttoy: NextPage = () => {
             {/* <a className="text-sm">ดูทั้งหมด{">"}</a> */}
           </div>
           {/* <div className="grid grid-cols-1 gap-6 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-"> */}
-          <div className="p-1 grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-1">
+          <div className="p-1 grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-4 desktopM:grid-cols-6 gap-1">
             <NFTCard rarity={0} />
             <NFTCard rarity={1} />
             <NFTCard rarity={2} />

@@ -7,14 +7,16 @@ import Pedigree from "../components/Home/Pedigree";
 import ProductList from "../components/Store/ProductsList";
 import FoodProductList from "../components/Store/FoodProductList";
 import { trpc } from "../utils/trpc";
+import MainTitle2 from "../components/Home/Hero/ManTitle2";
 
 const Home: NextPage = () => {
   return (
     <div className="relative">
       <Layout>
-        <Hero>
+        <MainTitle2 />
+        {/* <Hero>
           <MainTitle />
-        </Hero>
+        </Hero> */}
         <Pedigree />
         <ProductList />
         <FoodProductList />
