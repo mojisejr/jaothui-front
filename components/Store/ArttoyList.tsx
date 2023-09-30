@@ -45,7 +45,7 @@ const ArttoyProductList = () => {
               ดูทั้งหมด{">"}
             </Link>
           </div>
-          <div className="p-1 grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-1">
+          <div className="px-2 grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-3">
             {data
               ? data.map((product) => (
                   <ProductCard

@@ -48,7 +48,7 @@ const PriceTag = ({
   return (
     <>
       {discount != null ? (
-        <div className="font-bold flex gap-2 items-center">
+        <div className="font-bold flex gap-2 items-center flex-wrap">
           <span className="line-through text-sm">
             {new Intl.NumberFormat("th-TH", {
               style: "currency",

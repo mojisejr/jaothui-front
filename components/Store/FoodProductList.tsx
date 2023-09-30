@@ -56,7 +56,7 @@ const FoodProductList = () => {
               ดูทั้งหมด{">"}
             </Link>
           </div>
-          <div className="grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 p-1 gap-1">
+          <div className="px-[2rem] grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-5">
             {data
               ? data.map((d, index) => (
                   <ProductCard key={index} product={d} canAddToCart={false} />

@@ -13,10 +13,10 @@ const Home: NextPage = () => {
   return (
     <div className="relative">
       <Layout>
-        <MainTitle2 />
-        {/* <Hero>
+        {/* <MainTitle2 /> */}
+        <Hero>
           <MainTitle />
-        </Hero> */}
+        </Hero>
         <Pedigree />
         <ProductList />
         <FoodProductList />
