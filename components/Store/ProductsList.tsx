@@ -43,6 +43,46 @@ const data: Product[] = [
     discount: null,
     desc: [],
   },
+  {
+    _id: "123",
+    name: "Semen",
+    images: ["/images/mproduct.png"],
+    slug: "se0001-23",
+    price: 200,
+    modelno: "N/A",
+    discount: null,
+    desc: [],
+  },
+  {
+    _id: "124",
+    name: "Semen",
+    images: ["/images/mproduct.png"],
+    slug: "se0001-23",
+    price: 200,
+    modelno: "N/A",
+    discount: null,
+    desc: [],
+  },
+  {
+    _id: "153",
+    name: "Semen",
+    images: ["/images/mproduct.png"],
+    slug: "se0001-23",
+    price: 200,
+    modelno: "N/A",
+    discount: null,
+    desc: [],
+  },
+  {
+    _id: "123",
+    name: "Semen",
+    images: ["/images/mproduct.png"],
+    slug: "se0001-23",
+    price: 200,
+    modelno: "N/A",
+    discount: null,
+    desc: [],
+  },
 ];
 
 const ProductList = () => {
@@ -56,13 +96,22 @@ const ProductList = () => {
               ดูทั้งหมด{">"}
             </Link>
           </div>
-          <div className="px-[2rem] grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-5">
-            {data
-              ? data.map((d, index) => (
+          {data ? (
+            <>
+              <div className="px-[2rem] hidden grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-5 tabletS:grid">
+                {data.map((d, index) => (
                   <ProductCard key={index} product={d} canAddToCart={false} />
-                ))
-              : "Nothing to show"}
-          </div>
+                ))}
+              </div>
+              <div className="px-[2rem] grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-5">
+                {[data[0], data[1], data[2], data[3]].map((d, index) => (
+                  <ProductCard key={index} product={d} canAddToCart={false} />
+                ))}
+              </div>
+            </>
+          ) : (
+            "Nothing to show"
+          )}
         </div>
       </>
     </>
