@@ -1,9 +1,14 @@
 import type { NextPage } from "next";
-import Layout from "../../components/v2/Layouts";
-import NFTCard from "../../components/v2/Arttoy/Card/nft";
-import ArttoyProductList from "../../components/v2/Arttoy/ArttoyList";
+import Layout from "../../components/Layouts";
+import NFTCard from "../../components/Arttoy/Card/nft";
+import ArttoyProductList from "../../components/Store/ArttoyList";
+import { trpc } from "../../utils/trpc";
+import Loading from "../../components/Shared/Indicators/Loading";
+import { ToastContainer } from "react-toastify";
 
 const Arttoy: NextPage = () => {
+  const { isLoading: arttoyLoading } = trpc.store.get.useQuery();
+
   return (
     <div className="relative">
       <Layout>
@@ -18,13 +23,14 @@ const Arttoy: NextPage = () => {
           </div>
         </div>
         {/**Arttoy Box */}
-        <ArttoyProductList />
+        {arttoyLoading ? <Loading size="lg" /> : <ArttoyProductList />}
         <div className="px-[22px] py-6">
           <div className="flex justify-between items-center py-2">
             <div className="text-xl font-bold">NFT Profile</div>
             {/* <a className="text-sm">ดูทั้งหมด{">"}</a> */}
           </div>
-          <div className="grid grid-cols-1 gap-6 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-">
+          {/* <div className="grid grid-cols-1 gap-6 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-"> */}
+          <div className="p-1 grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-4 desktopM:grid-cols-6 gap-1">
             <NFTCard rarity={0} />
             <NFTCard rarity={1} />
             <NFTCard rarity={2} />

@@ -5,17 +5,17 @@ import {
   useRef,
 } from "react";
 
-import MyFarmDashboard from "../../../../components/sections/myfarm/Dashboard";
+import MyFarmDashboard from "../../../../components/MyFarm/Dashboard";
 import { FiSearch } from "react-icons/fi";
 
 import { useMenu } from "../../../../contexts/menuContext";
 import { useBitkubNext } from "../../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
 import { useFarm } from "../../../../hooks/useFarm";
-import CreateFarm from "../../../../components/sections/myfarm/CreateFarm";
-import FertilizationTable from "../../../../components/sections/myfarm/FertilizationTable";
-import Layout from "../../../../components/v2/Layouts";
-import BitkubNextConnectButton from "../../../../components/BitkubNext";
+import CreateFarm from "../../../../components/MyFarm/CreateFarm";
+import FertilizationTable from "../../../../components/MyFarm/FertilizationTable";
+import Layout from "../../../../components/Layouts";
+import BitkubNextConnectButton from "../../../../components/Shared/BitkubNext";
 
 const MyFarm: FunctionComponent<PropsWithChildren> = () => {
   const { push } = useRouter();

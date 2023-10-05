@@ -65,21 +65,21 @@ export function BitkubNextProvider({ children }: Props) {
 
   async function getUserDataFromAccessToken() {
     const { access_token, refresh_token, wallet } = getCookies();
-    // console.log("access token from cookies: ", {
-    //   accessToken,
-    //   refresh_token,
-    //   wallet,
-    // });
+    console.log("access token from cookies: ", {
+      accessToken,
+      refresh_token,
+      wallet,
+    });
 
     const userData = await getUserData(access_token!);
-    // console.log("user data from cookie's access token", userData);
+    console.log("user data from cookie's access token", userData);
 
     if (
       userData.success &&
       !isEmpty(userData.wallet_address) &&
       userData.wallet_address == wallet
     ) {
-      // console.log("cookie is useable setting data to hooks");
+      console.log("cookie is useable setting data to hooks");
       setWalletAddress(userData.wallet_address);
       setAccessToken(access_token!);
       setRefreshToken(refresh_token!);
@@ -87,38 +87,38 @@ export function BitkubNextProvider({ children }: Props) {
       setIsConnected(true);
     } else if (!isEmpty(refresh_token)) {
       // check if refresh token is OK ?
-      // console.log("cookie is invalid starting exchangeRefreshToken");
+      console.log("cookie is invalid starting exchangeRefreshToken");
       try {
         const refreshedTokens = await exchangeRefreshToken(
           process.env.NEXT_PUBLIC_client_id_dev as string,
           refresh_token!
         );
-        // console.log("refreshed Token: ", refreshedTokens);
+        console.log("refreshed Token: ", refreshedTokens);
 
         if (isEmpty(refreshedTokens)) {
-          // console.log("somthing went wrong cannot find any refreshing tokens");
+          console.log("somthing went wrong cannot find any refreshing tokens");
           setIsConnected(false);
         } else {
-          // console.log("refreshed token success fetching user data");
+          console.log("refreshed token success fetching user data");
           const userData = await getUserData(refreshedTokens.access_token);
           if (
             userData.success &&
             !isEmpty(userData.wallet_address) &&
             userData.wallet_address == wallet
           ) {
-            // console.log("user data found from refreshed tokens");
+            console.log("user data found from refreshed tokens");
             setWalletAddress(userData.wallet_address);
             setAccessToken(refreshedTokens.access_token!);
             setRefreshToken(refreshedTokens.refresh_token!);
             setEmail(userData.email);
             setIsConnected(true);
           } else {
-            // console.log("user data not found from refresh token");
+            console.log("user data not found from refresh token");
             setIsConnected(false);
           }
         }
       } catch (error) {
-        // console.log("invalid refresh token or token expired");
+        console.log("invalid refresh token or token expired");
         setIsConnected(false);
       }
     } else {

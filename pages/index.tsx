@@ -1,16 +1,18 @@
 import type { NextPage } from "next";
 import CookieConsent from "react-cookie-consent";
-import Layout from "../components/v2/Layouts";
-import Hero from "../components/v2/Home/Hero";
-import MainTitle from "../components/v2/Home/Hero/MainTitle";
-import Pedigree from "../components/v2/Home/Pedigree";
-import ProductList from "../components/v2/Products/ProductsList";
-import FoodProductList from "../components/v2/Products/FoodProductList";
+import Layout from "../components/Layouts";
+import Hero from "../components/Home/Hero";
+import MainTitle from "../components/Home/Hero/MainTitle";
+import Pedigree from "../components/Home/Pedigree";
+import ProductList from "../components/Store/ProductsList";
+import FoodProductList from "../components/Store/FoodProductList";
+import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   return (
     <div className="relative">
       <Layout>
+        {/* <MainTitle2 /> */}
         <Hero>
           <MainTitle />
         </Hero>

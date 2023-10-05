@@ -6,12 +6,13 @@ import {
   useState,
 } from "react";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
-import Layout from "../../../components/v2/Layouts";
-import BitkubNextConnectButton from "../../../components/BitkubNext";
+import Layout from "../../../components/Layouts";
+import BitkubNextConnectButton from "../../../components/Shared/BitkubNext";
 import { IMetadata } from "../../../interfaces/iMetadata";
 import { useGetMetadataOf } from "../../../blockchain/Metadata/read";
-import PedigreeCard from "../../../components/v2/Shared/Card/PedigreeCard";
-import Loading from "../../../components/v2/Shared/Indicators/Loading";
+import PedigreeCard from "../../../components/Shared/Card/PedigreeCard";
+import Loading from "../../../components/Shared/Indicators/Loading";
+import NotFound from "../../../components/Shared/Utils/Notfound";
 
 const MyCert: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected, walletAddress } = useBitkubNext();
@@ -53,7 +54,7 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
   return (
     <>
       <Layout>
-        <div className={`w-full bg-base-200 min-h-screen`}>
+        <div className="w-full bg-base-200">
           {isConnected ? (
             <div className="py-6">
               <div className="flex justify-between items-center px-[22px] py-2">
@@ -78,15 +79,19 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
                   </label>
                 </div>
               </div>
-              <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2">
-                {currentData ? (
-                  currentData.map((d, index) => (
-                    <PedigreeCard key={index} data={d} />
-                  ))
-                ) : (
-                  <Loading size="lg" />
-                )}
-              </div>
+              {currentData.length <= 0 ? (
+                <NotFound />
+              ) : (
+                <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:px-[10rem] labtop:grid-cols-3 desktopM:grid-cols-4 labtop:px-[13rem] desktopM:px-[18rem]">
+                  {currentData ? (
+                    currentData.map((d, index) => (
+                      <PedigreeCard key={index} data={d} />
+                    ))
+                  ) : (
+                    <Loading size="lg" />
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <div>

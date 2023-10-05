@@ -4,9 +4,9 @@ import {
   useGetMetadataByMicrochip,
 } from "../../blockchain/Metadata/read";
 import { useGetRewardByMicrochip } from "../../blockchain/Reward/read";
-import Layout from "../../components/v2/Layouts";
-import ProfileBoxV2 from "../../components/v2/Cert/Detail/ProfileBoxV2";
-import Loading from "../../components/v2/Shared/Indicators/Loading";
+import Layout from "../../components/Layouts";
+import ProfileBoxV2 from "../../components/Cert/Detail/ProfileBoxV2";
+import Loading from "../../components/Shared/Indicators/Loading";
 
 const CertDetail = () => {
   const router = useRouter();

@@ -11,6 +11,7 @@ import { MenuProvider } from "../contexts/menuContext";
 import { BitkubNextProvider } from "../contexts/bitkubNextContext";
 import { NewAssetProvider } from "../contexts/newAssetContext";
 import { trpc } from "../utils/trpc";
+import StoreProvider from "../contexts/storeContext";
 
 const { chains, provider } = configureChains(
   [bitkub_mainnet],
@@ -51,7 +52,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           <BitkubNextProvider>
             <MenuProvider>
               <NewAssetProvider>
-                <Component {...pageProps} />
+                <StoreProvider>
+                  <Component {...pageProps} />
+                </StoreProvider>
               </NewAssetProvider>
             </MenuProvider>
           </BitkubNextProvider>
