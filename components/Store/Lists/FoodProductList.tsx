@@ -1,6 +1,7 @@
 import Link from "next/link";
-import ProductCard from "./ProductCard";
-import { Product } from "../../interfaces/Store/Product";
+import { Product } from "../../../interfaces/Store/Product";
+import MockProductCard from "../MockProduct";
+import { ListLayout } from "../Layout/ListLayout";
 
 const data: Product[] = [
   {
@@ -98,16 +99,7 @@ const FoodProductList = () => {
           </div>
           {data ? (
             <>
-              <div className="px-[2rem] hidden tabletS:grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-5">
-                {data.map((d, index) => (
-                  <ProductCard key={index} product={d} canAddToCart={false} />
-                ))}
-              </div>
-              <div className="px-[2rem] grid grid-cols-2 place-items-center tabletS:grid-cols-3 labtop:grid-cols-4 desktopM:grid-cols-6 gap-5">
-                {[data[0], data[1], data[2], data[3]].map((d, index) => (
-                  <ProductCard key={index} product={d} canAddToCart={false} />
-                ))}
-              </div>
+              <ListLayout products={data} />
             </>
           ) : (
             "Nothing to show"

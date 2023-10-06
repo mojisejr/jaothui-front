@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import Layout from "../../components/Layouts";
 import NFTCard from "../../components/Arttoy/Card/nft";
-import ArttoyProductList from "../../components/Store/ArttoyList";
+import ArttoyProductList from "../../components/Store/Lists/ArttoyList";
 import { trpc } from "../../utils/trpc";
 import Loading from "../../components/Shared/Indicators/Loading";
 import { ToastContainer } from "react-toastify";
@@ -14,16 +14,26 @@ const Arttoy: NextPage = () => {
       <Layout>
         <div className="relative">
           <img className="w-full" src="images/arttoyhero.png" alt="hero"></img>
-          <div className="absolute bottom-4 px-2 py-2">
-            <div className="text-5xl text-base-200">JAOTHUI</div>
-            <div className="text-5xl font-bold text-primary">SOUVENIR</div>
-            <div className="font-bold text-base-200">
+          <div className="absolute bottom-4 px-2 py-2 tabletM:bottom-10">
+            <div className="text-5xl text-base-200 tabletM:text-[5rem]">
+              JAOTHUI
+            </div>
+            <div className="text-5xl font-bold text-primary tabletM:text-[5rem]">
+              SOUVENIR
+            </div>
+            <div className="font-bold text-thuiwhite tabletM:text-4xl">
               ยกระดับของสะสมด้วย Blockchain Tecnology
             </div>
           </div>
         </div>
         {/**Arttoy Box */}
-        {arttoyLoading ? <Loading size="lg" /> : <ArttoyProductList />}
+        {arttoyLoading ? (
+          <div className="h-[200px] w-full flex justify-center items-center">
+            <Loading size="lg" /> Loading..
+          </div>
+        ) : (
+          <ArttoyProductList />
+        )}
         <div className="px-[22px] py-6">
           <div className="flex justify-between items-center py-2">
             <div className="text-xl font-bold">NFT Profile</div>

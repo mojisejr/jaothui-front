@@ -16,7 +16,7 @@ const Pedigree = () => {
             ดูทั้งหมด{">"}
           </Link>
         </div>
-        <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-4 desktopM:grid-cols-4">
+        <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4">
           {data
             ? data.map((d, index) => <PedigreeCard key={index} data={d} />)
             : "Nothing to show"}

@@ -3,14 +3,13 @@ import { loadStripe } from "@stripe/stripe-js";
 import { trpc } from "../../../utils/trpc";
 import { useEffect } from "react";
 import Loading from "../../Shared/Indicators/Loading";
-import { useRouter } from "next/router";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUB_KEY as string
 );
 
 const CheckoutCard = () => {
-  const { totalPrice, itemInCartCount, itemInCart } = useStore();
+  const { currentCart } = useStore();
   const {
     data: session,
     isLoading,
@@ -31,9 +30,9 @@ const CheckoutCard = () => {
   }, [isSuccess]);
 
   const handleCheckout = async () => {
-    if (itemInCart.length <= 0) return;
+    if (currentCart?.items.length! <= 0) return;
     if (window !== undefined && window.location.origin) {
-      checkout({ items: itemInCart, basePath: window.location.origin });
+      checkout({ cart: currentCart, basePath: window.location.origin });
     }
   };
   return (
@@ -45,7 +44,7 @@ const CheckoutCard = () => {
             {new Intl.NumberFormat("th-TH", {
               style: "currency",
               currency: "THB",
-            }).format(totalPrice)}
+            }).format(currentCart?.total! / 100)}
           </div>
         </div>
         <div className="flex justify-end">
@@ -56,7 +55,14 @@ const CheckoutCard = () => {
               </div>
             ) : (
               <>
-                Checkout <span className="badge">{itemInCartCount}</span>
+                Checkout{" "}
+                <span className="badge">
+                  {currentCart?.items.length! <= 0
+                    ? 0
+                    : currentCart?.items
+                        .map((item) => item.quantity)
+                        .reduce((a, b) => a + b)}
+                </span>
               </>
             )}
           </button>

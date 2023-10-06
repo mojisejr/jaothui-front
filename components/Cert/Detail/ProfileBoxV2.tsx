@@ -12,7 +12,7 @@ import { HiExternalLink, HiOutlineDocumentText } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { BiRfid, BiRuler } from "react-icons/bi";
 import { TbNfc } from "react-icons/tb";
-import { BsGenderAmbiguous } from "react-icons/bs";
+import { BsGenderAmbiguous, BsFileEarmarkBinary } from "react-icons/bs";
 import { GiNewBorn, GiTrophyCup } from "react-icons/gi";
 import { MdColorLens } from "react-icons/md";
 
@@ -129,7 +129,7 @@ const ProfileBoxV2 = ({
               </div>
               <div className="stat flex items-center gap-4">
                 <div className="stat-figure text-secondary">
-                  <GiNewBorn size={30} />
+                  <BsFileEarmarkBinary size={30} />
                 </div>
                 <div>
                   <div className="stat-title font-bold text-secondary xl:text-[2rem]">

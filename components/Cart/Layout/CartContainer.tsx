@@ -5,7 +5,7 @@ interface CartContainerProp {
 }
 
 const CartContainer = ({ children }: CartContainerProp) => {
-  return <div className="min-h-screen px-6 py-5">{children}</div>;
+  return <div className="px-6 py-5">{children}</div>;
 };
 
 export default CartContainer;

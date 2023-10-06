@@ -62,7 +62,7 @@ const NFTCard = ({ rarity }: NFTCardProp) => {
       <div className="card w-[320px] bg-base-100 shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]">
         <figure className=" py-2 overflow-hidden">
           <img
-            className="w-3/4 rounded-xl"
+            className=" w-24/30 rounded-xl"
             src={data[rarity].image}
             alt="nft-image"
           />

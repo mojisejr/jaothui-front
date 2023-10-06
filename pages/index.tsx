@@ -4,8 +4,8 @@ import Layout from "../components/Layouts";
 import Hero from "../components/Home/Hero";
 import MainTitle from "../components/Home/Hero/MainTitle";
 import Pedigree from "../components/Home/Pedigree";
-import ProductList from "../components/Store/ProductsList";
-import FoodProductList from "../components/Store/FoodProductList";
+import ProductList from "../components/Store/Lists/ProductsList";
+import FoodProductList from "../components/Store/Lists/FoodProductList";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {

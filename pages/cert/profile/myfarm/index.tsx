@@ -41,7 +41,7 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
     <>
       <Layout>
         <div
-          className={`w-full bg-base-100  p-3 flex  justify-center items-center min-h-screen `}
+          className={`w-full bg-base-100  p-3 flex  justify-center items-center  `}
         >
           {isConnected ? (
             <div

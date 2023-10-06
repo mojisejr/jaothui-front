@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 
 export const BitkubDisconnectButton = () => {
   const { walletAddress, disconnect } = useBitkubNext();
+
   const { replace } = useRouter();
 
   function handleDisconnect() {
