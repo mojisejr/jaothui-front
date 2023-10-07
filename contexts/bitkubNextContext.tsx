@@ -12,6 +12,8 @@ import { getUserData } from "../helpers/getUserData";
 import { getCookies } from "cookies-next";
 import { isEmpty } from "../helpers/dataValidator";
 
+import { trpc } from "../utils/trpc";
+
 type bitkubNextContextType = {
   isConnected: boolean;
   walletAddress: `0x${string}` | "";
@@ -43,6 +45,12 @@ type Props = {
 };
 
 export function BitkubNextProvider({ children }: Props) {
+  const {
+    data: customer,
+    mutate: createOrGetCustomer,
+    isSuccess: isUserGet,
+  } = trpc.store.createOrGetCustomer.useMutation();
+
   const [isConnected, setIsConnected] = useState(false);
   const [accessToken, setAccessToken] = useState<string>("none");
   const [refreshToken, setRefreshToken] = useState<string>("none");
@@ -61,7 +69,11 @@ export function BitkubNextProvider({ children }: Props) {
     if (walletAddress != "" && isConnected && accessToken != "none") {
       setIsConnected(true);
     }
-  }, [accessToken, refreshToken, walletAddress, isConnected]);
+
+    if (isUserGet) {
+      localStorage.setItem("customer", JSON.stringify(customer));
+    }
+  }, [accessToken, refreshToken, walletAddress, isConnected, isUserGet]);
 
   async function getUserDataFromAccessToken() {
     const { access_token, refresh_token, wallet } = getCookies();
@@ -73,6 +85,7 @@ export function BitkubNextProvider({ children }: Props) {
 
     const userData = await getUserData(access_token!);
     console.log("user data from cookie's access token", userData);
+    getCustomerId(userData.wallet_address, userData.email);
 
     if (
       userData.success &&
@@ -84,6 +97,7 @@ export function BitkubNextProvider({ children }: Props) {
       setAccessToken(access_token!);
       setRefreshToken(refresh_token!);
       setEmail(userData.email);
+      getCustomerId(userData.wallet_address, userData.email);
       setIsConnected(true);
     } else if (!isEmpty(refresh_token)) {
       // check if refresh token is OK ?
@@ -111,6 +125,7 @@ export function BitkubNextProvider({ children }: Props) {
             setAccessToken(refreshedTokens.access_token!);
             setRefreshToken(refreshedTokens.refresh_token!);
             setEmail(userData.email);
+            getCustomerId(userData.wallet_address, userData.email);
             setIsConnected(true);
           } else {
             console.log("user data not found from refresh token");
@@ -136,6 +151,7 @@ export function BitkubNextProvider({ children }: Props) {
     setRefreshToken(refreshToken);
     setWalletAddress(walletAddress);
     setEmail(email);
+    getCustomerId(walletAddress, email);
     setIsConnected(true);
   }
 
@@ -155,7 +171,17 @@ export function BitkubNextProvider({ children }: Props) {
     setRefreshToken("none");
     setWalletAddress("");
     deleteCookies();
+    localStorage.removeItem("customer");
     setIsConnected(false);
+  }
+
+  function getCustomerId(wallet: string, email: string) {
+    if (localStorage.getItem("customer") == undefined) {
+      createOrGetCustomer({
+        wallet,
+        email,
+      });
+    }
   }
 
   const value = {

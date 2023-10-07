@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Product } from "../../../interfaces/Store/Product";
-import MockProductCard from "../MockProduct";
-import { ListLayout } from "../Layout/ListLayout";
+import { ListLayoutMock } from "../Layout/ListLayoutMock";
 
 const data: Product[] = [
   {
@@ -99,7 +98,7 @@ const ProductList = () => {
           </div>
           {data ? (
             <>
-              <ListLayout products={data} />
+              <ListLayoutMock products={data} />
             </>
           ) : (
             "Nothing to show"

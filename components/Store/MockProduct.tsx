@@ -27,7 +27,8 @@ const MockProductCard = ({
                 value={product.value}
               />
             ))}
-            <PriceTag actual={product.price} discount={product.discount} />
+            ---
+            {/* <PriceTag actual={product.price} discount={product.discount} /> */}
             {canAddToCart ? (
               // <AddToCartButton variantId={product.variants[0].id!} qty={1} />:
               <div></div>

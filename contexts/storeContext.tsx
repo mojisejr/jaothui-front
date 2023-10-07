@@ -1,12 +1,13 @@
 import {
+  Dispatch,
   ReactNode,
+  SetStateAction,
   createContext,
   useContext,
   useEffect,
   useState,
 } from "react";
-import _ from "lodash";
-import { trpc } from "../utils/trpc";
+import _, { replace } from "lodash";
 
 import {
   useRegions,
@@ -21,6 +22,8 @@ import {
   useCompleteCart,
 } from "medusa-react";
 import { AddressPayload, Cart, Region } from "@medusajs/medusa";
+import { PaymentIntent } from "@stripe/stripe-js";
+import { useRouter } from "next/router";
 
 //** store session in localstorage */
 interface StoreProviderProps {
@@ -30,6 +33,7 @@ interface StoreProviderProps {
 type StoreContextTypes = {
   currentRegion: Region | undefined;
   currentCart: Omit<Cart, "refundable_amount" | "refunded_total"> | undefined;
+  isLoading: boolean;
   addToCart: (variantId: string, qty: number) => void;
   removeFromCart: (variantId: string) => void;
   incQty: (variantId: string, qty: number) => void;
@@ -38,11 +42,13 @@ type StoreContextTypes = {
   createPaymentSession: (variants: void, options?: any) => void;
   complete: () => void;
   clearCart: () => void;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 const defaultStoreContextType: StoreContextTypes = {
   currentRegion: undefined,
   currentCart: undefined,
+  isLoading: false,
   addToCart: () => ({}),
   removeFromCart: () => ({}),
   incQty: () => ({}),
@@ -51,11 +57,13 @@ const defaultStoreContextType: StoreContextTypes = {
   createPaymentSession: () => ({}),
   complete: () => ({}),
   clearCart: () => ({}),
+  setIsLoading: () => ({}),
 };
 
 const StoreContext = createContext<StoreContextTypes>(defaultStoreContextType);
 
 const StoreProvider = ({ children }: StoreProviderProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { regions, isSuccess } = useRegions();
   const { cart, createCart, updateCart } = useCart();
 
@@ -105,7 +113,7 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
 
   const addToCart = (variantId: string, qty: number) => {
     if (!currentCartId) {
-      return;
+      _createCart();
     }
 
     _createLineItem.mutate(
@@ -173,8 +181,12 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   };
 
   const updateShippingAddress = (address: AddressPayload) => {
+    const customer = JSON.parse(localStorage.getItem("customer")!);
+
     updateCart.mutate(
       {
+        customer_id: customer.id,
+        email: customer.email,
         shipping_address: {
           ...address,
         },
@@ -219,8 +231,6 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
           console.log("payment ==> payment session is set to the cart");
           setCurrentCart({
             ...cart,
-            // email: customer.email,
-            // customer_id: customer.id,
           });
         },
       }
@@ -236,13 +246,14 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   };
 
   const clearCart = () => {
-    localStorage.removeItem(cart?.id!);
+    localStorage.removeItem("cart_id");
     setCurrentCart(undefined);
   };
 
   return (
     <StoreContext.Provider
       value={{
+        isLoading,
         currentRegion,
         currentCart,
         addToCart,
@@ -253,6 +264,7 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
         clearCart,
         createPaymentSession,
         complete,
+        setIsLoading,
       }}
     >
       {children}

@@ -1,9 +1,12 @@
 import Link from "next/link";
-import ProductCard from "../ProductCard";
 import { useProducts } from "medusa-react";
 import { useStore } from "../../../contexts/storeContext";
-import MockProductCard from "../MockProduct";
 import { ListLayout } from "../Layout/ListLayout";
+import { useEffect, useState } from "react";
+import { Region } from "@medusajs/medusa";
+import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
+import Loading from "../../Shared/Indicators/Loading";
+import { ListLayoutMock } from "../Layout/ListLayoutMock";
 
 const products = [
   {
@@ -69,9 +72,10 @@ const products = [
 ];
 
 const ArttoyProductList = () => {
-  const { currentRegion } = useStore();
+  // const { currentRegion } = useStore();
+
   // const { products } = useProducts({
-  //   region_id: currentRegion!.id!,
+  //   region_id: currentRegion == undefined ? "" : currentRegion!.id!,
   // });
 
   return (
@@ -86,7 +90,8 @@ const ArttoyProductList = () => {
           </div>
           {products ? (
             <>
-              <ListLayout products={products} />
+              <ListLayoutMock products={products} />
+              {/* <ListLayout products={products} /> */}
             </>
           ) : (
             "Nothing to show"

@@ -5,12 +5,20 @@ import { useCart } from "medusa-react";
 
 const CartButton = () => {
   const { currentCart } = useStore();
+  const count =
+    currentCart?.items.length! <= 0
+      ? 0
+      : currentCart?.items
+          .map((item) => item.quantity)
+          .reduce((a, b) => a + b) == undefined
+      ? 0
+      : currentCart?.items.map((item) => item.quantity).reduce((a, b) => a + b);
   return (
     <>
       <button className="btn btn-circle btn-ghost relative">
         <AiOutlineShoppingCart size={24} />
         <div className="badge absolute top-1 right-0 badge-sm badge-primary text-thuiwite font-bold">
-          0
+          {count}
           {/* {currentCart?.items.length! <= 0
             ? 0
             : currentCart?.items

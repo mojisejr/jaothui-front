@@ -13,7 +13,6 @@ import { getUserData } from "../../helpers/getUserData";
 import { setCookies } from "../../helpers/setCookies";
 import { trpc } from "../../utils/trpc";
 import Loading from "../../components/Shared/Indicators/Loading";
-import { useCart } from "medusa-react";
 
 const clientId =
   process.env.NODE_ENV == "production"
@@ -26,12 +25,7 @@ const redirectUrl =
 
 const Callback: FunctionComponent<PropsWithChildren> = () => {
   const { updateLogin } = useBitkubNext();
-  const { mutate: save, isSuccess: isSaved } = trpc.user.create.useMutation();
-  const {
-    data: customer,
-    mutate: createOrGetCustomer,
-    isSuccess: isUserGet,
-  } = trpc.store.createOrGetCustomer.useMutation();
+  const { mutate: save } = trpc.user.create.useMutation();
 
   const { query, replace } = useRouter();
   const [message, setMessage] = useState("Authorizing...");
@@ -58,9 +52,11 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
 
     //3. check if logged in ?
     if (!userData.success && isEmpty(userData.wallet_address)) {
-      //wallet not found
+      // if (localStorage.getItem("customer") == undefined) {
+      console.log("NO WALLET: ", userData);
       setMessage("no wallet found!");
       replace("/");
+      //wallet not found
     } else {
       //wallet founded
       save({
@@ -77,16 +73,12 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
         userData.email
       );
 
-      createOrGetCustomer({
-        wallet: userData.wallet_address,
-        email: userData.email,
-      });
-
       //set cookies
       setCookies(access_token, refresh_token, userData.wallet_address);
 
-      // await save({ wallet: wallet_address, refreshToken: refresh_token });
       replace("/cert/profile");
+
+      // await save({ wallet: wallet_address, refreshToken: refresh_token });
     }
   }
 

@@ -12,7 +12,7 @@ import CheckoutCard from "../Card/CheckoutCard";
 import CheckoutV2 from "../Card/Checkoutv2";
 
 const ShippingForm = () => {
-  const { updateShippingAddress, currentCart } = useStore();
+  const { updateShippingAddress, currentCart, isLoading } = useStore();
   const { startCheckout } = useCart();
   const [{ province }, setAddress] = useState<{
     province?: string;
@@ -40,7 +40,6 @@ const ShippingForm = () => {
   }, []);
 
   const onSubmit = (addressData: AddressPayload) => {
-    console.log("before chckout: ", currentCart);
     updateShippingAddress(addressData);
   };
 
@@ -55,7 +54,8 @@ const ShippingForm = () => {
             <span className="label-text">firstname</span>
           </label>
           <input
-            className="input input-bordered w-full max-w-xs"
+            disabled={isLoading || currentCart?.payment_sessions.length! > 0}
+            className="input input-bordered w-full max-w-md disabled:opacity-50"
             id="first_name"
             type="text"
             placeholder="firstname"
@@ -69,7 +69,8 @@ const ShippingForm = () => {
             <span className="label-text">lastname</span>
           </label>
           <input
-            className="input input-bordered w-full max-w-xs"
+            disabled={isLoading || currentCart?.payment_sessions.length! > 0}
+            className="input input-bordered w-full max-w-md disabled:opacity-50"
             id="last_name"
             type="text"
             placeholder="lastname"
@@ -83,7 +84,8 @@ const ShippingForm = () => {
             <span className="label-text">address 1</span>
           </label>
           <input
-            className="input input-bordered w-full max-w-xs"
+            disabled={isLoading || currentCart?.payment_sessions.length! > 0}
+            className="input input-bordered w-full max-w-md disabled:opacity-50"
             id="address_1"
             type="text"
             placeholder="address eg.(13/99 tambon ...)"
@@ -97,7 +99,8 @@ const ShippingForm = () => {
             <span className="label-text">province</span>
           </label>
           <select
-            className="select-bordered select"
+            disabled={isLoading || currentCart?.payment_sessions.length! > 0}
+            className="select-bordered select max-w-md disabled:opacity-50"
             aria-invalid={errors.province ? "true" : "false"}
             required
             // disabled={}
@@ -119,9 +122,9 @@ const ShippingForm = () => {
             <span className="label-text">amphoe</span>
           </label>
           <select
-            className="select-bordered select"
+            disabled={isLoading || currentCart?.payment_sessions.length! > 0}
+            className="select-bordered select max-w-md disabled:opacity-50"
             required
-            // disabled={}
             {...register("address_2", { required: true })}
           >
             <option disabled selected>
@@ -136,11 +139,12 @@ const ShippingForm = () => {
         </div>
 
         <div className="form-control">
-          <label className="label" htmlFor="address_1">
+          <label className="label" htmlFor="postcode">
             <span className="label-text">postcode</span>
           </label>
           <input
-            className="input input-bordered w-full max-w-xs"
+            disabled={isLoading || currentCart?.payment_sessions.length! > 0}
+            className="input input-bordered w-full max-w-md disabled:opacity-50"
             id="postcode"
             type="number"
             placeholder="postcode"
@@ -150,11 +154,12 @@ const ShippingForm = () => {
         </div>
 
         <div className="form-control">
-          <label className="label" htmlFor="address_1">
+          <label className="label" htmlFor="phone">
             <span className="label-text">phone</span>
           </label>
           <input
-            className="input input-bordered w-full max-w-xs"
+            disabled={isLoading || currentCart?.payment_sessions.length! > 0}
+            className="input input-bordered w-full max-w-md disabled:opacity-50"
             id="phone"
             type="number"
             placeholder="phone"
@@ -163,7 +168,7 @@ const ShippingForm = () => {
           />
         </div>
         {currentCart?.payment_sessions.length! <= 0 ? (
-          <button className="btn btn-primary" type="submit">
+          <button className="btn btn-primary mt-2 " type="submit">
             Checkout
           </button>
         ) : (

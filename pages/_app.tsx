@@ -67,6 +67,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     );
   }
 };
+
+export default trpc.withTRPC(MyApp);
+
 {
   /* <MedusaProvider
 queryClientProviderProps={{ client: queryClient }}
@@ -90,5 +93,3 @@ publishableApiKey="pk_01HBSTH6R1DYBQ7QR97RZEJGMN"
 </CartProvider>
 </MedusaProvider> */
 }
-
-export default trpc.withTRPC(MyApp);
