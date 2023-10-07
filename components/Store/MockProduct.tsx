@@ -33,9 +33,7 @@ const MockProductCard = ({
               // <AddToCartButton variantId={product.variants[0].id!} qty={1} />:
               <div></div>
             ) : null}
-            <div className="text-center opacity-30 font-bold">
-              Comming Soon...
-            </div>
+            <div className="text-center opacity-30">Comming Soon...</div>
           </div>
         </div>
       </div>

@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { useGetAllMetadata } from "../../../blockchain/Metadata/read";
 import PedigreeCard from "../../Shared/Card/PedigreeCard";
+import _ from "lodash";
 
 const Pedigree = () => {
   const { allMetadata } = useGetAllMetadata();
-  const data = allMetadata
-    ? [allMetadata[0], allMetadata[1], allMetadata[2], allMetadata[3]]
-    : [];
+  // const data = allMetadata
+  //   ? [allMetadata[0], allMetadata[1], allMetadata[2], allMetadata[3]]
+  //   : [];
+
+  const data = _.take(allMetadata, 8);
+
   return (
     <>
       <div className="py-6">
@@ -16,7 +20,7 @@ const Pedigree = () => {
             ดูทั้งหมด{">"}
           </Link>
         </div>
-        <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4">
+        <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4">
           {data
             ? data.map((d, index) => <PedigreeCard key={index} data={d} />)
             : "Nothing to show"}

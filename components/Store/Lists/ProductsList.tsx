@@ -63,26 +63,6 @@ const data: Product[] = [
     discount: null,
     desc: [],
   },
-  {
-    _id: "153",
-    name: "Semen",
-    images: ["/images/mproduct.png"],
-    slug: "se0001-23",
-    price: 200,
-    modelno: "N/A",
-    discount: null,
-    desc: [],
-  },
-  {
-    _id: "123",
-    name: "Semen",
-    images: ["/images/mproduct.png"],
-    slug: "se0001-23",
-    price: 200,
-    modelno: "N/A",
-    discount: null,
-    desc: [],
-  },
 ];
 
 const ProductList = () => {

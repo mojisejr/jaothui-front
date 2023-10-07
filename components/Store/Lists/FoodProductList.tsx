@@ -63,26 +63,6 @@ const data: Product[] = [
     discount: null,
     desc: [],
   },
-  {
-    _id: "153",
-    name: "Buff Roast",
-    images: ["/images/mfoodproduct.png"],
-    slug: "se0001-23",
-    price: 200,
-    modelno: "N/A",
-    discount: null,
-    desc: [],
-  },
-  {
-    _id: "153",
-    name: "Buff Roast",
-    images: ["/images/mfoodproduct.png"],
-    slug: "se0001-23",
-    price: 200,
-    modelno: "N/A",
-    discount: null,
-    desc: [],
-  },
 ];
 
 const FoodProductList = () => {
