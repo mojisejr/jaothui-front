@@ -1,12 +1,12 @@
 import { NextPage } from "next";
 
 import { useGetAllMetadata } from "../../blockchain/Metadata/read";
-import Layout from "../../components/v2/Layouts";
-import PedigreeCard from "../../components/v2/Shared/Card/PedigreeCard";
+import Layout from "../../components/Layouts";
+import PedigreeCard from "../../components/Shared/Card/PedigreeCard";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { IMetadata } from "../../interfaces/iMetadata";
-import Loading from "../../components/v2/Shared/Indicators/Loading";
-import NotFound from "../../components/v2/Shared/Utils/Notfound";
+import Loading from "../../components/Shared/Indicators/Loading";
+import NotFound from "../../components/Shared/Utils/Notfound";
 
 const CertMainPage: NextPage = () => {
   const { allMetadata: data } = useGetAllMetadata();
@@ -72,7 +72,7 @@ const CertMainPage: NextPage = () => {
           {currentData.length <= 0 ? (
             <NotFound />
           ) : (
-            <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:px-[10rem] labtop:grid-cols-3 desktopM:grid-cols-4 labtop:px-[13rem] desktopM:px-[18rem]">
+            <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:px-[10rem] labtop:grid-cols-3 desktopM:grid-cols-4 labtop:px-[13rem] desktopM:px-[18rem] gap-2 desktopM:gap-3 tabletS:px-10 px-2">
               {currentData ? (
                 currentData.map((d, index) => (
                   <PedigreeCard key={index} data={d} />

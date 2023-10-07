@@ -1,15 +1,9 @@
-import Profile from "../../../components/sections/cert/Profile";
-import ProfileMenu from "../../../components/sections/cert/ProfileMenu";
-import Header from "../../../components/Header";
-import PleaseConnectWallet from "../../../components/sections/cert/PleaseConnect";
-import MenuModal from "../../../components/MenuModal";
-import CertFooter from "../../../components/sections/cert/CertFooter";
-import { useMenu } from "../../../contexts/menuContext";
+import Profile from "../../../components/Cert/Profile";
+import ProfileMenu from "../../../components/Cert/ProfileMenu";
+
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-import Layout from "../../../components/v2/Layouts";
-import BitkubNextConnectButton from "../../../components/BitkubNext";
+import Layout from "../../../components/Layouts";
+import BitkubNextConnectButton from "../../../components/Shared/BitkubNext";
 
 const ProfilePage = () => {
   const { isConnected } = useBitkubNext();

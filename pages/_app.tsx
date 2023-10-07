@@ -12,6 +12,13 @@ import { BitkubNextProvider } from "../contexts/bitkubNextContext";
 import { NewAssetProvider } from "../contexts/newAssetContext";
 import { trpc } from "../utils/trpc";
 
+import { MedusaProvider, CartProvider } from "medusa-react";
+import { QueryClient } from "@tanstack/react-query";
+
+import StoreProvider from "../contexts/storeContext";
+
+const queryClient = new QueryClient();
+
 const { chains, provider } = configureChains(
   [bitkub_mainnet],
   [publicProvider()]
@@ -62,3 +69,27 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
 };
 
 export default trpc.withTRPC(MyApp);
+
+{
+  /* <MedusaProvider
+queryClientProviderProps={{ client: queryClient }}
+baseUrl="http://localhost:9000"
+publishableApiKey="pk_01HBSTH6R1DYBQ7QR97RZEJGMN"
+>
+<CartProvider>
+  <WagmiConfig client={wagmiClient}>
+    <RainbowKitProvider chains={chains}>
+      <BitkubNextProvider>
+        <MenuProvider>
+          <NewAssetProvider>
+            <StoreProvider>
+              <Component {...pageProps} />
+            </StoreProvider>
+          </NewAssetProvider>
+        </MenuProvider>
+      </BitkubNextProvider>
+    </RainbowKitProvider>
+  </WagmiConfig>
+</CartProvider>
+</MedusaProvider> */
+}

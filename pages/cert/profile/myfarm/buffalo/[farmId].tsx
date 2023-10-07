@@ -4,17 +4,13 @@ import { useRouter } from "next/router";
 import { useBitkubNext } from "../../../../../contexts/bitkubNextContext";
 import { useMenu } from "../../../../../contexts/menuContext";
 
-import CertFooter from "../../../../../components/sections/cert/CertFooter";
-import MenuModal from "../../../../../components/MenuModal";
-import PleaseConnectWallet from "../../../../../components/sections/cert/PleaseConnect";
-import Header from "../../../../../components/Header";
-import BuffaloDetail from "../../../../../components/sections/myfarm/BuffaloDetail";
-import BuffaloManagement from "../../../../../components/sections/myfarm/BuffaloManagement";
-import LoadingScreen from "../../../../../components/LoadingScreen";
+import BuffaloDetail from "../../../../../components/MyFarm/BuffaloDetail";
+import BuffaloManagement from "../../../../../components/MyFarm/BuffaloManagement";
+import LoadingScreen from "../../../../../components/Shared/LoadingScreen";
 import { trpc } from "../../../../../utils/trpc";
-import Layout from "../../../../../components/v2/Layouts";
-import Loading from "../../../../../components/v2/Shared/Indicators/Loading";
-import BitkubNextConnectButton from "../../../../../components/BitkubNext";
+import Layout from "../../../../../components/Layouts";
+import Loading from "../../../../../components/Shared/Indicators/Loading";
+import BitkubNextConnectButton from "../../../../../components/Shared/BitkubNext";
 
 const MyFarmBuffalo: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected } = useBitkubNext();
