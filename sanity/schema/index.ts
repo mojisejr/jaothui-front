@@ -5,6 +5,7 @@ import productVariant from "./productVariant";
 import productVariantOption from "./productVariantOption";
 import productVariantPrice from "./productVariantPrice";
 import { privilegeType } from "./privilege";
+import { RedemptionType } from "./redemption";
 
 // export const schema = [
 
@@ -18,5 +19,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     productVariantOption,
     productVariantPrice,
     privilegeType,
+    RedemptionType,
   ],
 };

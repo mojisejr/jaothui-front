@@ -8,7 +8,7 @@ export function useGetJaothui() {
   const { walletAddress } = useBitkubNext();
   const [tokens, setTokens] = useState<string[]>();
 
-  const { isLoading } = useContractRead({
+  const { isLoading, isSuccess } = useContractRead({
     ...contract.jaothui,
     functionName: "tokenOfOwnerAll",
     args: [walletAddress],
@@ -20,5 +20,6 @@ export function useGetJaothui() {
   return {
     tokens,
     loadingTokens: isLoading,
+    tokensLoaded: isSuccess,
   };
 }

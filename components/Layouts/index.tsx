@@ -168,7 +168,7 @@ const Layout = ({ children }: LayoutProps) => {
                 <div>Kwaithai.com</div>
               </Link>
             </li>
-            <li>{isConnected ? <StoreMenu /> : null}</li>
+            {/* <li>{isConnected ? <StoreMenu /> : null}</li> */}
             <li>
               {/* <LoginWithLineButton /> */}
               {isConnected ? (
