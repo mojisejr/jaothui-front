@@ -3,6 +3,7 @@ import { useStore } from "../../../contexts/storeContext";
 
 const ItemCard = ({ item }: { item: LineItem }) => {
   const { decQty, incQty, removeFromCart } = useStore();
+  console.log(item);
   return (
     <>
       <div className="relative grid grid-cols-3 shadow px-1 py-2 rounded-xl place-items-center">
@@ -26,7 +27,7 @@ const ItemCard = ({ item }: { item: LineItem }) => {
               {new Intl.NumberFormat("th-TH", {
                 style: "currency",
                 currency: "thb",
-              }).format(item.unit_price / 100)}
+              }).format(item.total! / 100)}
             </li>
             <li className="flex gap-5 items-center justify-center">
               <button

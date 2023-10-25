@@ -28,7 +28,7 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
                 {data ? data.name : <Loading size="sm" />}
               </div>
               <div className="text-sm">
-                {data ? data.createdAt : <Loading size="sm" />}
+                {data ? data.birthday : <Loading size="sm" />}
               </div>
             </div>
             <div>

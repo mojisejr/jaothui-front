@@ -48,7 +48,7 @@ const CheckoutV2Form = ({ clientSecret }: CheckoutV2FormProps) => {
     e.preventDefault();
     setIsLoading(true);
 
-    return stripe
+    return await stripe
       ?.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements?.getElement(CardElement)!,

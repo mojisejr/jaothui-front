@@ -27,25 +27,25 @@ const SSRBadge = () => {
 
 const data = [
   {
-    image: "images/n.gif",
+    image: "/images/n.gif",
     title: "NORMAL",
     subtitle: "80% of the collection",
     badge: <NBadge />,
   },
   {
-    image: "images/r.gif",
+    image: "/images/r.gif",
     title: "RARE",
     subtitle: "12% of the collection",
     badge: <RBadge />,
   },
   {
-    image: "images/sr.gif",
+    image: "/images/sr.gif",
     title: "SUPER RARE",
     subtitle: "5% of the collection",
     badge: <SRBadge />,
   },
   {
-    image: "images/ssr.gif",
+    image: "/images/ssr.gif",
     title: "SUPER S. RARE",
     subtitle: "3% of the collection",
     badge: <SSRBadge />,

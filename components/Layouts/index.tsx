@@ -14,6 +14,7 @@ import BitkubDisconnectButton from "../Shared/BitkubNextDiscon";
 import { ToastContainer } from "react-toastify";
 
 import CartButton from "../Cart/Buttons/CartButton";
+import StoreMenu from "../Shared/Navbar/StoreMenu";
 
 interface LayoutProps {
   children: ReactNode;
@@ -59,7 +60,7 @@ const Layout = ({ children }: LayoutProps) => {
                   PED
                 </Link>
                 <Link
-                  href="/arttoy"
+                  href="/store/arttoy"
                   className={`tab ${
                     pathname.includes("arttoy")
                       ? "bg-primary text-neutral"
@@ -167,6 +168,7 @@ const Layout = ({ children }: LayoutProps) => {
                 <div>Kwaithai.com</div>
               </Link>
             </li>
+            {/* <li>{isConnected ? <StoreMenu /> : null}</li> */}
             <li>
               {/* <LoginWithLineButton /> */}
               {isConnected ? (

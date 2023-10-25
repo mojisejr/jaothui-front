@@ -8,7 +8,6 @@ import {
   getProvinces,
   getAmphoeFromProvince,
 } from "../../../helpers/store/addressHelper";
-import CheckoutCard from "../Card/CheckoutCard";
 import CheckoutV2 from "../Card/Checkoutv2";
 
 const ShippingForm = () => {
@@ -36,7 +35,7 @@ const ShippingForm = () => {
   }, [watch]);
 
   useEffect(() => {
-    startCheckout.mutate();
+    // startCheckout.mutate();
   }, []);
 
   const onSubmit = (addressData: AddressPayload) => {

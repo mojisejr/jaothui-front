@@ -72,7 +72,7 @@ const ProductList = () => {
         <div className="py-6">
           <div className="flex justify-between items-center px-[22px] py-2">
             <div className="text-xl font-bold">Products</div>
-            <Link href="#" className="text-sm">
+            <Link href="/store/non-food" className="text-sm">
               ดูทั้งหมด{">"}
             </Link>
           </div>

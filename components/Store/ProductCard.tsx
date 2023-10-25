@@ -2,6 +2,8 @@ import AddToCartButton from "../Cart/Buttons/AddToCart";
 import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
 import { formatVariantPrice } from "medusa-react";
 import { useStore } from "../../contexts/storeContext";
+import Loading from "../Shared/Indicators/Loading";
+import { SyntheticEvent } from "react";
 
 interface ProductCartProps {
   product: PricedProduct;
@@ -10,45 +12,63 @@ interface ProductCartProps {
 
 const ProductCard = ({ product, canAddToCart = false }: ProductCartProps) => {
   const { currentRegion } = useStore();
+  const { setCurrentProduct } = useStore();
+
+  const handleShowDetail = (e: SyntheticEvent) => {
+    e.preventDefault();
+    setCurrentProduct(product);
+    window.product_detail.showModal();
+  };
+
+  if (product == null || product == undefined) {
+    return <Loading size="lg" />;
+  }
 
   return (
     <>
-      <div className="w-full max-w-[320px] rounded-xl shadow-xl">
-        <div className="p-4">
-          <img
-            className="w-full rounded-xl"
-            src={product.thumbnail!}
-            alt="image"
-          />
-          <div className="grid grids-col-1 w-full rounded-xl shadow p-3">
-            <div className="font-bold text-xl">{product.title}</div>
-            {Object.keys(product.metadata!).map((key: string, index) => (
-              <ProductAttribute
-                key={index}
-                title={key}
-                value={Object.values(product.metadata!)[index] as string}
-              />
-            ))}
+      <div>
+        <div className="w-full max-w-[320px] rounded-xl shadow-xl">
+          <div className="p-4">
+            <img
+              className="w-full rounded-xl"
+              src={product.thumbnail!}
+              alt="image"
+            />
+            <div className="grid grids-col-1 w-full rounded-xl shadow p-3">
+              <a
+                onClick={(e) => handleShowDetail(e)}
+                // href={`/store/${product.collection?.handle}/${product.handle}`}
+                className="font-bold text-xl hover:underline hover:cursor-pointer"
+              >
+                {product.title}
+              </a>
 
-            <ul>
-              {product.variants.map((variant) => (
-                <li key={variant.id}>
-                  {formatVariantPrice({
-                    variant,
-                    region: {
-                      currency_code: currentRegion?.currency_code as string,
-                      tax_code: currentRegion?.tax_code as string,
-                      tax_rate: currentRegion?.tax_rate as number,
-                    },
-                  })}
-                </li>
+              {Object.keys(product.metadata!).map((key: string, index) => (
+                <ProductAttribute
+                  key={index}
+                  title={key}
+                  value={Object.values(product.metadata!)[index] as string}
+                />
               ))}
-            </ul>
+              <ul>
+                {product.variants.map((variant) => (
+                  <li key={variant.id}>
+                    {formatVariantPrice({
+                      variant,
+                      region: {
+                        currency_code: currentRegion?.currency_code as string,
+                        tax_code: currentRegion?.tax_code as string,
+                        tax_rate: currentRegion?.tax_rate as number,
+                      },
+                    })}
+                  </li>
+                ))}
+              </ul>
 
-            {canAddToCart ? (
-              <AddToCartButton variantId={product.variants[0].id!} qty={1} />
-            ) : // <div></div>
-            null}
+              {canAddToCart ? (
+                <AddToCartButton variantId={product.variants[0].id!} qty={1} />
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
