@@ -8,7 +8,6 @@ import {
   getProvinces,
   getAmphoeFromProvince,
 } from "../../../helpers/store/addressHelper";
-import CheckoutCard from "../Card/CheckoutCard";
 import CheckoutV2 from "../Card/Checkoutv2";
 
 const ShippingForm = () => {
