@@ -53,43 +53,29 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     return <></>;
   } else {
     return (
-      <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains}>
-          <BitkubNextProvider>
-            <MenuProvider>
-              <NewAssetProvider>
-                <Component {...pageProps} />
-              </NewAssetProvider>
-            </MenuProvider>
-          </BitkubNextProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
+      <MedusaProvider
+        queryClientProviderProps={{ client: queryClient }}
+        baseUrl="http://localhost:9000"
+        publishableApiKey="pk_01HBSTH6R1DYBQ7QR97RZEJGMN"
+      >
+        <CartProvider>
+          <WagmiConfig client={wagmiClient}>
+            <RainbowKitProvider chains={chains}>
+              <BitkubNextProvider>
+                <MenuProvider>
+                  <NewAssetProvider>
+                    <StoreProvider>
+                      <Component {...pageProps} />
+                    </StoreProvider>
+                  </NewAssetProvider>
+                </MenuProvider>
+              </BitkubNextProvider>
+            </RainbowKitProvider>
+          </WagmiConfig>
+        </CartProvider>
+      </MedusaProvider>
     );
   }
 };
 
 export default trpc.withTRPC(MyApp);
-
-{
-  /* <MedusaProvider
-queryClientProviderProps={{ client: queryClient }}
-baseUrl="http://localhost:9000"
-publishableApiKey="pk_01HBSTH6R1DYBQ7QR97RZEJGMN"
->
-<CartProvider>
-  <WagmiConfig client={wagmiClient}>
-    <RainbowKitProvider chains={chains}>
-      <BitkubNextProvider>
-        <MenuProvider>
-          <NewAssetProvider>
-            <StoreProvider>
-              <Component {...pageProps} />
-            </StoreProvider>
-          </NewAssetProvider>
-        </MenuProvider>
-      </BitkubNextProvider>
-    </RainbowKitProvider>
-  </WagmiConfig>
-</CartProvider>
-</MedusaProvider> */
-}

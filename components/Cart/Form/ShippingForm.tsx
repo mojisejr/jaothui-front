@@ -36,7 +36,7 @@ const ShippingForm = () => {
   }, [watch]);
 
   useEffect(() => {
-    startCheckout.mutate();
+    // startCheckout.mutate();
   }, []);
 
   const onSubmit = (addressData: AddressPayload) => {

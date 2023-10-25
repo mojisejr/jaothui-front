@@ -22,8 +22,7 @@ import {
   useCompleteCart,
 } from "medusa-react";
 import { AddressPayload, Cart, Region } from "@medusajs/medusa";
-import { PaymentIntent } from "@stripe/stripe-js";
-import { useRouter } from "next/router";
+import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
 
 //** store session in localstorage */
 interface StoreProviderProps {
@@ -34,6 +33,8 @@ type StoreContextTypes = {
   currentRegion: Region | undefined;
   currentCart: Omit<Cart, "refundable_amount" | "refunded_total"> | undefined;
   isLoading: boolean;
+  currentProduct: PricedProduct | undefined;
+  setCurrentProduct: Dispatch<SetStateAction<PricedProduct | undefined>>;
   addToCart: (variantId: string, qty: number) => void;
   removeFromCart: (variantId: string) => void;
   incQty: (variantId: string, qty: number) => void;
@@ -48,7 +49,9 @@ type StoreContextTypes = {
 const defaultStoreContextType: StoreContextTypes = {
   currentRegion: undefined,
   currentCart: undefined,
+  currentProduct: undefined,
   isLoading: false,
+  setCurrentProduct: () => ({}),
   addToCart: () => ({}),
   removeFromCart: () => ({}),
   incQty: () => ({}),
@@ -63,6 +66,8 @@ const defaultStoreContextType: StoreContextTypes = {
 const StoreContext = createContext<StoreContextTypes>(defaultStoreContextType);
 
 const StoreProvider = ({ children }: StoreProviderProps) => {
+  const [currentProduct, setCurrentProduct] = useState<PricedProduct>();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { regions, isSuccess } = useRegions();
   const { cart, createCart, updateCart } = useCart();
@@ -203,6 +208,7 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
               onSuccess: ({ cart }) => {
                 setCurrentCart(cart);
                 console.log("shipping method => shipping method added", cart);
+                createPaymentSession();
               },
             }
           );
@@ -256,6 +262,8 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
         isLoading,
         currentRegion,
         currentCart,
+        currentProduct,
+        setCurrentProduct,
         addToCart,
         removeFromCart,
         incQty,

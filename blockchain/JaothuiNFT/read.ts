@@ -4,21 +4,21 @@ import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import { BigNumber } from "ethers";
 import { useState } from "react";
 
-export function useTokenOfOwnerAll() {
+export function useGetJaothui() {
   const { walletAddress } = useBitkubNext();
-  const [tokens, setTokens] = useState<BigNumber[]>();
+  const [tokens, setTokens] = useState<string[]>();
 
-  useContractRead({
-    ...contract.nft,
-    functionName: "tokensOfOwnerAll",
+  const { isLoading } = useContractRead({
+    ...contract.jaothui,
+    functionName: "tokenOfOwnerAll",
     args: [walletAddress],
     onSuccess(data: BigNumber[]) {
-      console.log("tokenOfOwnerAll", data);
-      setTokens(data);
+      setTokens(data.map((d) => d.toString()));
     },
   });
 
   return {
     tokens,
+    loadingTokens: isLoading,
   };
 }

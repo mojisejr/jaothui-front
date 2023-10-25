@@ -9,6 +9,8 @@ import FoodProductList from "../components/Store/Lists/FoodProductList";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
+  const { data } = trpc.privilege.get.useQuery();
+  console.log(data);
   return (
     <div className="relative">
       <Layout>

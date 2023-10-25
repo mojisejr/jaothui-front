@@ -72,11 +72,11 @@ const products = [
 ];
 
 const ArttoyProductList = () => {
-  // const { currentRegion } = useStore();
+  const { currentRegion } = useStore();
 
-  // const { products } = useProducts({
-  //   region_id: currentRegion == undefined ? "" : currentRegion!.id!,
-  // });
+  const { products } = useProducts({
+    region_id: currentRegion == undefined ? "" : currentRegion!.id!,
+  });
 
   return (
     <>
@@ -90,8 +90,8 @@ const ArttoyProductList = () => {
           </div>
           {products ? (
             <>
-              <ListLayoutMock products={products} />
-              {/* <ListLayout products={products} /> */}
+              {/* <ListLayoutMock products={products} /> */}
+              <ListLayout products={products} />
             </>
           ) : (
             "Nothing to show"

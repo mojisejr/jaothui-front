@@ -12,7 +12,7 @@ const CheckoutV2 = () => {
   const { createPaymentSession, currentCart } = useStore();
 
   useEffect(() => {
-    createPaymentSession();
+    // createPaymentSession();
   }, []);
 
   return (
