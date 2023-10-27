@@ -42,6 +42,7 @@ type Props = {
 };
 
 export function BitkubNextProvider({ children }: Props) {
+  const { replace } = useRouter();
   const {
     data: customer,
     mutate: createOrGetCustomer,
@@ -70,15 +71,11 @@ export function BitkubNextProvider({ children }: Props) {
   //get user from refresh token
   const getUserDataFromRefreshToken = async () => {
 
-    console.log("check refresh token");
-
-
     const accessToken = localStorage.getItem('bkc_at');
     const refreshToken = localStorage.getItem("bkc_rt");
 
 
     if(accessToken == undefined || refreshToken == undefined) {
-      console.log("current token is undefined");
       setIsConnected(false);
     } else {
       const userData = await getUserData(accessToken!);

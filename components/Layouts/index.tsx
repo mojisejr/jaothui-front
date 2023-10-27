@@ -192,7 +192,7 @@ const ConnectedList  = () => {
     </li>
     <li>
       <Link href="/cert/profile/mycert" className="hover:text-primary">
-        <AiFillCaretRight size={24} />
+        <AiFillCaretRight size={4} />
         <div>My Pedigrees</div>
       </Link>
     </li> 

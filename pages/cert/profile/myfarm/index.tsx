@@ -17,7 +17,7 @@ import FertilizationTable from "../../../../components/MyFarm/FertilizationTable
 import Layout from "../../../../components/Layouts";
 import BitkubNextConnectButton from "../../../../components/Shared/BitkubNext";
 
-const MyFarm: FunctionComponent<PropsWithChildren> = () => {
+const MyFarm = () => {
   const { push, replace } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected } = useBitkubNext();

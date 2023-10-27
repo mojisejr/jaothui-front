@@ -29,11 +29,11 @@ const RedeemDetail = () => {
             option={query.option as string}
             image={query.image as string}
             error={Boolean(query.error)}
-          />
+         />
         )}
       </div>
     </Layout>
   );
 };
 
-export fault RedeemDetail;
+export default RedeemDetail;

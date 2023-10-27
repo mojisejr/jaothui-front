@@ -9,7 +9,7 @@ import ArttoyProductList from "../../../components/Store/Lists/ArttoyList";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
 
-const Arttoy: NextPage = () => {
+const Arttoy = () => {
   const { isConnected } = useBitkubNext();
   const { replace } = useRouter();
   const { data, isLoading: arttoyLoading } = trpc.store.getCollctions.useQuery({

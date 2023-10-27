@@ -15,7 +15,7 @@ import Loading from "../../../components/Shared/Indicators/Loading";
 import NotFound from "../../../components/Shared/Utils/Notfound";
 import { useRouter } from "next/router";
 
-const MyCert: FunctionComponent<PropsWithChildren> = () => {
+const MyCert = () => {
   const { replace } = useRouter();
   const { isConnected, walletAddress } = useBitkubNext();
   const { metadataOfOwner } = useGetMetadataOf();
@@ -28,7 +28,6 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
     const target = e.target as typeof e.target & {
       value: number;
     };
-
     switch (+target.value) {
       case 1: {
         const sorted = metadataOfOwner.filter((f) => f.sex == "female");

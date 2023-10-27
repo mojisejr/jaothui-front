@@ -12,7 +12,7 @@ const ProfilePage = () => {
 
 
   if(!isConnected) {
-    replac("/unauthorized");
+    replace("/unauthorized");
     return;
     
   }

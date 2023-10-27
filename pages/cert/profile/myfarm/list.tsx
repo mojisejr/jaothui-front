@@ -17,7 +17,7 @@ import { trpc } from "../../../../utils/trpc";
 import Layout from "../../../../components/Layouts";
 import BitkubNextConnectButton from "../../../../components/Shared/BitkubNext";
 
-const BuffaloList: FunctionComponent<PropsWithChildren> = () => {
+const BuffaloList= () => {
   const { push } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected, walletAddress } = useBitkubNext();
