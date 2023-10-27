@@ -79,13 +79,14 @@ const MultipleRedeemCard = ({ privilege }: MultipleRedeemCardProps) => {
       });
     }
 
-  }
+  } 
 
   useEffect(() => {
+    refetch();
     if (tokens) {
       filterOutUsedToken(tokens!, data); 
     }
-  }, [tokensLoaded, isLoading, tokens, redeemed]);
+  }, [tokensLoaded, isLoading, tokens, redeemed, redeemError]);
 
   useEffect(() => {
     handleRedeemedSuccess();

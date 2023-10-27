@@ -20,7 +20,7 @@ const RedeemCard = ({
       </figure>
       <div className="card-body">
         <h2 className="card-title">{title}</h2>
-        <p>{description}</p>
+        <pre className="text-sm overflow-auto font-sans h-[100px]">{description}</pre>
         <>{children}</>
       </div>
     </div>

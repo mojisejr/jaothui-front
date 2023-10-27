@@ -8,12 +8,11 @@ import Loading from "../../../../components/Shared/Indicators/Loading";
 const RedeemDetail = () => {
   const { query } = useRouter();
 
-  console.log(query);
 
 
   return (
     <Layout>
-      <div className="h-[80vh] flex justify-center items-center py-10">
+      <div className="h-[95vh] flex justify-center items-center py-10">
         {query.redeemed == undefined ? (
           <Loading size="lg" />
         ) : (
