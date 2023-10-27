@@ -15,12 +15,18 @@ import BitkubNextConnectButton from "../../../../../components/Shared/BitkubNext
 const MyFarmBuffalo: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected } = useBitkubNext();
   const { isOpen } = useMenu();
-  const { query } = useRouter();
+  const { query, replace } = useRouter();
+
 
   const { data, isLoading, refetch } = trpc.buffalo.getByMicrochip.useQuery({
     farmId: +query.farmId!,
     microchip: query.microchip as string,
   });
+
+  if(!isConnected) {
+    replace("/unauthorized")
+    return;
+  }
 
   return (
     <>

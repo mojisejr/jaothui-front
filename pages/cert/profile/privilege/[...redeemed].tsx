@@ -6,7 +6,15 @@ import RedeemedCard from "../../../../components/Privilege/RedeemedCard";
 import Loading from "../../../../components/Shared/Indicators/Loading";
 
 const RedeemDetail = () => {
-  const { query } = useRouter();
+  const { query, replace } = useRouter();
+  const { isConnected } = useBitkubNext();
+
+  if(!isConnected) {
+    replace("/unauthorized");
+    return;
+  }
+
+
 
 
 
@@ -28,4 +36,4 @@ const RedeemDetail = () => {
   );
 };
 
-export default RedeemDetail;
+export fault RedeemDetail;

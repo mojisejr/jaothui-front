@@ -6,11 +6,20 @@ import StoreLayout from "../../../components/Layouts/StoreLayout";
 import AllProductList from "../../../components/Store/Lists/AllProductList";
 import ProductDetailModal from "../../../components/Store/Details/ProductDetailModal";
 import ArttoyProductList from "../../../components/Store/Lists/ArttoyList";
+import { useBitkubNext } from "../../../contexts/bitkubNextContext";
+import { useRouter } from "next/router";
 
 const Arttoy: NextPage = () => {
+  const { isConnected } = useBitkubNext();
+  const { replace } = useRouter();
   const { data, isLoading: arttoyLoading } = trpc.store.getCollctions.useQuery({
     handle: "arttoy",
   });
+
+  if(!isConnected) {
+    replace('/unauthorized');
+    return;
+  }
 
   return (
     <div className="relative">

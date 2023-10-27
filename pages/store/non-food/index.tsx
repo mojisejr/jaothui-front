@@ -4,11 +4,20 @@ import { trpc } from "../../../utils/trpc";
 import Loading from "../../../components/Shared/Indicators/Loading";
 import AllProductList from "../../../components/Store/Lists/AllProductList";
 import ProductDetailModal from "../../../components/Store/Details/ProductDetailModal";
+import { useBitkubNext } from "../../../contexts/bitkubNextContext";
+import { useRouter } from "next/router";
 
 const NonFoodProductPage = () => {
+  const { replace } = useRouter();
+  const { isConnected } = useBitkubNext();
   const { data, isLoading: arttoyLoading } = trpc.store.getCollctions.useQuery({
     handle: "non-food",
   });
+
+  if(!isConnected) {
+    replace('/unauthorized');
+    return;
+  }
 
   return (
     <StoreLayout

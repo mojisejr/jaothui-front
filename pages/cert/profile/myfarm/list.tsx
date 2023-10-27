@@ -23,6 +23,7 @@ const BuffaloList: FunctionComponent<PropsWithChildren> = () => {
   const { isConnected, walletAddress } = useBitkubNext();
   const { isOpen } = useMenu();
   const { data, isLoading } = trpc.farm.get.useQuery({ wallet: walletAddress });
+  const { replace } = useRouter();
 
   function handleSearch(e: SyntheticEvent) {
     const value =
@@ -34,6 +35,12 @@ const BuffaloList: FunctionComponent<PropsWithChildren> = () => {
 
     push(`/cert/profile/myfarm/buffalo/${data.farm.id}?microchip=${value}`);
   }
+
+  if(!isConnected) {
+    replace("/unauthorized");
+    return;
+  }
+
 
   return (
     <>
