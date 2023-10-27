@@ -22,11 +22,11 @@ const PrivilegePage = () => {
     <Layout>
       <div className="my-10">
         {isLoading && !isConnected ? (
-          <Loading size="lg" />
+          <div className="h-[80vh] pt-[100px]"><Loading size="lg"/></div>
         ) : (
           <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4">
             {data == undefined
-              ? "N/A"
+              ? <div className="h-[80vh] pt-[100px]"><Loading size="lg"/></div>
               : data.map((privilege: IPrivilege) => {
                   if (privilege.type == "multiple") {
                     return (

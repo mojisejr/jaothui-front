@@ -22,15 +22,17 @@ const MultipleRedeemCard = ({ privilege }: MultipleRedeemCardProps) => {
   const { replace } = useRouter();
   const { walletAddress } = useBitkubNext();
   const { tokens, loadingTokens, tokensLoaded } = useGetJaothui();
-  const { data, isLoading } = trpc.privilege.getUsedTokens.useQuery({
+  const { data, isLoading, refetch } = trpc.privilege.getUsedTokens.useQuery({
     wallet: walletAddress,
     privilegeId: privilege._id! as string,
   });
 
   const {
     data: redeemedData,
+    error,
     isLoading: redeeming,
     isSuccess: redeemed,
+    isError: redeemError,
     mutate: redeem,
   } = trpc.privilege.redeem.useMutation();
 
@@ -51,23 +53,44 @@ const MultipleRedeemCard = ({ privilege }: MultipleRedeemCardProps) => {
     }
   };
 
+  const handleRedeemedSuccess = () => {
+    if (redeemed) {
+      replace({
+        pathname: "/cert/profile/privilege/redeemed",
+        query: {
+          tokenId: watching.selectedToken,
+          image: privilege.image,
+          option: watching.selectedOption,
+        },
+      });
+    } 
+  }
+
+  const handleRedeemedError = () => {
+    if(redeemError) {
+      replace({
+        pathname: "/cert/profile/privilege/redeem-failed",
+        query: {
+          tokenId: watching.selectedToken,
+          image: privilege.image,
+          option: "Token is already claimed!",
+          error: true,
+        },
+      });
+    }
+
+  }
+
   useEffect(() => {
     if (tokens) {
-      filterOutUsedToken(tokens!, data);
+      filterOutUsedToken(tokens!, data); 
     }
   }, [tokensLoaded, isLoading, tokens, redeemed]);
 
   useEffect(() => {
-    if (redeemed) {
-      replace({
-        pathname: "/cert/profile/privilege/[tokenId]/[opiton]",
-        query: {
-          tokenId: watching.selectedToken,
-          option: watching.selectedOption,
-        },
-      });
-    }
-  }, [redeemed]);
+    handleRedeemedSuccess();
+    handleRedeemedError(); 
+  }, [redeemed, redeemError]);
 
   const {
     register,
@@ -148,6 +171,7 @@ const MultipleRedeemCard = ({ privilege }: MultipleRedeemCardProps) => {
             className="btn btn-primary"
             disabled={
               redeeming ||
+              redeemed ||
               watching.selectedOption == "Select Options" ||
               watching.selectedToken == "Select Your NFT" ||
               !dayjs(new Date()).isSame(new Date(privilege.start!), "day")

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import {
   getAllPriviledge,
   getPrivilegeById,
@@ -33,6 +34,7 @@ export const privilegeRouter = router({
     .query(async ({ ctx, input }) => {
       return await getRedeemedTokenByWallet(input.wallet, input.privilegeId);
     }),
+
   redeem: publicProcedure
     .input(
       z.object({
@@ -44,6 +46,8 @@ export const privilegeRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await saveRedeemData(input);
+      const response = await saveRedeemData(input);
+      if(response == undefined) throw new TRPCError({code: "BAD_REQUEST", message: `Token #${input.tokenId} already claimed`})
+      return response;
     }),
 });

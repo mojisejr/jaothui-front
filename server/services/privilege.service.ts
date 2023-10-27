@@ -1,6 +1,7 @@
 import { RedeemData } from "../../interfaces/Privilege/redeemData";
 import { client } from "../../sanity/lib/client";
 import { groq } from "next-sanity";
+import { TRPCError } from "@trpc/server";
 
 export const getAllPriviledge = async () => {
   try {
@@ -68,6 +69,10 @@ export const getRedeemedTokenByWallet = async (
 
 export const saveRedeemData = async (redeemData: RedeemData) => {
   try {
+    const query = await groq`*[_type == "redemption" && privilege._ref == "${redeemData.privilege}" && tokenId == "${redeemData.tokenId}"]`;
+    const isExisted = await client.fetch(query);
+  
+    if(isExisted.length <= 0) {
     const response = await client.create({
       _type: "redemption",
       ...redeemData,
@@ -76,8 +81,10 @@ export const saveRedeemData = async (redeemData: RedeemData) => {
         _ref: redeemData.privilege,
       },
     });
-    console.log(response);
     return response;
+
+    } 
+    
   } catch (error) {
     console.log(error);
   }

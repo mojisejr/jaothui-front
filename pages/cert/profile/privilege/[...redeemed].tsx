@@ -10,15 +10,18 @@ const RedeemDetail = () => {
 
   console.log(query);
 
+
   return (
     <Layout>
-      <div className="h-[80vh] flex justify-center items-center">
+      <div className="h-[80vh] flex justify-center items-center py-10">
         {query.redeemed == undefined ? (
           <Loading size="lg" />
         ) : (
           <RedeemedCard
-            tokenId={query.redeemed![0]}
-            option={query.redeemed![1]}
+            tokenId={query.tokenId as string}
+            option={query.option as string}
+            image={query.image as string}
+            error={Boolean(query.error)}
           />
         )}
       </div>
