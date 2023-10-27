@@ -17,8 +17,8 @@ import FertilizationTable from "../../../../components/MyFarm/FertilizationTable
 import Layout from "../../../../components/Layouts";
 import BitkubNextConnectButton from "../../../../components/Shared/BitkubNext";
 
-const MyFarm: FunctionComponent<PropsWithChildren> = () => {
-  const { push } = useRouter();
+const MyFarm = () => {
+  const { push, replace } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected } = useBitkubNext();
   const { isOpen } = useMenu();
@@ -35,6 +35,11 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
     push(
       `/cert/profile/myfarm/buffalo/${farmData?.farm.id}?microchip=${value}`
     );
+  }
+
+  if(!isConnected) {
+    replace("/unauthorized");
+    return
   }
 
   return (

@@ -6,7 +6,15 @@ import RedeemedCard from "../../../../components/Privilege/RedeemedCard";
 import Loading from "../../../../components/Shared/Indicators/Loading";
 
 const RedeemDetail = () => {
-  const { query } = useRouter();
+  const { query, replace } = useRouter();
+  const { isConnected } = useBitkubNext();
+
+  if(!isConnected) {
+    replace("/unauthorized");
+    return;
+  }
+
+
 
 
 
@@ -21,7 +29,7 @@ const RedeemDetail = () => {
             option={query.option as string}
             image={query.image as string}
             error={Boolean(query.error)}
-          />
+         />
         )}
       </div>
     </Layout>
