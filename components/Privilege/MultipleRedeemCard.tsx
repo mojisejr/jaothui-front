@@ -113,6 +113,8 @@ const MultipleRedeemCard = ({ privilege }: MultipleRedeemCardProps) => {
       privilege: privilege._id!,
     };
 
+    // console.log(submittingData);
+
     redeem(submittingData);
   };
 
@@ -149,24 +151,21 @@ const MultipleRedeemCard = ({ privilege }: MultipleRedeemCardProps) => {
                 </>
               )}
             </select>
-          </div>
 
-          <div>
+          </div>
             <div className="divider">Select Options</div>
-            <select
-              disabled={redeeming}
-              className="select select-bordered w-full max-w-xs"
-              {...register("selectedOption", { required: true })}
-            >
-              <option disabled selected>
-                Select Options
-              </option>
-              {privilege.options?.map((option) => (
-                <option key={option}>{option}</option>
-              ))}
-            </select>
-          </div>
+            <div className="h-[80px] overflow-y-auto">
+            { privilege.options?.map((option) => (
+              <div key={option.option} className="form-control">
+                <label className="cursor-pointer label">  
+                  <img src={option.image} className="w-24" />
+                  <div>{option.option}</div>
+                  <input type="radio" className="radio checked:bg-primary" value={option.option} {...register("selectedOption")} />
+                </label>
+              </div>
+          ))}
 
+          </div>
           <button
             type="submit"
             className="btn btn-primary"
