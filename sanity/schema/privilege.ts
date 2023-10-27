@@ -48,7 +48,16 @@ export const privilegeType = defineType({
       name: "options",
       title: "Privilege Options",
       type: "array",
-      of: [{type: "string"}],
+      of: [{type: "object", fields: [
+        defineField({
+          name: "image",
+          type: "image",
+        }),
+        defineField({
+          name: "option",
+          type: "string",
+        })
+      ]}],
       validation: (Rule: ArrayRule<String>) => Rule.required(),
     }),
     defineField({

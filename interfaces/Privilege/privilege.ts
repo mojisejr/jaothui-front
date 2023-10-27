@@ -2,7 +2,10 @@ export interface IPrivilege {
     _rev?: string,
     start?: string,
     isActive?: boolean,
-    options?: string[],
+    options?: {
+    image?: string,
+    option?: string,
+  }[],
     _id?: string,
     _updatedAt?: string,
     contract?: string,

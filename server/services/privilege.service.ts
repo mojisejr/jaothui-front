@@ -11,7 +11,7 @@ export const getAllPriviledge = async () => {
     isActive,
     "image": image.asset->url,
     contract,
-    options,
+    "options": options[]{"image": image.asset->url, option},
     start,
     type,
     _id,
@@ -19,6 +19,7 @@ export const getAllPriviledge = async () => {
     end,
 }`;
     const response = await client.fetch(query);
+    console.log("allprivilege: ", response[1].options);
     return response;
   } catch (error) {
     console.log(error);
@@ -33,7 +34,7 @@ export const getPrivilegeById = async (_id: string) => {
     isActive,
     "image": image.asset->url,
     contract,
-    options,
+    "options": options[]{"image": image.asset->url, option},
     start,
     type,
     _id,
@@ -42,6 +43,7 @@ export const getPrivilegeById = async (_id: string) => {
     }`;
 
     const response = await client.fetch(query);
+    console.log("privilege: ",response)
     return response;
   } catch (error) {
     console.log(error);
