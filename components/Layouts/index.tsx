@@ -15,6 +15,7 @@ import { ToastContainer } from "react-toastify";
 
 import CartButton from "../Cart/Buttons/CartButton";
 import StoreMenu from "../Shared/Navbar/StoreMenu";
+import Head from "next/head";
 
 interface LayoutProps {
   children: ReactNode;
@@ -100,6 +101,14 @@ const Layout = ({ children }: LayoutProps) => {
               </div>
             </div>
           </div>
+          <Head>
+            <title>Jaothui NFT Official</title>
+            <meta
+              name="description"
+              content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+            />
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
           {children}
           <FooterSection />
           <BottomNav />
@@ -162,10 +171,14 @@ const Layout = ({ children }: LayoutProps) => {
                 <div>Kwaithai.com</div>
               </Link>
             </li>
-            {isConnected ? <>
-            <div className="text-center border-b-[1px] border-white py-2">Your Menu</div>
-            <ConnectedList />
-            </> :  null}
+            {isConnected ? (
+              <>
+                <div className="text-center border-b-[1px] border-white py-2">
+                  Your Menu
+                </div>
+                <ConnectedList />
+              </>
+            ) : null}
             <li>
               {/* <LoginWithLineButton /> */}
               {isConnected ? (
@@ -181,38 +194,38 @@ const Layout = ({ children }: LayoutProps) => {
   );
 };
 
-const ConnectedList  = () => {
+const ConnectedList = () => {
   return (
-  <ul>
-    <li>
-      <Link href="/cert/profile" className="hover:text-primary">
-        <AiFillCaretRight size={24} />
-        <div>My Profile</div>
-      </Link>
-    </li>
-    <li>
-      <Link href="/cert/profile/mycert" className="hover:text-primary">
-        <AiFillCaretRight size={4} />
-        <div>My Pedigrees</div>
-      </Link>
-    </li> 
-    <li>
-      <Link href="/cert/profile/privilege" className="hover:text-primary">
-        <AiFillCaretRight size={24} />
-        <div>My Privilege</div>
-      </Link>
-    </li>
-    <li>
-      <Link href="/cert/profile/myfarm" className="hover:text-primary">
-        <AiFillCaretRight size={24} />
-        <div>My Farm</div>
-      </Link>
-    </li>
-    {/*<li>
+    <ul>
+      <li>
+        <Link href="/cert/profile" className="hover:text-primary">
+          <AiFillCaretRight size={24} />
+          <div>My Profile</div>
+        </Link>
+      </li>
+      <li>
+        <Link href="/cert/profile/mycert" className="hover:text-primary">
+          <AiFillCaretRight size={4} />
+          <div>My Pedigrees</div>
+        </Link>
+      </li>
+      <li>
+        <Link href="/cert/profile/privilege" className="hover:text-primary">
+          <AiFillCaretRight size={24} />
+          <div>My Privilege</div>
+        </Link>
+      </li>
+      <li>
+        <Link href="/cert/profile/myfarm" className="hover:text-primary">
+          <AiFillCaretRight size={24} />
+          <div>My Farm</div>
+        </Link>
+      </li>
+      {/*<li>
       <StoreMenu />
     </li>*/}
-  </ul>
-  )
-}
+    </ul>
+  );
+};
 
 export default Layout;
