@@ -17,12 +17,13 @@ import { trpc } from "../../../../utils/trpc";
 import Layout from "../../../../components/Layouts";
 import BitkubNextConnectButton from "../../../../components/Shared/BitkubNext";
 
-const BuffaloList: FunctionComponent<PropsWithChildren> = () => {
+const BuffaloList= () => {
   const { push } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected, walletAddress } = useBitkubNext();
   const { isOpen } = useMenu();
   const { data, isLoading } = trpc.farm.get.useQuery({ wallet: walletAddress });
+  const { replace } = useRouter();
 
   function handleSearch(e: SyntheticEvent) {
     const value =
@@ -34,6 +35,12 @@ const BuffaloList: FunctionComponent<PropsWithChildren> = () => {
 
     push(`/cert/profile/myfarm/buffalo/${data.farm.id}?microchip=${value}`);
   }
+
+  if(!isConnected) {
+    replace("/unauthorized");
+    return;
+  }
+
 
   return (
     <>

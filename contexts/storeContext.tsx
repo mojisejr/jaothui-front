@@ -7,9 +7,22 @@ import {
   useEffect,
   useState,
 } from "react";
-import { ItemInCart } from "../interfaces/Store/ItemInCart";
-import _ from "lodash";
-import { Product } from "../interfaces/Store/Product";
+import _, { replace } from "lodash";
+
+import {
+  useRegions,
+  useCart,
+  useCreateLineItem,
+  useUpdateLineItem,
+  useDeleteLineItem,
+  useShippingOptions,
+  useAddShippingMethodToCart,
+  useCreatePaymentSession,
+  useSetPaymentSession,
+  useCompleteCart,
+} from "medusa-react";
+import { AddressPayload, Cart, Region } from "@medusajs/medusa";
+import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
 
 //** store session in localstorage */
 interface StoreProviderProps {
@@ -17,148 +30,249 @@ interface StoreProviderProps {
 }
 
 type StoreContextTypes = {
-  itemInCart: ItemInCart[];
-  itemInCartCount: number;
-  totalPrice: number;
-  setItemInCart: Dispatch<SetStateAction<ItemInCart[]>>;
-  addToCart: (item: ItemInCart) => void;
-  removeFromCart: (item: ItemInCart) => void;
-  incQty: (item: Product, qty: number) => void;
-  decQty: (item: Product, qty: number) => void;
+  currentRegion: Region | undefined;
+  currentCart: Omit<Cart, "refundable_amount" | "refunded_total"> | undefined;
+  isLoading: boolean;
+  currentProduct: PricedProduct | undefined;
+  setCurrentProduct: Dispatch<SetStateAction<PricedProduct | undefined>>;
+  addToCart: (variantId: string, qty: number) => void;
+  removeFromCart: (variantId: string) => void;
+  incQty: (variantId: string, qty: number) => void;
+  decQty: (variantId: string, qty: number) => void;
+  updateShippingAddress: (address: AddressPayload) => void;
+  createPaymentSession: (variants: void, options?: any) => void;
+  complete: () => void;
   clearCart: () => void;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 const defaultStoreContextType: StoreContextTypes = {
-  itemInCart: [],
-  totalPrice: 0,
-  itemInCartCount: 0,
-  setItemInCart: () => ({}),
+  currentRegion: undefined,
+  currentCart: undefined,
+  currentProduct: undefined,
+  isLoading: false,
+  setCurrentProduct: () => ({}),
   addToCart: () => ({}),
   removeFromCart: () => ({}),
   incQty: () => ({}),
   decQty: () => ({}),
+  updateShippingAddress: () => ({}),
+  createPaymentSession: () => ({}),
+  complete: () => ({}),
   clearCart: () => ({}),
+  setIsLoading: () => ({}),
 };
 
 const StoreContext = createContext<StoreContextTypes>(defaultStoreContextType);
 
 const StoreProvider = ({ children }: StoreProviderProps) => {
-  const [itemInCart, setItemInCart] = useState<ItemInCart[]>([]);
-  const [itemInCartCount, setItemInCartCount] = useState<number>(0);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [currentProduct, setCurrentProduct] = useState<PricedProduct>();
 
-  const addToCart = (item: ItemInCart) => {
-    let alreadyInCart = itemInCart.find((inCart) => inCart._id === item._id);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { regions, isSuccess } = useRegions();
+  const { cart, createCart, updateCart } = useCart();
 
-    setTotalPrice((prev) => {
-      if (item.discount) {
-        return prev + item.qty * item.discount;
-      } else {
-        return prev + item.qty * item.price;
-      }
-    });
+  const [currentCartId, _setCurrentCartId] = useState<string>();
+  const _createLineItem = useCreateLineItem(currentCartId!);
+  const _updateLineItem = useUpdateLineItem(currentCartId!);
+  const _removeLineItem = useDeleteLineItem(currentCartId!);
 
-    if (alreadyInCart) {
-      _.remove(itemInCart, alreadyInCart);
-      const updatedItemInCart = _.concat(itemInCart, {
-        ...alreadyInCart,
-        qty: alreadyInCart?.qty + item.qty,
-      });
-      setItemInCart(updatedItemInCart);
-      setItemInCartCount((prev) => prev + item.qty);
-    } else {
-      setItemInCart([...itemInCart, { ...item }]);
-      setItemInCartCount((prev) => prev + item.qty);
+  const _addShippingMethod = useAddShippingMethodToCart(currentCartId!);
+
+  const _createPaymenySession = useCreatePaymentSession(currentCartId!);
+  const _setPaymentSession = useSetPaymentSession(currentCartId!);
+
+  const _completeCart = useCompleteCart(currentCartId!);
+
+  const [currentCart, setCurrentCart] =
+    useState<Omit<Cart, "refundable_amount" | "refunded_total">>();
+  const [currentRegion, _setCurrentRegion] = useState<Region>();
+
+  const { shipping_options } = useShippingOptions({
+    region_id: currentRegion?.id,
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      _setCurrentRegion(regions![0]);
+      _createCart();
     }
-  };
+  }, [isSuccess, cart]);
 
-  const removeFromCart = (item: ItemInCart) => {
-    let alreadyInCart = itemInCart.find((inCart) => inCart._id === item._id);
-
-    setTotalPrice((prev) => {
-      if (item.discount) {
-        return prev - item.qty * item.discount;
-      } else {
-        return prev - item.qty * item.price;
-      }
-    });
-
-    if (alreadyInCart) {
-      _.remove(itemInCart, alreadyInCart);
-      const itemLeft = itemInCart.filter(
-        (inCart) => inCart._id !== alreadyInCart?._id
+  const _createCart = () => {
+    if (cart?.id != localStorage.getItem("cart_id")) {
+      createCart.mutate(
+        {
+          region_id: regions?.length ? regions[0].id : undefined,
+        },
+        {
+          onSuccess: ({ cart }) => {
+            localStorage.setItem("cart_id", cart.id);
+            setCurrentCart(cart);
+            _setCurrentCartId(cart.id);
+          },
+        }
       );
-      setItemInCart(itemLeft.length <= 0 ? [] : itemLeft);
-      setItemInCartCount((prev) => (prev <= 0 ? 0 : prev - item.qty));
     }
   };
 
-  const incQty = (item: Product, qty: number = 1) => {
-    let alreadyInCart = itemInCart.find((inCart) => inCart._id === item._id);
-    const index = _.indexOf(itemInCart, alreadyInCart);
-
-    setTotalPrice((prev) => {
-      if (item.discount) {
-        return prev + qty * item.discount;
-      } else {
-        return prev + qty * item.price;
-      }
-    });
-
-    if (alreadyInCart) {
-      setItemInCart((prev) => {
-        prev[index] = {
-          ...alreadyInCart,
-          qty: alreadyInCart?.qty === undefined ? 0 : alreadyInCart.qty + qty,
-        } as ItemInCart;
-        return prev;
-      });
-      setItemInCartCount((prev) => (prev <= 0 ? 0 : prev + qty));
+  const addToCart = (variantId: string, qty: number) => {
+    if (!currentCartId) {
+      _createCart();
     }
+
+    _createLineItem.mutate(
+      {
+        variant_id: variantId,
+        quantity: qty,
+      },
+      {
+        onSuccess: ({ cart }) => {
+          cart.items;
+          setCurrentCart(cart);
+        },
+      }
+    );
   };
 
-  const decQty = (item: Product, qty: number = 1) => {
-    let alreadyInCart = itemInCart.find((inCart) => inCart._id === item._id);
-    const index = _.indexOf(itemInCart, alreadyInCart);
-
-    setTotalPrice((prev) => {
-      if (item.discount) {
-        return prev - qty * item.discount;
-      } else {
-        return prev - qty * item.price;
+  const removeFromCart = (itemId: string) => {
+    _removeLineItem.mutate(
+      {
+        lineId: itemId,
+      },
+      {
+        onSuccess: ({ cart }) => {
+          cart.items;
+          setCurrentCart(cart);
+        },
       }
-    });
+    );
+  };
 
-    if (alreadyInCart && alreadyInCart.qty > 1) {
-      setItemInCart((prev) => {
-        prev[index] = {
-          ...alreadyInCart,
-          qty: alreadyInCart?.qty === undefined ? 0 : alreadyInCart.qty - qty,
-        } as ItemInCart;
-        return prev;
-      });
-      setItemInCartCount((prev) => (prev <= 0 ? 0 : prev - qty));
-    }
+  const incQty = (itemId: string, qty: number = 1) => {
+    const prevQty = currentCart?.items.find((item) => item.id === itemId)
+      ?.quantity as number | 0;
+
+    _updateLineItem.mutate(
+      {
+        lineId: itemId,
+        quantity: prevQty + qty,
+      },
+      {
+        onSuccess: ({ cart }) => {
+          cart.items;
+          setCurrentCart(cart);
+        },
+      }
+    );
+  };
+
+  const decQty = (itemId: string, qty: number = 1) => {
+    const prevQty = currentCart?.items.find((item) => item.id === itemId)
+      ?.quantity as number | 0;
+
+    _updateLineItem.mutate(
+      {
+        lineId: itemId,
+        quantity: prevQty - qty,
+      },
+      {
+        onSuccess: ({ cart }) => {
+          cart.items;
+          setCurrentCart(cart);
+        },
+      }
+    );
+  };
+
+  const updateShippingAddress = (address: AddressPayload) => {
+    const customer = JSON.parse(localStorage.getItem("customer")!);
+
+    updateCart.mutate(
+      {
+        customer_id: customer.id,
+        email: customer.email,
+        shipping_address: {
+          ...address,
+        },
+      },
+      {
+        onSuccess: ({ cart }) => {
+          console.log("shipping => shipping address is updated");
+          setCurrentCart(cart);
+          _addShippingMethod.mutate(
+            {
+              option_id: shipping_options![0].id!,
+            },
+            {
+              onSuccess: ({ cart }) => {
+                setCurrentCart(cart);
+                console.log("shipping method => shipping method added", cart);
+                createPaymentSession();
+              },
+            }
+          );
+        },
+      }
+    );
+  };
+
+  const createPaymentSession = () => {
+    _createPaymenySession.mutate(undefined, {
+      onSuccess: ({ cart }) => {
+        console.log("payment => payment session is created");
+        setCurrentCart(cart);
+        setPaymentSession();
+      },
+    });
+  };
+
+  const setPaymentSession = () => {
+    _setPaymentSession.mutate(
+      {
+        provider_id: "stripe",
+      },
+      {
+        onSuccess: ({ cart }) => {
+          console.log("payment ==> payment session is set to the cart");
+          setCurrentCart({
+            ...cart,
+          });
+        },
+      }
+    );
+  };
+
+  const complete = () => {
+    _completeCart.mutate(undefined, {
+      onSuccess: (response) => {
+        clearCart();
+      },
+    });
   };
 
   const clearCart = () => {
-    setItemInCart([]);
-    setItemInCartCount(0);
-    setTotalPrice(0);
+    localStorage.removeItem("cart_id");
+    setCurrentCart(undefined);
   };
 
   return (
     <StoreContext.Provider
       value={{
-        itemInCart,
-        itemInCartCount,
-        totalPrice,
-        setItemInCart,
+        isLoading,
+        currentRegion,
+        currentCart,
+        currentProduct,
+        setCurrentProduct,
         addToCart,
         removeFromCart,
         incQty,
         decQty,
+        updateShippingAddress,
         clearCart,
+        createPaymentSession,
+        complete,
+        setIsLoading,
       }}
     >
       {children}

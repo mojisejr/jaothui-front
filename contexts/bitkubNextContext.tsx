@@ -12,26 +12,25 @@ import { getUserData } from "../helpers/getUserData";
 import { getCookies } from "cookies-next";
 import { isEmpty } from "../helpers/dataValidator";
 
+import { trpc } from "../utils/trpc";
+
+import  { useRouter } from 'next/router';
+
+
 type bitkubNextContextType = {
   isConnected: boolean;
   walletAddress: `0x${string}` | "";
   email?: string;
   disconnect: () => void;
-  updateLogin: (
-    accessToken: string,
-    refreshToken: string,
-    walletAddress: `0x${string}`,
-    email: string
+  loggedIn: (
   ) => void;
-  refreshAccessToken: () => void;
 };
 
 const bitkubNextContextDefaultValue: bitkubNextContextType = {
   isConnected: false,
   walletAddress: "",
   disconnect: () => {},
-  updateLogin: () => {},
-  refreshAccessToken: () => {},
+  loggedIn: () => {},
 };
 
 const BitkubNextContext = createContext<bitkubNextContextType>(
@@ -43,9 +42,14 @@ type Props = {
 };
 
 export function BitkubNextProvider({ children }: Props) {
+  const { replace } = useRouter();
+  const {
+    data: customer,
+    mutate: createOrGetCustomer,
+    isSuccess: isUserGet,
+  } = trpc.store.createOrGetCustomer.useMutation();
+
   const [isConnected, setIsConnected] = useState(false);
-  const [accessToken, setAccessToken] = useState<string>("none");
-  const [refreshToken, setRefreshToken] = useState<string>("none");
   const [walletAddress, setWalletAddress] = useState<`0x${string}` | "">(
     "0x00"
   );
@@ -53,118 +57,87 @@ export function BitkubNextProvider({ children }: Props) {
   const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
-    if (walletAddress == "" || accessToken == "none") {
-      //in case of refresh token is available
-      getUserDataFromAccessToken();
+    
+    const wallet = localStorage.getItem("bkc_wallet");
+    setWalletAddress(wallet as `0x${string}`);
+
+    getUserDataFromRefreshToken();
+
+    if (isUserGet) {
+      localStorage.setItem("customer", JSON.stringify(customer));
     }
+  }, [isConnected, isUserGet]);
 
-    if (walletAddress != "" && isConnected && accessToken != "none") {
-      setIsConnected(true);
-    }
-  }, [accessToken, refreshToken, walletAddress, isConnected]);
+  //get user from refresh token
+  const getUserDataFromRefreshToken = async () => {
 
-  async function getUserDataFromAccessToken() {
-    const { access_token, refresh_token, wallet } = getCookies();
-    console.log("access token from cookies: ", {
-      accessToken,
-      refresh_token,
-      wallet,
-    });
+    const accessToken = localStorage.getItem('bkc_at');
+    const refreshToken = localStorage.getItem("bkc_rt");
 
-    const userData = await getUserData(access_token!);
-    console.log("user data from cookie's access token", userData);
 
-    if (
-      userData.success &&
-      !isEmpty(userData.wallet_address) &&
-      userData.wallet_address == wallet
-    ) {
-      console.log("cookie is useable setting data to hooks");
-      setWalletAddress(userData.wallet_address);
-      setAccessToken(access_token!);
-      setRefreshToken(refresh_token!);
-      setEmail(userData.email);
-      setIsConnected(true);
-    } else if (!isEmpty(refresh_token)) {
-      // check if refresh token is OK ?
-      console.log("cookie is invalid starting exchangeRefreshToken");
-      try {
-        const refreshedTokens = await exchangeRefreshToken(
-          process.env.NEXT_PUBLIC_client_id_dev as string,
-          refresh_token!
-        );
-        console.log("refreshed Token: ", refreshedTokens);
-
-        if (isEmpty(refreshedTokens)) {
-          console.log("somthing went wrong cannot find any refreshing tokens");
-          setIsConnected(false);
-        } else {
-          console.log("refreshed token success fetching user data");
-          const userData = await getUserData(refreshedTokens.access_token);
-          if (
-            userData.success &&
-            !isEmpty(userData.wallet_address) &&
-            userData.wallet_address == wallet
-          ) {
-            console.log("user data found from refreshed tokens");
-            setWalletAddress(userData.wallet_address);
-            setAccessToken(refreshedTokens.access_token!);
-            setRefreshToken(refreshedTokens.refresh_token!);
-            setEmail(userData.email);
-            setIsConnected(true);
-          } else {
-            console.log("user data not found from refresh token");
-            setIsConnected(false);
-          }
-        }
-      } catch (error) {
-        console.log("invalid refresh token or token expired");
-        setIsConnected(false);
-      }
+    if(accessToken == undefined || refreshToken == undefined) {
+      setIsConnected(false);
     } else {
+      const userData = await getUserData(accessToken!);
+      if(userData.success) {
+        localStorage.setItem('bkc_wallet', userData.wallet_address);
+        localStorage.setItem('bkc_email', userData.email);
+        setIsConnected(true);
+        return;
+      }
+    }
+
+    const tokens = await exchangeRefreshToken(process.env.NEXT_PUBLIC_client_id_dev as string, refreshToken!);
+
+    if(tokens.access_token == undefined || tokens.refresh_token == undefined) {
+      setIsConnected(false);
+    }
+
+
+    const userData = await getUserData(tokens.access_token!);
+
+    if(userData.success) {
+      localStorage.setItem('bkc_wallet', userData.wallet_address);
+      localStorage.setItem('bkc_email', userData.email);
+      setWalletAddress(userData.wallet_address!);
+      setIsConnected(true);
+    } else if(!userData.success) {
+      setWalletAddress("");
       setIsConnected(false);
     }
   }
 
-  function updateLogin(
-    accessToken: string,
-    refreshToken: string,
-    walletAddress: `0x${string}`,
-    email: string
-  ) {
-    setAccessToken(accessToken);
-    setRefreshToken(refreshToken);
-    setWalletAddress(walletAddress);
-    setEmail(email);
-    setIsConnected(true);
-  }
 
-  async function refreshAccessToken() {
-    const { access_token, refresh_token } = await exchangeRefreshToken(
-      process.env.NEXT_PUBLIC_client_id_dev as string,
-      refreshToken
-    );
-
-    setAccessToken(access_token);
-    setRefreshToken(refresh_token);
+  function loggedIn() {
+    const wallet = localStorage.getItem('bkc_wallet');
+    setWalletAddress(wallet as `0x${string}`);
     setIsConnected(true);
   }
 
   function disconnect() {
-    setAccessToken("none");
-    setRefreshToken("none");
-    setWalletAddress("");
-    deleteCookies();
+    localStorage.removeItem('bkc_wallet');
+    localStorage.removeItem('bkc_email');
+    localStorage.removeItem('bkc_at');
+    localStorage.removeItem('bkc_rt');
+    localStorage.removeItem("customer");
     setIsConnected(false);
+  }
+
+  function getCustomerId(wallet: string, email: string) {
+    if (localStorage.getItem("customer") == undefined) {
+      createOrGetCustomer({
+        wallet,
+        email,
+      });
+    }
   }
 
   const value = {
     walletAddress,
     email,
     isConnected,
-    updateLogin,
+    loggedIn,
     disconnect,
-    refreshAccessToken,
   };
 
   return (

@@ -17,8 +17,8 @@ import FertilizationTable from "../../../../components/MyFarm/FertilizationTable
 import Layout from "../../../../components/Layouts";
 import BitkubNextConnectButton from "../../../../components/Shared/BitkubNext";
 
-const MyFarm: FunctionComponent<PropsWithChildren> = () => {
-  const { push } = useRouter();
+const MyFarm = () => {
+  const { push, replace } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected } = useBitkubNext();
   const { isOpen } = useMenu();
@@ -37,11 +37,16 @@ const MyFarm: FunctionComponent<PropsWithChildren> = () => {
     );
   }
 
+  if(!isConnected) {
+    replace("/unauthorized");
+    return
+  }
+
   return (
     <>
       <Layout>
         <div
-          className={`w-full bg-base-100  p-3 flex  justify-center items-center min-h-screen `}
+          className={`w-full bg-base-100  p-3 flex  justify-center items-center  `}
         >
           {isConnected ? (
             <div

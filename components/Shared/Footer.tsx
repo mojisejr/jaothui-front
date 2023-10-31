@@ -12,7 +12,7 @@ const FooterSection = () => {
         <div className="text-[35px] flex-none">FOLLOW US</div>
         <div className="border-b-[3px] flex-1"></div>
       </div>
-      <div className="flex flex-col gap-[20px] mt-[10px]">
+      <div className="flex flex-col gap-[20px] mt-[10px] text-[25px]">
         <Link
           className="flex items-center gap-[20px] hover:text-thuiyellow transition-[2s]"
           href="https://www.facebook.com/jaothui"

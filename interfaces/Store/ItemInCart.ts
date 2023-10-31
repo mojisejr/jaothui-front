@@ -1,5 +1,6 @@
 import { Product } from "./Product";
-import { string, z } from "zod";
+import { z } from "zod";
+import { Cart } from "@medusajs/medusa";
 
 export type ItemInCart = Product & { qty: number };
 

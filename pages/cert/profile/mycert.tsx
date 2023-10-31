@@ -13,19 +13,21 @@ import { useGetMetadataOf } from "../../../blockchain/Metadata/read";
 import PedigreeCard from "../../../components/Shared/Card/PedigreeCard";
 import Loading from "../../../components/Shared/Indicators/Loading";
 import NotFound from "../../../components/Shared/Utils/Notfound";
+import { useRouter } from "next/router";
 
-const MyCert: FunctionComponent<PropsWithChildren> = () => {
+const MyCert = () => {
+  const { replace } = useRouter();
   const { isConnected, walletAddress } = useBitkubNext();
   const { metadataOfOwner } = useGetMetadataOf();
   const [sortState, setSortState] = useState<number>(0);
   const [currentData, setCurrentData] = useState<IMetadata[]>(metadataOfOwner);
+
 
   function handleSorting(e: SyntheticEvent) {
     e.preventDefault();
     const target = e.target as typeof e.target & {
       value: number;
     };
-
     switch (+target.value) {
       case 1: {
         const sorted = metadataOfOwner.filter((f) => f.sex == "female");
@@ -50,6 +52,12 @@ const MyCert: FunctionComponent<PropsWithChildren> = () => {
       setCurrentData(metadataOfOwner);
     }
   }, [metadataOfOwner, sortState]);
+
+
+  if(!isConnected) {
+    replace("/unauthorized");
+    return;
+  }
 
   return (
     <>

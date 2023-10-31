@@ -27,25 +27,25 @@ const SSRBadge = () => {
 
 const data = [
   {
-    image: "images/n.gif",
+    image: "/images/n.gif",
     title: "NORMAL",
     subtitle: "80% of the collection",
     badge: <NBadge />,
   },
   {
-    image: "images/r.gif",
+    image: "/images/r.gif",
     title: "RARE",
     subtitle: "12% of the collection",
     badge: <RBadge />,
   },
   {
-    image: "images/sr.gif",
+    image: "/images/sr.gif",
     title: "SUPER RARE",
     subtitle: "5% of the collection",
     badge: <SRBadge />,
   },
   {
-    image: "images/ssr.gif",
+    image: "/images/ssr.gif",
     title: "SUPER S. RARE",
     subtitle: "3% of the collection",
     badge: <SSRBadge />,
@@ -62,7 +62,7 @@ const NFTCard = ({ rarity }: NFTCardProp) => {
       <div className="card w-[320px] bg-base-100 shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]">
         <figure className=" py-2 overflow-hidden">
           <img
-            className="w-3/4 rounded-xl"
+            className=" w-24/30 rounded-xl"
             src={data[rarity].image}
             alt="nft-image"
           />

@@ -11,7 +11,7 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
     <>
       <Link
         href={`/cert/${data ? data.microchip : null}`}
-        className="w-[320px] rounded-xl shadow-xl"
+        className="w-full rounded-xl shadow-xl"
       >
         <div className="p-4">
           <img
@@ -28,7 +28,7 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
                 {data ? data.name : <Loading size="sm" />}
               </div>
               <div className="text-sm">
-                {data ? data.createdAt : <Loading size="sm" />}
+                {data ? data.birthday : <Loading size="sm" />}
               </div>
             </div>
             <div>

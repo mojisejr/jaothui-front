@@ -72,7 +72,7 @@ const CertMainPage: NextPage = () => {
           {currentData.length <= 0 ? (
             <NotFound />
           ) : (
-            <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:px-[10rem] labtop:grid-cols-3 desktopM:grid-cols-4 labtop:px-[13rem] desktopM:px-[18rem]">
+            <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:px-[10rem] labtop:grid-cols-3 desktopM:grid-cols-4 labtop:px-[13rem] desktopM:px-[18rem] gap-2 desktopM:gap-3 tabletS:px-10 px-2">
               {currentData ? (
                 currentData.map((d, index) => (
                   <PedigreeCard key={index} data={d} />

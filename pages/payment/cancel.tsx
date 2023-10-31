@@ -7,7 +7,6 @@ import Link from "next/link";
 const Cancel = () => {
   const { clearCart } = useStore();
   useEffect(() => {
-    localStorage.clear();
     clearCart();
   }, []);
 

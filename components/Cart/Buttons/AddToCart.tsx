@@ -3,17 +3,17 @@ import { Product } from "../../../interfaces/Store/Product";
 import { useStore } from "../../../contexts/storeContext";
 
 interface AddToCartButtonProps {
-  product: Product;
+  variantId: string;
   qty: number;
 }
 
-const AddToCartButton = ({ product, qty = 1 }: AddToCartButtonProps) => {
+const AddToCartButton = ({ variantId, qty = 1 }: AddToCartButtonProps) => {
   const { addToCart } = useStore();
   return (
     <button
       className="btn"
       onClick={() => {
-        addToCart({ ...product, qty });
+        addToCart(variantId, qty);
       }}
     >
       Add To Cart

@@ -1,6 +1,7 @@
 import { Stripe } from "stripe";
 import { ItemInCart } from "../../interfaces/Store/ItemInCart";
 import { TRPCError } from "@trpc/server";
+import { LineItem } from "@medusajs/medusa";
 
 const config: Stripe.StripeConfig = {
   apiVersion: "2023-08-16",
@@ -38,21 +39,22 @@ export const createCheckoutParam = (
   return params;
 };
 
-export const createLineItems = (items: ItemInCart[]) => {
+export const createLineItems = (items: LineItem[]) => {
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
-    (item: ItemInCart) => {
+    (item: LineItem) => {
       return {
         price_data: {
           currency: "thb",
           product_data: {
-            name: item.name,
-            images: item.images,
+            name: item.title,
+            images: [item.thumbnail as string],
           },
-          unit_amount: item.price * 100,
+          unit_amount: item.total as number,
         },
-        quantity: item.qty,
+        quantity: item.quantity as number,
       };
     }
   );
+  console.log("lineItem: ", lineItems);
   return lineItems;
 };

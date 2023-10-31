@@ -16,7 +16,10 @@ const ProfileMenu = () => {
           className="p-5 bg-[url('/images/banner2.png')] w-full bg-cover rounded-md 
           hover:shadow-xl"
         >
-          <Link href="#" onClick={() => toast.success("Coming Soon!!")}>
+          <Link
+            href="/cert/profile/privilege"
+            onClick={() => toast.success("Coming Soon!!")}
+          >
             JAOTHUI NFT PRIVILEGE
           </Link>
         </li>
@@ -27,6 +30,12 @@ const ProfileMenu = () => {
           <Link href="/cert/profile/myfarm">MY FARM</Link>
           {/* <Link href="/cert/profile/myfarm">MY FARM</Link> */}
         </li>
+        {/* <li
+          className="p-5 bg-[url('/images/banner3.png')] w-full bg-cover rounded-md
+          hover:shadow-xl"
+        >
+          <Link href="/cert/profile/order">MY ORDER</Link>
+        </li> */}
       </ul>
     </div>
   );

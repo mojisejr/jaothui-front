@@ -1,82 +1,83 @@
-import { defineType, defineField, ImageOptions, ArrayOptions } from "sanity";
-
-export const productType = defineType({
+const product = {
   name: "product",
-  title: "Product",
   type: "document",
+  title: "Product",
   fields: [
-    defineField({
+    {
+      name: "title",
+      type: "internationalizedArrayString",
+      title: "Title",
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
+      name: "handle",
+      type: "string",
+      title: "Handle",
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
+      name: "subtitle",
+      type: "internationalizedArrayString",
+      title: "Subtitle",
+    },
+    {
+      name: "thumbnail",
+      type: "image",
+      title: "Thumbnail",
+    },
+    {
       name: "images",
+      type: "array",
       title: "Images",
-      type: "array",
-      description: "Product Images",
       of: [{ type: "image" }],
-      options: {
-        hotspot: true,
-      } as ArrayOptions<ImageOptions>,
-    }),
-
-    defineField({
-      name: "name",
-      title: "Name",
-      type: "string",
-      description: "Product's Name",
-    }),
-
-    defineField({
-      name: "category",
-      title: "Category",
-      type: "array",
-      of: [{ type: "string" }],
-    }),
-
-    defineField({
-      name: "modelno",
-      title: "Model No",
-      type: "string",
-      description:
-        "Model Number is going to be used as the items path so must be unique",
-    }),
-
-    defineField({
-      name: "price",
-      title: "Price",
-      type: "number",
-      description: "Price in Thai Baht",
-    }),
-
-    defineField({
-      name: "discount",
-      title: "Discount Price",
-      type: "number",
-      description: "Discount Price if any",
-    }),
-
-    defineField({
-      name: "desc",
+    },
+    {
+      name: "description",
+      type: "internationalizedArrayString",
       title: "Description",
+    },
+    {
+      name: "options",
       type: "array",
+      title: "Options",
+      of: [{ type: "string" }],
+    },
+    {
+      name: "tags",
+      type: "array",
+      title: "Tags",
+      of: [{ type: "string" }],
+    },
+    {
+      name: "collection",
+      type: "reference",
+      title: "Collection",
+      weak: true,
+      to: [{ type: "productCollection" }],
+    },
+    {
+      name: "type",
+      type: "string",
+      title: "Type",
+    },
+    {
+      name: "variants",
+      type: "array",
+      title: "Variants",
       of: [
         {
-          type: "object",
-          name: "inline",
-          fields: [
-            { type: "string", name: "title" },
-            { type: "string", name: "value" },
-          ],
+          type: "reference",
+          weak: true,
+          to: [{ type: "productVariant" }],
         },
       ],
-    }),
-
-    defineField({
-      name: "slug",
-      title: "Slug",
-      type: "slug",
-      options: {
-        source: "modelno",
-        maxLength: 200,
-      },
-      description: "generate the slug for the item path",
-    }),
+    },
   ],
-});
+  preview: {
+    select: {
+      title: `title.en`,
+    },
+  },
+};
+
+export default product;
