@@ -22,25 +22,29 @@ const PrivilegePage = () => {
     <Layout>
       <div className="my-10">
         {isLoading && !isConnected ? (
-          <div className="h-[80vh] pt-[100px] flex justify-center"><Loading size="lg"/></div>
+          <div className="h-[80vh] pt-[100px] flex justify-center">
+            <Loading size="lg" />
+          </div>
         ) : (
           <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4">
-            {data == undefined
-              ? <div className="h-[80vh]"><Loading size="lg"/></div>
-              : data.map((privilege: IPrivilege) => {
-                  if (privilege.type == "multiple") {
-                    return (
-                      <MultipleRedeemCard
-                        key={privilege._id}
-                        privilege={privilege}
-                      />
-                    );
-                  } else if (privilege.type == "single") {
-                    return (
-                      <PrivilegeCard key={privilege._id} data={privilege} />
-                    );
-                  }
-                })}
+            {data == undefined ? (
+              <div className="h-[80vh]">
+                <Loading size="lg" />
+              </div>
+            ) : (
+              data.map((privilege: IPrivilege) => {
+                if (privilege.type == "multiple") {
+                  return (
+                    <MultipleRedeemCard
+                      key={privilege._id}
+                      privilege={privilege}
+                    />
+                  );
+                } else if (privilege.type == "single") {
+                  return <PrivilegeCard key={privilege._id} data={privilege} />;
+                }
+              })
+            )}
           </div>
         )}
       </div>

@@ -19,7 +19,6 @@ export const getAllPriviledge = async () => {
     end,
 }`;
     const response = await client.fetch(query);
-    console.log("allprivilege: ", response[1].options);
     return response;
   } catch (error) {
     console.log(error);
@@ -43,7 +42,6 @@ export const getPrivilegeById = async (_id: string) => {
     }`;
 
     const response = await client.fetch(query);
-    console.log("privilege: ",response)
     return response;
   } catch (error) {
     console.log(error);
@@ -71,22 +69,21 @@ export const getRedeemedTokenByWallet = async (
 
 export const saveRedeemData = async (redeemData: RedeemData) => {
   try {
-    const query = await groq`*[_type == "redemption" && privilege._ref == "${redeemData.privilege}" && tokenId == "${redeemData.tokenId}"]`;
+    const query =
+      await groq`*[_type == "redemption" && privilege._ref == "${redeemData.privilege}" && tokenId == "${redeemData.tokenId}"]`;
     const isExisted = await client.fetch(query);
-  
-    if(isExisted.length <= 0) {
-    const response = await client.create({
-      _type: "redemption",
-      ...redeemData,
-      privilege: {
-        _type: "reference",
-        _ref: redeemData.privilege,
-      },
-    });
-    return response;
 
-    } 
-    
+    if (isExisted.length <= 0) {
+      const response = await client.create({
+        _type: "redemption",
+        ...redeemData,
+        privilege: {
+          _type: "reference",
+          _ref: redeemData.privilege,
+        },
+      });
+      return response;
+    }
   } catch (error) {
     console.log(error);
   }

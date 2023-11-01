@@ -1,10 +1,20 @@
-import { ArrayOfType, ArrayRule, BooleanRule, DateRule, ImageOptions, StringRule, StringSchemaType, TextRule, defineField, defineType } from "sanity";
-import { contract } from '../../blockchain/contract';
-
+import {
+  ArrayOfType,
+  ArrayRule,
+  BooleanRule,
+  DateRule,
+  ImageOptions,
+  StringRule,
+  StringSchemaType,
+  TextRule,
+  defineField,
+  defineType,
+} from "sanity";
+import { contract } from "../../blockchain/contract";
 
 export const privilegeType = defineType({
   name: "privilege",
-  type: "document", 
+  type: "document",
   fields: [
     defineField({
       name: "name",
@@ -17,8 +27,8 @@ export const privilegeType = defineType({
       title: "Image",
       type: "image",
       options: {
-        hotspot: true
-      } 
+        hotspot: true,
+      },
     }),
     defineField({
       name: "type",
@@ -26,8 +36,8 @@ export const privilegeType = defineType({
       type: "string",
       options: {
         list: [
-          {title: "Single", value: "single"},
-          {title: "Multiple", value: "multiple"},
+          { title: "Single", value: "single" },
+          { title: "Multiple", value: "multiple" },
         ],
         layout: "radio",
       },
@@ -38,9 +48,7 @@ export const privilegeType = defineType({
       title: "Redeemable Contract Address",
       type: "string",
       options: {
-        list: [
-          {title: "Jaothui NFT", value: `${contract.nft.address}`}
-        ]
+        list: [{ title: "Jaothui NFT", value: `${contract.nft.address}` }],
       },
       validation: (Rule: StringRule) => Rule.required(),
     }),
@@ -48,16 +56,21 @@ export const privilegeType = defineType({
       name: "options",
       title: "Privilege Options",
       type: "array",
-      of: [{type: "object", fields: [
-        defineField({
-          name: "image",
-          type: "image",
-        }),
-        defineField({
-          name: "option",
-          type: "string",
-        })
-      ]}],
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "image",
+              type: "image",
+            }),
+            defineField({
+              name: "option",
+              type: "string",
+            }),
+          ],
+        },
+      ],
       validation: (Rule: ArrayRule<String>) => Rule.required(),
     }),
     defineField({
@@ -83,8 +96,6 @@ export const privilegeType = defineType({
       title: "To Date",
       type: "date",
       validation: (Rule: DateRule) => Rule.required(),
-    })
-  ]
-})
-
-
+    }),
+  ],
+});
