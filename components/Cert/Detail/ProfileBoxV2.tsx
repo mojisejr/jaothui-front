@@ -52,8 +52,8 @@ const ProfileBoxV2 = ({
   }
 
   return (
-    <div className="m-10" id="container">
-      <div className="flex min-h-screen items-center justify-center rounded-xl shadow-xl">
+    <div className="my-10 mx-3 flex justify-center" id="container">
+      <div className="flex min-h-screen items-center max-w-[800px] justify-center rounded-xl shadow-xl">
         <div className="card my-2 w-11/12 bg-base-100 xl:my-6 xl:w-1/2">
           <figure>
             <img src={certNft.image!} />
@@ -66,7 +66,7 @@ const ProfileBoxV2 = ({
                   <TbNfc size={30} />
                 </div>
                 <div>
-                  <div className="stat-value text-secondary">
+                  <div className="text-2xl font-bold text-secondary">
                     {certNft.name}
                   </div>
                   <div className="stat-desc">Buffalo{"'"}s name</div>

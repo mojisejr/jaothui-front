@@ -2,12 +2,13 @@ import { LineItem } from "@medusajs/medusa";
 import { useStore } from "../../../contexts/storeContext";
 
 const ItemCard = ({ item }: { item: LineItem }) => {
-  const { decQty, incQty, removeFromCart } = useStore();
-  console.log(item);
+  const { decQty, incQty, removeFromCart, currentCart } = useStore();
+
   return (
     <>
       <div className="relative grid grid-cols-3 shadow px-1 py-2 rounded-xl place-items-center">
         <button
+          disabled={currentCart?.shipping_methods.length! > 0}
           className="absolute -top-3 -right-3 btn btn-circle btn-sm btn-error"
           onClick={() => removeFromCart(item.id as string)}
         >
@@ -27,10 +28,11 @@ const ItemCard = ({ item }: { item: LineItem }) => {
               {new Intl.NumberFormat("th-TH", {
                 style: "currency",
                 currency: "thb",
-              }).format(item.total! / 100)}
+              }).format(item.subtotal! / 100)}
             </li>
             <li className="flex gap-5 items-center justify-center">
               <button
+                disabled={currentCart?.shipping_methods.length! > 0}
                 className="btn btn-primary btn-circle text-2xl text-thuiwhite"
                 onClick={() => incQty(item.id as string, 1)}
               >
@@ -40,7 +42,10 @@ const ItemCard = ({ item }: { item: LineItem }) => {
                 {item.quantity}
               </div>
               <button
-                disabled={item.quantity == 1}
+                disabled={
+                  item.quantity == 1 ||
+                  currentCart?.shipping_methods.length! > 0
+                }
                 className="btn btn-primary btn-circle text-2xl text-thuiwhite"
                 onClick={() => decQty(item.id as string, 1)}
               >

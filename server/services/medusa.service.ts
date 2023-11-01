@@ -1,7 +1,7 @@
 import Medusa, { Config } from "@medusajs/medusa-js";
 
 const medusa = new Medusa({
-  baseUrl: "storeapi.jaohtui.com",
+  baseUrl: "http://localhost:9000",
   apiKey: process.env.MEDUSA_KEY as string,
 } as Config);
 

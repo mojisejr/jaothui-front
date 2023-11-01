@@ -11,7 +11,6 @@ import BitkubNextConnectButton from "../Shared/BitkubNext";
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import BitkubDisconnectButton from "../Shared/BitkubNextDiscon";
-import { ToastContainer } from "react-toastify";
 
 import CartButton from "../Cart/Buttons/CartButton";
 import StoreMenu from "../Shared/Navbar/StoreMenu";
@@ -221,9 +220,7 @@ const ConnectedList = () => {
           <div>My Farm</div>
         </Link>
       </li>
-      {/*<li>
-      <StoreMenu />
-    </li>*/}
+      <li>{/* <StoreMenu /> */}</li>
     </ul>
   );
 };

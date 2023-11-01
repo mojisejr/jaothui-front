@@ -7,6 +7,7 @@ import Pedigree from "../components/Home/Pedigree";
 import ProductList from "../components/Store/Lists/ProductsList";
 import FoodProductList from "../components/Store/Lists/FoodProductList";
 import { trpc } from "../utils/trpc";
+import { ToastContainer } from "react-toastify";
 
 const Home: NextPage = () => {
   return (
@@ -20,6 +21,7 @@ const Home: NextPage = () => {
         <ProductList />
         <FoodProductList />
       </Layout>
+      <ToastContainer />
       <CookieConsent buttonText="Thank You, I Accept">
         Welcome to Jaothui Website! We want to provide you with the best user
         experience possible, so we use cookies to enhance your browsing

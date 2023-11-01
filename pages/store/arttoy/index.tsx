@@ -16,10 +16,10 @@ const Arttoy = () => {
     handle: "arttoy",
   });
 
-  if(!isConnected) {
-    replace('/unauthorized');
-    return;
-  }
+  // if (!isConnected) {
+  //   replace("/unauthorized");
+  //   return;
+  // }
 
   return (
     <div className="relative">
@@ -40,9 +40,7 @@ const Arttoy = () => {
         <div className="px-[22px] py-6">
           <div className="flex justify-between items-center py-2">
             <div className="text-xl font-bold">NFT Profile</div>
-            {/* <a className="text-sm">ดูทั้งหมด{">"}</a> */}
           </div>
-          {/* <div className="grid grid-cols-1 gap-6 place-items-center tabletS:grid-cols-2 labtop:grid-cols-3 desktopM:grid-cols-"> */}
           <div className="p-1 grid grid-cols-1 place-items-center tabletS:grid-cols-2 labtop:grid-cols-4 desktopM:grid-cols-6 gap-1">
             <NFTCard rarity={0} />
             <NFTCard rarity={1} />
