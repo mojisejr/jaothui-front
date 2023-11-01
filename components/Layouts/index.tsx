@@ -220,9 +220,7 @@ const ConnectedList = () => {
           <div>My Farm</div>
         </Link>
       </li>
-      <li>
-        <StoreMenu />
-      </li>
+      <li>{/* <StoreMenu /> */}</li>
     </ul>
   );
 };

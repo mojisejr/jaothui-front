@@ -29,14 +29,14 @@ const Arttoy = () => {
         subTitle="SOUVENIR"
         smallTitle="ยกระดับของสะสมด้วย Blockchain Tecnology"
       >
-        {/* <ArttoyProductList /> */}
-        {arttoyLoading ? (
+        <ArttoyProductList />
+        {/* {arttoyLoading ? (
           <div className="h-[200px] w-full flex justify-center items-center">
             <Loading size="lg" /> Loading..
           </div>
         ) : (
           <AllProductList products={data!} title="ARTTOY" />
-        )}
+        )} */}
         <div className="px-[22px] py-6">
           <div className="flex justify-between items-center py-2">
             <div className="text-xl font-bold">NFT Profile</div>

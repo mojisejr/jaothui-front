@@ -53,27 +53,17 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     return <></>;
   } else {
     return (
-      <MedusaProvider
-        queryClientProviderProps={{ client: queryClient }}
-        baseUrl="http://localhost:9000"
-        publishableApiKey="pk_01HE2G0V87MX400NVJT1MFS6T1"
-      >
-        <CartProvider>
-          <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider chains={chains}>
-              <BitkubNextProvider>
-                <MenuProvider>
-                  <NewAssetProvider>
-                    <StoreProvider>
-                      <Component {...pageProps} />
-                    </StoreProvider>
-                  </NewAssetProvider>
-                </MenuProvider>
-              </BitkubNextProvider>
-            </RainbowKitProvider>
-          </WagmiConfig>
-        </CartProvider>
-      </MedusaProvider>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains}>
+          <BitkubNextProvider>
+            <MenuProvider>
+              <NewAssetProvider>
+                <Component {...pageProps} />
+              </NewAssetProvider>
+            </MenuProvider>
+          </BitkubNextProvider>
+        </RainbowKitProvider>
+      </WagmiConfig>
     );
   }
 };
