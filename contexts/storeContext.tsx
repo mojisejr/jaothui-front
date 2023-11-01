@@ -7,11 +7,10 @@ import {
   useEffect,
   useState,
 } from "react";
-import _, { replace } from "lodash";
+import _ from "lodash";
 
 import {
   useRegions,
-  useCart,
   useCreateLineItem,
   useUpdateLineItem,
   useDeleteLineItem,
@@ -20,9 +19,13 @@ import {
   useCreatePaymentSession,
   useSetPaymentSession,
   useCompleteCart,
+  useGetCart,
+  useCreateCart,
+  useUpdateCart,
 } from "medusa-react";
 import { AddressPayload, Cart, Region } from "@medusajs/medusa";
 import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
+import { useBitkubNext } from "./bitkubNextContext";
 
 //** store session in localstorage */
 interface StoreProviderProps {
@@ -69,20 +72,30 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   const [currentProduct, setCurrentProduct] = useState<PricedProduct>();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { regions, isSuccess } = useRegions();
-  const { cart, createCart, updateCart } = useCart();
+  const { regions, isSuccess: gotRegion } = useRegions();
 
   const [currentCartId, _setCurrentCartId] = useState<string>();
-  const _createLineItem = useCreateLineItem(currentCartId!);
-  const _updateLineItem = useUpdateLineItem(currentCartId!);
-  const _removeLineItem = useDeleteLineItem(currentCartId!);
 
-  const _addShippingMethod = useAddShippingMethodToCart(currentCartId!);
+  const _newCart = useCreateCart();
+  const { cart: realCart, isSuccess: gotCart } = useGetCart(
+    localStorage.getItem("cart_id")!
+  );
+  const { mutate: updateCart } = useUpdateCart(currentCartId!);
+  const { mutate: createLineItem } = useCreateLineItem(currentCartId!);
+  const { mutate: updateLineItem } = useUpdateLineItem(currentCartId!);
+  const { mutate: deleteLineItem } = useDeleteLineItem(currentCartId!);
+  const { mutate: addShippingMethod } = useAddShippingMethodToCart(
+    currentCartId!
+  );
 
-  const _createPaymenySession = useCreatePaymentSession(currentCartId!);
-  const _setPaymentSession = useSetPaymentSession(currentCartId!);
+  const { mutate: _createPaymentSession } = useCreatePaymentSession(
+    currentCartId!
+  );
+  const { mutate: _setPaymentSession } = useSetPaymentSession(currentCartId!);
 
-  const _completeCart = useCompleteCart(currentCartId!);
+  const { mutate: _completeCart, isSuccess: cartCompleted } = useCompleteCart(
+    currentCartId!
+  );
 
   const [currentCart, setCurrentCart] =
     useState<Omit<Cart, "refundable_amount" | "refunded_total">>();
@@ -93,15 +106,26 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   });
 
   useEffect(() => {
-    if (isSuccess) {
+    if (gotRegion) {
       _setCurrentRegion(regions![0]);
-      _createCart();
+      if (localStorage.getItem("cart_id") == undefined) {
+        _createCart();
+      } else {
+        if (gotCart) {
+          _getCurrentCart();
+        }
+      }
     }
-  }, [isSuccess, cart]);
+  }, [gotRegion, gotCart]);
+
+  const _getCurrentCart = () => {
+    _setCurrentCartId(realCart?.id);
+    setCurrentCart(realCart!);
+  };
 
   const _createCart = () => {
-    if (cart?.id != localStorage.getItem("cart_id")) {
-      createCart.mutate(
+    if (localStorage.getItem("cart_id") == undefined) {
+      _newCart.mutate(
         {
           region_id: regions?.length ? regions[0].id : undefined,
         },
@@ -113,6 +137,8 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
           },
         }
       );
+    } else {
+      _setCurrentCartId(localStorage.getItem("cart_id")!);
     }
   };
 
@@ -121,14 +147,13 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
       _createCart();
     }
 
-    _createLineItem.mutate(
+    createLineItem(
       {
         variant_id: variantId,
         quantity: qty,
       },
       {
         onSuccess: ({ cart }) => {
-          cart.items;
           setCurrentCart(cart);
         },
       }
@@ -136,13 +161,12 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   };
 
   const removeFromCart = (itemId: string) => {
-    _removeLineItem.mutate(
+    deleteLineItem(
       {
         lineId: itemId,
       },
       {
         onSuccess: ({ cart }) => {
-          cart.items;
           setCurrentCart(cart);
         },
       }
@@ -153,14 +177,13 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
     const prevQty = currentCart?.items.find((item) => item.id === itemId)
       ?.quantity as number | 0;
 
-    _updateLineItem.mutate(
+    updateLineItem(
       {
         lineId: itemId,
         quantity: prevQty + qty,
       },
       {
         onSuccess: ({ cart }) => {
-          cart.items;
           setCurrentCart(cart);
         },
       }
@@ -171,14 +194,13 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
     const prevQty = currentCart?.items.find((item) => item.id === itemId)
       ?.quantity as number | 0;
 
-    _updateLineItem.mutate(
+    updateLineItem(
       {
         lineId: itemId,
         quantity: prevQty - qty,
       },
       {
         onSuccess: ({ cart }) => {
-          cart.items;
           setCurrentCart(cart);
         },
       }
@@ -186,28 +208,23 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   };
 
   const updateShippingAddress = (address: AddressPayload) => {
-    const customer = JSON.parse(localStorage.getItem("customer")!);
-
-    updateCart.mutate(
+    updateCart(
       {
-        customer_id: customer.id,
-        email: customer.email,
+        email: localStorage.getItem("bkc_email")!,
         shipping_address: {
           ...address,
         },
       },
       {
         onSuccess: ({ cart }) => {
-          console.log("shipping => shipping address is updated");
           setCurrentCart(cart);
-          _addShippingMethod.mutate(
+          addShippingMethod(
             {
               option_id: shipping_options![0].id!,
             },
             {
               onSuccess: ({ cart }) => {
                 setCurrentCart(cart);
-                console.log("shipping method => shipping method added", cart);
                 createPaymentSession();
               },
             }
@@ -218,9 +235,8 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   };
 
   const createPaymentSession = () => {
-    _createPaymenySession.mutate(undefined, {
+    _createPaymentSession(undefined, {
       onSuccess: ({ cart }) => {
-        console.log("payment => payment session is created");
         setCurrentCart(cart);
         setPaymentSession();
       },
@@ -228,13 +244,12 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   };
 
   const setPaymentSession = () => {
-    _setPaymentSession.mutate(
+    _setPaymentSession(
       {
         provider_id: "stripe",
       },
       {
         onSuccess: ({ cart }) => {
-          console.log("payment ==> payment session is set to the cart");
           setCurrentCart({
             ...cart,
           });
@@ -244,7 +259,7 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
   };
 
   const complete = () => {
-    _completeCart.mutate(undefined, {
+    _completeCart(undefined, {
       onSuccess: (response) => {
         clearCart();
       },

@@ -12,7 +12,6 @@ import CheckoutV2 from "../Card/Checkoutv2";
 
 const ShippingForm = () => {
   const { updateShippingAddress, currentCart, isLoading } = useStore();
-  const { startCheckout } = useCart();
   const [{ province }, setAddress] = useState<{
     province?: string;
   }>({

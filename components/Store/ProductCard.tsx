@@ -60,6 +60,7 @@ const ProductCard = ({ product, canAddToCart = false }: ProductCartProps) => {
                         tax_code: currentRegion?.tax_code as string,
                         tax_rate: currentRegion?.tax_rate as number,
                       },
+                      includeTaxes: false,
                     })}
                   </li>
                 ))}
