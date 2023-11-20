@@ -1,6 +1,5 @@
 import { Product } from "./Product";
 import { z } from "zod";
-import { Cart } from "@medusajs/medusa";
 
 export type ItemInCart = Product & { qty: number };
 
@@ -9,10 +8,12 @@ export const ItemInCartInput = z.object({
   images: z.array(z.string()),
   slug: z.string().nullable(),
   name: z.string(),
-  modelno: z.string(),
   price: z.number(),
+  category: z.string(),
   discount: z.number().nullable(),
-  desc: z.array(
+  isDiscount: z.boolean(),
+  inStock: z.boolean(),
+  attributes: z.array(
     z.object({
       title: z.string(),
       value: z.string(),

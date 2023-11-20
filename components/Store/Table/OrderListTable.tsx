@@ -1,4 +1,4 @@
-import { Order } from "@medusajs/medusa";
+import { Order } from "../../../interfaces/Store/Order";
 import React from "react";
 
 interface OrderListTableProps {
@@ -7,7 +7,7 @@ interface OrderListTableProps {
 
 const OrderListTable = ({ orders }: OrderListTableProps) => {
   return (
-    <div className="overflow-x-auto min-h-fit my-2 max-w-xl">
+    <div className="overflow-auto h-full  max-h-[500px] my-2 max-w-xl">
       <h3 className="font-bold text-2xl">Your Orders</h3>
       {orders.length <= 0 ? (
         <div>No Order</div>
@@ -24,18 +24,40 @@ const OrderListTable = ({ orders }: OrderListTableProps) => {
           </thead>
           <tbody>
             {orders.map((order) => (
-              <tr key={order.id}>
-                <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                <td>{order.id.slice(0, 15)}...</td>
+              <tr key={order._id}>
+                <td>
+                  {new Date(order._createdAt as string).toLocaleDateString()}
+                </td>
+                <td>{order.stripeIntentId.slice(0, 15)}...</td>
                 <td>
                   <ul>
-                    {order.items.map((item) => (
-                      <li key={item.id}>{item.title}</li>
+                    {order.products?.map((item) => (
+                      <li key={item._key}>{item.product}</li>
                     ))}
                   </ul>
                 </td>
-                <td>{order.payment_status}</td>
-                <td>{order.fulfillment_status}</td>
+                <td>
+                  <div
+                    className={`badge badge-sm ${
+                      order.paymentStatus == "pending"
+                        ? "badge-primary"
+                        : "badge-success"
+                    }`}
+                  >
+                    {order.paymentStatus}
+                  </div>
+                </td>
+                <td>
+                  <div
+                    className={`badge badge-sm ${
+                      order.shippingStatus == "pending"
+                        ? "badge-primary"
+                        : "badge-success"
+                    }`}
+                  >
+                    {order.shippingStatus}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

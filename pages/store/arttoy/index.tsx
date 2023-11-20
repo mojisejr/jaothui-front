@@ -1,4 +1,3 @@
-import type { NextPage } from "next";
 import NFTCard from "../../../components/Arttoy/Card/nft";
 import { trpc } from "../../../utils/trpc";
 import Loading from "../../../components/Shared/Indicators/Loading";
@@ -10,17 +9,6 @@ import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
 
 const Arttoy = () => {
-  const { isConnected } = useBitkubNext();
-  const { replace } = useRouter();
-  const { data, isLoading: arttoyLoading } = trpc.store.getCollctions.useQuery({
-    handle: "arttoy",
-  });
-
-  // if (!isConnected) {
-  //   replace("/unauthorized");
-  //   return;
-  // }
-
   return (
     <div className="relative">
       <StoreLayout

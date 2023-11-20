@@ -204,7 +204,7 @@ const ConnectedList = () => {
       </li>
       <li>
         <Link href="/cert/profile/mycert" className="hover:text-primary">
-          <AiFillCaretRight size={4} />
+          <AiFillCaretRight size={24} />
           <div>My Pedigrees</div>
         </Link>
       </li>
@@ -220,7 +220,9 @@ const ConnectedList = () => {
           <div>My Farm</div>
         </Link>
       </li>
-      <li>{/* <StoreMenu /> */}</li>
+      <li>
+        <StoreMenu />
+      </li>
     </ul>
   );
 };

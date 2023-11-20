@@ -1,12 +1,9 @@
 import Link from "next/link";
-import { useProducts } from "medusa-react";
-import { useStore } from "../../../contexts/storeContext";
 import { ListLayout } from "../Layout/ListLayout";
 import { useEffect, useState } from "react";
-import { Region } from "@medusajs/medusa";
-import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
 import Loading from "../../Shared/Indicators/Loading";
 import { ListLayoutMock } from "../Layout/ListLayoutMock";
+import { trpc } from "../../../utils/trpc";
 
 const products = [
   {
@@ -72,6 +69,14 @@ const products = [
 ];
 
 const ArttoyProductList = () => {
+  const { data, isLoading, isSuccess, isError, refetch } =
+    trpc.store.getByCat.useQuery({
+      category: "arttoy",
+    });
+
+  useEffect(() => {
+    refetch();
+  }, []);
   // const { currentRegion } = useStore();
 
   // const { products } = useProducts({
@@ -88,13 +93,15 @@ const ArttoyProductList = () => {
               ดูทั้งหมด{">"}
             </Link>
           </div>
-          {products ? (
+          {!isLoading ? (
             <>
-              <ListLayoutMock products={products} />
-              {/* <ListLayout products={products} /> */}
+              {/* <ListLayoutMock products={products} /> */}
+              <ListLayout products={data!} />
             </>
           ) : (
-            "Nothing to show"
+            <div className="py-10 text-center">
+              <Loading size="lg" />
+            </div>
           )}
         </div>
       </>

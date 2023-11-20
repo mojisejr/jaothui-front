@@ -1,17 +1,16 @@
 import AddToCartButton from "../Cart/Buttons/AddToCart";
-import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
-import { formatVariantPrice } from "medusa-react";
-import { useStore } from "../../contexts/storeContext";
 import Loading from "../Shared/Indicators/Loading";
 import { SyntheticEvent } from "react";
+import { Product, ProductAttr } from "../../interfaces/Store/Product";
+import { useStore } from "../../contexts/storeContext";
 
 interface ProductCartProps {
-  product: PricedProduct;
+  product: Product;
   canAddToCart: boolean;
 }
 
 const ProductCard = ({ product, canAddToCart = false }: ProductCartProps) => {
-  const { currentRegion } = useStore();
+  // const { currentRegion } = useStore();
   const { setCurrentProduct } = useStore();
 
   const handleShowDetail = (e: SyntheticEvent) => {
@@ -31,7 +30,7 @@ const ProductCard = ({ product, canAddToCart = false }: ProductCartProps) => {
           <div className="p-4">
             <img
               className="w-full rounded-xl"
-              src={product.thumbnail!}
+              src={product.images[0]!}
               alt="image"
             />
             <div className="grid grids-col-1 w-full rounded-xl shadow p-3">
@@ -40,34 +39,21 @@ const ProductCard = ({ product, canAddToCart = false }: ProductCartProps) => {
                 // href={`/store/${product.collection?.handle}/${product.handle}`}
                 className="font-bold text-xl hover:underline hover:cursor-pointer"
               >
-                {product.title}
+                {product.name}
               </a>
 
-              {Object.keys(product.metadata!).map((key: string, index) => (
+              {product.attributes.map((attr: ProductAttr, index) => (
                 <ProductAttribute
                   key={index}
-                  title={key}
-                  value={Object.values(product.metadata!)[index] as string}
+                  title={attr.title}
+                  value={attr.value}
                 />
               ))}
-              <ul>
-                {product.variants.map((variant) => (
-                  <li key={variant.id}>
-                    {formatVariantPrice({
-                      variant,
-                      region: {
-                        currency_code: currentRegion?.currency_code as string,
-                        tax_code: currentRegion?.tax_code as string,
-                        tax_rate: currentRegion?.tax_rate as number,
-                      },
-                      includeTaxes: false,
-                    })}
-                  </li>
-                ))}
-              </ul>
+
+              <PriceTag actual={product.price} discount={null} />
 
               {canAddToCart ? (
-                <AddToCartButton variantId={product.variants[0].id!} qty={1} />
+                <AddToCartButton item={{ ...product, qty: 1 }} />
               ) : null}
             </div>
           </div>
@@ -120,7 +106,7 @@ const ProductAttribute = ({
 }) => {
   return (
     <>
-      <div className="">{`${title.toUpperCase()}: ${value}`}</div>
+      <div className="hidden tabletS:block">{`${title.toUpperCase()}: ${value}`}</div>
     </>
   );
 };

@@ -20,7 +20,7 @@ const MockProductCard = ({
           />
           <div className="grid grids-col-1 w-full rounded-xl shadow p-3">
             <div className="font-bold text-xl">{product.name}</div>
-            {product.desc.map((product, index) => (
+            {product.attributes.map((product, index) => (
               <ProductAttribute
                 key={index}
                 title={product.title}

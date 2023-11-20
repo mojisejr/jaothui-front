@@ -1,8 +1,8 @@
 import { ListLayout } from "../Layout/ListLayout";
-import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
+import { Product } from "../../../interfaces/Store/Product";
 
 interface AllProductListProps {
-  products: PricedProduct[] | any[];
+  products: Product[];
   title: string;
 }
 

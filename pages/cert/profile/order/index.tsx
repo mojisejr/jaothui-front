@@ -3,23 +3,34 @@ import Layout from "../../../../components/Layouts";
 import OrderListTable from "../../../../components/Store/Table/OrderListTable";
 import { useBitkubNext } from "../../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
+import { trpc } from "../../../../utils/trpc";
+import Loading from "../../../../components/Shared/Indicators/Loading";
 
 const Orders = () => {
   const { replace } = useRouter();
-  const customer = JSON.parse(localStorage.getItem("customer")!);
-  const { isConnected } = useBitkubNext();
+  const { isConnected, walletAddress } = useBitkubNext();
 
+  const { data, isLoading, isSuccess, isError, refetch } =
+    trpc.store.getOrder.useQuery({
+      wallet: walletAddress,
+    });
 
-  if(!isConnected) {
+  if (!isConnected) {
     replace("/unauthorized");
     return;
   }
 
   return (
     <Layout>
+      <div className="min-h-screen">
         <div className="flex justify-center">
-          <OrderListTable orders={customer.orders} />
+          {isLoading ? (
+            <Loading size="lg" />
+          ) : (
+            <OrderListTable orders={data!} />
+          )}
         </div>
+      </div>
     </Layout>
   );
 };

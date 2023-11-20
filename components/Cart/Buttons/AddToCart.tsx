@@ -1,19 +1,17 @@
-import { SyntheticEvent } from "react";
-import { Product } from "../../../interfaces/Store/Product";
 import { useStore } from "../../../contexts/storeContext";
+import { ItemInCart } from "../../../interfaces/Store/ItemInCart";
 
 interface AddToCartButtonProps {
-  variantId: string;
-  qty: number;
+  item: ItemInCart;
 }
 
-const AddToCartButton = ({ variantId, qty = 1 }: AddToCartButtonProps) => {
+const AddToCartButton = ({ item }: AddToCartButtonProps) => {
   const { addToCart } = useStore();
   return (
     <button
       className="btn"
       onClick={() => {
-        addToCart(variantId, qty);
+        addToCart(item);
       }}
     >
       Add To Cart

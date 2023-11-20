@@ -1,83 +1,123 @@
-const product = {
+import { defineType, defineField, StringRule, NumberRule } from "sanity";
+
+export const productType = defineType({
   name: "product",
   type: "document",
   title: "Product",
+  description: "ข้อมูลสินค้าใน shop",
   fields: [
-    {
-      name: "title",
-      type: "internationalizedArrayString",
-      title: "Title",
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: "handle",
+    defineField({
+      name: "name",
+      title: "Product Name",
       type: "string",
-      title: "Handle",
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: "subtitle",
-      type: "internationalizedArrayString",
-      title: "Subtitle",
-    },
-    {
-      name: "thumbnail",
-      type: "image",
-      title: "Thumbnail",
-    },
-    {
+      validation: (Rule: StringRule) => Rule.required(),
+    }),
+
+    defineField({
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: {
+        source: "name",
+        maxLength: 200,
+        slugify: (input) =>
+          input.toLowerCase().replace(/\s+/g, "-").slice(0, 200),
+      },
+    }),
+
+    defineField({
       name: "images",
+      title: "Product Images",
       type: "array",
-      title: "Images",
-      of: [{ type: "image" }],
-    },
-    {
-      name: "description",
-      type: "internationalizedArrayString",
-      title: "Description",
-    },
-    {
-      name: "options",
-      type: "array",
-      title: "Options",
-      of: [{ type: "string" }],
-    },
-    {
-      name: "tags",
-      type: "array",
-      title: "Tags",
-      of: [{ type: "string" }],
-    },
-    {
-      name: "collection",
-      type: "reference",
-      title: "Collection",
-      weak: true,
-      to: [{ type: "productCollection" }],
-    },
-    {
-      name: "type",
-      type: "string",
-      title: "Type",
-    },
-    {
-      name: "variants",
-      type: "array",
-      title: "Variants",
+      description:
+        "multiple images is available, but the first one is the main image",
       of: [
         {
-          type: "reference",
-          weak: true,
-          to: [{ type: "productVariant" }],
+          type: "image",
+          options: {
+            hotspot: true,
+          },
         },
       ],
-    },
-  ],
-  preview: {
-    select: {
-      title: `title.en`,
-    },
-  },
-};
+      validation: (Rule) => Rule.required(),
+    }),
 
-export default product;
+    defineField({
+      name: "category",
+      title: "Product Category",
+      type: "string",
+      options: {
+        list: [
+          { title: "Arttoy", value: "arttoy" },
+          { title: "Food", value: "food" },
+          { title: "Non-Food", value: "nonFood" },
+          { title: "Other", value: "other" },
+        ],
+        layout: "dropdown",
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
+      name: "attributes",
+      title: "Product Attributes",
+      type: "array",
+      description:
+        "product attribute eg. it's color, model, serial number, contract address etc.",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Attribute Name",
+              type: "string",
+            }),
+
+            defineField({
+              name: "value",
+              title: "Attribute Value",
+              type: "string",
+            }),
+          ],
+        },
+      ],
+    }),
+
+    defineField({
+      name: "price",
+      title: "Product Price (THB)",
+      type: "number",
+      description: "Product price in thai baht",
+      validation: (Rule: NumberRule) => Rule.required().precision(2).positive(),
+    }),
+
+    defineField({
+      name: "isDiscount",
+      title: "Check this if want to make this item discount",
+      type: "boolean",
+      initialValue: false,
+    }),
+
+    defineField({
+      name: "discount",
+      title: "Discount Percent (%)",
+      type: "number",
+      description: "max 90; input only number dont input %",
+      validation: (Rule: NumberRule) => Rule.positive().max(90),
+    }),
+
+    defineField({
+      name: "inStock",
+      title: "In Stock ?",
+      type: "boolean",
+      initialValue: false,
+    }),
+
+    defineField({
+      name: "description",
+      title: "Product description",
+      type: "text",
+    }),
+  ],
+});

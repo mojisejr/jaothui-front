@@ -1,9 +1,8 @@
 import { Product } from "../../../interfaces/Store/Product";
 import ProductCard from "../ProductCard";
-import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
 
 interface ListLayoutProps {
-  products: PricedProduct[];
+  products: Product[];
 }
 
 export const ListLayout = ({ products }: ListLayoutProps) => {
