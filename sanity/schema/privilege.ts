@@ -1,12 +1,8 @@
 import {
-  ArrayOfType,
   ArrayRule,
   BooleanRule,
   DateRule,
-  ImageOptions,
   StringRule,
-  StringSchemaType,
-  TextRule,
   defineField,
   defineType,
 } from "sanity";

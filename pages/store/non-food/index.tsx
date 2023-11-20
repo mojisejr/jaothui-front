@@ -10,12 +10,9 @@ import { useRouter } from "next/router";
 const NonFoodProductPage = () => {
   const { replace } = useRouter();
   const { isConnected } = useBitkubNext();
-  const { data, isLoading: arttoyLoading } = trpc.store.getCollctions.useQuery({
-    handle: "non-food",
-  });
 
-  if(!isConnected) {
-    replace('/unauthorized');
+  if (!isConnected) {
+    replace("/unauthorized");
     return;
   }
 
@@ -26,13 +23,6 @@ const NonFoodProductPage = () => {
       subTitle="PRODUCT"
       smallTitle="Best Selection form our best practice."
     >
-      {arttoyLoading ? (
-        <div className="h-[200px] w-full flex justify-center items-center">
-          <Loading size="lg" /> Loading..
-        </div>
-      ) : (
-        <AllProductList products={data!} title="PRODUCT" />
-      )}
       <ProductDetailModal />
     </StoreLayout>
   );

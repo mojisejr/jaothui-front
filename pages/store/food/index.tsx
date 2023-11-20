@@ -10,16 +10,11 @@ import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 const FoodProductPage = () => {
   const { replace } = useRouter();
   const { isConnected } = useBitkubNext();
-  const { data, isLoading: arttoyLoading } = trpc.store.getCollctions.useQuery({
-    handle: "food",
-  });
 
-
-  if(!isConnected) {
-    replace('/unauthorized');
-    return
+  if (!isConnected) {
+    replace("/unauthorized");
+    return;
   }
-
 
   return (
     <StoreLayout
@@ -28,13 +23,6 @@ const FoodProductPage = () => {
       subTitle="FOOD"
       smallTitle="From Farm To Table"
     >
-      {arttoyLoading ? (
-        <div className="h-[200px] w-full flex justify-center items-center">
-          <Loading size="lg" /> Loading..
-        </div>
-      ) : (
-        <AllProductList products={data!} title="FOOD" />
-      )}
       <ProductDetailModal />
     </StoreLayout>
   );

@@ -32,7 +32,6 @@
     "dayjs": "^1.11.9",
     "ethers": "^5",
     "framer-motion": "^10.12.4",
-    "i": "^0.3.7",
     "lodash": "^4.17.21",
     "lodash.merge": "^4.6.2",
     "medusa-react": "^9.0.6",

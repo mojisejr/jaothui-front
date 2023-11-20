@@ -1,54 +1,32 @@
 import React from "react";
 import { useStore } from "../../../contexts/storeContext";
-import { formatVariantPrice } from "medusa-react";
 
 const ProductDetailModal = () => {
-  const { currentProduct: product, currentRegion, addToCart } = useStore();
+  const { currentProduct: product, addToCart } = useStore();
   return (
     <dialog id="product_detail" className="modal">
       <div className="modal-box">
         <div className="grid grid-cols-1 gap-2 tabletS:grid-cols-2 place-items-center">
           <img
             className="w-full"
-            src={product?.thumbnail as string}
-            alt={product?.title}
+            src={product?.images[0] as string}
+            alt={product?.name}
           />
           <div>
-            <h3 className="font-bold text-lg">{product?.title}</h3>
-            <h2 className="text-secondary text-opacity-60">
+            <h3 className="font-bold text-lg">{product?.name}</h3>
+            {/* <h2 className="text-secondary text-opacity-60">
               {product?.subtitle}
-            </h2>
+            </h2> */}
             <div className="divider"></div>
-            <div className="text-2xl font-bold text-primary">
-              {
-                <ul>
-                  {product?.variants.map((variant) => (
-                    <li key={variant.id}>
-                      {formatVariantPrice({
-                        variant,
-                        region: {
-                          currency_code: currentRegion?.currency_code as string,
-                          tax_code: currentRegion?.tax_code as string,
-                          tax_rate: currentRegion?.tax_rate as number,
-                        },
-                      })}
-                    </li>
-                  ))}
-                </ul>
-              }
-            </div>
+            <PriceTag actual={product?.price as number} discount={null} />
             <p className="h-[120px] overflow-y-auto w-full p-2">
               {'"'}
-              discontinuing support for existing virtual BAT balances.
-              Unfortunately, there are no available custodians in your region
-              (TH) to withdraw your earnings. Until then, you can still
-              contribute to your favorite crea
-              {/* {product?.description} */}
+              {product?.description}
               {'"'}
             </p>
             <button
               className="btn w-full mt-2"
-              onClick={() => addToCart(product?.variants[0].id!, 1)}
+              onClick={() => addToCart({ ...product!, qty: 1 })}
             >
               Add To Cart
             </button>
@@ -64,6 +42,40 @@ const ProductDetailModal = () => {
         </div>
       </div>
     </dialog>
+  );
+};
+
+const PriceTag = ({
+  actual,
+  discount,
+}: {
+  actual: number;
+  discount: number | null;
+}) => {
+  return (
+    <>
+      {discount != null ? (
+        <div className="font-bold flex gap-2 items-center flex-wrap">
+          <span className="line-through text-sm">
+            {new Intl.NumberFormat("th-TH", {
+              style: "currency",
+              currency: "THB",
+            }).format(actual)}
+          </span>
+          {new Intl.NumberFormat("th-TH", {
+            style: "currency",
+            currency: "THB",
+          }).format(discount)}
+        </div>
+      ) : (
+        <div className="font-bold">
+          {new Intl.NumberFormat("th-TH", {
+            style: "currency",
+            currency: "THB",
+          }).format(actual)}
+        </div>
+      )}
+    </>
   );
 };
 

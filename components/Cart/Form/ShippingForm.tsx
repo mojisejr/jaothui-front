@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AddressPayload } from "@medusajs/medusa";
 import { useForm } from "react-hook-form";
-import { useStore } from "../../../contexts/storeContext";
+import { useStore } from "../../../contexts/storeContext-medusa";
 import { useCart } from "medusa-react";
 
 import {

@@ -1,19 +1,47 @@
 import { publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-// import {
-//   createLineItems,
-//   createCheckoutParam,
-//   stripeCheckOut,
-// } from "../services/stripe.service";
 import {
-  createOrGetCustomer,
+  createLineItems,
+  createCheckoutParam,
+  stripeCheckOut,
+  getSessionById,
+} from "../services/stripe.service";
+
+import {
+  getAllProducts,
+  getProductByCategory,
   getProductById,
-  getProductFromHandle,
-} from "../services/medusa.service";
+} from "../services/product.service";
+import { ItemInCart } from "../../interfaces/Store/ItemInCart";
+import { createOrder, getOrdersByWallet } from "../services/order.service";
 
 export const storeRouter = router({
   //GET PRODUCT BY ID
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const products = await getAllProducts();
+    if (products.length <= 0) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "No Product Found!" });
+    }
+    return products;
+  }),
+
+  getByCat: publicProcedure
+    .input(
+      z.object({
+        category: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const products = await getProductByCategory(input.category);
+      if (products.length <= 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No Product Found!",
+        });
+      }
+      return products;
+    }),
   get: publicProcedure
     .input(
       z.object({
@@ -21,54 +49,52 @@ export const storeRouter = router({
       })
     )
     .query(async ({ ctx, input }) => {
-      try {
-        return await getProductById(input.id);
-      } catch (error) {
+      const product = await getProductById(input.id);
+      if (product == null) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Cannot fetch product from CMS",
+          code: "NOT_FOUND",
+          message: "No Product Found",
         });
       }
-    }),
 
-  //GET PRODUCTS BY COLLECTION HANDLE
-  getCollctions: publicProcedure
-    .input(
-      z.object({
-        handle: z.string(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      return await getProductFromHandle(input.handle);
-    }),
-
-  //CREATE OR LOGIN USER
-  createOrGetCustomer: publicProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        wallet: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      return await createOrGetCustomer(input.wallet, input.email);
+      return product;
     }),
 
   // //CHECKOUT STRIPE (NO USE RIGHT NOW)
-  // checkout: publicProcedure
-  //   .input((value) => value)
-  //   .mutation(async ({ ctx, input }) => {
-  //     const inputData = input as {
-  //       cart: Omit<Cart, "refundable_amount" | "refunded_total"> | undefined;
-  //       basePath: string;
-  //     };
-  //     console.log("INPT DATA : ", inputData.cart?.items);
-  //     const lineItems = createLineItems(inputData.cart?.items!);
-  //     console.log("lineItems: ", lineItems);
-  //     const checkoutParams = createCheckoutParam(lineItems, inputData.basePath);
-  //     console.log("checkoutParams: ", checkoutParams);
-  //     const checkoutSession = await stripeCheckOut(checkoutParams);
-  //     console.log("session: ", checkoutSession);
-  //     return checkoutSession;
-  //   }),
+  checkout: publicProcedure
+    .input((value) => value)
+    .mutation(async ({ ctx, input }) => {
+      const inputData = input as {
+        wallet: string;
+        items: ItemInCart[];
+        basePath: string;
+      };
+      const lineItems = createLineItems(inputData.items);
+      const checkoutParams = createCheckoutParam(
+        inputData.wallet,
+        lineItems,
+        inputData.basePath
+      );
+      const checkoutSession = await stripeCheckOut(checkoutParams);
+      return checkoutSession;
+    }),
+
+  createOrder: publicProcedure
+    .input(
+      z.object({
+        session: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const session = await getSessionById(input.session);
+      await createOrder(session);
+    }),
+
+  getOrder: publicProcedure
+    .input(z.object({ wallet: z.string() }))
+    .query(async ({ input }) => {
+      const orders = await getOrdersByWallet(input.wallet);
+      //TODO: handle error
+      return orders;
+    }),
 });

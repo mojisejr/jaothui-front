@@ -4,15 +4,13 @@ import { useStore } from "../../../contexts/storeContext";
 import { useCart } from "medusa-react";
 
 const CartButton = () => {
-  const { currentCart } = useStore();
+  const { itemInCart } = useStore();
   const count =
-    currentCart?.items.length! <= 0
+    itemInCart.length! <= 0
       ? 0
-      : currentCart?.items
-          .map((item) => item.quantity)
-          .reduce((a, b) => a + b) == undefined
+      : itemInCart.map((item) => item.qty).reduce((a, b) => a + b) == undefined
       ? 0
-      : currentCart?.items.map((item) => item.quantity).reduce((a, b) => a + b);
+      : itemInCart.map((item) => item.qty).reduce((a, b) => a + b);
   return (
     <>
       <button className="btn btn-circle btn-ghost relative">

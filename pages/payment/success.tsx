@@ -3,12 +3,30 @@ import Layout from "../../components/Layouts";
 import { useStore } from "../../contexts/storeContext";
 import { BsCheckCircleFill } from "react-icons/bs";
 import Link from "next/link";
+import { trpc } from "../../utils/trpc";
+import { useRouter } from "next/router";
+
+const test =
+  "cs_test_a1xl3z3O4Pjw5lFqWe5qxtiJ8ATkJqYzzYk9nMf6xS25gq48ojyXyLl6oB";
 
 const Success = () => {
+  const {
+    isLoading,
+    isSuccess,
+    mutate: createOrder,
+  } = trpc.store.createOrder.useMutation();
+
+  const { query } = useRouter();
+
+  console.log(query);
+
   const { clearCart } = useStore();
   useEffect(() => {
     clearCart();
-  }, []);
+    if (query.id !== undefined) {
+      createOrder({ session: query.id as string });
+    }
+  }, [query.id]);
 
   return (
     <Layout>

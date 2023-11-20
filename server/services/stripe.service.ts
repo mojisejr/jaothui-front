@@ -1,7 +1,6 @@
 import { Stripe } from "stripe";
 import { ItemInCart } from "../../interfaces/Store/ItemInCart";
 import { TRPCError } from "@trpc/server";
-import { LineItem } from "@medusajs/medusa";
 
 const config: Stripe.StripeConfig = {
   apiVersion: "2023-08-16",
@@ -24,6 +23,7 @@ export const stripeCheckOut = async (
 };
 
 export const createCheckoutParam = (
+  wallet: string,
   lineItems: Stripe.Checkout.SessionCreateParams.LineItem[],
   basePath: string
 ) => {
@@ -31,30 +31,44 @@ export const createCheckoutParam = (
     submit_type: "pay",
     mode: "payment",
     payment_method_types: ["card"],
-    billing_address_collection: "required",
+    shipping_address_collection: {
+      allowed_countries: ["TH"],
+    },
+    phone_number_collection: {
+      enabled: true,
+    },
     line_items: lineItems,
-    success_url: `${basePath}/payment/success`,
+    metadata: {
+      wallet,
+      items: JSON.stringify(lineItems),
+    },
+    success_url: `${basePath}/payment/success?id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${basePath}/payment/cancel`,
   };
   return params;
 };
 
-export const createLineItems = (items: LineItem[]) => {
+export const createLineItems = (items: ItemInCart[]) => {
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
-    (item: LineItem) => {
+    (item: ItemInCart) => {
       return {
         price_data: {
           currency: "thb",
           product_data: {
-            name: item.title,
-            images: [item.thumbnail as string],
+            name: item.name,
+            images: item.images,
           },
-          unit_amount: item.total as number,
+          unit_amount: (item.price * 100) as number,
         },
-        quantity: item.quantity as number,
+        quantity: item.qty as number,
       };
     }
   );
   console.log("lineItem: ", lineItems);
   return lineItems;
+};
+
+export const getSessionById = async (sessionId: string) => {
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  return session;
 };

@@ -1,13 +1,15 @@
 export interface Product {
   _id: string;
-  // category: "arttoy" | "semen" | "food";
-  images: string[];
-  slug: string | null;
   name: string;
-  modelno: string;
+  slug: string | null;
+  images: string[];
+  category: string;
+  attributes: ProductAttr[];
   price: number;
+  isDiscount: boolean;
   discount: number | null;
-  desc: ProductAttr[];
+  inStock: boolean;
+  description?: string;
 }
 
 export interface ProductAttr {

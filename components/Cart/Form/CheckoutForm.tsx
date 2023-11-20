@@ -6,7 +6,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { SyntheticEvent, useEffect, useState, FormEvent } from "react";
-import { useStore } from "../../../contexts/storeContext";
+import { useStore } from "../../../contexts/storeContext-medusa";
 import Loading from "../../Shared/Indicators/Loading";
 import { useRouter } from "next/router";
 

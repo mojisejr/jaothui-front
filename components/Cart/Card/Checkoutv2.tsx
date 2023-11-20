@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import CheckoutV2Form from "../Form/CheckoutForm";
-import { useStore } from "../../../contexts/storeContext";
+import { useStore } from "../../../contexts/storeContext-medusa";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUB_KEY as string
