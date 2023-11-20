@@ -2,6 +2,7 @@ import AddToCartButton from "../Cart/Buttons/AddToCart";
 import Loading from "../Shared/Indicators/Loading";
 import { SyntheticEvent } from "react";
 import { Product, ProductAttr } from "../../interfaces/Store/Product";
+import { useStore } from "../../contexts/storeContext";
 
 interface ProductCartProps {
   product: Product;
@@ -10,11 +11,11 @@ interface ProductCartProps {
 
 const ProductCard = ({ product, canAddToCart = false }: ProductCartProps) => {
   // const { currentRegion } = useStore();
-  // const { setCurrentProduct } = useStore();
+  const { setCurrentProduct } = useStore();
 
   const handleShowDetail = (e: SyntheticEvent) => {
     e.preventDefault();
-    // setCurrentProduct(product);
+    setCurrentProduct(product);
     window.product_detail.showModal();
   };
 

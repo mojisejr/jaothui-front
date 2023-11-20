@@ -74,8 +74,6 @@ const ArttoyProductList = () => {
       category: "arttoy",
     });
 
-  console.log(data);
-
   useEffect(() => {
     refetch();
   }, []);
