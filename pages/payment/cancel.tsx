@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect } from "react";
 import Layout from "../../components/Layouts";
-import { useStore } from "../../contexts/storeContext-medusa";
+import { useStore } from "../../contexts/storeContext";
 import { RiCloseCircleFill } from "react-icons/ri";
 import Link from "next/link";
 

@@ -1,7 +1,6 @@
 import React from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { useStore } from "../../../contexts/storeContext";
-import { useCart } from "medusa-react";
 
 const CartButton = () => {
   const { itemInCart } = useStore();

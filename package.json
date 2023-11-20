@@ -11,8 +11,6 @@
   },
   "dependencies": {
     "@bitkub-blockchain/react-bitkubnext-oauth2": "^0.0.15",
-    "@medusajs/medusa": "^1.17.0",
-    "@medusajs/medusa-js": "^6.1.0",
     "@rainbow-me/rainbowkit": "^0.12.7",
     "@sanity/client": "^6.4.9",
     "@sanity/icons": "^2.0.0",
@@ -34,7 +32,6 @@
     "framer-motion": "^10.12.4",
     "lodash": "^4.17.21",
     "lodash.merge": "^4.6.2",
-    "medusa-react": "^9.0.6",
     "next": "^13.0.0",
     "next-sanity": "5.5.4",
     "npm": "^10.1.0",

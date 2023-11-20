@@ -1,10 +1,6 @@
 import Link from "next/link";
-import { useProducts } from "medusa-react";
-import { useStore } from "../../../contexts/storeContext-medusa";
 import { ListLayout } from "../Layout/ListLayout";
 import { useEffect, useState } from "react";
-import { Region } from "@medusajs/medusa";
-import { PricedProduct } from "@medusajs/medusa/dist/types/pricing";
 import Loading from "../../Shared/Indicators/Loading";
 import { ListLayoutMock } from "../Layout/ListLayoutMock";
 import { trpc } from "../../../utils/trpc";

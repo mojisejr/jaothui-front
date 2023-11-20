@@ -1,5 +1,4 @@
 import AddToCartButton from "../Cart/Buttons/AddToCart";
-import { useStore } from "../../contexts/storeContext-medusa";
 import Loading from "../Shared/Indicators/Loading";
 import { SyntheticEvent } from "react";
 import { Product, ProductAttr } from "../../interfaces/Store/Product";

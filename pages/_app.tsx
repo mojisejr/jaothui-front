@@ -12,7 +12,6 @@ import { BitkubNextProvider } from "../contexts/bitkubNextContext";
 import { NewAssetProvider } from "../contexts/newAssetContext";
 import { trpc } from "../utils/trpc";
 
-import { MedusaProvider, CartProvider } from "medusa-react";
 import { QueryClient } from "@tanstack/react-query";
 
 import StoreProvider from "../contexts/storeContext";

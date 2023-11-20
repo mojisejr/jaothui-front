@@ -4,14 +4,11 @@ import {
   SetStateAction,
   createContext,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import { ItemInCart } from "../interfaces/Store/ItemInCart";
 import _ from "lodash";
 import { Product } from "../interfaces/Store/Product";
-import { Region } from "@medusajs/medusa";
-import { useBitkubNext } from "./bitkubNextContext";
 
 //** store session in localstorage */
 interface StoreProviderProps {
