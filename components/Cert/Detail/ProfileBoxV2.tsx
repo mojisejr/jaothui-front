@@ -71,7 +71,11 @@ const ProfileBoxV2 = ({
           name="description"
           content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
         />
-        <meta key="og-title" property="og:title" content={certNft.name} />
+        <meta
+          key="og-title"
+          property="og:title"
+          content={`${certNft.name} #${certNft.microchip}`}
+        />
         <meta
           key="og-description"
           property="og:description"
@@ -82,6 +86,7 @@ const ProfileBoxV2 = ({
           property="og:url"
           content={`https://jaothui.com/cert/${certNft.microchip}`}
         />
+        <meta key="og-image" property="og:image" content={`${certNft.image}`} />
         <meta key="twitter-title" name="twitter:title" content={certNft.name} />
         <meta
           key="twitter-description"
@@ -89,7 +94,7 @@ const ProfileBoxV2 = ({
           content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
         />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@lighter_app" />
+        <meta name="twitter:site" content="@jaothui" />
         <meta name="twitter:image" content={`${certNft.image}`} />
 
         <link rel="canonical" href="https://jaothui.com/" />
