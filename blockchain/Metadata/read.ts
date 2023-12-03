@@ -38,7 +38,7 @@ export function useGetMetadataOf() {
     args: [walletAddress],
     onSuccess(data: IMetadata[]) {
       const parsed = parseOutputMetadata(data);
-      // console.log(parsed);
+      console.log(parsed);
       setData(parsed);
     },
   });

@@ -12,9 +12,14 @@ import { HiExternalLink, HiOutlineDocumentText } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { BiRfid, BiRuler } from "react-icons/bi";
 import { TbNfc } from "react-icons/tb";
-import { BsGenderAmbiguous, BsFileEarmarkBinary } from "react-icons/bs";
+import {
+  BsGenderAmbiguous,
+  BsFileEarmarkBinary,
+  BsCheck,
+} from "react-icons/bs";
 import { GiNewBorn, GiTrophyCup } from "react-icons/gi";
 import { MdColorLens } from "react-icons/md";
+import { StarIcon } from "@sanity/icons";
 
 export interface ProfileBoxProps {
   certNft: IMetadata;
@@ -129,17 +134,33 @@ const ProfileBoxV2 = ({
               </div>
               <div className="stat flex items-center gap-4">
                 <div className="stat-figure text-secondary">
-                  <BsFileEarmarkBinary size={30} />
+                  {certNft.dna ? (
+                    <Link href={certNft.dna!} target="_blank">
+                      <BsFileEarmarkBinary
+                        className="text-primary hover:text-accent"
+                        size={30}
+                      />
+                    </Link>
+                  ) : (
+                    <BsFileEarmarkBinary size={30} />
+                  )}
                 </div>
                 <div>
                   <div className="stat-title font-bold text-secondary xl:text-[2rem]">
                     {certNft.origin ? (
-                      <CountryFlag country={certNft.origin} size={"48x36"} />
+                      <div className="flex gap-2 items-center">
+                        <CountryFlag country={certNft.origin} size={"48x36"} />
+                        {certNft.dna ? (
+                          <span className="text-xs text-accent font-semibold">
+                            Verified
+                          </span>
+                        ) : null}
+                      </div>
                     ) : (
                       <CountryFlag country={"thai"} size={"48x36"} />
                     )}
                   </div>
-                  <div className="stat-desc">Buffalo{"'"}s Origin Country</div>
+                  <div className="stat-desc">Buffalo{"'"}s Origin Country </div>
                 </div>
               </div>
               <div className="stat flex items-center gap-4">
