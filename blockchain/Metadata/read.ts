@@ -16,8 +16,8 @@ export function useGetAllMetadata() {
     // args: [address],
     onSuccess(data: any[]) {
       const parsed = parseOutputMetadata(data);
-      // console.log(parsed);
-      setData(parsed);
+      const filtered = parsed.filter((data) => data.name != "N/A");
+      setData(filtered);
     },
   });
 
