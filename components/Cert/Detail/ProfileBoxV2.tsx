@@ -20,6 +20,7 @@ import {
 import { GiNewBorn, GiTrophyCup } from "react-icons/gi";
 import { MdColorLens } from "react-icons/md";
 import { StarIcon } from "@sanity/icons";
+import Head from "next/head";
 
 export interface ProfileBoxProps {
   certNft: IMetadata;
@@ -57,211 +58,255 @@ const ProfileBoxV2 = ({
   }
 
   return (
-    <div className="my-10 mx-3 flex justify-center" id="container">
-      <div className="flex min-h-screen items-center max-w-[800px] justify-center rounded-xl shadow-xl">
-        <div className="card my-2 w-11/12 bg-base-100 xl:my-6 xl:w-1/2">
-          <figure>
-            <img src={certNft.image!} />
-          </figure>
-          <div className="card-body">
-            <div className="card-title">Information</div>
-            <div className="stats stats-vertical shadow">
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  <TbNfc size={30} />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-secondary">
-                    {certNft.name}
+    <>
+      <Head>
+        <title key="title">{certNft.name}</title>
+        <meta
+          key="keywords"
+          name="keywords"
+          content={`Jaothui, JaothuiNFT, NFT, Pedigree, Kwaithai, Jaothui Official`}
+        />
+        <meta
+          key="description"
+          name="description"
+          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+        />
+        <meta key="og-title" property="og:title" content={certNft.name} />
+        <meta
+          key="og-description"
+          property="og:description"
+          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+        />
+        <meta
+          key="og-url"
+          property="og:url"
+          content={`https://jaothui.com/cert/${certNft.microchip}`}
+        />
+        <meta key="twitter-title" name="twitter:title" content={certNft.name} />
+        <meta
+          key="twitter-description"
+          name="twitter:description"
+          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@lighter_app" />
+        <meta name="twitter:image" content={`${certNft.image}`} />
+
+        <link rel="canonical" href="https://jaothui.com/" />
+      </Head>
+      <div className="my-10 mx-3 flex justify-center" id="container">
+        <div className="flex min-h-screen items-center max-w-[800px] justify-center rounded-xl shadow-xl">
+          <div className="card my-2 w-11/12 bg-base-100 xl:my-6 xl:w-1/2">
+            <figure>
+              <img src={certNft.image!} />
+            </figure>
+            <div className="card-body">
+              <div className="card-title">Information</div>
+              <div className="stats stats-vertical shadow">
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <TbNfc size={30} />
                   </div>
-                  <div className="stat-desc">Buffalo{"'"}s name</div>
-                </div>
-              </div>
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  <BiRfid size={30} />
-                </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                    {certNft.microchip}
+                  <div>
+                    <div className="text-2xl font-bold text-secondary">
+                      {certNft.name}
+                    </div>
+                    <div className="stat-desc">Buffalo{"'"}s name</div>
                   </div>
-                  <div className="stat-desc">Signature ID</div>
                 </div>
-              </div>
-              <div className="stat flex items-center gap-4 ">
-                <div className="stat-figure text-secondary">
-                  <HiOutlineDocumentText size={30} />
-                </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                    {certNft.birthday}
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <BiRfid size={30} />
                   </div>
-                  <div className="stat-desc">Birthday Date</div>
-                </div>
-              </div>
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  <BsGenderAmbiguous size={30} />
-                </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                    {certNft.sex}
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                      {certNft.microchip}
+                    </div>
+                    <div className="stat-desc">Signature ID</div>
                   </div>
-                  <div className="stat-desc">Buffalo{"'"}s Gender</div>
                 </div>
-              </div>
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  <BiRfid size={30} />
-                </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                    {certNft.motherId ? certNft.motherId : "N/A"}
+                <div className="stat flex items-center gap-4 ">
+                  <div className="stat-figure text-secondary">
+                    <HiOutlineDocumentText size={30} />
                   </div>
-                  <div className="stat-desc">Buffalo{"'"}s Mother ID</div>
-                </div>
-              </div>
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  <BiRfid size={30} />
-                </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                    {certNft.fatherId ? certNft.fatherId : "N/A"}
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                      {certNft.birthday}
+                    </div>
+                    <div className="stat-desc">Birthday Date</div>
                   </div>
-                  <div className="stat-desc">Buffalo{"'"}s Father ID</div>
                 </div>
-              </div>
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  {certNft.dna ? (
-                    <Link href={certNft.dna!} target="_blank">
-                      <BsFileEarmarkBinary
-                        className="text-primary hover:text-accent"
-                        size={30}
-                      />
-                    </Link>
-                  ) : (
-                    <BsFileEarmarkBinary size={30} />
-                  )}
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <BsGenderAmbiguous size={30} />
+                  </div>
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                      {certNft.sex}
+                    </div>
+                    <div className="stat-desc">Buffalo{"'"}s Gender</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                    {certNft.origin ? (
-                      <div className="flex gap-2 items-center">
-                        <CountryFlag country={certNft.origin} size={"48x36"} />
-                        {certNft.dna ? (
-                          <span className="text-xs text-accent font-semibold">
-                            Verified
-                          </span>
-                        ) : null}
-                      </div>
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <BiRfid size={30} />
+                  </div>
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                      {certNft.motherId ? certNft.motherId : "N/A"}
+                    </div>
+                    <div className="stat-desc">Buffalo{"'"}s Mother ID</div>
+                  </div>
+                </div>
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <BiRfid size={30} />
+                  </div>
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                      {certNft.fatherId ? certNft.fatherId : "N/A"}
+                    </div>
+                    <div className="stat-desc">Buffalo{"'"}s Father ID</div>
+                  </div>
+                </div>
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    {certNft.dna ? (
+                      <Link href={certNft.dna!} target="_blank">
+                        <BsFileEarmarkBinary
+                          className="text-primary hover:text-accent"
+                          size={30}
+                        />
+                      </Link>
                     ) : (
-                      <CountryFlag country={"thai"} size={"48x36"} />
+                      <BsFileEarmarkBinary size={30} />
                     )}
                   </div>
-                  <div className="stat-desc">Buffalo{"'"}s Origin Country </div>
-                </div>
-              </div>
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  <BiRuler size={30} />
-                </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                    {certNft.height ? `${certNft.height} cm` : "N/A"}
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                      {certNft.origin ? (
+                        <div className="flex gap-2 items-center">
+                          <CountryFlag
+                            country={certNft.origin}
+                            size={"48x36"}
+                          />
+                          {certNft.dna ? (
+                            <span className="text-xs text-accent font-semibold">
+                              Verified
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <CountryFlag country={"thai"} size={"48x36"} />
+                      )}
+                    </div>
+                    <div className="stat-desc">
+                      Buffalo{"'"}s Origin Country{" "}
+                    </div>
                   </div>
-                  <div className="stat-desc">Buffalo{"'"}s Height</div>
                 </div>
-              </div>
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  <MdColorLens size={30} />
-                </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                    {certNft.color ? certNft.color : "N/A"}
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <BiRuler size={30} />
                   </div>
-                  <div className="stat-desc">Buffalo{"'"}s Color</div>
-                </div>
-              </div>
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  <GiTrophyCup size={30} />
-                </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem] flex flex-wrap gap-[0.2]">
-                    {rewards.length <= 0
-                      ? "N/A"
-                      : rewards.map((r, index) => (
-                          <Link
-                            className="text-gray-600 hover:text-primary"
-                            key={index}
-                            href={r.ipfs}
-                            target="_blank"
-                          >
-                            <RiMedalFill size={30} />
-                          </Link>
-                        ))}
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                      {certNft.height ? `${certNft.height} cm` : "N/A"}
+                    </div>
+                    <div className="stat-desc">Buffalo{"'"}s Height</div>
                   </div>
-                  <div className="stat-desc">Competition Rewards</div>
                 </div>
-              </div>
-              <div className="stat flex items-center gap-4">
-                <div className="stat-figure text-secondary">
-                  <FaStamp size={30} />
-                </div>
-                <div>
-                  <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                    {approvedBy.length <= 0
-                      ? "N/A"
-                      : approvedBy.map((a, index) => (
-                          <>
-                            {a.doc == "" || a.doc == undefined ? (
-                              <button onClick={() => toast.error("Not Found")}>
-                                <Image
-                                  src={a.uri}
-                                  width={40}
-                                  height={40}
-                                  alt="approvedBy"
-                                />
-                              </button>
-                            ) : (
-                              <Link
-                                href={
-                                  a.doc == "" || a.doc == undefined
-                                    ? "/notfound"
-                                    : a.doc
-                                }
-                                target="blank"
-                                key={index}
-                              >
-                                <Image
-                                  src={a.uri}
-                                  width={40}
-                                  height={40}
-                                  alt="approvedBy"
-                                />
-                              </Link>
-                            )}
-                          </>
-                        ))}
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <MdColorLens size={30} />
                   </div>
-                  <div className="stat-desc">Approved By</div>
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                      {certNft.color ? certNft.color : "N/A"}
+                    </div>
+                    <div className="stat-desc">Buffalo{"'"}s Color</div>
+                  </div>
+                </div>
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <GiTrophyCup size={30} />
+                  </div>
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem] flex flex-wrap gap-[0.2]">
+                      {rewards.length <= 0
+                        ? "N/A"
+                        : rewards.map((r, index) => (
+                            <Link
+                              className="text-gray-600 hover:text-primary"
+                              key={index}
+                              href={r.ipfs}
+                              target="_blank"
+                            >
+                              <RiMedalFill size={30} />
+                            </Link>
+                          ))}
+                    </div>
+                    <div className="stat-desc">Competition Rewards</div>
+                  </div>
+                </div>
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <FaStamp size={30} />
+                  </div>
+                  <div>
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                      {approvedBy.length <= 0
+                        ? "N/A"
+                        : approvedBy.map((a, index) => (
+                            <>
+                              {a.doc == "" || a.doc == undefined ? (
+                                <button
+                                  onClick={() => toast.error("Not Found")}
+                                >
+                                  <Image
+                                    src={a.uri}
+                                    width={40}
+                                    height={40}
+                                    alt="approvedBy"
+                                  />
+                                </button>
+                              ) : (
+                                <Link
+                                  href={
+                                    a.doc == "" || a.doc == undefined
+                                      ? "/notfound"
+                                      : a.doc
+                                  }
+                                  target="blank"
+                                  key={index}
+                                >
+                                  <Image
+                                    src={a.uri}
+                                    width={40}
+                                    height={40}
+                                    alt="approvedBy"
+                                  />
+                                </Link>
+                              )}
+                            </>
+                          ))}
+                    </div>
+                    <div className="stat-desc">Approved By</div>
+                  </div>
                 </div>
               </div>
+              <Link
+                href="https://www.bkcscan.com/address/0x41f291b116459aE967bCd616F64e762f8468Ea0E/transactions#address-tabs"
+                target="_blank"
+                className="btn btn-ghost text-gray-400"
+              >
+                View On BKCScan <HiExternalLink size={20} />
+              </Link>
             </div>
-            <Link
-              href="https://www.bkcscan.com/address/0x41f291b116459aE967bCd616F64e762f8468Ea0E/transactions#address-tabs"
-              target="_blank"
-              className="btn btn-ghost text-gray-400"
-            >
-              View On BKCScan <HiExternalLink size={20} />
-            </Link>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
