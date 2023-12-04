@@ -59,54 +59,6 @@ const ProfileBoxV2 = ({
 
   return (
     <>
-      <Head>
-        <title key="title">{certNft.name}</title>
-        <meta
-          key="keywords"
-          name="keywords"
-          content={`Jaothui, JaothuiNFT, NFT, Pedigree, Kwaithai, Jaothui Official`}
-        />
-        <meta
-          key="description"
-          name="description"
-          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-        />
-        <meta
-          key="og-title"
-          name="og:title"
-          property="og:title"
-          content={`${certNft.name} #${certNft.microchip}`}
-        />
-        <meta
-          key="og-description"
-          name="og:description"
-          property="og:description"
-          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-        />
-        <meta
-          key="og-url"
-          name="og:url"
-          property="og:url"
-          content={`https://jaothui.com/cert/${certNft.microchip}`}
-        />
-        <meta
-          key="og-image"
-          name="og:image"
-          property="og:image"
-          content={`${certNft.image}`}
-        />
-        <meta key="twitter-title" name="twitter:title" content={certNft.name} />
-        <meta
-          key="twitter-description"
-          name="twitter:description"
-          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@jaothui" />
-        <meta name="twitter:image" content={`${certNft.image}`} />
-
-        <link rel="canonical" href="https://jaothui.com/" />
-      </Head>
       <div className="my-10 mx-3 flex justify-center" id="container">
         <div className="flex min-h-screen items-center max-w-[800px] justify-center rounded-xl shadow-xl">
           <div className="card my-2 w-11/12 bg-base-100 xl:my-6 xl:w-1/2">

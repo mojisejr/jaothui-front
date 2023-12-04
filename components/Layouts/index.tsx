@@ -20,7 +20,8 @@ interface LayoutProps {
   children: ReactNode;
 }
 const Layout = ({ children }: LayoutProps) => {
-  const { pathname, push } = useRouter();
+  const { pathname, push, query } = useRouter();
+  const { tokenId } = query;
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected } = useBitkubNext();
 
