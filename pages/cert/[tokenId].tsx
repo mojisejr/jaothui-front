@@ -29,9 +29,9 @@ const CertDetail = (
   );
 
   return (
-    <>
+    <Layout>
       <Head>
-        <title key="title">{`${metadata.name} #${metadata.certify.microchip}`}</title>
+        <title key="title">{`${props.seo.name} #${props.seo.certify.microchip}`}</title>
         <meta
           key="keywords"
           name="keywords"
@@ -46,7 +46,13 @@ const CertDetail = (
           key="og-title"
           name="og:title"
           property="og:title"
-          content={`${metadata.name} #${metadata.certify.microchip}`}
+          content={`${props.seo.name} #${props.seo.certify.microchip}`}
+        />
+        <meta
+          key="og-title"
+          name="og:title"
+          property="og:title"
+          content={`${props.seo.name} #${props.seo.certify.microchip}`}
         />
         <meta
           key="og-description"
@@ -58,18 +64,18 @@ const CertDetail = (
           key="og-url"
           name="og:url"
           property="og:url"
-          content={`https://jaothui.com/cert/${metadata.certify.microchip}`}
+          content={`https://jaothui.com/cert/${props.seo.certify.microchip}`}
         />
         <meta
           key="og-image"
           name="og:image"
           property="og:image"
-          content={`${metadata.imageUri}`}
+          content={`${props.seo.imageUri}`}
         />
         <meta
           key="twitter-title"
           name="twitter:title"
-          content={metadata.name}
+          content={props.seo.name}
         />
         <meta
           key="twitter-description"
@@ -78,24 +84,22 @@ const CertDetail = (
         />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@jaothui" />
-        <meta name="twitter:image" content={`${metadata.imageUri}`} />
+        <meta name="twitter:image" content={`${props.seo.imageUri}`} />
 
         <link rel="canonical" href="https://jaothui.com/" />
       </Head>
-      <Layout>
-        {metadata == undefined || metadata == null || metadata.length <= 0 ? (
-          <div className="min-h-screen flex justify-center">
-            <Loading size="lg" />
-          </div>
-        ) : (
-          <ProfileBoxV2
-            certNft={metadata!}
-            rewards={rewards}
-            approvedBy={approvedBy}
-          />
-        )}
-      </Layout>
-    </>
+      {metadata == undefined || metadata == null || metadata.length <= 0 ? (
+        <div className="min-h-screen flex justify-center">
+          <Loading size="lg" />
+        </div>
+      ) : (
+        <ProfileBoxV2
+          certNft={metadata!}
+          rewards={rewards}
+          approvedBy={approvedBy}
+        />
+      )}
+    </Layout>
   );
 };
 
@@ -115,6 +119,7 @@ export const getServerSideProps = async (
     props: {
       trpcState: helper.dehydrate(),
       tokenId,
+      seo: helper.dehydrate().queries[0].state.data as any,
     },
   };
 };
