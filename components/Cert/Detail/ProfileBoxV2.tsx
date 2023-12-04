@@ -21,9 +21,10 @@ import { GiNewBorn, GiTrophyCup } from "react-icons/gi";
 import { MdColorLens } from "react-icons/md";
 import { StarIcon } from "@sanity/icons";
 import Head from "next/head";
+import dayjs from "dayjs";
 
 export interface ProfileBoxProps {
-  certNft: IMetadata;
+  certNft: any;
   rewards: RewardData[];
   approvedBy: ApprovedBy[];
 }
@@ -63,7 +64,7 @@ const ProfileBoxV2 = ({
         <div className="flex min-h-screen items-center max-w-[800px] justify-center rounded-xl shadow-xl">
           <div className="card my-2 w-11/12 bg-base-100 xl:my-6 xl:w-1/2">
             <figure>
-              <img src={certNft.image!} />
+              <img src={certNft.imageUri!} />
             </figure>
             <div className="card-body">
               <div className="card-title">Information</div>
@@ -85,7 +86,7 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.microchip}
+                      {certNft.certify.microchip}
                     </div>
                     <div className="stat-desc">Signature ID</div>
                   </div>
@@ -96,7 +97,7 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.birthday}
+                      {dayjs(certNft.birthdate * 1000).format("DD/MMM/YYYY")}
                     </div>
                     <div className="stat-desc">Birthday Date</div>
                   </div>

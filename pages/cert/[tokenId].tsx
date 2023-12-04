@@ -8,21 +8,31 @@ import Layout from "../../components/Layouts";
 import ProfileBoxV2 from "../../components/Cert/Detail/ProfileBoxV2";
 import Loading from "../../components/Shared/Indicators/Loading";
 import Head from "next/head";
+import { trpc } from "../../utils/trpc";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { appRouter } from "../../server/routers/_app";
 
-const CertDetail = () => {
-  const router = useRouter();
-  const { tokenId } = router.query;
-  const { metadata } = useGetMetadataByMicrochip(tokenId! as string);
-  const { rewards } = useGetRewardByMicrochip(tokenId! as string);
-  const { approvedBy } = useGetApprovalDataByMicrochip(tokenId! as string);
+const CertDetail = (
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) => {
+  // const router = useRouter();
+  // const { tokenId } = router.query;
+  // const { metadata } = useGetMetadataByMicrochip(tokenId! as string);
+  const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
+    microchip: props.tokenId,
+  }) as any;
 
-  console.log(metadata);
+  const { rewards } = useGetRewardByMicrochip(props.tokenId! as string);
+  const { approvedBy } = useGetApprovalDataByMicrochip(
+    props.tokenId! as string
+  );
 
   return (
     <Layout>
-      {metadata.length <= 0 || metadata == undefined ? null : (
+      {metadata == undefined ? null : (
         <Head>
-          <title key="title">{metadata[0].name}</title>
+          <title key="title">{metadata.name}</title>
           <meta
             key="keywords"
             name="keywords"
@@ -37,7 +47,7 @@ const CertDetail = () => {
             key="og-title"
             name="og:title"
             property="og:title"
-            content={`${metadata[0].name} #${metadata[0].microchip}`}
+            content={`${metadata.name} #${metadata.microchip}`}
           />
           <meta
             key="og-description"
@@ -49,18 +59,18 @@ const CertDetail = () => {
             key="og-url"
             name="og:url"
             property="og:url"
-            content={`https://jaothui.com/cert/${metadata[0].microchip}`}
+            content={`https://jaothui.com/cert/${metadata.microchip}`}
           />
           <meta
             key="og-image"
             name="og:image"
             property="og:image"
-            content={`${metadata[0].image}`}
+            content={`${metadata.image}`}
           />
           <meta
             key="twitter-title"
             name="twitter:title"
-            content={metadata[0].name}
+            content={metadata.name}
           />
           <meta
             key="twitter-description"
@@ -69,7 +79,7 @@ const CertDetail = () => {
           />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@jaothui" />
-          <meta name="twitter:image" content={`${metadata[0].image}`} />
+          <meta name="twitter:image" content={`${metadata.image}`} />
 
           <link rel="canonical" href="https://jaothui.com/" />
         </Head>
@@ -80,13 +90,33 @@ const CertDetail = () => {
         </div>
       ) : (
         <ProfileBoxV2
-          certNft={metadata![0]}
+          certNft={metadata!}
           rewards={rewards}
           approvedBy={approvedBy}
         />
       )}
     </Layout>
   );
+};
+
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext<{ tokenId: string }>
+) => {
+  const helper = createServerSideHelpers({
+    router: appRouter,
+    ctx: {},
+  });
+
+  const tokenId = context.params?.tokenId as string;
+
+  await helper.metadata.getByMicrochip.prefetch({ microchip: tokenId });
+
+  return {
+    props: {
+      trpcState: helper.dehydrate(),
+      tokenId,
+    },
+  };
 };
 
 export default CertDetail;
