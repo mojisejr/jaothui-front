@@ -21,6 +21,7 @@ export const getMetadataByMicrochipId = async (microchipId: string) => {
       ...data!,
       birthdate: +data.birthdate!.toString(),
       height: +data.height.toString(),
+      "og:image": data.imageUri,
       certify: {
         ...data.certify,
         issuedAt: +data.certify.issuedAt.toString(),

@@ -29,7 +29,7 @@ const CertDetail = (
   );
 
   return (
-    <Layout>
+    <>
       <Head>
         <title key="title">{`${metadata.name} #${metadata.certify.microchip}`}</title>
         <meta
@@ -82,18 +82,20 @@ const CertDetail = (
 
         <link rel="canonical" href="https://jaothui.com/" />
       </Head>
-      {metadata == undefined || metadata == null || metadata.length <= 0 ? (
-        <div className="min-h-screen flex justify-center">
-          <Loading size="lg" />
-        </div>
-      ) : (
-        <ProfileBoxV2
-          certNft={metadata!}
-          rewards={rewards}
-          approvedBy={approvedBy}
-        />
-      )}
-    </Layout>
+      <Layout>
+        {metadata == undefined || metadata == null || metadata.length <= 0 ? (
+          <div className="min-h-screen flex justify-center">
+            <Loading size="lg" />
+          </div>
+        ) : (
+          <ProfileBoxV2
+            certNft={metadata!}
+            rewards={rewards}
+            approvedBy={approvedBy}
+          />
+        )}
+      </Layout>
+    </>
   );
 };
 
