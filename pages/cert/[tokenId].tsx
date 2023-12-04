@@ -30,60 +30,58 @@ const CertDetail = (
 
   return (
     <Layout>
-      {metadata == undefined ? null : (
-        <Head>
-          <title key="title">{metadata.name}</title>
-          <meta
-            key="keywords"
-            name="keywords"
-            content={`Jaothui, JaothuiNFT, NFT, Pedigree, Kwaithai, Jaothui Official`}
-          />
-          <meta
-            key="description"
-            name="description"
-            content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-          />
-          <meta
-            key="og-title"
-            name="og:title"
-            property="og:title"
-            content={`${metadata.name} #${metadata.microchip}`}
-          />
-          <meta
-            key="og-description"
-            name="og:description"
-            property="og:description"
-            content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-          />
-          <meta
-            key="og-url"
-            name="og:url"
-            property="og:url"
-            content={`https://jaothui.com/cert/${metadata.microchip}`}
-          />
-          <meta
-            key="og-image"
-            name="og:image"
-            property="og:image"
-            content={`${metadata.image}`}
-          />
-          <meta
-            key="twitter-title"
-            name="twitter:title"
-            content={metadata.name}
-          />
-          <meta
-            key="twitter-description"
-            name="twitter:description"
-            content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-          />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:site" content="@jaothui" />
-          <meta name="twitter:image" content={`${metadata.image}`} />
+      <Head>
+        <title key="title">{`${metadata.name} #${metadata.certify.microchip}`}</title>
+        <meta
+          key="keywords"
+          name="keywords"
+          content={`Jaothui, JaothuiNFT, NFT, Pedigree, Kwaithai, Jaothui Official`}
+        />
+        <meta
+          key="description"
+          name="description"
+          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+        />
+        <meta
+          key="og-title"
+          name="og:title"
+          property="og:title"
+          content={`${metadata.name} #${metadata.certify.microchip}`}
+        />
+        <meta
+          key="og-description"
+          name="og:description"
+          property="og:description"
+          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+        />
+        <meta
+          key="og-url"
+          name="og:url"
+          property="og:url"
+          content={`https://jaothui.com/cert/${metadata.certify.microchip}`}
+        />
+        <meta
+          key="og-image"
+          name="og:image"
+          property="og:image"
+          content={`${metadata.imageUri}`}
+        />
+        <meta
+          key="twitter-title"
+          name="twitter:title"
+          content={metadata.name}
+        />
+        <meta
+          key="twitter-description"
+          name="twitter:description"
+          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@jaothui" />
+        <meta name="twitter:image" content={`${metadata.imageUri}`} />
 
-          <link rel="canonical" href="https://jaothui.com/" />
-        </Head>
-      )}
+        <link rel="canonical" href="https://jaothui.com/" />
+      </Head>
       {metadata == undefined || metadata == null || metadata.length <= 0 ? (
         <div className="min-h-screen flex justify-center">
           <Loading size="lg" />
