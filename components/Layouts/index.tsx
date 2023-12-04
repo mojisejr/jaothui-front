@@ -107,6 +107,12 @@ const Layout = ({ children }: LayoutProps) => {
               name="description"
               content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
             />
+            <meta
+              name="og:image"
+              key="og:image"
+              content="https://nftstorage.link/ipfs/bafybeigeqxejnwim325qsxn2ti45f4fixzepmubczouwlkweitqsocqvjq"
+            />
+            <meta name="somekey" content={`${tokenId}`} />
             <link rel="icon" href="/favicon.ico" />
           </Head>
           {children}
