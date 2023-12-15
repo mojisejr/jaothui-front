@@ -25,7 +25,16 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
                 {data ? data.microchip : <Loading size="sm" />}
               </div>
               <div className="font-bold text-xl">
-                {data ? data.name : <Loading size="sm" />}
+                {data.name.includes("คุณ") ? (
+                  <div className="text-2xl font-bold bg-gradient-to-br from-[#FFE15D] via-[#e59a28] to-[#FFE15D] text-transparent bg-clip-text">
+                    {data.name}
+                  </div>
+                ) : (
+                  <div className="text-2xl font-bold text-secondary">
+                    {data.name}
+                  </div>
+                )}
+                {/* {data ? data.name : <Loading size="sm" />} */}
               </div>
               <div className="text-sm">
                 {data ? data.birthday : <Loading size="sm" />}

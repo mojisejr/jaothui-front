@@ -6,7 +6,6 @@ import MainTitle from "../components/Home/Hero/MainTitle";
 import Pedigree from "../components/Home/Pedigree";
 import ProductList from "../components/Store/Lists/ProductsList";
 import FoodProductList from "../components/Store/Lists/FoodProductList";
-import { trpc } from "../utils/trpc";
 import { ToastContainer } from "react-toastify";
 
 const Home: NextPage = () => {

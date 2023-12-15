@@ -15,12 +15,14 @@ import BitkubDisconnectButton from "../Shared/BitkubNextDiscon";
 import CartButton from "../Cart/Buttons/CartButton";
 import StoreMenu from "../Shared/Navbar/StoreMenu";
 import Head from "next/head";
+import { Metadata } from "next";
 
 interface LayoutProps {
   children: ReactNode;
 }
 const Layout = ({ children }: LayoutProps) => {
-  const { pathname, push } = useRouter();
+  const { pathname, push, query } = useRouter();
+  const { tokenId } = query;
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected } = useBitkubNext();
 
@@ -106,7 +108,6 @@ const Layout = ({ children }: LayoutProps) => {
               name="description"
               content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
             />
-            <link rel="icon" href="/favicon.ico" />
           </Head>
           {children}
           <FooterSection />

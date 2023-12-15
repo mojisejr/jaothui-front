@@ -21,9 +21,10 @@ import { GiNewBorn, GiTrophyCup } from "react-icons/gi";
 import { MdColorLens } from "react-icons/md";
 import { StarIcon } from "@sanity/icons";
 import Head from "next/head";
+import dayjs from "dayjs";
 
 export interface ProfileBoxProps {
-  certNft: IMetadata;
+  certNft: any;
   rewards: RewardData[];
   approvedBy: ApprovedBy[];
 }
@@ -59,51 +60,11 @@ const ProfileBoxV2 = ({
 
   return (
     <>
-      <Head>
-        <title key="title">{certNft.name}</title>
-        <meta
-          key="keywords"
-          name="keywords"
-          content={`Jaothui, JaothuiNFT, NFT, Pedigree, Kwaithai, Jaothui Official`}
-        />
-        <meta
-          key="description"
-          name="description"
-          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-        />
-        <meta
-          key="og-title"
-          property="og:title"
-          content={`${certNft.name} #${certNft.microchip}`}
-        />
-        <meta
-          key="og-description"
-          property="og:description"
-          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-        />
-        <meta
-          key="og-url"
-          property="og:url"
-          content={`https://jaothui.com/cert/${certNft.microchip}`}
-        />
-        <meta key="og-image" property="og:image" content={`${certNft.image}`} />
-        <meta key="twitter-title" name="twitter:title" content={certNft.name} />
-        <meta
-          key="twitter-description"
-          name="twitter:description"
-          content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@jaothui" />
-        <meta name="twitter:image" content={`${certNft.image}`} />
-
-        <link rel="canonical" href="https://jaothui.com/" />
-      </Head>
       <div className="my-10 mx-3 flex justify-center" id="container">
         <div className="flex min-h-screen items-center max-w-[800px] justify-center rounded-xl shadow-xl">
           <div className="card my-2 w-11/12 bg-base-100 xl:my-6 xl:w-1/2">
             <figure>
-              <img src={certNft.image!} />
+              <img src={certNft.imageUri!} />
             </figure>
             <div className="card-body">
               <div className="card-title">Information</div>
@@ -114,7 +75,15 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-secondary">
-                      {certNft.name}
+                      {certNft.name.includes("คุณ") ? (
+                        <div className="text-2xl font-bold bg-gradient-to-br from-[#FFE15D] via-[#e59a28] to-[#FFE15D] text-transparent bg-clip-text">
+                          {certNft.name}
+                        </div>
+                      ) : (
+                        <div className="text-2xl font-bold text-secondary">
+                          {certNft.name}
+                        </div>
+                      )}
                     </div>
                     <div className="stat-desc">Buffalo{"'"}s name</div>
                   </div>
@@ -125,7 +94,7 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.microchip}
+                      {certNft.certify.microchip}
                     </div>
                     <div className="stat-desc">Signature ID</div>
                   </div>
@@ -136,7 +105,7 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.birthday}
+                      {dayjs(certNft.birthdate * 1000).format("DD/MMM/YYYY")}
                     </div>
                     <div className="stat-desc">Birthday Date</div>
                   </div>
