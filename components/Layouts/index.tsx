@@ -15,6 +15,7 @@ import BitkubDisconnectButton from "../Shared/BitkubNextDiscon";
 import CartButton from "../Cart/Buttons/CartButton";
 import StoreMenu from "../Shared/Navbar/StoreMenu";
 import Head from "next/head";
+import { Metadata } from "next";
 
 interface LayoutProps {
   children: ReactNode;

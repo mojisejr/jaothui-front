@@ -75,7 +75,15 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-secondary">
-                      {certNft.name}
+                      {certNft.name.includes("คุณ") ? (
+                        <div className="text-2xl font-bold bg-gradient-to-br from-[#FFE15D] via-[#e59a28] to-[#FFE15D] text-transparent bg-clip-text">
+                          {certNft.name}
+                        </div>
+                      ) : (
+                        <div className="text-2xl font-bold text-secondary">
+                          {certNft.name}
+                        </div>
+                      )}
                     </div>
                     <div className="stat-desc">Buffalo{"'"}s name</div>
                   </div>
