@@ -127,7 +127,10 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.motherId ? certNft.motherId : "N/A"}
+                      {certNft.relation.motherTokenId &&
+                      certNft.relation.motherTokenId != 0
+                        ? certNft.relation.motherTokenId
+                        : "N/A"}
                     </div>
                     <div className="stat-desc">Buffalo{"'"}s Mother ID</div>
                   </div>
@@ -138,7 +141,18 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.fatherId ? certNft.fatherId : "N/A"}
+                      {certNft.relation.fatherTokenId &&
+                      certNft.relation.fatherTokenId != 0 ? (
+                        <Link
+                          className="font-bold text-secondary xl:text-[2rem] hover:text-thuiyellow"
+                          href={`/cert/${certNft.relation.fatherTokenId}`}
+                          target="_blank"
+                        >
+                          {certNft.relation.fatherTokenId}
+                        </Link>
+                      ) : (
+                        "N/A"
+                      )}
                     </div>
                     <div className="stat-desc">Buffalo{"'"}s Father ID</div>
                   </div>
