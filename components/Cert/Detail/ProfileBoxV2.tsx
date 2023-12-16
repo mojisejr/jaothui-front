@@ -242,7 +242,7 @@ const ProfileBoxV2 = ({
                     <FaStamp size={30} />
                   </div>
                   <div>
-                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
+                    <div className="stat-title font-bold text-secondary xl:text-[2rem] flex gap-2 items-center">
                       {approvedBy.length <= 0
                         ? "N/A"
                         : approvedBy.map((a, index) => (
