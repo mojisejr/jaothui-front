@@ -2,13 +2,25 @@ import Link from "next/link";
 import { IMetadata } from "../../../interfaces/iMetadata";
 import CountryFlag from "../CountryFlag";
 import Loading from "../Indicators/Loading";
+import { motion } from "framer-motion";
+
 interface PedigreeCardProps {
   data: IMetadata;
 }
 
 const PedigreeCard = ({ data }: PedigreeCardProps) => {
   return (
-    <>
+    <motion.div
+      initial={{ y: 0 }}
+      transition={{
+        duration: 0.2,
+        type: "tween",
+        ease: "easeInOut",
+      }}
+      whileHover={{
+        y: -3,
+      }}
+    >
       <Link
         href={`/cert/${data ? data.microchip : null}`}
         className="w-full rounded-xl shadow-xl"
@@ -46,7 +58,7 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
           </div>
         </div>
       </Link>
-    </>
+    </motion.div>
   );
 };
 

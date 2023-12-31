@@ -2,20 +2,15 @@ import { ReactNode, SyntheticEvent, useRef } from "react";
 import BottomNav from "../Shared/Navbar/Bottom";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { BiSearchAlt2 } from "react-icons/bi";
-import { AiFillCaretRight } from "react-icons/ai";
 import LoginWithLineButton from "../Shared/Buttons/LoginWithLine";
 import Link from "next/link";
-import Image from "next/image";
 import FooterSection from "../Shared/Footer";
-import BitkubNextConnectButton from "../Shared/BitkubNext";
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
-import BitkubDisconnectButton from "../Shared/BitkubNextDiscon";
 
 import CartButton from "../Cart/Buttons/CartButton";
-import StoreMenu from "../Shared/Navbar/StoreMenu";
 import Head from "next/head";
-import { Metadata } from "next";
+import MenuList from "../Shared/Navbar/MenuList";
 
 interface LayoutProps {
   children: ReactNode;
@@ -113,118 +108,9 @@ const Layout = ({ children }: LayoutProps) => {
           <FooterSection />
           <BottomNav />
         </div>
-        <div className="drawer-side z-[10]">
-          <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
-          <ul className="menu p-4 w-52 min-h-full bg-neutral text-thuiwhite rounded-tr-3xl shadow-2xl">
-            <li>
-              <Link href="/" className="flex">
-                <Image
-                  className="w-[30px]"
-                  src="/images/thuiLogo.png"
-                  width={30}
-                  height={30}
-                  alt="jaothui-logo"
-                />
-                <div className="font-bold text-lg">JAOTHUI</div>
-              </Link>
-            </li>
-            <hr />
-            <li>
-              <Link
-                href="/whitepaper.pdf"
-                target="_blank"
-                className="hover:text-primary"
-              >
-                <AiFillCaretRight size={24} />
-                <div>Whitepaper</div>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="https://www.bitkubnft.com/gashapon/427"
-                target="_blank"
-                className="hover:text-primary"
-              >
-                <AiFillCaretRight size={24} />
-                <div>NFT Profile</div>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cert" className="hover:text-primary">
-                <AiFillCaretRight size={24} />
-                <div>Pedigree List</div>
-              </Link>
-            </li>
-            <li>
-              <Link href="/partners" className="hover:text-primary">
-                <AiFillCaretRight size={24} />
-                <div>Partners</div>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="https://kwaithai.com"
-                target="_blank"
-                className="hover:text-primary"
-              >
-                <AiFillCaretRight size={24} />
-                <div>Kwaithai.com</div>
-              </Link>
-            </li>
-            {isConnected ? (
-              <>
-                <div className="text-center border-b-[1px] border-white py-2">
-                  Your Menu
-                </div>
-                <ConnectedList />
-              </>
-            ) : null}
-            <li>
-              {/* <LoginWithLineButton /> */}
-              {isConnected ? (
-                <BitkubDisconnectButton />
-              ) : (
-                <BitkubNextConnectButton />
-              )}
-            </li>
-          </ul>
-        </div>
+        <MenuList />
       </div>
     </>
-  );
-};
-
-const ConnectedList = () => {
-  return (
-    <ul>
-      <li>
-        <Link href="/cert/profile" className="hover:text-primary">
-          <AiFillCaretRight size={24} />
-          <div>My Profile</div>
-        </Link>
-      </li>
-      <li>
-        <Link href="/cert/profile/mycert" className="hover:text-primary">
-          <AiFillCaretRight size={24} />
-          <div>My Pedigrees</div>
-        </Link>
-      </li>
-      <li>
-        <Link href="/cert/profile/privilege" className="hover:text-primary">
-          <AiFillCaretRight size={24} />
-          <div>My Privilege</div>
-        </Link>
-      </li>
-      <li>
-        <Link href="/cert/profile/myfarm" className="hover:text-primary">
-          <AiFillCaretRight size={24} />
-          <div>My Farm</div>
-        </Link>
-      </li>
-      <li>
-        <StoreMenu />
-      </li>
-    </ul>
   );
 };
 

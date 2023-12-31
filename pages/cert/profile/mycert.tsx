@@ -22,7 +22,6 @@ const MyCert = () => {
   const [sortState, setSortState] = useState<number>(0);
   const [currentData, setCurrentData] = useState<IMetadata[]>(metadataOfOwner);
 
-
   function handleSorting(e: SyntheticEvent) {
     e.preventDefault();
     const target = e.target as typeof e.target & {
@@ -53,8 +52,7 @@ const MyCert = () => {
     }
   }, [metadataOfOwner, sortState]);
 
-
-  if(!isConnected) {
+  if (!isConnected) {
     replace("/unauthorized");
     return;
   }
@@ -66,7 +64,7 @@ const MyCert = () => {
           {isConnected ? (
             <div className="py-6">
               <div className="flex justify-between items-center px-[22px] py-2">
-                <div className="text-xl font-bold">Pedigrees</div>
+                <div className="text-xl font-bold">My Pedigrees</div>
                 <div
                   id="search-bar"
                   className="flex items-center gap-3 mt-1 mb-1

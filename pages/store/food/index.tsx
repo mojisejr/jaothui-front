@@ -6,6 +6,7 @@ import AllProductList from "../../../components/Store/Lists/AllProductList";
 import ProductDetailModal from "../../../components/Store/Details/ProductDetailModal";
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
+import NothingSelling from "../../../components/Shared/NothingSelling";
 
 const FoodProductPage = () => {
   const { replace } = useRouter();
@@ -23,6 +24,9 @@ const FoodProductPage = () => {
       subTitle="FOOD"
       smallTitle="From Farm To Table"
     >
+      <div className="py-10 flex justify-center items-center">
+        <NothingSelling />
+      </div>
       <ProductDetailModal />
     </StoreLayout>
   );

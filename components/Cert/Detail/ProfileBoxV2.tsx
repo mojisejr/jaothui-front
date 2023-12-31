@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaArrowCircleLeft, FaStamp } from "react-icons/fa";
 import { RiMedalFill } from "react-icons/ri";
-import { IMetadata } from "../../../interfaces/iMetadata";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import CountryFlag from "../../Shared/CountryFlag";
 import { RewardData } from "../../../interfaces/iReward";
@@ -12,16 +11,11 @@ import { HiExternalLink, HiOutlineDocumentText } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { BiRfid, BiRuler } from "react-icons/bi";
 import { TbNfc } from "react-icons/tb";
-import {
-  BsGenderAmbiguous,
-  BsFileEarmarkBinary,
-  BsCheck,
-} from "react-icons/bs";
-import { GiNewBorn, GiTrophyCup } from "react-icons/gi";
+import { BsGenderAmbiguous, BsFileEarmarkBinary } from "react-icons/bs";
+import { GiTrophyCup } from "react-icons/gi";
 import { MdColorLens } from "react-icons/md";
-import { StarIcon } from "@sanity/icons";
-import Head from "next/head";
 import dayjs from "dayjs";
+import { motion } from "framer-motion";
 
 export interface ProfileBoxProps {
   certNft: any;
@@ -60,7 +54,17 @@ const ProfileBoxV2 = ({
 
   return (
     <>
-      <div className="my-10 mx-3 flex justify-center" id="container">
+      <motion.div
+        className="my-10 mx-3 flex justify-center"
+        id="container"
+        initial={{ y: 5, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{
+          duration: 0.5,
+          type: "tween",
+          ease: "easeInOut",
+        }}
+      >
         <div className="flex min-h-screen items-center max-w-[800px] justify-center rounded-xl shadow-xl">
           <div className="card my-2 w-11/12 bg-base-100 xl:my-6 xl:w-1/2">
             <figure>
@@ -293,7 +297,7 @@ const ProfileBoxV2 = ({
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

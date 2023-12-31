@@ -30,7 +30,7 @@ export const createCheckoutParam = (
   const params: Stripe.Checkout.SessionCreateParams = {
     submit_type: "pay",
     mode: "payment",
-    payment_method_types: ["card"],
+    payment_method_types: ["card", "promptpay"],
     shipping_address_collection: {
       allowed_countries: ["TH"],
     },
