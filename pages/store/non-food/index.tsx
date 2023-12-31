@@ -6,6 +6,7 @@ import AllProductList from "../../../components/Store/Lists/AllProductList";
 import ProductDetailModal from "../../../components/Store/Details/ProductDetailModal";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
+import NothingSelling from "../../../components/Shared/NothingSelling";
 
 const NonFoodProductPage = () => {
   const { replace } = useRouter();
@@ -23,6 +24,9 @@ const NonFoodProductPage = () => {
       subTitle="PRODUCT"
       smallTitle="Best Selection form our best practice."
     >
+      <div className="py-10 flex justify-center items-center">
+        <NothingSelling />
+      </div>
       <ProductDetailModal />
     </StoreLayout>
   );

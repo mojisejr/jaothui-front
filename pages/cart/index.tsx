@@ -6,7 +6,7 @@ import ItemCard from "../../components/Cart/Card/ItemCard";
 import Checkout from "../../components/Cart/Card/Checkout";
 
 const Cart = () => {
-  const { itemInCart, itemInCartCount } = useStore();
+  const { itemInCart } = useStore();
 
   return (
     <>
