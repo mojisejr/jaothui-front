@@ -30,7 +30,7 @@ const CertDetail = (
 
   return (
     <Layout>
-      <Head>
+      {/* <Head>
         <title key="title">{`${props.seo.name} #${props.seo.certify.microchip}`}</title>
         <meta
           key="keywords"
@@ -87,7 +87,7 @@ const CertDetail = (
         <meta name="twitter:image" content={`${props.seo.imageUri}`} />
 
         <link rel="canonical" href="https://jaothui.com/" />
-      </Head>
+      </Head> */}
       {metadata == undefined || metadata == null || metadata.length <= 0 ? (
         <div className="min-h-screen flex justify-center">
           <Loading size="lg" />
