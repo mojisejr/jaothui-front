@@ -129,7 +129,7 @@ const Layout = ({ children }: LayoutProps) => {
               name="og:image"
               property="og:image"
               // content={`https://nftstorage.link/ipfs/bafkreifuxnild7y5degh4bt4puu3cnkk6r74cqcboukih5rwipr2xzaeoy`}
-              content={`http://localhost:3000/api/og?tokenId=${tokenId}`}
+              content={`https://jaothui.com/api/og?tokenId=${tokenId}`}
             />
             <meta
               key="twitter-title"
