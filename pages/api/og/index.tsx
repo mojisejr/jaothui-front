@@ -8,10 +8,6 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   try {
-    const defaultImage = await fetch(
-      new URL("./seo_logo.jpeg", import.meta.url)
-    ).then((res) => res.arrayBuffer());
-
     const { searchParams } = new URL(req.url);
     const hasTokenId = searchParams.has("tokenId");
     const tokenId = hasTokenId
@@ -22,9 +18,13 @@ export default async function handler(req: NextRequest) {
       ? await getMetadataByMicrochipId(tokenId!)
       : null;
 
-    const image = metadata == null ? defaultImage : metadata.imageUri;
+    const image =
+      metadata == null || metadata == undefined
+        ? "https://nftstorage.link/ipfs/bafkreifuxnild7y5degh4bt4puu3cnkk6r74cqcboukih5rwipr2xzaeoy"
+        : metadata.imageUri;
 
-    console.log(metadata);
+    console.log("image: ", image);
+
     return new ImageResponse(
       (
         <div
@@ -62,7 +62,7 @@ export default async function handler(req: NextRequest) {
             }}
           >
             <span>#{tokenId}</span>
-            <span>{metadata.name}</span>
+            <span>{metadata ? metadata.name : null}</span>
           </div>
         </div>
       )
