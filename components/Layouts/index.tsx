@@ -21,6 +21,8 @@ const Layout = ({ children }: LayoutProps) => {
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected } = useBitkubNext();
 
+  console.log(`http://localhost:3000/api/og?tokenId=${tokenId}`);
+
   function handleSearch(e: SyntheticEvent) {
     const value =
       searchRef.current?.value == undefined ? 0 : +searchRef.current.value;
@@ -102,6 +104,12 @@ const Layout = ({ children }: LayoutProps) => {
             <meta
               name="description"
               content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+            />
+            <meta
+              key="og-image"
+              name="og:image"
+              property="og:image"
+              content={`http://localhost:3000/api/og?tokenId=${tokenId}`}
             />
           </Head>
           {children}
