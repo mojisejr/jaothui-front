@@ -163,8 +163,8 @@ const ProfileBoxV2 = ({
                 </div>
                 <div className="stat flex items-center gap-4">
                   <div className="stat-figure text-secondary">
-                    {certNft.dna ? (
-                      <Link href={certNft.dna!} target="_blank">
+                    {certNft.certify.dna ? (
+                      <Link href={certNft.certify.dna!} target="_blank">
                         <BsFileEarmarkBinary
                           className="text-primary hover:text-accent"
                           size={30}
@@ -182,7 +182,7 @@ const ProfileBoxV2 = ({
                             country={certNft.origin}
                             size={"48x36"}
                           />
-                          {certNft.dna ? (
+                          {certNft.certify.dna ? (
                             <span className="text-xs text-accent font-semibold">
                               Verified
                             </span>
