@@ -2,34 +2,44 @@ import { ReactNode, SyntheticEvent, useRef } from "react";
 import BottomNav from "../Shared/Navbar/Bottom";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { BiSearchAlt2 } from "react-icons/bi";
-import LoginWithLineButton from "../Shared/Buttons/LoginWithLine";
 import Link from "next/link";
 import FooterSection from "../Shared/Footer";
 import { useRouter } from "next/router";
-import { useBitkubNext } from "../../contexts/bitkubNextContext";
 
 import CartButton from "../Cart/Buttons/CartButton";
-import Head from "next/head";
 import MenuList from "../Shared/Navbar/MenuList";
+import { useGetAllMetadata } from "../../blockchain/Metadata/read";
 
 interface LayoutProps {
   children: ReactNode;
 }
 const Layout = ({ children }: LayoutProps) => {
   const { pathname, push, query } = useRouter();
-  const { tokenId } = query;
   const searchRef = useRef<HTMLInputElement>(null);
-  const { isConnected } = useBitkubNext();
+  //bad
+  const { allMetadata } = useGetAllMetadata();
 
   function handleSearch(e: SyntheticEvent) {
     const value =
-      searchRef.current?.value == undefined ? 0 : +searchRef.current.value;
+      searchRef.current?.value == undefined ? 0 : searchRef.current.value;
 
-    if (value <= 0) {
+    if (+value <= 0) {
       return;
     }
 
-    push(`/cert/${value}`);
+    const isNumberic = /^\d+$/.test(value.toString()!);
+
+    if (isNumberic) {
+      push(`/cert/${value}`);
+    } else {
+      const found = allMetadata.find((buffalo) =>
+        buffalo.name.includes(value.toString())
+      );
+
+      if (!found) return;
+
+      push(`/cert/${found.microchip}`);
+    }
   }
 
   return (
@@ -82,8 +92,9 @@ const Layout = ({ children }: LayoutProps) => {
                 >
                   <div className="join">
                     <input
+                      type="text"
                       className="input join-item w-3/4"
-                      placeholder="Microchip Id"
+                      placeholder="id/name"
                       ref={searchRef}
                     />
                     <button

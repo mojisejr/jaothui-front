@@ -5,7 +5,7 @@ import { SiDiscord } from "react-icons/si";
 const FooterSection = () => {
   return (
     <div
-      className="w-full h-full bg-thuidark bg-opacity-[0.955] py-10 mb-10 pr-[5%] pl-[5%] text-thuiwhite 
+      className="w-full h-full bg-thuidark bg-opacity-[0.955] py-10 mb-10 tabletS:mb-0 pr-[5%] pl-[5%] text-thuiwhite 
     "
     >
       <div className="flex gap-10 items-center">

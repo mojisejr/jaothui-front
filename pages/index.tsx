@@ -4,11 +4,9 @@ import Layout from "../components/Layouts";
 import Hero from "../components/Home/Hero";
 import MainTitle from "../components/Home/Hero/MainTitle";
 import Pedigree from "../components/Home/Pedigree";
-import ProductList from "../components/Store/Lists/ProductsList";
-import FoodProductList from "../components/Store/Lists/FoodProductList";
+// import ProductList from "../components/Store/Lists/ProductsList";
+// import FoodProductList from "../components/Store/Lists/FoodProductList";
 import { ToastContainer } from "react-toastify";
-import Head from "next/head";
-import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   return (
@@ -19,8 +17,6 @@ const Home: NextPage = () => {
           <MainTitle />
         </Hero>
         <Pedigree />
-        <ProductList />
-        <FoodProductList />
       </Layout>
       <ToastContainer />
       <CookieConsent buttonText="Thank You, I Accept">
