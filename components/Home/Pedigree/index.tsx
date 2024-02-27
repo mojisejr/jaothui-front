@@ -9,7 +9,17 @@ const Pedigree = () => {
   //   ? [allMetadata[0], allMetadata[1], allMetadata[2], allMetadata[3]]
   //   : [];
 
-  const data = _.take(allMetadata, 8);
+  // const data = _.take(allMetadata, 8);
+  const data = [
+    allMetadata[8],
+    allMetadata[70],
+    allMetadata[79],
+    allMetadata[81],
+    allMetadata[72],
+    allMetadata[76],
+    allMetadata[155],
+    allMetadata[65],
+  ];
 
   return (
     <>

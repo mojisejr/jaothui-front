@@ -7,7 +7,7 @@ import { MdAccountBox } from "react-icons/md";
 const BottomNav = () => {
   return (
     <>
-      <div className="btm-nav bg-neutral z-[10]">
+      <div className="btm-nav bg-neutral z-[10] tabletM:hidden">
         <Link href="/">
           <AiFillHome className="text-base-200 hover:text-base-300" size={24} />
         </Link>

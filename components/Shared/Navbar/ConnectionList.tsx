@@ -96,9 +96,7 @@ const ConnectedList = () => {
           </motion.div>
         </Link>
       </motion.li>
-      <li>
-        <StoreMenu />
-      </li>
+      <li>{/* <StoreMenu /> */}</li>
     </ul>
   );
 };
