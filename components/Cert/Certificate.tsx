@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { trpc } from "../../utils/trpc";
-import dayjs from "dayjs";
 import { parseThaiDate } from "../../helpers/parseThaiDate";
+import { QRCodeSVG } from "qrcode.react";
 
 interface CertificateProps {
   microchip: string;
@@ -62,8 +62,11 @@ const Certificate = ({ microchip }: CertificateProps) => {
           </div>
         </div>
         <div className="flex flex-col gap-1 items-center">
-          <div className="w-24 h-24 border-[1px] rounded-xl flex justify-center items-center">
-            QR CODE
+          <div className="w-24 h-24 rounded-sm flex justify-center items-center overflow-hidden">
+            <QRCodeSVG
+              value={`https://jaothui.com/cert/${microchip}`}
+              bgColor="none"
+            />
           </div>
           <div>
             เลขที่ <span className="font-bold">xxxx/67</span>
