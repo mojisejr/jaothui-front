@@ -10,7 +10,7 @@ interface PedigreeCardProps {
 }
 
 const PedigreeCard = ({ data }: PedigreeCardProps) => {
-  const thaiDate = parseThaiDate(new Date(data.birthday).getTime());
+  const thaiDate = parseThaiDate(new Date(data?.birthday! ?? 0).getTime());
   return (
     <motion.div
       initial={{ y: 0 }}

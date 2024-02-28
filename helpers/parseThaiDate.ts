@@ -1,6 +1,14 @@
 import dayjs from "dayjs";
 
 export const parseThaiDate = (timestamp: number) => {
+  if (timestamp <= 0)
+    return {
+      date: "N/A",
+      thaiMonth: "N/A",
+      thaiMonth2: "N/A",
+      thaiYear: "N/A",
+      thaiYear2: "N/A",
+    };
   const thaiMonths = [
     "มกราคม",
     "กุมภาพันธ์",
