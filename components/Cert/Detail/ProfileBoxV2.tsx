@@ -14,8 +14,8 @@ import { TbNfc } from "react-icons/tb";
 import { BsGenderAmbiguous, BsFileEarmarkBinary } from "react-icons/bs";
 import { GiTrophyCup } from "react-icons/gi";
 import { MdColorLens } from "react-icons/md";
-import dayjs from "dayjs";
 import { motion } from "framer-motion";
+import { parseThaiDate } from "../../../helpers/parseThaiDate";
 
 export interface ProfileBoxProps {
   certNft: any;
@@ -30,6 +30,7 @@ const ProfileBoxV2 = ({
 }: ProfileBoxProps) => {
   // const { isConnected } = useAccount();
   const { isConnected } = useBitkubNext();
+  const thaiDate = parseThaiDate(certNft.birthdate * 1000);
 
   if (Object.keys(certNft).length === 0) {
     return (
@@ -108,8 +109,8 @@ const ProfileBoxV2 = ({
                     <HiOutlineDocumentText size={30} />
                   </div>
                   <div>
-                    <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {dayjs(certNft.birthdate * 1000).format("DD/MMM/YYYY")}
+                    <div className="xl:hidden stat-title font-bold text-secondary xl:text-[2rem]">
+                      {`${thaiDate.date} ${thaiDate.thaiMonth2} ${thaiDate.thaiYear2}`}
                     </div>
                     <div className="stat-desc">Birthday Date</div>
                   </div>
@@ -250,6 +251,16 @@ const ProfileBoxV2 = ({
                       {approvedBy.length <= 0
                         ? "N/A"
                         : approvedBy.map((a, index) => (
+                            // <Link
+                            //   href={`/cert/${certNft.certify.microchip}/certificate`}
+                            // >
+                            //   <Image
+                            //     src={a.uri}
+                            //     width={40}
+                            //     height={40}
+                            //     alt="approvedBy"
+                            //   />
+                            // </Link>
                             <>
                               {a.doc == "" || a.doc == undefined ? (
                                 <button
@@ -294,6 +305,13 @@ const ProfileBoxV2 = ({
               >
                 View On BKCScan <HiExternalLink size={20} />
               </Link>
+              {/* <Link
+                href={`/cert/${certNft.certify.microchip}/certificate`}
+                // target="_blank"
+                className="btn btn-ghost text-gray-400"
+              >
+                ApprovedBy
+              </Link> */}
             </div>
           </div>
         </div>
