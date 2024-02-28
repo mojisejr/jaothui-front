@@ -110,7 +110,7 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="xl:hidden stat-title font-bold text-secondary xl:text-[2rem]">
-                      {`${thaiDate.date} ${thaiDate.thaiMonth2} ${thaiDate.thaiYear2}`}
+                      {`${thaiDate.date} ${thaiDate.thaiMonth} ${thaiDate.thaiYear2}`}
                     </div>
                     <div className="stat-desc">Birthday Date</div>
                   </div>

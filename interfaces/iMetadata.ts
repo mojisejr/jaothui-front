@@ -5,6 +5,7 @@ export interface IMetadata {
   image?: string;
   detail: string;
   sex: string;
+  birthdate: number;
   birthday: string;
   height: string;
   microchip: string;
