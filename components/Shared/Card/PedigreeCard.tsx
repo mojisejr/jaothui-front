@@ -3,12 +3,14 @@ import { IMetadata } from "../../../interfaces/iMetadata";
 import CountryFlag from "../CountryFlag";
 import Loading from "../Indicators/Loading";
 import { motion } from "framer-motion";
+import { parseThaiDate } from "../../../helpers/parseThaiDate";
 
 interface PedigreeCardProps {
   data: IMetadata;
 }
 
 const PedigreeCard = ({ data }: PedigreeCardProps) => {
+  const thaiDate = parseThaiDate(new Date(data.birthday).getTime());
   return (
     <motion.div
       initial={{ y: 0 }}
@@ -49,7 +51,11 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
                 {/* {data ? data.name : <Loading size="sm" />} */}
               </div>
               <div className="text-sm">
-                {data ? data.birthday : <Loading size="sm" />}
+                {data ? (
+                  `${thaiDate.date} ${thaiDate.thaiMonth2} ${thaiDate.thaiYear2}`
+                ) : (
+                  <Loading size="sm" />
+                )}
               </div>
             </div>
             <div>

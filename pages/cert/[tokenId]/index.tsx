@@ -2,16 +2,16 @@ import { useRouter } from "next/router";
 import {
   useGetApprovalDataByMicrochip,
   useGetMetadataByMicrochip,
-} from "../../blockchain/Metadata/read";
-import { useGetRewardByMicrochip } from "../../blockchain/Reward/read";
-import Layout from "../../components/Layouts";
-import ProfileBoxV2 from "../../components/Cert/Detail/ProfileBoxV2";
-import Loading from "../../components/Shared/Indicators/Loading";
+} from "../../../blockchain/Metadata/read";
+import { useGetRewardByMicrochip } from "../../../blockchain/Reward/read";
+import Layout from "../../../components/Layouts";
+import ProfileBoxV2 from "../../../components/Cert/Detail/ProfileBoxV2";
+import Loading from "../../../components/Shared/Indicators/Loading";
 import Head from "next/head";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "../../../utils/trpc";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { appRouter } from "../../server/routers/_app";
+import { appRouter } from "../../../server/routers/_app";
 
 const CertDetail = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>
