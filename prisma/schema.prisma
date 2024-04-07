@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  Int                  @id @default(autoincrement())
+  avatar              String?
+  name                String?
+  farmName            String?
+  wallet              String               @unique
+  address             String               @db.Text
+  province            String               @db.Text
+  lat                 Float?
+  lon                 Float?
+  role                String               @default("USER")
+  lineId              String?              @unique @db.Text
+  email               String?
+  tel                 String?              @db.Text
+  payment             Payment[]
+  active              Boolean              @default(false)
+  approved            String[]             @default([])
+  approvedCount       Int                  @default(0)
+  createdAt           DateTime             @default(now())
+  updateAt            DateTime             @updatedAt
+  Farm                Farm[]
+  MicrochipOrder      MicrochipOrder[]
+  CertificateApprover CertificateApprover?
+  Certificate         Certificate[]
+}
+
+model Farm {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.Text
+  lat            Float
+  lon            Float
+  imageUrl       String?          @default("/images/thuiLogo.png")
+  description    String?
+  tel            String?
+  websiteUrl     String?
+  facebook       String?
+  twitter        String?
+  locationUrl    String?
+  userId         Int?
+  user           User?            @relation(references: [id], fields: [userId])
+  MicrochipOrder MicrochipOrder[]
+}
+
+model Payment {
+  id            Int       @id @default(autoincrement())
+  wallet        String
+  isLifeTime    Boolean   @default(false)
+  active        Boolean   @default(true)
+  start         DateTime  @default(now())
+  end           DateTime?
+  slipUrl       String    @db.Text
+  approver      String[]  @default([])
+  approvedCount Int       @default(0)
+  rejector      String[]  @default([])
+  rejectedCount Int       @default(0)
+  User          User?     @relation(fields: [userId], references: [id])
+  userId        Int?
+  currentStep   Int       @default(0)
+}
+
+model Pedigree {
+  microchip String    @id @unique
+  name      String
+  certNo    String?
+  birthday  DateTime
+  sex       String
+  motherId  String?
+  fatherId  String?
+  origin    String?   @default("thai")
+  height    Int?
+  color     String
+  issueAt   DateTime?
+}
+
+model Advertisements {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String
+  imageUrl    String?
+  active      Boolean @default(true)
+}
+
+model Microchip {
+  id             Int             @id @default(autoincrement())
+  microchip      String          @unique
+  tokenId        String?         @unique
+  sold           Boolean         @default(false)
+  active         Boolean         @default(false)
+  MicrochipOrder MicrochipOrder?
+}
+
+model MicrochipOrder {
+  id              Int        @id @default(autoincrement())
+  microchipId     String?    @unique
+  microchip       Microchip? @relation(fields: [microchipId], references: [microchip])
+  wallet          String
+  user            User       @relation(fields: [wallet], references: [wallet])
+  farmId          Int?
+  farm            Farm?      @relation(fields: [farmId], references: [id])
+  shippingAddress String?
+  slipUrl         String?
+  note            String?
+  approver        String[]
+  approved        Boolean    @default(false)
+  canMint         Boolean    @default(false)
+  minted          Boolean    @default(false)
+  shipped         Boolean    @default(false)
+  buffaloName     String
+  buffaloOrigin   String
+  buffaloBirthday String
+  buffaloColor    String
+  buffaloSex      String
+  buffaloHeight   String
+  buffaloipfsUrl  String
+  timestamp       DateTime
+}
+
+model Certificate {
+  microchip String                @id @unique
+  no        Int                   @default(autoincrement())
+  approvers CertificateApprover[]
+  isActive  Boolean               @default(false)
+  bornAt    String?               @default("N/A")
+  user      User                  @relation(fields: [wallet], references: [wallet])
+  updatedAt DateTime              @updatedAt
+  wallet    String
+}
+
+model CertificateApprover {
+  wallet       String        @id @unique
+  signatureUrl String?
+  user         User          @relation(fields: [wallet], references: [wallet])
+  certificates Certificate[]
+}

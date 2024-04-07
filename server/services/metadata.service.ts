@@ -1,7 +1,7 @@
 import { Address, createPublicClient, http } from "viem";
 import { bitkub_mainnet } from "../../blockchain/chain";
 import { contract } from "../../blockchain/contract";
-import { parseOutputMetadata } from "../../blockchain/Metadata/helpers/metadataParser";
+import { isCertificateActivated } from "./certificate.service";
 
 const viem = createPublicClient({
   chain: bitkub_mainnet,
@@ -17,6 +17,8 @@ export const getMetadataByMicrochipId = async (microchipId: string) => {
       args: [microchipId],
     });
 
+    const certificationData = await isCertificateActivated(microchipId);
+
     const parsed = {
       ...data!,
       birthdate: +data.birthdate!.toString(),
@@ -28,7 +30,13 @@ export const getMetadataByMicrochipId = async (microchipId: string) => {
       },
       createdAt: +data.createdAt.toString(),
       updatedAt: +data.updatedAt.toString(),
+      isFull: certificationData.isFull,
+      no: certificationData.no,
+      year: certificationData.year,
+      bornAt: certificationData.bornAt,
+      owner: certificationData.owner,
     };
+
     return parsed;
   } catch (error) {
     console.log(error);
