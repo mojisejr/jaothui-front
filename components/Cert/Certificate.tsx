@@ -5,9 +5,19 @@ import { QRCodeSVG } from "qrcode.react";
 
 interface CertificateProps {
   microchip: string;
+  no: number;
+  year: number;
+  bornAt: string;
+  owner: string;
 }
 
-const Certificate = ({ microchip }: CertificateProps) => {
+const Certificate = ({
+  microchip,
+  no,
+  year,
+  bornAt,
+  owner,
+}: CertificateProps) => {
   const { data: metadata, isLoading } = trpc.metadata.getByMicrochip.useQuery({
     microchip,
   }) as any;
@@ -27,12 +37,12 @@ const Certificate = ({ microchip }: CertificateProps) => {
 
   return (
     <div className="relative container w-[1000px] min-h-[600px]  bg-gradient-to-br from-[#F3EDC8] via-[#EAD196] to-[#F3EDC8] p-8 shadow-xl">
-      <div className="example absolute rotate-[-45deg] font-bold opacity-30 top-[50%] left-[50%] text-[50px]">
+      {/* <div className="example absolute rotate-[-45deg] font-bold opacity-30 top-[50%] left-[50%] text-[50px]">
         เอกสารตัวอย่าง
       </div>
       <div className="example absolute rotate-[-45deg] font-bold opacity-30 top-[30%] left-[20%] text-[50px]">
         เอกสารตัวอย่าง
-      </div>
+      </div> */}
       <Image
         className="w-72 opacity-20 absolute bottom-[15%] right-[15%]"
         src="/images/logo-gray.png"
@@ -69,7 +79,10 @@ const Certificate = ({ microchip }: CertificateProps) => {
             />
           </div>
           <div>
-            เลขที่ <span className="font-bold">xxxx/67</span>
+            เลขที่{" "}
+            <span className="font-bold">
+              {no}/{year}
+            </span>
           </div>
         </div>
       </div>
@@ -110,11 +123,11 @@ const Certificate = ({ microchip }: CertificateProps) => {
         </div>
         {/** line 3 */}
         <div className="col-span-10">
-          ชื่อผู้ครอบครองควาย <span className="font-semibold">N/A</span>
+          ชื่อผู้ครอบครองควาย <span className="font-semibold">{owner}</span>
         </div>
         {/** line 4 */}
         <div className="col-span-10">
-          สถานที่เกิด <span className="font-semibold">N/A</span>
+          สถานที่เกิด <span className="font-semibold">{bornAt}</span>
         </div>
       </div>
       <div className="lower-zone px-6 flex items-center gap-4">

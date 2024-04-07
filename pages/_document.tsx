@@ -22,7 +22,6 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
 
-          <title>Jaothui Official</title>
           <meta
             key="keywords"
             name="keywords"
