@@ -1,4 +1,4 @@
-import React from "react";
+import React, { RefObject, useState } from "react";
 import Layout from "../../../components/Layouts";
 import Certificate from "../../../components/Cert/Certificate";
 import { useRouter } from "next/router";
@@ -14,8 +14,6 @@ const ApprovementPage = () => {
       microchip: query.tokenId! as string,
     });
 
-  // console.log({ certificate, query: query.tokenId! });
-
   return (
     <Layout>
       {/* <div className="min-h-screen  justify-center items-center flex labtop:hidden">
@@ -28,7 +26,7 @@ const ApprovementPage = () => {
         ) : (
           <>
             {certificate.isFull ? (
-              <>
+              <div className="flex flex-col items-center gap-3">
                 <div className="flex tabletM:hidden">
                   <CertificateMobile
                     microchip={query.tokenId! as string}
@@ -47,7 +45,7 @@ const ApprovementPage = () => {
                     owner={certificate.owner}
                   />
                 </div>
-              </>
+              </div>
             ) : (
               <div>
                 <div className="font-bold">ไม่มีข้อมูลในระบบ</div>
