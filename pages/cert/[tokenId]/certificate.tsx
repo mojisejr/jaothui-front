@@ -25,25 +25,13 @@ const ApprovementPage = () => {
           <Loading size="lg" />
         ) : (
           <>
-            {certificate.isFull ? (
-              <div className="flex flex-col items-center gap-3">
+            {certificate != null ? (
+              <div className="flex flex-col items-center gap-3 p-2">
                 <div className="flex tabletM:hidden">
-                  <CertificateMobile
-                    microchip={query.tokenId! as string}
-                    no={certificate.no}
-                    year={certificate.year}
-                    bornAt={certificate.bornAt}
-                    owner={certificate.owner}
-                  />
+                  <CertificateMobile microchip={query.tokenId! as string} />
                 </div>
                 <div className="hidden tabletM:flex">
-                  <Certificate
-                    microchip={query.tokenId! as string}
-                    no={certificate.no}
-                    year={certificate.year}
-                    bornAt={certificate.bornAt}
-                    owner={certificate.owner}
-                  />
+                  <Certificate microchip={query.tokenId! as string} />
                 </div>
               </div>
             ) : (

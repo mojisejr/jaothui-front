@@ -1,36 +1,33 @@
 import { useRouter } from "next/router";
 import {
   useGetApprovalDataByMicrochip,
-  useGetMetadataByMicrochip,
+  // useGetMetadataByMicrochip,
 } from "../../../blockchain/Metadata/read";
 import { useGetRewardByMicrochip } from "../../../blockchain/Reward/read";
 import Layout from "../../../components/Layouts";
 import ProfileBoxV2 from "../../../components/Cert/Detail/ProfileBoxV2";
 import Loading from "../../../components/Shared/Indicators/Loading";
-import Head from "next/head";
 import { trpc } from "../../../utils/trpc";
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { appRouter } from "../../../server/routers/_app";
+// import { createServerSideHelpers } from "@trpc/react-query/server";
+// import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 
-const CertDetail = (
-  props: InferGetServerSidePropsType<typeof getServerSideProps>
-) => {
-  // const router = useRouter();
-  // const { tokenId } = router.query;
-  // const { metadata } = useGetMetadataByMicrochip(tokenId! as string);
-  const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
-    microchip: props.tokenId,
-  }) as any;
+const CertDetail = () =>
+  // props: InferGetServerSidePropsType<typeof getServerSideProps>
+  {
+    const router = useRouter();
+    const { tokenId } = router.query;
+    // const { metadata } = useGetMetadataByMicrochip(tokenId! as string);
+    const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
+      // microchip: props.tokenId,
+      microchip: tokenId! as string,
+    }) as any;
 
-  const { rewards } = useGetRewardByMicrochip(props.tokenId! as string);
-  const { approvedBy } = useGetApprovalDataByMicrochip(
-    props.tokenId! as string
-  );
+    const { rewards } = useGetRewardByMicrochip(tokenId! as string);
+    const { approvedBy } = useGetApprovalDataByMicrochip(tokenId as string);
 
-  return (
-    <Layout>
-      {/* <Head>
+    return (
+      <Layout>
+        {/* <Head>
         <title key="title">{`${props.seo.name} #${props.seo.certify.microchip}`}</title>
         <meta
           key="keywords"
@@ -88,40 +85,40 @@ const CertDetail = (
 
         <link rel="canonical" href="https://jaothui.com/" />
       </Head> */}
-      {metadata == undefined || metadata == null || metadata.length <= 0 ? (
-        <div className="min-h-screen flex justify-center">
-          <Loading size="lg" />
-        </div>
-      ) : (
-        <ProfileBoxV2
-          certNft={metadata!}
-          rewards={rewards}
-          approvedBy={approvedBy}
-        />
-      )}
-    </Layout>
-  );
-};
-
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext<{ tokenId: string }>
-) => {
-  const helper = createServerSideHelpers({
-    router: appRouter,
-    ctx: {},
-  });
-
-  const tokenId = context.params?.tokenId as string;
-
-  await helper.metadata.getByMicrochip.prefetch({ microchip: tokenId });
-
-  return {
-    props: {
-      trpcState: helper.dehydrate(),
-      tokenId,
-      seo: helper.dehydrate().queries[0].state.data as any,
-    },
+        {metadata == undefined || metadata == null || metadata.length <= 0 ? (
+          <div className="min-h-screen flex justify-center">
+            <Loading size="lg" />
+          </div>
+        ) : (
+          <ProfileBoxV2
+            certNft={metadata!}
+            rewards={rewards}
+            approvedBy={approvedBy}
+          />
+        )}
+      </Layout>
+    );
   };
-};
+
+// export const getServerSideProps = async (
+//   context: GetServerSidePropsContext<{ tokenId: string }>
+// ) => {
+//   const helper = createServerSideHelpers({
+//     router: appRouter,
+//     ctx: {},
+//   });
+
+//   const tokenId = context.params?.tokenId as string;
+
+//   await helper.metadata.getByMicrochip.prefetch({ microchip: tokenId });
+
+//   return {
+//     props: {
+//       trpcState: helper.dehydrate(),
+//       tokenId,
+//       seo: helper.dehydrate().queries[0].state.data as any,
+//     },
+//   };
+// };
 
 export default CertDetail;

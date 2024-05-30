@@ -1,17 +1,17 @@
 import { NextPage } from "next";
 
-import { useGetAllMetadata } from "../../blockchain/Metadata/read";
 import Layout from "../../components/Layouts";
 import PedigreeCard from "../../components/Shared/Card/PedigreeCard";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { IMetadata } from "../../interfaces/iMetadata";
 import Loading from "../../components/Shared/Indicators/Loading";
 import NotFound from "../../components/Shared/Utils/Notfound";
+import { trpc } from "../../utils/trpc";
 
 const CertMainPage: NextPage = () => {
-  const { allMetadata: data } = useGetAllMetadata();
+  const { data, isLoading } = trpc.metadata.getAll.useQuery();
   const [sortState, setSortState] = useState<number>(0);
-  const [currentData, setCurrentData] = useState<IMetadata[]>(data);
+  const [currentData, setCurrentData] = useState<IMetadata[]>(data!);
 
   function handleSorting(e: SyntheticEvent) {
     e.preventDefault();
@@ -21,12 +21,12 @@ const CertMainPage: NextPage = () => {
 
     switch (+target.value) {
       case 1: {
-        const sorted = data.filter((f) => f.sex == "Female");
+        const sorted = data!.filter((f) => f.sex == "Female");
         setCurrentData(sorted);
         break;
       }
       case 2: {
-        const sorted = data.filter((f) => f.sex == "Male");
+        const sorted = data!.filter((f) => f.sex == "Male");
         setCurrentData(sorted);
         break;
       }
@@ -38,8 +38,8 @@ const CertMainPage: NextPage = () => {
   }
 
   useEffect(() => {
-    if (data.length > 0 && sortState == 0) {
-      setCurrentData(data);
+    if (data && data!.length > 0 && sortState == 0) {
+      setCurrentData(data!);
     }
   }, [data, sortState]);
 
@@ -69,18 +69,26 @@ const CertMainPage: NextPage = () => {
               </label>
             </div>
           </div>
-          {currentData.length <= 0 ? (
-            <NotFound />
-          ) : (
-            <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:px-[10rem] labtop:grid-cols-3 desktopM:grid-cols-4 labtop:px-[13rem] desktopM:px-[18rem] gap-2 desktopM:gap-3 tabletS:px-10 px-2">
-              {currentData ? (
-                currentData.map((d, index) => (
-                  <PedigreeCard key={index} data={d} />
-                ))
-              ) : (
-                <Loading size="lg" />
-              )}
+          {isLoading || currentData == undefined ? (
+            <div className="h-screen flex w-full justify-center items-start">
+              <Loading size="lg" />
             </div>
+          ) : (
+            <>
+              {currentData.length <= 0 ? (
+                <NotFound />
+              ) : (
+                <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:px-[10rem] labtop:grid-cols-3 desktopM:grid-cols-4 labtop:px-[13rem] desktopM:px-[18rem] gap-2 desktopM:gap-3 tabletS:px-10 px-2">
+                  {currentData ? (
+                    currentData.map((d, index) => (
+                      <PedigreeCard key={index} data={d} />
+                    ))
+                  ) : (
+                    <Loading size="lg" />
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
       </Layout>

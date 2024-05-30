@@ -248,7 +248,7 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem] flex gap-2 items-center">
-                      {approvedBy.length <= 0
+                      {/* {approvedBy.length <= 0
                         ? "N/A"
                         : approvedBy.map((a, index) => (
                             // <Link
@@ -292,7 +292,21 @@ const ProfileBoxV2 = ({
                                 </Link>
                               )}
                             </>
-                          ))}
+                          ))} */}
+                      {certNft.certificate == null ? (
+                        "N/A"
+                      ) : (
+                        <Link
+                          href={`/cert/${certNft.certify.microchip}/certificate?tokenId=${certNft.certify.microchip}`}
+                        >
+                          <Image
+                            src={"/images/logo.png"}
+                            width={40}
+                            height={40}
+                            alt="approvedBy"
+                          />
+                        </Link>
+                      )}
                     </div>
                     <div className="stat-desc">Approved By</div>
                   </div>
