@@ -8,19 +8,9 @@ import { MdDownload } from "react-icons/md";
 
 interface CertificateProps {
   microchip: string;
-  no: number;
-  year: number;
-  bornAt: string;
-  owner: string;
 }
 
-const Certificate = ({
-  microchip,
-  no,
-  year,
-  bornAt,
-  owner,
-}: CertificateProps) => {
+const Certificate = ({ microchip }: CertificateProps) => {
   const certificateRef = useRef<HTMLDivElement>(null);
   const { data: metadata, isLoading } = trpc.metadata.getByMicrochip.useQuery({
     microchip,
@@ -75,7 +65,7 @@ const Certificate = ({
         เอกสารตัวอย่าง
       </div> */}
         <Image
-          className="w-72 opacity-20 absolute bottom-[15%] right-[15%]"
+          className="w-72 opacity-20 absolute bottom-[20%] right-[15%]"
           src="/images/logo-gray.png"
           width={750}
           height={750}
@@ -112,7 +102,7 @@ const Certificate = ({
             <div>
               เลขที่{" "}
               <span className="font-bold">
-                {no}/{year}
+                {metadata.certificate.no}/{metadata.certificate.year}
               </span>
             </div>
           </div>
@@ -156,11 +146,15 @@ const Certificate = ({
           </div>
           {/** line 3 */}
           <div className="col-span-10">
-            ชื่อผู้ครอบครองควาย <span className="font-semibold">{owner}</span>
+            ชื่อผู้ครอบครองควาย{" "}
+            <span className="font-semibold">
+              {metadata.certificate.ownerName}
+            </span>
           </div>
           {/** line 4 */}
           <div className="col-span-10">
-            สถานที่เกิด <span className="font-semibold">{bornAt}</span>
+            สถานที่เกิด{" "}
+            <span className="font-semibold">{metadata.certificate.bornAt}</span>
           </div>
         </div>
         <div className="lower-zone px-6 flex items-center gap-4">
@@ -171,12 +165,63 @@ const Certificate = ({
             height={700}
             alt="buffalo-image"
           />
-          <div className="flex flex-col gap-4">
-            <div>
-              พ่อ <span className="font-semibold">N/A</span>
+          <div className="flex flex-col gap-4 w-full">
+            <div className="flex items-center justify-evenly">
+              <div>
+                พ่อ{" "}
+                <span className=" font-semibold">
+                  {metadata.certificate.dadId != null
+                    ? JSON.parse(metadata.certificate?.dadId!)[1]
+                    : "N/A"}
+                </span>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div>
+                  ปู่{" "}
+                  <span className=" font-semibold">
+                    {metadata.certificate?.fGranDadId != null
+                      ? JSON.parse(metadata.certificate?.fGranDadId!)[1]
+                      : "N/A"}
+                  </span>
+                </div>
+                <div>
+                  ย่า{" "}
+                  <span className=" font-semibold">
+                    {metadata.certificate?.fGrandMomId != null
+                      ? JSON.parse(metadata.certificate?.fGrandMomId!)[1]
+                      : "N/A"}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div>
-              แม่ <span className="font-semibold">N/A</span>
+
+            <div className="flex items-center justify-evenly">
+              <div>
+                แม่{" "}
+                <span className=" font-semibold">
+                  {metadata.certificate?.momId != null
+                    ? JSON.parse(metadata.certificate?.momId)[1]
+                    : "N/A"}
+                </span>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div>
+                  ตา
+                  <span className=" font-semibold">
+                    {metadata.certificate?.mGrandDadId != null
+                      ? JSON.parse(metadata.certificate?.mGrandDadId)[1]
+                      : "N/A"}
+                  </span>
+                </div>
+                <div>
+                  ยาย{" "}
+                  <span className=" font-semibold">
+                    {metadata.certificate?.mGrandMomId != null
+                      ? JSON.parse(metadata.certificate?.mGrandMomId!)[1]
+                      : "N/A"}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -184,23 +229,89 @@ const Certificate = ({
           <div className="col-span-1"></div>
           <div className="flex justify-evenly col-span-3">
             <div className="flex flex-col items-center">
-              <span className="font-semibold">{`(นายกุลภัทร์ โพธิกนิษฐ)`}</span>
-              <span>นายทะเบียนสมาคม</span>
+              <figure className="w-24">
+                <Image
+                  src={
+                    metadata.certificate?.approvers.find(
+                      (approver: { position: number }) => approver.position == 0
+                    )?.signatureUrl!
+                  }
+                  height={200}
+                  width={200}
+                  alt="signature"
+                />
+              </figure>
+              <span className="font-semibold text-center">{`(${
+                metadata.certificate?.approvers.find(
+                  (approver: { position: number }) => approver.position == 0
+                )?.user.name
+              })`}</span>
+              <span className="text-center">
+                {
+                  metadata.certificate?.approvers.find(
+                    (approver: { position: number }) => approver.position == 0
+                  )?.job
+                }
+              </span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="font-semibold">{`(นายธนบัตร ใคร่นุ่นสิงห์)`}</span>
-              <span>คณะทำงานกลางสมาคม</span>
+              <figure className="w-24">
+                <Image
+                  src={
+                    metadata.certificate?.approvers.find(
+                      (approver: { position: number }) => approver.position == 1
+                    )?.signatureUrl!
+                  }
+                  height={200}
+                  width={200}
+                  alt="signature"
+                />
+              </figure>
+              <span className="font-semibold text-cemter">{`(${
+                metadata.certificate?.approvers.find(
+                  (approver: { position: number }) => approver.position == 1
+                )?.user.name
+              })`}</span>
+              <span className="text-center">
+                {
+                  metadata.certificate?.approvers.find(
+                    (approver: { position: number }) => approver.position == 1
+                  )?.job
+                }
+              </span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="font-semibold">{`(นายสุชาติ บุญเจริญ)`}</span>
-              <span>นายกสมาคมอนุรักษ์​และพัฒนาควายไทย</span>
+              <figure className="w-24">
+                <Image
+                  src={
+                    metadata.certificate?.approvers.find(
+                      (approver: { position: number }) => approver.position == 2
+                    )?.signatureUrl!
+                  }
+                  height={200}
+                  width={200}
+                  alt="signature"
+                />
+              </figure>
+              <span className="font-semibold text-center">{`(${
+                metadata.certificate?.approvers.find(
+                  (approver: { position: number }) => approver.position == 2
+                )?.user.name
+              })`}</span>
+              <span className="text-center">
+                {
+                  metadata.certificate?.approvers.find(
+                    (approver: { position: number }) => approver.position == 2
+                  )?.job
+                }
+              </span>
             </div>
           </div>
         </div>
-        <div className="text-xs w-full text-right">
+        {/* <div className="text-xs w-full text-right">
           เอกสารเพื่อทดสอบระบบเท่านั้น ยังไม่สามารถนำไปใช้จริงได้
           อยู่ระหว่างการพัฒนา
-        </div>
+        </div> */}
       </div>
     </div>
   );

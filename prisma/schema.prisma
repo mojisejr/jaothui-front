@@ -128,19 +128,29 @@ model MicrochipOrder {
 }
 
 model Certificate {
-  microchip String                @id @unique
-  no        Int                   @default(autoincrement())
-  approvers CertificateApprover[]
-  isActive  Boolean               @default(false)
-  bornAt    String?               @default("N/A")
-  user      User                  @relation(fields: [wallet], references: [wallet])
-  updatedAt DateTime              @updatedAt
-  wallet    String
+  microchip   String                @id @unique
+  no          Int                   @default(autoincrement())
+  approvers   CertificateApprover[]
+  isActive    Boolean               @default(false)
+  ownerName   String
+  bornAt      String?               @default("N/A")
+  momId       String?
+  dadId       String?
+  mGrandMomId String?
+  mGrandDadId String?
+  fGrandMomId String?
+  fGranDadId  String?
+  user        User                  @relation(fields: [wallet], references: [wallet])
+  updatedAt   DateTime              @updatedAt
+  wallet      String
+  slipUrl     String
 }
 
 model CertificateApprover {
   wallet       String        @id @unique
-  signatureUrl String?
+  signatureUrl String
+  job          String
+  position     Int
   user         User          @relation(fields: [wallet], references: [wallet])
   certificates Certificate[]
 }

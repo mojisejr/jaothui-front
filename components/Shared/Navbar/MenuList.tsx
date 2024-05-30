@@ -62,7 +62,7 @@ const MenuList = () => {
           whileHover="whileHover"
         >
           <Link
-            href="https://www.bitkubnft.com/gashapon/427"
+            href="https://www.bitkubnft.com/store/0xef22447b5b06677c9597df18d5f2398c82a062a0?type=home"
             target="_blank"
             className={`hover:text-primary`}
           >
