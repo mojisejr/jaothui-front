@@ -48,14 +48,36 @@ export const getAllMetadata = async () => {
   }
 };
 
+export interface Metadata {
+  name: string;
+  origin: string;
+  color: string;
+  imageUri: string;
+  detail: string;
+  sex: string;
+  birthdate: bigint;
+  height: bigint;
+  certify: {
+    microchip: string;
+    certNo: string;
+    rarity: string;
+    dna: string;
+    issuedAt: bigint;
+  };
+  relation: { motherTokenId: string; fatherTokenId: string };
+  createdAt: bigint;
+  updatedAt: bigint;
+  certificate: any;
+}
+
 export const getMetadataByMicrochipId = async (microchipId: string) => {
   try {
-    const data: any = await viem.readContract({
+    const data = (await viem.readContract({
       address: contract.metadata.address as Address,
       abi: contract.metadata.abi,
       functionName: "getMetadataByMicrochip",
       args: [microchipId],
-    });
+    })) as Metadata;
 
     const certificationData = await isCertificateActivated(microchipId);
 
@@ -63,7 +85,6 @@ export const getMetadataByMicrochipId = async (microchipId: string) => {
       ...data!,
       birthdate: +data.birthdate!.toString(),
       height: +data.height.toString(),
-      "og:image": data.imageUri,
       certify: {
         ...data.certify,
         issuedAt: +data.certify.issuedAt.toString(),

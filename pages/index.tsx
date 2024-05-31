@@ -7,6 +7,8 @@ import Pedigree from "../components/Home/Pedigree";
 // import ProductList from "../components/Store/Lists/ProductsList";
 // import FoodProductList from "../components/Store/Lists/FoodProductList";
 import { ToastContainer } from "react-toastify";
+import { trpc } from "../utils/trpc";
+import Image from "next/image";
 
 const Home: NextPage = () => {
   return (
