@@ -10,7 +10,7 @@ export const productType = defineType({
       name: "name",
       title: "Product Name",
       type: "string",
-      validation: (Rule: StringRule) => Rule.required(),
+      // validation: (Rule: StringRule) => Rule.required(),
     }),
 
     defineField({
@@ -20,27 +20,27 @@ export const productType = defineType({
       options: {
         source: "name",
         maxLength: 200,
-        slugify: (input) =>
+        slugify: (input: string) =>
           input.toLowerCase().replace(/\s+/g, "-").slice(0, 200),
       },
     }),
 
-    defineField({
-      name: "images",
-      title: "Product Images",
-      type: "array",
-      description:
-        "multiple images is available, but the first one is the main image",
-      of: [
-        {
-          type: "image",
-          options: {
-            hotspot: true,
-          },
-        },
-      ],
-      validation: (Rule) => Rule.required(),
-    }),
+    // defineField({
+    //   name: "images",
+    //   title: "Product Images",
+    //   type: "array",
+    //   description:
+    //     "multiple images is available, but the first one is the main image",
+    //   of: [
+    //     {
+    //       type: "image",
+    //       options: {
+    //         hotspot: true,
+    //       },
+    //     },
+    //   ],
+    //   // validation: (Rule) => Rule.required(),
+    // }),
 
     defineField({
       name: "category",
@@ -55,41 +55,41 @@ export const productType = defineType({
         ],
         layout: "dropdown",
       },
-      validation: (Rule) => Rule.required(),
+      // validation: (Rule) => Rule.required(),
     }),
 
-    defineField({
-      name: "attributes",
-      title: "Product Attributes",
-      type: "array",
-      description:
-        "product attribute eg. it's color, model, serial number, contract address etc.",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({
-              name: "title",
-              title: "Attribute Name",
-              type: "string",
-            }),
+    // defineField({
+    //   name: "attributes",
+    //   title: "Product Attributes",
+    //   type: "array",
+    //   description:
+    //     "product attribute eg. it's color, model, serial number, contract address etc.",
+    //   of: [
+    //     {
+    //       type: "object",
+    //       fields: [
+    //         defineField({
+    //           name: "title",
+    //           title: "Attribute Name",
+    //           type: "string",
+    //         }),
 
-            defineField({
-              name: "value",
-              title: "Attribute Value",
-              type: "string",
-            }),
-          ],
-        },
-      ],
-    }),
+    //         defineField({
+    //           name: "value",
+    //           title: "Attribute Value",
+    //           type: "string",
+    //         }),
+    //       ],
+    //     },
+    //   ],
+    // }),
 
     defineField({
       name: "price",
       title: "Product Price (THB)",
       type: "number",
       description: "Product price in thai baht",
-      validation: (Rule: NumberRule) => Rule.required().precision(2).positive(),
+      // validation: (Rule: NumberRule) => Rule.required().precision(2).positive(),
     }),
 
     defineField({
@@ -104,7 +104,7 @@ export const productType = defineType({
       title: "Discount Percent (%)",
       type: "number",
       description: "max 90; input only number dont input %",
-      validation: (Rule: NumberRule) => Rule.positive().max(90),
+      // validation: (Rule: NumberRule) => Rule.positive().max(90),
     }),
 
     defineField({

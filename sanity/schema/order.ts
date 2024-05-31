@@ -27,84 +27,84 @@ export const orderType = defineType({
       readOnly: true,
     }),
 
-    defineField({
-      name: "products",
-      title: "Purchase Detail",
-      type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            defineField({
-              name: "product",
-              title: "Product",
-              type: "string",
-            }),
+    // defineField({
+    //   name: "products",
+    //   title: "Purchase Detail",
+    //   type: "array",
+    //   of: [
+    //     {
+    //       type: "object",
+    //       fields: [
+    //         defineField({
+    //           name: "product",
+    //           title: "Product",
+    //           type: "string",
+    //         }),
 
-            defineField({
-              name: "amount",
-              title: "amount",
-              type: "number",
-            }),
+    //         defineField({
+    //           name: "amount",
+    //           title: "amount",
+    //           type: "number",
+    //         }),
 
-            defineField({
-              name: "subtotal",
-              title: "Subtotal",
-              type: "number",
-            }),
-          ],
-        },
-      ],
-    }),
+    //         defineField({
+    //           name: "subtotal",
+    //           title: "Subtotal",
+    //           type: "number",
+    //         }),
+    //       ],
+    //     },
+    //   ],
+    // }),
 
-    defineField({
-      name: "shippingAddress",
-      title: "Shipping Address",
-      type: "object",
-      fields: [
-        defineField({
-          name: "name",
-          title: "ชื่อ",
-          type: "string",
-        }),
+    // defineField({
+    //   name: "shippingAddress",
+    //   title: "Shipping Address",
+    //   type: "object",
+    //   fields: [
+    //     defineField({
+    //       name: "name",
+    //       title: "ชื่อ",
+    //       type: "string",
+    //     }),
 
-        defineField({
-          name: "address1",
-          title: "บ้านเลขที่",
-          type: "string",
-        }),
+    //     defineField({
+    //       name: "address1",
+    //       title: "บ้านเลขที่",
+    //       type: "string",
+    //     }),
 
-        defineField({
-          name: "tambon",
-          title: "ตำบล",
-          type: "string",
-        }),
+    //     defineField({
+    //       name: "tambon",
+    //       title: "ตำบล",
+    //       type: "string",
+    //     }),
 
-        defineField({
-          name: "amphoe",
-          title: "อำเภอ",
-          type: "string",
-        }),
+    //     defineField({
+    //       name: "amphoe",
+    //       title: "อำเภอ",
+    //       type: "string",
+    //     }),
 
-        defineField({
-          name: "province",
-          title: "จังหวัด",
-          type: "string",
-        }),
+    //     defineField({
+    //       name: "province",
+    //       title: "จังหวัด",
+    //       type: "string",
+    //     }),
 
-        defineField({
-          name: "postcode",
-          title: "รหัสไปรษณี",
-          type: "number",
-        }),
+    //     defineField({
+    //       name: "postcode",
+    //       title: "รหัสไปรษณี",
+    //       type: "number",
+    //     }),
 
-        defineField({
-          name: "phone",
-          title: "โทรศัพท์",
-          type: "string",
-        }),
-      ],
-    }),
+    //     defineField({
+    //       name: "phone",
+    //       title: "โทรศัพท์",
+    //       type: "string",
+    //     }),
+    //   ],
+    // }),
 
     defineField({
       name: "paymentStatus",

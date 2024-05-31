@@ -29,11 +29,11 @@ export const RedemptionType = defineType({
       initialValue: false,
     }),
 
-    defineField({
-      name: "privilege",
-      title: "Privilege Reference",
-      type: "reference",
-      to: [{ type: "privilege" }],
-    }),
+    // defineField({
+    //   name: "privilege",
+    //   title: "Privilege Reference",
+    //   type: "reference",
+    //   to: [{ type: "privilege" }],
+    // }),
   ],
 });
