@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@bitkub-blockchain/react-bitkubnext-oauth2": "^0.0.15",
-    "@prisma/client": "5.8.1",
+    "@prisma/client": "^5.14.0",
     "@rainbow-me/rainbowkit": "^0.12.7",
     "@sanity/client": "^6.4.9",
     "@sanity/icons": "^2.0.0",
