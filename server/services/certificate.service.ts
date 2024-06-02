@@ -1,5 +1,4 @@
 import { prisma } from "../prisma";
-import dayjs from "dayjs";
 
 export const isCertificateActivated = async (microchip: string) => {
   const found = await prisma.certificate.findUnique({
