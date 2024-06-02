@@ -2,6 +2,7 @@ import {
   getAllMetadata,
   getMetadataByMicrochipId,
 } from "../services/metadata.service";
+import { getCertificateImageOf } from "../services/renderer.service";
 // import { renderPedigree } from "../services/renderer.service";
 import { router } from "../trpc";
 import { publicProcedure } from "../trpc";
@@ -17,9 +18,9 @@ export const metadataRouter = router({
     .query(async ({ ctx, input }) => {
       return await getMetadataByMicrochipId(input.microchip);
     }),
-  // renderPedigree: publicProcedure
-  //   .input(z.object({ microchip: z.string() }))
-  //   .query(async ({ input }) => {
-  //     return await renderPedigree(input.microchip);
-  //   }),
+  renderPedigree: publicProcedure
+    .input(z.object({ microchip: z.string() }))
+    .query(async ({ input }) => {
+      return await getCertificateImageOf(input.microchip);
+    }),
 });

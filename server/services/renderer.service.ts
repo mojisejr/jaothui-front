@@ -1,3 +1,15 @@
+import axios from "axios";
+export const getCertificateImageOf = async (microchip: string) => {
+  const response = await axios.get(`${process.env.renderer_url}/${microchip}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.renderer_key}`,
+    },
+  });
+
+  if (!response) return;
+
+  return response.data.data;
+};
 // import { createCanvas, loadImage, CanvasRenderingContext2D } from "canvas";
 // import { pedigreeRenderingConfig } from "../config";
 // import qrcode from "qrcode-generator";
