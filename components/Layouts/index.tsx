@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 
 import CartButton from "../Cart/Buttons/CartButton";
 import MenuList from "../Shared/Navbar/MenuList";
-import { useGetAllMetadata } from "../../blockchain/Metadata/read";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,7 +16,6 @@ const Layout = ({ children }: LayoutProps) => {
   const { pathname, push, query } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
   //bad
-  const { allMetadata } = useGetAllMetadata();
 
   function handleSearch(e: SyntheticEvent) {
     const value =
@@ -32,13 +30,13 @@ const Layout = ({ children }: LayoutProps) => {
     if (isNumberic) {
       push(`/cert/${value}`);
     } else {
-      const found = allMetadata.find((buffalo) =>
-        buffalo.name.includes(value.toString())
-      );
+      // const found = allMetadata.find((buffalo) =>
+      //   buffalo.name.includes(value.toString())
+      // );
 
-      if (!found) return;
+      // if (!found) return;
 
-      push(`/cert/${found.microchip}`);
+      push(`/cert/search?q=${value}`);
     }
   }
 

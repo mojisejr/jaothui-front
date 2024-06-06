@@ -8,7 +8,6 @@ import { RewardData } from "../../../interfaces/iReward";
 import { ApprovedBy } from "../../../interfaces/iApprovedBy";
 
 import { HiExternalLink, HiOutlineDocumentText } from "react-icons/hi";
-import { toast } from "react-toastify";
 import { BiRfid, BiRuler } from "react-icons/bi";
 import { TbNfc } from "react-icons/tb";
 import { BsGenderAmbiguous, BsFileEarmarkBinary } from "react-icons/bs";
@@ -16,6 +15,7 @@ import { GiTrophyCup } from "react-icons/gi";
 import { MdColorLens } from "react-icons/md";
 import { motion } from "framer-motion";
 import { parseThaiDate } from "../../../helpers/parseThaiDate";
+import { useRouter } from "next/router";
 
 export interface ProfileBoxProps {
   certNft: any;
@@ -31,6 +31,7 @@ const ProfileBoxV2 = ({
   // const { isConnected } = useAccount();
   const { isConnected } = useBitkubNext();
   const thaiDate = parseThaiDate(certNft.birthdate * 1000);
+  const { back } = useRouter();
 
   if (Object.keys(certNft).length === 0) {
     return (
@@ -319,13 +320,12 @@ const ProfileBoxV2 = ({
               >
                 View On BKCScan <HiExternalLink size={20} />
               </Link>
-              {/* <Link
-                href={`/cert/${certNft.certify.microchip}/certificate`}
-                // target="_blank"
+              <button
+                onClick={() => back()}
                 className="btn btn-ghost text-gray-400"
               >
-                ApprovedBy
-              </Link> */}
+                Back
+              </button>
             </div>
           </div>
         </div>
