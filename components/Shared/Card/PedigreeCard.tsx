@@ -51,7 +51,7 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
                   {data ? data.microchip : <Loading size="sm" />}
                 </div>
                 <div className="font-bold text-xl">
-                  {data?.name.includes("คุณ") ? (
+                  {data?.name.startsWith("คุณ") ? (
                     <div className="text-2xl font-bold bg-gradient-to-br from-[#FFE15D] via-[#e59a28] to-[#FFE15D] text-transparent bg-clip-text">
                       {data?.name ?? "loading"}
                     </div>
