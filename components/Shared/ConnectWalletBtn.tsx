@@ -36,7 +36,7 @@ export const ConnectWalletButton = () => {
               if (!connected) {
                 return (
                   <button
-                    className="bg-thuiyellow text-thuigray pl-[2%] pr-[2%] pt-[1%] pb-[1%] min-w-[100px] text-[15px] rounded-[30px]
+                    className="border-[1px] bg-thuiyellow text-thuigray pl-[2%] pr-[2%] pt-[1%] pb-[1%] min-w-[100px] text-[15px] rounded-[30px] 
                     tabletS:text-[30px]
                     tabletS:w-[250px]
                     "

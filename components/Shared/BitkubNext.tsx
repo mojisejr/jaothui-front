@@ -18,8 +18,7 @@ const BitkubNextConnectButton: FunctionComponent<PropsWithChildren> = () => {
       redirectURI={redirectURI}
       mode="redirect"
     >
-      <button className="btn-primary font-bold hover:text-base-200 hover:bg-accent flex gap-2 px-3 py-2 rounded-xl items-center">
-        <TbPlugConnected size={24} />
+      <button className="btn-primary text-xs hover:text-base-200 hover:bg-accent flex gap-2 px-3 py-2 rounded-xl items-center border-[1px] border-thuiwhite">
         Connect Wallet
       </button>
     </ReactBitkubNextOauth2>

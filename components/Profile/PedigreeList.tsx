@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { useGetAllMetadata } from "../../../blockchain/Metadata/read";
-import PedigreeCard from "../../Shared/Card/PedigreeCard";
+import { useGetAllMetadata } from "../../blockchain/Metadata/read";
+import PedigreeCard from "../Shared/Card/PedigreeCard";
 import _ from "lodash";
-import { trpc } from "../../../utils/trpc";
+import PedigreeSmallCard from "./PedigreeSmallCard";
 import { useEffect, useState } from "react";
-import { IMetadata } from "../../../interfaces/iMetadata";
-import Loading from "../../Shared/Indicators/Loading";
+import { IMetadata } from "../../interfaces/iMetadata";
+import { trpc } from "../../utils/trpc";
+import Loading from "../Shared/Indicators/Loading";
 
-const Pedigree = () => {
+const PedigreeListInProfile = () => {
   const [data, setData] = useState<IMetadata[]>([]);
   const { data: allMetadata, isLoading } = trpc.metadata.getAll.useQuery();
   // const { allMetadata } = useGetAllMetadata();
@@ -45,9 +46,13 @@ const Pedigree = () => {
           </Link>
         </div>
         {!isLoading ? (
-          <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4">
+          <div className="carousel carousel-center bg-transparent rounded-box w-full space-x-2 p-2">
             {data
-              ? data.map((d, index) => <PedigreeCard key={index} data={d} />)
+              ? data.map((d, index) => (
+                  <div key={index} className="carousel-item">
+                    <PedigreeSmallCard key={index} data={d} />
+                  </div>
+                ))
               : "Nothing to show"}
           </div>
         ) : (
@@ -55,9 +60,14 @@ const Pedigree = () => {
             <Loading size="lg" />
           </div>
         )}
+        {/* <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4">
+          {data
+            ? data.map((d, index) => <PedigreeCard key={index} data={d} />)
+            : "Nothing to show"}
+        </div> */}
       </div>
     </>
   );
 };
 
-export default Pedigree;
+export default PedigreeListInProfile;
