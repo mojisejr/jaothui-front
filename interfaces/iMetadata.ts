@@ -1,4 +1,5 @@
 export interface IMetadata {
+  tokenId?: number;
   name: string;
   origin: string;
   color: string;

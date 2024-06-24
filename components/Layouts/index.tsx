@@ -48,9 +48,14 @@ const Layout = ({ children }: LayoutProps) => {
           {/* Navbar */}
           <div className="navbar bg-base-200 bg-opacity-60 px-[22px] sticky top-0 left-0 z-[1]">
             <div className="navbar-start">
-              <label htmlFor="my-drawer-3" className="btn btn-square btn-ghost">
-                <HiMenuAlt2 size={24} />
-              </label>
+              <div className="hidden tabletS:block">
+                <label
+                  htmlFor="my-drawer-3"
+                  className="btn btn-square btn-ghost"
+                >
+                  <HiMenuAlt2 size={24} />
+                </label>
+              </div>
             </div>
             <div className="navbar-center">
               <div className="tabs bg-base-200 rounded-full p-1">
@@ -77,9 +82,6 @@ const Layout = ({ children }: LayoutProps) => {
               </div>
             </div>
             <div className="navbar-end flex items-center gap-2">
-              <Link href="/cart">
-                <CartButton />
-              </Link>
               <div className="dropdown dropdown-end">
                 <label tabIndex={0} className="btn btn-primary btn-circle">
                   <BiSearchAlt2 size={24} />
@@ -106,9 +108,8 @@ const Layout = ({ children }: LayoutProps) => {
               </div>
             </div>
           </div>
-
-          {children}
-          <FooterSection />
+          <div className="mb-10">{children}</div>
+          {/* <FooterSection /> */}
           <BottomNav />
         </div>
         <MenuList />

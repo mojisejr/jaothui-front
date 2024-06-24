@@ -15,10 +15,11 @@ const CertDetail = () =>
   // props: InferGetServerSidePropsType<typeof getServerSideProps>
   {
     const router = useRouter();
-    const { tokenId } = router.query;
+    const { tokenId, i } = router.query;
     // const { metadata } = useGetMetadataByMicrochip(tokenId! as string);
     const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
       // microchip: props.tokenId,
+      tokenId: +(i as string),
       microchip: tokenId! as string,
     }) as any;
 
