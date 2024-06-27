@@ -15,16 +15,16 @@ const CertDetail = () =>
   // props: InferGetServerSidePropsType<typeof getServerSideProps>
   {
     const router = useRouter();
-    const { tokenId, i } = router.query;
+    const { microchip, i } = router.query;
     // const { metadata } = useGetMetadataByMicrochip(tokenId! as string);
     const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
       // microchip: props.tokenId,
       tokenId: +(i as string),
-      microchip: tokenId! as string,
+      microchip: microchip! as string,
     }) as any;
 
-    const { rewards } = useGetRewardByMicrochip(tokenId! as string);
-    const { approvedBy } = useGetApprovalDataByMicrochip(tokenId as string);
+    const { rewards } = useGetRewardByMicrochip(microchip! as string);
+    const { approvedBy } = useGetApprovalDataByMicrochip(microchip as string);
 
     return (
       <Layout>
@@ -92,6 +92,7 @@ const CertDetail = () =>
           </div>
         ) : (
           <ProfileBoxV2
+            tokenId={i as string}
             certNft={metadata!}
             rewards={rewards}
             approvedBy={approvedBy}

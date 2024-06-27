@@ -7,9 +7,12 @@ import Image from "next/image";
 const ApprovementPage = () => {
   const { query, back } = useRouter();
 
+  console.log(query);
+
   const { data: certificate, isLoading } =
     trpc.metadata.renderPedigree.useQuery({
-      microchip: query.tokenId! as string,
+      tokenId: query.tokenId! as string,
+      microchip: query.microchip! as string,
     });
 
   const handleDowload = () => {

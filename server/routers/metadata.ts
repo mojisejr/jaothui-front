@@ -19,8 +19,8 @@ export const metadataRouter = router({
       return await getMetadataByMicrochipId(input.microchip, input.tokenId);
     }),
   renderPedigree: publicProcedure
-    .input(z.object({ microchip: z.string() }))
+    .input(z.object({ microchip: z.string(), tokenId: z.string() }))
     .query(async ({ input }) => {
-      return await getCertificateImageOf(input.microchip);
+      return await getCertificateImageOf(input.microchip, input.tokenId);
     }),
 });
