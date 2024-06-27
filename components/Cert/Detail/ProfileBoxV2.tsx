@@ -18,12 +18,14 @@ import { parseThaiDate } from "../../../helpers/parseThaiDate";
 import { useRouter } from "next/router";
 
 export interface ProfileBoxProps {
+  tokenId: string;
   certNft: any;
   rewards: RewardData[];
   approvedBy: ApprovedBy[];
 }
 
 const ProfileBoxV2 = ({
+  tokenId,
   certNft,
   rewards,
   approvedBy = [],
@@ -308,7 +310,7 @@ const ProfileBoxV2 = ({
                         "N/A"
                       ) : (
                         <Link
-                          href={`/cert/${certNft.certify.microchip}/certificate?tokenId=${certNft.certify.microchip}`}
+                          href={`/cert/${certNft.certify.microchip}/certificate?microchip=${certNft.certify.microchip}&tokenId=${tokenId}`}
                         >
                           <Image
                             src={"/images/logo.png"}
