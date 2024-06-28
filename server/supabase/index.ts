@@ -9,3 +9,8 @@ export const getImageUrl = (path: string) => {
   return supabase.storage.from("slipstorage/buffalo").getPublicUrl(path).data
     .publicUrl;
 };
+
+export const getAvatarUrl = (path: string) => {
+  return supabase.storage.from("slipstorage/avatar").getPublicUrl(path).data
+    .publicUrl;
+};

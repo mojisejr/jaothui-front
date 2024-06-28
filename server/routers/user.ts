@@ -1,3 +1,4 @@
+import { getMemberData } from "../services/kwaithai.service";
 import { hasUser, registerUser } from "../services/user.service";
 import { router } from "../trpc";
 import { publicProcedure } from "../trpc";
@@ -21,5 +22,14 @@ export const userRouter = router({
         const data = await registerUser(input);
         return data;
       }
+    }),
+  kGetMember: publicProcedure
+    .input(
+      z.object({
+        wallet: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getMemberData(input.wallet);
     }),
 });

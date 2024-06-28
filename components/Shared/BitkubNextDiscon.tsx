@@ -13,9 +13,13 @@ export const BitkubDisconnectButton = () => {
   }
 
   return (
+    // <button
+    //   className="btn-primary font-bold hover:text-base-200 hover:bg-accent flex gap-2 px-3 py-2 rounded-xl items-center"
+    //   onClick={handleDisconnect}
+    // >
     <button
-      className="btn-primary font-bold hover:text-base-200 hover:bg-accent flex gap-2 px-3 py-2 rounded-xl items-center"
       onClick={handleDisconnect}
+      className="btn-primary text-xs hover:text-base-200 hover:bg-accent flex gap-2 px-3 py-2 rounded-xl items-center border-[1px] border-thuiwhite"
     >
       <AiOutlineDisconnect size={24} />
       Disconnect
