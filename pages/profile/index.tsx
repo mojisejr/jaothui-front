@@ -31,9 +31,6 @@ const ProfilePage = () => {
           <div className="grid grid-cols-1 w-full overflow-hidden">
             <NoConnectProfileCard />
             <PedigreeListInProfile />
-            <div className="px-4">
-              <ProfileMenuList />
-            </div>
           </div>
         ) : (
           <div>
@@ -45,7 +42,9 @@ const ProfilePage = () => {
               <div className="grid grid-cols-1 w-full overflow-hidden">
                 <ProfileCard member={member} />
                 <PedigreeListInProfile />
-                <ProfileMenuList />
+                <div className="px-4">
+                  <ProfileMenuList />
+                </div>
               </div>
             )}
           </div>
