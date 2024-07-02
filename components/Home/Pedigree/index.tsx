@@ -48,7 +48,7 @@ const Pedigree = () => {
           <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4">
             {data
               ? data.map((d, index) => <PedigreeCard key={index} data={d} />)
-              : "Nothing to show"}
+              : "ไม่มีข้อมูล"}
           </div>
         ) : (
           <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4 h-[300px]">
