@@ -8,7 +8,7 @@ import { IMetadata } from "../../interfaces/iMetadata";
 import { trpc } from "../../utils/trpc";
 import Loading from "../Shared/Indicators/Loading";
 
-const PedigreeListInProfile = () => {
+const NoConnectPedigreeList = () => {
   const [data, setData] = useState<IMetadata[]>([]);
   const { data: allMetadata, isLoading } = trpc.metadata.getAll.useQuery();
   // const { allMetadata } = useGetAllMetadata();
@@ -53,7 +53,7 @@ const PedigreeListInProfile = () => {
                     <PedigreeSmallCard key={index} data={d} />
                   </div>
                 ))
-              : "Nothing to show"}
+              : "ไม่มีข้อมูล"}
           </div>
         ) : (
           <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4 h-[300px]">
@@ -70,4 +70,4 @@ const PedigreeListInProfile = () => {
   );
 };
 
-export default PedigreeListInProfile;
+export default NoConnectPedigreeList;

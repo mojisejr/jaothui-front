@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../components/Layouts";
 import NoConnectProfileCard from "../../components/Profile/NoConnectProfileCard";
-import PedigreeListInProfile from "../../components/Profile/PedigreeList";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import { trpc } from "../../utils/trpc";
 import Loading from "../../components/Shared/Indicators/Loading";
 import ProfileCard from "../../components/Profile/ProfileCard";
 import ProfileMenuList from "../../components/Profile/ProfileMenuList";
+import NoConnectPedigreeList from "../../components/Profile/NoConnectPedigreeList";
+import ConnectedPedigreeList from "../../components/Profile/ConnectedPedigreeList";
 
 const ProfilePage = () => {
   const [wallet, setWallet] = useState<string>();
@@ -30,7 +31,7 @@ const ProfilePage = () => {
         {member == undefined ? (
           <div className="grid grid-cols-1 w-full overflow-hidden">
             <NoConnectProfileCard />
-            <PedigreeListInProfile />
+            <NoConnectPedigreeList />
           </div>
         ) : (
           <div>
@@ -41,7 +42,7 @@ const ProfilePage = () => {
             ) : (
               <div className="grid grid-cols-1 w-full overflow-hidden">
                 <ProfileCard member={member} />
-                <PedigreeListInProfile />
+                <ConnectedPedigreeList />
                 <div className="px-4">
                   <ProfileMenuList />
                 </div>

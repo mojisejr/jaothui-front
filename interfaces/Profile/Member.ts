@@ -1,3 +1,5 @@
+import { IMetadata } from "../iMetadata";
+
 export interface Member {
   id: number;
   avatar?: string;
@@ -16,5 +18,6 @@ export interface Member {
   approved: string[];
   approvedCount: number;
   createdAt?: string;
+  Certificate: IMetadata[];
   updateAt?: string;
 }
