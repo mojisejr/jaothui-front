@@ -14,10 +14,6 @@ export const getMemberData = async (wallet: string) => {
       ? await prisma.certificate.findMany({ where: { ownerName: user.name! } })
       : [];
 
-    console.log("ownerName: ", user?.name);
-
-    console.log("cert: ", certificates);
-
     const avatar = getAvatarUrl(user?.avatar!);
 
     const allMeta = await getAllMetadata();
