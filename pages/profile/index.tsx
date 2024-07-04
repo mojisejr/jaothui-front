@@ -27,7 +27,7 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <div className="p-2 bg-secondary text-thuiwhite min-h-screen">
+      <div className="p-2 bg-[#000] text-thuiwhite min-h-screen">
         {member == undefined ? (
           <div className="grid grid-cols-1 w-full overflow-hidden">
             <NoConnectProfileCard />
