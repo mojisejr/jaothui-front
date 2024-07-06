@@ -1,14 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -17,29 +15,29 @@ model User {
   name                String?
   farmName            String?
   wallet              String               @unique
-  address             String               @db.Text
-  province            String               @db.Text
+  address             String
+  province            String
   lat                 Float?
   lon                 Float?
   role                String               @default("USER")
-  lineId              String?              @unique @db.Text
+  lineId              String?              @unique
   email               String?
-  tel                 String?              @db.Text
-  payment             Payment[]
+  tel                 String?
   active              Boolean              @default(false)
   approved            String[]             @default([])
   approvedCount       Int                  @default(0)
   createdAt           DateTime             @default(now())
   updateAt            DateTime             @updatedAt
+  Certificate         Certificate[]
+  CertificateApprover CertificateApprover?
   Farm                Farm[]
   MicrochipOrder      MicrochipOrder[]
-  CertificateApprover CertificateApprover?
-  Certificate         Certificate[]
+  payment             Payment[]
 }
 
 model Farm {
   id             Int              @id @default(autoincrement())
-  name           String           @db.Text
+  name           String
   lat            Float
   lon            Float
   imageUrl       String?          @default("/images/thuiLogo.png")
@@ -50,7 +48,7 @@ model Farm {
   twitter        String?
   locationUrl    String?
   userId         Int?
-  user           User?            @relation(references: [id], fields: [userId])
+  user           User?            @relation(fields: [userId], references: [id])
   MicrochipOrder MicrochipOrder[]
 }
 
@@ -61,14 +59,14 @@ model Payment {
   active        Boolean   @default(true)
   start         DateTime  @default(now())
   end           DateTime?
-  slipUrl       String    @db.Text
+  slipUrl       String
   approver      String[]  @default([])
   approvedCount Int       @default(0)
   rejector      String[]  @default([])
   rejectedCount Int       @default(0)
-  User          User?     @relation(fields: [userId], references: [id])
   userId        Int?
   currentStep   Int       @default(0)
+  User          User?     @relation(fields: [userId], references: [id])
 }
 
 model Pedigree {
@@ -105,11 +103,8 @@ model Microchip {
 model MicrochipOrder {
   id              Int        @id @default(autoincrement())
   microchipId     String?    @unique
-  microchip       Microchip? @relation(fields: [microchipId], references: [microchip])
   wallet          String
-  user            User       @relation(fields: [wallet], references: [wallet])
   farmId          Int?
-  farm            Farm?      @relation(fields: [farmId], references: [id])
   shippingAddress String?
   slipUrl         String?
   note            String?
@@ -126,25 +121,28 @@ model MicrochipOrder {
   buffaloHeight   String
   buffaloipfsUrl  String
   timestamp       DateTime
+  farm            Farm?      @relation(fields: [farmId], references: [id])
+  microchip       Microchip? @relation(fields: [microchipId], references: [microchip])
+  user            User       @relation(fields: [wallet], references: [wallet])
 }
 
 model Certificate {
   microchip   String                @id @unique
   no          Int                   @default(autoincrement())
-  approvers   CertificateApprover[]
   isActive    Boolean               @default(false)
-  ownerName   String
-  bornAt      String?               @default("N/A")
-  momId       String?
-  dadId       String?
-  mGrandMomId String?
-  mGrandDadId String?
-  fGrandMomId String?
-  fGranDadId  String?
-  user        User                  @relation(fields: [wallet], references: [wallet])
   updatedAt   DateTime              @updatedAt
+  bornAt      String?               @default("N/A")
   wallet      String
   slipUrl     String
+  dadId       String?
+  fGranDadId  String?
+  fGrandMomId String?
+  mGrandDadId String?
+  mGrandMomId String?
+  momId       String?
+  ownerName   String
+  user        User                  @relation(fields: [wallet], references: [wallet])
+  approvers   CertificateApprover[] @relation("CertificateToCertificateApprover")
 }
 
 model CertificateApprover {
@@ -153,5 +151,5 @@ model CertificateApprover {
   job          String
   position     Int
   user         User          @relation(fields: [wallet], references: [wallet])
-  certificates Certificate[]
+  certificates Certificate[] @relation("CertificateToCertificateApprover")
 }
