@@ -23,38 +23,38 @@ const ProfileMenuList = () => {
         </div>
       </Link>
       <Link
-        href="https://kwaithai.com/"
+        href="/profile/privilege"
         className="grid grid-cols-1 place-items-center gap-1 rounded-xl bg-opacity-30"
       >
         <figure className="w-24">
           <Image
-            src="/images/icons/KWAITHAI.png"
+            src="/images/icons/PRIVILEGE.png"
             height={1000}
             width={1000}
-            alt="kwaithai.com"
+            alt="privilege"
           />
         </figure>
         <div className="flex flex-col items-center">
-          <span className="text-xs">Cert</span>
-          <span className="text-[9px]">Certificate</span>
+          <span className="text-xs">Previlege</span>
+          <span className="text-[9px]">Reward & Redeem</span>
         </div>
       </Link>
+
       <Link
-        href="https://www.facebook.com/jaothui"
-        target="_blank"
+        href="/profile/game"
         className="grid grid-cols-1 place-items-center gap-1 rounded-xl bg-opacity-30"
       >
         <figure className="w-24">
           <Image
-            src="/images/icons/FACEBOOK.png"
+            src="/images/icons/GAME.png"
             height={1000}
             width={1000}
-            alt="facebook"
+            alt="game"
           />
         </figure>
         <div className="flex flex-col items-center">
-          <span className="text-xs">Facebook</span>
-          <span className="text-[9px]">Fanpage</span>
+          <span className="text-xs">GAME</span>
+          <span className="text-[9px]">Play & Earn</span>
         </div>
       </Link>
 
@@ -75,40 +75,40 @@ const ProfileMenuList = () => {
           <span className="text-[9px]">Farm Management</span>
         </div>
       </Link>
-
       <Link
-        href="/cert/profile/privilege"
+        href="https://kwaithai.com/"
+        target="_blank"
         className="grid grid-cols-1 place-items-center gap-1 rounded-xl bg-opacity-30"
       >
         <figure className="w-24">
           <Image
-            src="/images/icons/PRIVILEGE.png"
+            src="/images/icons/KWAITHAI.png"
             height={1000}
             width={1000}
-            alt="privilege"
+            alt="kwaithai.com"
           />
         </figure>
         <div className="flex flex-col items-center">
-          <span className="text-xs">Previlege</span>
-          <span className="text-[9px]">Reward & Redeem</span>
+          <span className="text-xs">Kwaithai</span>
+          <span className="text-[9px]">kwaithai.com</span>
         </div>
       </Link>
-
       <Link
-        href="#"
+        href="https://www.facebook.com/jaothui"
+        target="_blank"
         className="grid grid-cols-1 place-items-center gap-1 rounded-xl bg-opacity-30"
       >
         <figure className="w-24">
           <Image
-            src="/images/icons/SHOP.png"
+            src="/images/icons/FACEBOOK.png"
             height={1000}
             width={1000}
             alt="facebook"
           />
         </figure>
         <div className="flex flex-col items-center">
-          <span className="text-xs">SHOP</span>
-          <span className="text-[9px]">coming soon</span>
+          <span className="text-xs">Facebook</span>
+          <span className="text-[9px]">Fanpage</span>
         </div>
       </Link>
     </div>

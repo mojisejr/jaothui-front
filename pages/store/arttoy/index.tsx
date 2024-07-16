@@ -7,6 +7,7 @@ import ProductDetailModal from "../../../components/Store/Details/ProductDetailM
 import ArttoyProductList from "../../../components/Store/Lists/ArttoyList";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
+import HotWheel from "../../../components/Privilege/HotWheel";
 
 const Arttoy = () => {
   return (
@@ -17,7 +18,7 @@ const Arttoy = () => {
         subTitle="SOUVENIR"
         smallTitle="ยกระดับของสะสมด้วย Blockchain Tecnology"
       >
-        <ArttoyProductList />
+        {/* <ArttoyProductList /> */}
         {/* {arttoyLoading ? (
           <div className="h-[200px] w-full flex justify-center items-center">
             <Loading size="lg" /> Loading..
@@ -25,6 +26,12 @@ const Arttoy = () => {
         ) : (
           <AllProductList products={data!} title="ARTTOY" />
         )} */}
+        <div className="flex flex-col items-center">
+          <div className="text-2xl w-full text-center font-bold">
+            JAOTHUI HOT WHEEL
+          </div>
+          <HotWheel />
+        </div>
         <div className="px-[22px] py-6">
           <div className="flex justify-between items-center py-2">
             <div className="text-xl font-bold">NFT Profile</div>
@@ -36,7 +43,7 @@ const Arttoy = () => {
             <NFTCard rarity={3} />
           </div>
         </div>
-        <ProductDetailModal />
+        {/* <ProductDetailModal /> */}
       </StoreLayout>
     </div>
   );

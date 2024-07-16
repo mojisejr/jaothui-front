@@ -1,13 +1,15 @@
 import { TRPCError } from "@trpc/server";
 import {
+  getAllJaothuiRedeemItems,
   getAllPriviledge,
   getPrivilegeById,
   getRedeemedTokenByWallet,
+  redeemHistoryCreate,
   saveRedeemData,
 } from "../services/privilege.service";
 import { router } from "../trpc";
 import { publicProcedure } from "../trpc";
-import { z } from "zod";
+import { string, z } from "zod";
 
 export const privilegeRouter = router({
   get: publicProcedure.query(async ({ ctx }) => {
@@ -47,7 +49,30 @@ export const privilegeRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const response = await saveRedeemData(input);
-      if(response == undefined) throw new TRPCError({code: "BAD_REQUEST", message: `Token #${input.tokenId} already claimed`})
+      if (response == undefined)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Token #${input.tokenId} already claimed`,
+        });
       return response;
+    }),
+  getAllJaothuiRedeemItems: publicProcedure.query(async () => {
+    return await getAllJaothuiRedeemItems();
+  }),
+  redeemHistoryCreate: publicProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        address: z.string(),
+        tel: z.string(),
+        timestamp: z.string(),
+        wallet: z.string(),
+        redeemItem: z.string(),
+        redeemedPoint: z.number(),
+        redeemedItemName: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await redeemHistoryCreate({ ...input, timestamp: new Date() });
     }),
 });

@@ -15,6 +15,7 @@ import { trpc } from "../utils/trpc";
 import { QueryClient } from "@tanstack/react-query";
 
 import StoreProvider from "../contexts/storeContext";
+import { PrivilegeProvider } from "../contexts/privilegeContext";
 
 const queryClient = new QueryClient();
 
@@ -58,7 +59,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
             <BitkubNextProvider>
               <MenuProvider>
                 <NewAssetProvider>
-                  <Component {...pageProps} />
+                  <PrivilegeProvider>
+                    <Component {...pageProps} />
+                  </PrivilegeProvider>
                 </NewAssetProvider>
               </MenuProvider>
             </BitkubNextProvider>
