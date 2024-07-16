@@ -1,5 +1,11 @@
 import { getMemberData } from "../services/kwaithai.service";
-import { hasUser, registerUser } from "../services/user.service";
+import { getJaothuiProfileAll } from "../services/nft-profile.service";
+import {
+  getJaothuiPointOf,
+  hasUser,
+  registerUser,
+  updateUserPoint,
+} from "../services/user.service";
 import { router } from "../trpc";
 import { publicProcedure } from "../trpc";
 import { z } from "zod";
@@ -31,5 +37,29 @@ export const userRouter = router({
     )
     .query(async ({ input }) => {
       return await getMemberData(input.wallet);
+    }),
+  getJaothuiProfileAll: publicProcedure
+    .input(z.object({ wallet: z.string() }))
+    .query(async ({ input }) => {
+      return await getJaothuiProfileAll(input.wallet);
+    }),
+  updateUserPoint: publicProcedure
+    .input(
+      z.object({
+        wallet: z.string(),
+        point: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await updateUserPoint(input.wallet, input.point);
+    }),
+  getJaothuiPointOf: publicProcedure
+    .input(
+      z.object({
+        wallet: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getJaothuiPointOf(input.wallet);
     }),
 });
