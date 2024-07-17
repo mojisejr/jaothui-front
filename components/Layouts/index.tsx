@@ -32,7 +32,9 @@ const Layout = ({ children }: LayoutProps) => {
     if (isNumberic) {
       const index = allMetadata?.findIndex((m) => m.microchip === value);
 
-      push(`/cert/${value}?i=${index + 1}`);
+      if (index == undefined || index < 0) return;
+
+      push(`/cert/${value}?i=${index! + 1}`);
     } else {
       // const found = allMetadata.find((buffalo) =>
       //   buffalo.name.includes(value.toString())
