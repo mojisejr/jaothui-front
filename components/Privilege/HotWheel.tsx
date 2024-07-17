@@ -193,26 +193,29 @@ const HotWheel = () => {
     <div className="flex flex-col gap-4 p-2 md:p-0">
       <div className="flex gap-2 items-center flex-col">
         <div className="flex flex-col gap-2">
-          <figure className="w-56 rounded-2xl overflow-hidden">
-            {selectedProfile ? (
-              <Image
-                src={selectedProfile.image}
-                width={1000}
-                height={1000}
-                alt="logo"
-              />
-            ) : (
-              <Image
-                src="/images/herov2.png"
-                width={1000}
-                height={1000}
-                alt="logo"
-              />
-            )}
-          </figure>
-          <div className="">
-            <div className="font-bold">กรุณาเลือกเจ้าทุย</div>
+          <div className="grid grid-cols-2">
+            <figure className="w-56 rounded-2xl overflow-hidden">
+              {selectedProfile ? (
+                <Image
+                  src={selectedProfile.image}
+                  width={1000}
+                  height={1000}
+                  alt="logo"
+                />
+              ) : (
+                <Image
+                  src="/images/herov2.png"
+                  width={1000}
+                  height={1000}
+                  alt="logo"
+                />
+              )}
+            </figure>
+            <div className="">
+              <div className="font-bold">กรุณาเลือกเจ้าทุย</div>
+            </div>
           </div>
+
           {!loadingToken ? (
             <select
               onChange={(e) => handleSelectProfile(e)}
