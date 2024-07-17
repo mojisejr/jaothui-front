@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 
 import CartButton from "../Cart/Buttons/CartButton";
 import MenuList from "../Shared/Navbar/MenuList";
+import { trpc } from "../../utils/trpc";
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,6 +16,7 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const { pathname, push, query } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
+  const { data: allMetadata, isLoading } = trpc.metadata.getAll.useQuery();
   //bad
 
   function handleSearch(e: SyntheticEvent) {
@@ -28,7 +30,9 @@ const Layout = ({ children }: LayoutProps) => {
     const isNumberic = /^\d+$/.test(value.toString()!);
 
     if (isNumberic) {
-      push(`/cert/${value}`);
+      const index = allMetadata?.findIndex((m) => m.microchip === value);
+
+      push(`/cert/${value}?i=${index}`);
     } else {
       // const found = allMetadata.find((buffalo) =>
       //   buffalo.name.includes(value.toString())
@@ -98,6 +102,7 @@ const Layout = ({ children }: LayoutProps) => {
                       ref={searchRef}
                     />
                     <button
+                      disabled={isLoading}
                       onClick={handleSearch}
                       className="btn btn-primary join-item w-1/4"
                     >
