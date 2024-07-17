@@ -73,7 +73,9 @@ const PrivilegeLayout = ({ children }: PrivilegeLayoutProps) => {
                       <Loading size="lg" />
                     ) : (
                       <span className="text-xl font-bold">
-                        {point.currentPoint}
+                        {point == null || point == undefined
+                          ? 0
+                          : point.currentPoint}
                       </span>
                     )}
                   </div>

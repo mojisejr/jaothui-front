@@ -27,9 +27,9 @@ import { ImSpinner11 } from "react-icons/im";
 const config = {
   rarity: [
     { name: "Normal", value: 3 },
-    { name: "Rare", value: 4 },
-    { name: "Super Rare", value: 5 },
-    { name: "Super Special Rare", value: 6 },
+    { name: "Rare", value: 5 },
+    { name: "Super Rare", value: 7 },
+    { name: "Super Special Rare", value: 10 },
   ],
 };
 
@@ -190,11 +190,11 @@ const HotWheel = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-2 md:p-0">
+    <div className="flex flex-col gap-4 p-2 md:p-0 w-screen">
       <div className="flex gap-2 items-center flex-col">
-        <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-2">
-            <figure className="w-56 rounded-2xl overflow-hidden">
+        <div className="flex flex-col gap-6">
+          <div className="grid grid-cols-2 gap-2 place-items-center">
+            <figure className="w-full rounded-2xl overflow-hidden">
               {selectedProfile ? (
                 <Image
                   src={selectedProfile.image}
@@ -204,36 +204,47 @@ const HotWheel = () => {
                 />
               ) : (
                 <Image
-                  src="/images/herov2.png"
+                  src="/images/hotwheel-logo.jpg"
                   width={1000}
                   height={1000}
                   alt="logo"
                 />
               )}
             </figure>
-            <div className="">
-              <div className="font-bold">กรุณาเลือกเจ้าทุย</div>
+            <div>
+              <div>
+                {selectedProfile == undefined ? (
+                  <div className="font-bold py-2">กรุณาเลือกเจ้าทุย</div>
+                ) : (
+                  <div className="font-bold py-2">
+                    หมุนไปแล้ว {count}/
+                    {rarity.find(
+                      (r) => r.name == selectedProfile?.attributes[0].value
+                    )?.value ?? 0} ครั้ง
+                  </div>
+                )}
+              </div>
+
+              {!loadingToken ? (
+                <select
+                  onChange={(e) => handleSelectProfile(e)}
+                  className="select select-bordered w-full font-bold select-primary text-[#000]"
+                >
+                  <option disabled selected>
+                    เลือกเจ้าทุย
+                  </option>
+                  {tokens &&
+                    tokens.map((token) => (
+                      <option key={token.name} value={JSON.stringify(token)}>
+                        {token.name}
+                      </option>
+                    ))}
+                </select>
+              ) : (
+                <Loading size="md" />
+              )}
             </div>
           </div>
-
-          {!loadingToken ? (
-            <select
-              onChange={(e) => handleSelectProfile(e)}
-              className="select select-bordered w-full text-xl font-bold select-primary text-[#000]"
-            >
-              <option disabled selected>
-                เลือกเจ้าทุย
-              </option>
-              {tokens &&
-                tokens.map((token) => (
-                  <option key={token.name} value={JSON.stringify(token)}>
-                    {token.name}
-                  </option>
-                ))}
-            </select>
-          ) : (
-            <Loading size="md" />
-          )}
         </div>
         <div className="relative">
           <>
@@ -280,9 +291,9 @@ const HotWheel = () => {
               <span className="absolute loading loading-spinner loading-lg top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"></span>
             ) : (
               <div className="relative">
-                <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+                {/* <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                   {count}
-                </div>
+                </div> */}
                 <ImSpinner11 size={34} />
               </div>
             )}

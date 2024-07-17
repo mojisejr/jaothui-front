@@ -13,7 +13,9 @@ const RedeemItemDetailTab = () => {
 
   return (
     <div>
-      <h3 className="font-bold text-lg">_id: {selectedItem?._id}</h3>
+      <h3 className="font-bold text-lg text-center py-2">
+        {selectedItem?.name}
+      </h3>
       <div className="w-full flex flex-col items-center gap-2">
         <figure className="w-48">
           <Image
@@ -39,7 +41,7 @@ const RedeemItemDetailTab = () => {
                 />
               </figure>
               <div>
-                <div className="text-xl font-bold">JTO</div>
+                <div className="text-xl font-bold">JTP</div>
                 <div>Jaothui Point</div>
               </div>
               <div className="font-bold">{selectedItem?.point}</div>
@@ -48,16 +50,22 @@ const RedeemItemDetailTab = () => {
         </div>
         <div className="modal-action">
           <>
-            <button
-              disabled={
-                loadingUserPoint ||
-                userPoint.currentPoint < selectedItem?.point!
-              }
-              onClick={() => redeem()}
-              className="btn"
-            >
-              Redeem
-            </button>
+            {userPoint ? (
+              <button
+                disabled={
+                  loadingUserPoint ||
+                  userPoint.currentPoint < selectedItem?.point!
+                }
+                onClick={() => redeem()}
+                className="btn"
+              >
+                Redeem
+              </button>
+            ) : (
+              <button disabled={true} className="btn">
+                Redeem
+              </button>
+            )}
           </>
 
           <form method="dialog">
