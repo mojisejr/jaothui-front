@@ -19,7 +19,7 @@ const RedeemResultTab = () => {
             <FaCheckCircle size={100} />
           </div>
           <div className="text-center">
-            <div className="font-bold">{selectedItem?.point} JTO USED</div>
+            <div className="font-bold">{selectedItem?.point} JTP USED</div>
             <div>Order: {orderId}</div>
             <div>please wait for the verification system</div>
           </div>
