@@ -141,7 +141,7 @@ const HotWheel = () => {
   useEffect(() => {
     if (!mustSpin && result && isConnected) {
       alert(`ยินดีด้วยคุณได้รับ  ${result} Point!`);
-      updateUserPoint({ wallet: walletAddress, point: result });
+      console.log(result);
     }
   }, [mustSpin, result, isConnected]);
 
@@ -150,8 +150,8 @@ const HotWheel = () => {
     if (!mustSpin && selectedProfile && canSpin) {
       setResult(null);
       const newPrizeNumber = Math.floor(Math.random() * data.length);
+      updateUserPoint({ wallet: walletAddress, point: prizeNumber });
       setPrizeNumber(newPrizeNumber);
-
       setMustSpin(true);
     }
   };
@@ -220,7 +220,8 @@ const HotWheel = () => {
                     หมุนไปแล้ว {count}/
                     {rarity.find(
                       (r) => r.name == selectedProfile?.attributes[0].value
-                    )?.value ?? 0} ครั้ง
+                    )?.value ?? 0}{" "}
+                    ครั้ง
                   </div>
                 )}
               </div>
