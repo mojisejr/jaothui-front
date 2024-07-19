@@ -8,12 +8,15 @@ import ProfileCard from "../../components/Profile/ProfileCard";
 import ProfileMenuList from "../../components/Profile/ProfileMenuList";
 import NoConnectPedigreeList from "../../components/Profile/NoConnectPedigreeList";
 import ConnectedPedigreeList from "../../components/Profile/ConnectedPedigreeList";
+import NftHolderProfileCard from "../../components/Profile/NftHolderProfileCard";
 
 const ProfilePage = () => {
   const [wallet, setWallet] = useState<string>();
   const { walletAddress, isConnected } = useBitkubNext();
   const { data: member, isLoading: memberLoading } =
     trpc.user.kGetMember.useQuery({ wallet: wallet! });
+
+  console.log(member);
 
   useEffect(() => {
     if (!isConnected) {
@@ -28,7 +31,7 @@ const ProfilePage = () => {
   return (
     <Layout>
       <div className="p-2 bg-[#000] text-thuiwhite min-h-screen">
-        {member == undefined ? (
+        {member == null && !isConnected ? (
           <div className="grid grid-cols-1 w-full overflow-hidden">
             <NoConnectProfileCard />
             <NoConnectPedigreeList />
@@ -41,7 +44,11 @@ const ProfilePage = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 w-full overflow-hidden">
-                <ProfileCard member={member} />
+                {member == null ? (
+                  <NftHolderProfileCard />
+                ) : (
+                  <ProfileCard member={member} />
+                )}
                 <ConnectedPedigreeList />
                 <div className="px-4">
                   <ProfileMenuList />

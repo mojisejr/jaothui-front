@@ -11,14 +11,21 @@ const ConnectedPedigreeList = () => {
     wallet: walletAddress!,
   });
 
-  console.log(data);
-  // const { allMetadata } = useGetAllMetadata();
-  // const data = allMetadata
-
-  //   ? [allMetadata[0], allMetadata[1], allMetadata[2], allMetadata[3]]
-  //   : [];
-
-  // const data = _.take(allMetadata, 8);
+  if (!data) {
+    return (
+      <div className="py-6">
+        <div className="flex justify-between items-center px-[22px] py-2">
+          <div className="text-xl font-bold">Pedigrees</div>
+          <Link href="/cert" className="text-sm">
+            ดูทั้งหมด{">"}
+          </Link>
+        </div>
+        <div className="carousel carousel-center bg-transparent rounded-box w-full space-x-2 p-2">
+          ไม่มีข้อมูล
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

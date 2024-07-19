@@ -33,8 +33,10 @@ export const getMemberData = async (wallet: string) => {
 
     const output = { ...user, avatar, Certificate: userBuffaloMata };
 
-    return output as Member;
+    return user == null ? null : (output as Member | null);
+    // return undefined;
   } catch (error) {
     console.log(error);
+    return null;
   }
 };
