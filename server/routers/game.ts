@@ -6,6 +6,7 @@ import {
   getNFTInGame,
   pointUpdate,
   resetPointByRound,
+  spin,
 } from "../services/game.service";
 
 export const gameRouter = router({
@@ -45,5 +46,14 @@ export const gameRouter = router({
     )
     .mutation(async ({ input }) => {
       return await pointUpdate(input.docId);
+    }),
+  spin: publicProcedure
+    .input(
+      z.object({
+        wallet: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await spin(input.wallet);
     }),
 });
