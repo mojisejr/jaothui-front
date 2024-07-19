@@ -31,7 +31,8 @@ export const hasUser = async (wallet: string) => {
   return true;
 };
 
-export const updateUserPoint = async (wallet: string, point: number) => {
+export const updateUserPoint = async (wallet: string, position: number) => {
+  const point = [0, 1, 0, 3, 5, 1, 7, 3, 10, 3, 7, 1];
   try {
     const query = groq`*[_type == "userJaothuiPoint" && wallet == "${wallet}"][0]
     {
@@ -54,10 +55,10 @@ export const updateUserPoint = async (wallet: string, point: number) => {
     } else {
       const result = await client
         .patch(found._id)
-        .inc({ currentPoint: point })
+        .inc({ currentPoint: point[position] })
         .commit();
 
-      return result;
+      return point[position];
     }
   } catch (error) {
     console.log(error);

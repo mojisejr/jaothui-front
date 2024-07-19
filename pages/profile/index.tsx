@@ -16,8 +16,6 @@ const ProfilePage = () => {
   const { data: member, isLoading: memberLoading } =
     trpc.user.kGetMember.useQuery({ wallet: wallet! });
 
-  console.log(member);
-
   useEffect(() => {
     if (!isConnected) {
       setWallet(undefined);
