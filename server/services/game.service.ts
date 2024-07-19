@@ -1,6 +1,7 @@
 import { groq } from "next-sanity";
 import { client } from "../../sanity/lib/client";
 import dayjs from "dayjs";
+import { updateUserPoint } from "./user.service";
 
 export const getAllGames = async () => {
   try {
@@ -102,7 +103,13 @@ export const resetPointByRound = async (
 
     await client
       .patch(gameId)
-      .set({ end: dayjs().add(1, "day").set("minute", 0).toISOString() })
+      .set({
+        end: dayjs()
+          .add(1, "day")
+          .set("hour", 0)
+          .set("minute", 0)
+          .toISOString(),
+      })
       .commit();
 
     // console.log("Reset");
@@ -114,4 +121,12 @@ export const resetPointByRound = async (
 export const pointUpdate = async (docId: string) => {
   const result = await client.patch(docId).inc({ point: 1 }).commit();
   return result.point;
+};
+
+export const spin = async (wallet: string) => {
+  const point = [0, 1, 0, 3, 5, 1, 7, 3, 10, 3, 7, 1];
+  const newPrizeNumber = Math.floor(Math.random() * point.length);
+  await updateUserPoint(wallet, point[newPrizeNumber]);
+
+  return { position: newPrizeNumber, result: point[newPrizeNumber] };
 };

@@ -102,12 +102,14 @@ const HotWheel = () => {
     mutate: updatePoint,
   } = trpc.game.updatePoint.useMutation();
 
+  // const { isLoading: loadingUpdateUserPoint, mutate: updateUserPoint } =
+  //   trpc.user.updateUserPoint.useMutation();
+
   const {
-    data: userPointUpdated,
-    isLoading: loadingUpdateUserPoint,
-    isSuccess: updateUserPointSuccess,
-    mutate: updateUserPoint,
-  } = trpc.user.updateUserPoint.useMutation();
+    data: spinData,
+    isLoading: spinning,
+    mutate: spin,
+  } = trpc.game.spin.useMutation();
 
   //EFFECTS
 
@@ -141,19 +143,30 @@ const HotWheel = () => {
   useEffect(() => {
     if (!mustSpin && result && isConnected) {
       alert(`ยินดีด้วยคุณได้รับ  ${result} Point!`);
-      console.log(result);
     }
   }, [mustSpin, result, isConnected]);
 
-  //HANDLERS
-  const handleSpinClick = () => {
-    if (!mustSpin && selectedProfile && canSpin) {
-      setResult(null);
-      const newPrizeNumber = Math.floor(Math.random() * data.length);
-      updateUserPoint({ wallet: walletAddress, point: prizeNumber });
-      setPrizeNumber(newPrizeNumber);
+  useEffect(() => {
+    if (spinData) {
+      setPrizeNumber(spinData.position);
       setMustSpin(true);
+      setResult(spinData.result);
     }
+  }, [spinData]);
+
+  //HANDLERS
+  // const handleSpinClick = () => {
+  //   if (!mustSpin && selectedProfile && canSpin) {
+  //     setResult(null);
+  //     const newPrizeNumber = Math.floor(Math.random() * data.length);
+  //     setMustSpin(true);
+  //     setPrizeNumber(newPrizeNumber);
+  //   }
+  // };
+
+  const handleSpinClick = () => {
+    setCanSpin(false);
+    spin({ wallet: walletAddress! });
   };
 
   const handleSelectProfile = (e: SyntheticEvent) => {
@@ -270,7 +283,7 @@ const HotWheel = () => {
                       "0x07B2bCc269B100b51AB8598d44AB568C7199C7BC",
                     gameId: "3fc396c8-b968-46fd-849d-d2243102fe00",
                   });
-                  setResult(parseInt(data[prizeNumber].option));
+                  // setResult(parseInt(data[prizeNumber].option));
                 }}
               />
             ) : null}
@@ -281,7 +294,7 @@ const HotWheel = () => {
               loadingNftGameData ||
               loadingToken ||
               loadingUpdatePoint ||
-              loadingUpdateUserPoint ||
+              spinning ||
               selectedProfile == null ||
               !canSpin
             }
