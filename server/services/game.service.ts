@@ -96,7 +96,9 @@ export const resetPointByRound = async (
 
   const game = await client.fetch<any>(query);
 
-  const canReset = dayjs().isAfter(dayjs(game.end).tz("Asia/Bangkok"));
+  const canReset = dayjs()
+    .tz("Asia/Bangkok")
+    .isAfter(dayjs(game.end).tz("Asia/Bangkok"));
 
   if (canReset) {
     const query = groq`*[_type == "nftInGame" && contractAddress == "${contractAddress}"]`;
@@ -107,7 +109,7 @@ export const resetPointByRound = async (
       // .then((result) => console.log("Done"));
     }
 
-    await client
+    const result = await client
       .patch(gameId)
       .set({
         end: dayjs()
