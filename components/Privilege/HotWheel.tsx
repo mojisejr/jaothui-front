@@ -82,11 +82,8 @@ const HotWheel = () => {
       wallet: walletAddress as string,
     });
 
-  const {
-    isLoading: reseting,
-    isSuccess: reseted,
-    mutate: reset,
-  } = trpc.game.resetPointByRound.useMutation();
+  const { isLoading: reseting, mutate: reset } =
+    trpc.game.resetPointByRound.useMutation();
 
   const {
     data: nftGameData,
@@ -102,9 +99,6 @@ const HotWheel = () => {
     mutate: updatePoint,
   } = trpc.game.updatePoint.useMutation();
 
-  // const { isLoading: loadingUpdateUserPoint, mutate: updateUserPoint } =
-  //   trpc.user.updateUserPoint.useMutation();
-
   const {
     data: spinData,
     isLoading: spinning,
@@ -112,7 +106,6 @@ const HotWheel = () => {
   } = trpc.game.spin.useMutation();
 
   //EFFECTS
-
   useEffect(() => {
     reset({
       contractAddress: "0x07B2bCc269B100b51AB8598d44AB568C7199C7BC",
@@ -153,16 +146,6 @@ const HotWheel = () => {
       setResult(spinData.result);
     }
   }, [spinData]);
-
-  //HANDLERS
-  // const handleSpinClick = () => {
-  //   if (!mustSpin && selectedProfile && canSpin) {
-  //     setResult(null);
-  //     const newPrizeNumber = Math.floor(Math.random() * data.length);
-  //     setMustSpin(true);
-  //     setPrizeNumber(newPrizeNumber);
-  //   }
-  // };
 
   const handleSpinClick = () => {
     setCanSpin(false);
