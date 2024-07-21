@@ -1,7 +1,13 @@
 import { groq } from "next-sanity";
 import { client } from "../../sanity/lib/client";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { updateUserPoint } from "./user.service";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Bangkok");
 
 export const getAllGames = async () => {
   try {
@@ -90,7 +96,7 @@ export const resetPointByRound = async (
 
   const game = await client.fetch<any>(query);
 
-  const canReset = dayjs().isAfter(dayjs(game.end));
+  const canReset = dayjs().isAfter(dayjs(game.end).tz("Asia/Bangkok"));
 
   if (canReset) {
     const query = groq`*[_type == "nftInGame" && contractAddress == "${contractAddress}"]`;
@@ -112,10 +118,10 @@ export const resetPointByRound = async (
       })
       .commit();
 
-    // console.log("Reset");
+    console.log("Reset");
   }
 
-  // console.log("Continue");
+  console.log("Continue");
 };
 
 export const pointUpdate = async (docId: string) => {
