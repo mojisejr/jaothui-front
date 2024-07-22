@@ -6,7 +6,7 @@ import {
   registerUser,
   updateUserPoint,
 } from "../services/user.service";
-import { router } from "../trpc";
+import { privateProcedure, router } from "../trpc";
 import { publicProcedure } from "../trpc";
 import { z } from "zod";
 
@@ -42,16 +42,6 @@ export const userRouter = router({
     .input(z.object({ wallet: z.string() }))
     .query(async ({ input }) => {
       return await getJaothuiProfileAll(input.wallet);
-    }),
-  updateUserPoint: publicProcedure
-    .input(
-      z.object({
-        wallet: z.string(),
-        point: z.number(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      return await updateUserPoint(input.wallet, input.point);
     }),
   getJaothuiPointOf: publicProcedure
     .input(

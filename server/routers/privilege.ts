@@ -68,8 +68,6 @@ export const privilegeRouter = router({
         timestamp: z.string(),
         wallet: z.string(),
         redeemItem: z.string(),
-        redeemedPoint: z.number(),
-        redeemedItemName: z.string(),
       })
     )
     .mutation(async ({ input }) => {

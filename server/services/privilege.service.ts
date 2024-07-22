@@ -107,10 +107,18 @@ export const getAllJaothuiRedeemItems = async () => {
 
 export const redeemHistoryCreate = async (input: RedeemHistoryInput) => {
   try {
-    const query = groq`*[_type == "userJaothuiPoint" && wallet == "${input.wallet}"]{_id}[0]`;
+    const query = groq`*[_type == "userJaothuiPoint" && wallet == "${input.wallet}"]{_id, currentPoint}[0]`;
     const found = await client.fetch<any>(query);
 
-    if (!found) return;
+    const query2 = groq`*[_type == "jaothuiRedeemItem" && _id == "${input.redeemItem}"][0]`;
+    const item = await client.fetch<any>(query2);
+
+    if (!found) return null;
+
+    if (found.currentPoint < item.point) {
+      return null;
+    }
+
     const newReedeemData = {
       _type: "jaothuiRedeemHistory",
       name: input.name,
@@ -126,7 +134,7 @@ export const redeemHistoryCreate = async (input: RedeemHistoryInput) => {
         _type: "jaothuiRedeemItem",
         _ref: input.redeemItem,
       },
-      redeemedPoint: input.redeemedPoint,
+      redeemedPoint: item.point,
     };
 
     const result = await client.create(newReedeemData);
@@ -134,8 +142,8 @@ export const redeemHistoryCreate = async (input: RedeemHistoryInput) => {
     if (result != null) {
       await client
         .patch(found._id)
-        .dec({ currentPoint: input.redeemedPoint })
-        .inc({ usedPoint: input.redeemedPoint })
+        .dec({ currentPoint: item.point })
+        .inc({ usedPoint: item.point })
         .setIfMissing({ redeemHistory: [] })
         .insert("after", "redeemHistory[-1]", [
           { _type: "reference", _ref: result._id },
@@ -144,7 +152,7 @@ export const redeemHistoryCreate = async (input: RedeemHistoryInput) => {
 
       await itemRedeemNotify({
         _id: result._id,
-        item: input.redeemedItemName,
+        item: item.name,
         name: input.name,
         address: input.address,
         tel: input.tel,

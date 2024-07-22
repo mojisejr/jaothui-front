@@ -9,8 +9,6 @@ export interface RedeemHistory {
   timestamp: Date;
   wallet: string;
   redeemItem: string;
-  redeemedPoint: number;
-  redeemedItemName: string;
 }
 
 export type RedeemHistoryInput = Omit<

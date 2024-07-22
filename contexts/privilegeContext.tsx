@@ -10,7 +10,6 @@ import {
 import { RedeemDetailPreview } from "../interfaces/Privilege/redeemDetails";
 import { RedeemHistoryInput } from "../interfaces/Privilege/redeemHistory";
 import { trpc } from "../utils/trpc";
-import { useBitkubNext } from "./bitkubNextContext";
 
 type privilegeContextType = {
   step: number;
@@ -21,7 +20,7 @@ type privilegeContextType = {
   back: (to: number) => void;
   checkout: (data: RedeemHistoryInput) => void;
   openRedeemDetailDialog: (detail: RedeemDetailPreview) => void;
-  orderId?: string;
+  orderId?: string | null;
   updatingHistory: boolean;
   updateHistoryError: boolean;
 };
