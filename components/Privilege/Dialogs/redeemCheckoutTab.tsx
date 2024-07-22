@@ -44,9 +44,7 @@ const RedeemCheckoutTab = () => {
       tel: data.tel,
       address: `${data.address} ${data.amphoe} ${data.district} ${data.province} ${data.zipcode}`,
       wallet: walletAddress,
-      redeemedPoint: selectedItem?.point!,
       redeemItem: selectedItem?._id!,
-      redeemedItemName: selectedItem?.name!,
       timestamp: new Date(),
     };
 

@@ -20,7 +20,10 @@ export const trpc = createTRPCNext<AppRouter>({
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           async headers() {
-            return {};
+            console.log("OK");
+            return {
+              authorization: `Bearer ${process.env.NEXT_PUBLIC_private_procedure_key}`,
+            };
           },
         }),
       ],

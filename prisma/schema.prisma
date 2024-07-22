@@ -69,17 +69,21 @@ model Payment {
 }
 
 model Pedigree {
-  microchip String    @id @unique
+  tokenId   String   @unique
   name      String
+  microchip String   @id @unique
   certNo    String?
-  birthday  DateTime
+  origin    String?  @default("thai")
+  color     String
+  imageUrl  String
+  detail    String?
   sex       String
+  rarity    String   @default("Normal")
+  birthday  DateTime
+  height    Int?
   motherId  String?
   fatherId  String?
-  origin    String?   @default("thai")
-  height    Int?
-  color     String
-  issueAt   DateTime?
+  isMinted  Boolean  @default(false)
 }
 
 model Advertisements {
