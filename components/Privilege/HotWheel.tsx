@@ -82,8 +82,8 @@ const HotWheel = () => {
       wallet: walletAddress as string,
     });
 
-  const { isLoading: reseting, mutate: reset } =
-    trpc.game.resetPointByRound.useMutation();
+  // const { isLoading: reseting, mutate: reset } =
+  //   trpc.game.resetPointByRound.useMutation();
 
   const {
     data: nftGameData,
@@ -106,12 +106,12 @@ const HotWheel = () => {
   } = trpc.game.spin.useMutation();
 
   //EFFECTS
-  useEffect(() => {
-    reset({
-      contractAddress: "0x07B2bCc269B100b51AB8598d44AB568C7199C7BC",
-      gameId: "3fc396c8-b968-46fd-849d-d2243102fe00",
-    });
-  }, []);
+  // useEffect(() => {
+  //   reset({
+  //     contractAddress: "0x07B2bCc269B100b51AB8598d44AB568C7199C7BC",
+  //     gameId: "3fc396c8-b968-46fd-849d-d2243102fe00",
+  //   });
+  // }, []);
   useEffect(() => {
     const info = rarity.find(
       (r) => r.name == selectedProfile?.attributes[0].value
@@ -167,14 +167,14 @@ const HotWheel = () => {
     setSelectedProfile(nft);
   };
 
-  if (reseting) {
-    return (
-      <div className="h-screen flex flex-col mt-[100px] items-center">
-        <Loading size="lg" />
-        <div>Initializing..</div>
-      </div>
-    );
-  }
+  // if (reseting) {
+  //   return (
+  //     <div className="h-screen flex flex-col mt-[100px] items-center">
+  //       <Loading size="lg" />
+  //       <div>Initializing..</div>
+  //     </div>
+  //   );
+  // }
 
   if (!isConnected) {
     return (
