@@ -82,8 +82,8 @@ const HotWheel = () => {
       wallet: walletAddress as string,
     });
 
-  const { isLoading: reseting, mutate: reset } =
-    trpc.game.resetPointByRound.useMutation();
+  // const { isLoading: reseting, mutate: reset } =
+  //   trpc.game.resetPointByRound.useMutation();
 
   const {
     data: nftGameData,

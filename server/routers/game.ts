@@ -28,16 +28,16 @@ export const gameRouter = router({
         input.contractAddress
       );
     }),
-  resetPointByRound: publicProcedure
-    .input(
-      z.object({
-        gameId: z.string(),
-        contractAddress: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      return await resetPointByRound(input.gameId, input.contractAddress);
-    }),
+  // resetPointByRound: publicProcedure
+  //   .input(
+  //     z.object({
+  //       gameId: z.string(),
+  //       contractAddress: z.string(),
+  //     })
+  //   )
+  //   .mutation(async ({ input }) => {
+  //     return await resetPointByRound(input.gameId, input.contractAddress);
+  //   }),
   updatePoint: publicProcedure
     .input(
       z.object({
