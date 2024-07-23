@@ -113,8 +113,9 @@ export const resetPointByRound = async (
       .patch(gameId)
       .set({
         end: dayjs()
+          .tz("Asia/Bangkok")
           .add(1, "day")
-          .set("hour", 17)
+          .set("hour", 0)
           .set("minute", 0)
           .toISOString(),
       })
