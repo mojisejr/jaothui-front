@@ -6,7 +6,7 @@ import { useBitkubNext } from "../../../../contexts/bitkubNextContext";
 
 const HotWheelGame1 = () => {
   const { isConnected } = useBitkubNext();
-  const { replace } = useRouter();
+  const { replace, query } = useRouter();
   const [ready, setReady] = useState<boolean>(false);
 
   useEffect(() => {
@@ -28,7 +28,10 @@ const HotWheelGame1 = () => {
               <span className="text-2xl font-bold p-2">Hot Wheel</span>
             </div>
             <div>
-              <HotWheel />
+              <HotWheel
+                contractAddress={query.c as string}
+                gameId={query.id as string}
+              />
             </div>
           </div>
         ) : (

@@ -4,6 +4,10 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { updateUserPoint } from "./user.service";
+import { viem } from "../viem";
+import { contract } from "../../blockchain/contract";
+import axios from "axios";
+import { JaothuiProfile } from "../../interfaces/JaothuiProfile/JaothuiProfile";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -22,7 +26,18 @@ export const getAllGames = async () => {
     isActive
     }`;
 
-    const result = await client.fetch<any[]>(query);
+    const result = await client.fetch<
+      {
+        _id: string;
+        title: string;
+        type: string;
+        image: string;
+        start: Date;
+        end: Date;
+        description: string;
+        isActive: boolean;
+      }[]
+    >(query);
 
     return result;
   } catch (error) {
@@ -138,4 +153,39 @@ export const spin = async (wallet: string) => {
   await updateUserPoint(wallet, point[newPrizeNumber]);
 
   return { position: newPrizeNumber, result: point[newPrizeNumber] };
+};
+
+export const getNFTbyContract = async (
+  wallet: string,
+  contractAddress: `0x${string}`
+) => {
+  try {
+    const tokenOfOwnerAll = (await viem.readContract({
+      abi: contract.jaothui.abi,
+      address: contractAddress,
+      functionName: "tokenOfOwnerAll",
+      args: [wallet],
+    })) as bigint[];
+
+    const metadata =
+      tokenOfOwnerAll && tokenOfOwnerAll.length > 0
+        ? ((await Promise.all(
+            tokenOfOwnerAll.map(async (token) => {
+              const metadata = (await viem.readContract({
+                abi: contract.jaothui.abi,
+                address: contractAddress,
+                functionName: "tokenURI",
+                args: [token],
+              })) as string;
+
+              const tokenURI = (await axios.get(metadata)).data;
+              return { tokenId: token.toString(), ...tokenURI };
+            })
+          )) as JaothuiProfile[])
+        : [];
+
+    return metadata;
+  } catch (error) {
+    console.log(error);
+  }
 };

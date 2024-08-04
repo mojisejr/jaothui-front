@@ -7,6 +7,7 @@ interface GameListCardProps {
   title: string;
   thumbnailImage?: string;
   description?: string;
+  contractAddress?: string;
   type: string;
 }
 
@@ -15,6 +16,7 @@ const GameListCard = ({
   title,
   description,
   thumbnailImage,
+  contractAddress,
   type,
 }: GameListCardProps) => {
   return (
@@ -42,7 +44,7 @@ const GameListCard = ({
         <div className="card-actions justify-end">
           <Link
             className="btn btn-primary btn-sm"
-            href={`/profile/game/${type}`}
+            href={`/profile/game/${type}?c=${contractAddress}&id=${_id}`}
           >
             enter
           </Link>
