@@ -1,4 +1,5 @@
 export interface JaothuiProfile {
+  tokenId?: string;
   name: string;
   description: string;
   image: string;

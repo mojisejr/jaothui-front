@@ -5,6 +5,7 @@ import { trpc } from "../../../utils/trpc";
 import Loading from "../../../components/Shared/Indicators/Loading";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
+import { gameContracts } from "../../../constants/game-contracts";
 
 const GameList = () => {
   const { replace } = useRouter();
@@ -30,6 +31,7 @@ const GameList = () => {
                 title={game.title}
                 thumbnailImage={game.image}
                 description={game.description}
+                contractAddress={gameContracts[game._id]}
                 type={game.type}
               />
             ))

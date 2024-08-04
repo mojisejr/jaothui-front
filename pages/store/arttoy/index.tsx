@@ -26,12 +26,6 @@ const Arttoy = () => {
         ) : (
           <AllProductList products={data!} title="ARTTOY" />
         )} */}
-        <div className="flex flex-col items-center">
-          <div className="text-2xl w-full text-center font-bold">
-            JAOTHUI HOT WHEEL
-          </div>
-          <HotWheel />
-        </div>
         <div className="px-[22px] py-6">
           <div className="flex justify-between items-center py-2">
             <div className="text-xl font-bold">NFT Profile</div>

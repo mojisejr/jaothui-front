@@ -1,3 +1,4 @@
+import { getNFTbyContract } from "../services/game.service";
 import { getMemberData } from "../services/kwaithai.service";
 import { getJaothuiProfileAll } from "../services/nft-profile.service";
 import {
@@ -37,6 +38,14 @@ export const userRouter = router({
     )
     .query(async ({ input }) => {
       return await getMemberData(input.wallet);
+    }),
+  getNFTByContract: publicProcedure
+    .input(z.object({ wallet: z.string(), contract: z.string() }))
+    .query(async ({ input }) => {
+      return await getNFTbyContract(
+        input.wallet,
+        input.contract as `0x${string}`
+      );
     }),
   getJaothuiProfileAll: publicProcedure
     .input(z.object({ wallet: z.string() }))

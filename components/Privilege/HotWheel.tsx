@@ -62,7 +62,13 @@ const data = [
   },
   { option: "1", style: { backgroundColor: "#E3A51D" } },
 ];
-const HotWheel = () => {
+
+interface HotWheelProps {
+  contractAddress: string;
+  gameId: string;
+}
+
+const HotWheel = ({ contractAddress, gameId }: HotWheelProps) => {
   const { rarity } = config;
 
   //HOOH & STATES
@@ -78,8 +84,9 @@ const HotWheel = () => {
 
   //TRPC
   const { data: tokens, isLoading: loadingToken } =
-    trpc.user.getJaothuiProfileAll.useQuery({
+    trpc.user.getNFTByContract.useQuery({
       wallet: walletAddress as string,
+      contract: contractAddress,
     });
 
   // const { isLoading: reseting, mutate: reset } =
@@ -160,9 +167,11 @@ const HotWheel = () => {
 
     const nft: JaothuiProfile = JSON.parse(target.value);
     getNftInGame({
-      tokenId: nft.attributes[2].value.toString(),
-      contractAddress: "0x07B2bCc269B100b51AB8598d44AB568C7199C7BC",
-      gameId: "3fc396c8-b968-46fd-849d-d2243102fe00",
+      tokenId: nft.tokenId!,
+      contractAddress,
+      gameId,
+      // contractAddress: "0x07B2bCc269B100b51AB8598d44AB568C7199C7BC",
+      // gameId: "3fc396c8-b968-46fd-849d-d2243102fe00",
     });
     setSelectedProfile(nft);
   };
@@ -261,10 +270,12 @@ const HotWheel = () => {
                   setMustSpin(false);
                   updatePoint({ docId: nftGameData._id });
                   getNftInGame({
-                    tokenId: selectedProfile!.attributes[2].value.toString(),
-                    contractAddress:
-                      "0x07B2bCc269B100b51AB8598d44AB568C7199C7BC",
-                    gameId: "3fc396c8-b968-46fd-849d-d2243102fe00",
+                    tokenId: nftGameData.tokenId!,
+                    contractAddress,
+                    gameId,
+                    // contractAddress:
+                    //   "0x07B2bCc269B100b51AB8598d44AB568C7199C7BC",
+                    // gameId: "3fc396c8-b968-46fd-849d-d2243102fe00",
                   });
                   // setResult(parseInt(data[prizeNumber].option));
                 }}
