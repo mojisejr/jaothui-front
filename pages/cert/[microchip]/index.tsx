@@ -19,7 +19,7 @@ const CertDetail = () =>
     // const { metadata } = useGetMetadataByMicrochip(tokenId! as string);
     const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
       // microchip: props.tokenId,
-      tokenId: +(i as string),
+      // tokenId: +(i as string),
       microchip: microchip! as string,
     }) as any;
 

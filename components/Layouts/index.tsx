@@ -16,7 +16,7 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const { pathname, push, query } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
-  const { data: allMetadata, isLoading } = trpc.metadata.getAll.useQuery();
+  // const { data: allMetadata, isLoading } = trpc.metadata.getAll.useQuery();
   //bad
 
   function handleSearch(e: SyntheticEvent) {
@@ -30,11 +30,12 @@ const Layout = ({ children }: LayoutProps) => {
     const isNumberic = /^\d+$/.test(value.toString()!);
 
     if (isNumberic) {
-      const index = allMetadata?.findIndex((m) => m.microchip === value);
+      // const index = allMetadata?.findIndex((m) => m.microchip === value);
 
-      if (index == undefined || index < 0) return;
+      // if (index == undefined || index < 0) return;
 
-      push(`/cert/${value}?i=${index! + 1}`);
+      // push(`/cert/${value}?i=${index! + 1}`);
+      push(`/cert/${value}`);
     } else {
       // const found = allMetadata.find((buffalo) =>
       //   buffalo.name.includes(value.toString())
@@ -104,7 +105,7 @@ const Layout = ({ children }: LayoutProps) => {
                       ref={searchRef}
                     />
                     <button
-                      disabled={isLoading}
+                      // disabled={isLoading}
                       onClick={handleSearch}
                       className="btn btn-primary join-item w-1/4"
                     >

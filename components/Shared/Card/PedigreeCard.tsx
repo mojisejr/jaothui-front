@@ -36,7 +36,8 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
       >
         <Link
           onClick={() => setExit(true)}
-          href={`/cert/${data ? data.microchip : null}?i=${data.tokenId}`}
+          // href={`/cert/${data ? data.microchip : null}?i=${data.tokenId}`}
+          href={`/cert/${data ? data.microchip : null}`}
           className="w-full rounded-xl shadow-xl"
         >
           <div className="p-4">
