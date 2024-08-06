@@ -112,3 +112,21 @@ export const getMetadataByMicrochipId = async (
     console.log(error);
   }
 };
+
+export const getMetadataByMicrochip = async (microchip: string) => {
+  try {
+    const metadata = (await viem.readContract({
+      address: contract.metadata.address as Address,
+      abi: contract.metadata.abi,
+      functionName: "getAllMetadata",
+    })) as any[];
+
+    const tokenId =
+      metadata.map((m) => m.certify.microchip === microchip).indexOf(true) + 1;
+
+    const data = await getMetadataByMicrochipId(microchip, tokenId);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

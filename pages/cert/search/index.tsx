@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../../components/Layouts";
 import { useRouter } from "next/router";
-import { useGetAllMetadata } from "../../../blockchain/Metadata/read";
 import Loading from "../../../components/Shared/Indicators/Loading";
 import PedigreeCard from "../../../components/Shared/Card/PedigreeCard";
-import NotFound from "../../../components/Shared/Utils/Notfound";
 import { trpc } from "../../../utils/trpc";
 
 const SearchResultPage = () => {
   const [found, setFound] = useState<any[]>();
   const { query } = useRouter();
-  // const { allMetadata } = useGetAllMetadata();
   const { data: allMetadata } = trpc.metadata.getAll.useQuery();
 
   useEffect(() => {
