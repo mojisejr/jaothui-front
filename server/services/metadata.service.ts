@@ -10,7 +10,7 @@ const viem = createPublicClient({
   transport: http(),
 });
 
-export const getAllMetadataV2 = async () => {
+export const getTotalSupply = async () => {
   const totalSupply = (await viem.readContract({
     address: contract.nft.address,
     abi: contract.nft.abi,
@@ -20,17 +20,25 @@ export const getAllMetadataV2 = async () => {
   return parseInt(totalSupply.toString());
 };
 
-export const getAllMetadata = async () => {
+export const getAllMetadata = async (nextPage: number) => {
+  const totalSupply = await getTotalSupply();
+  const page = nextPage <= 1 ? 1 : nextPage;
+  const itemsPerPage = 9;
+  const endPoint =
+    page * itemsPerPage + 1 > totalSupply
+      ? totalSupply + 1
+      : page * itemsPerPage + 1;
+  const startPoint = (page - 1) * itemsPerPage + 1;
+
   try {
-    const totalSupply = await getAllMetadataV2();
     let metadata: any[] = [];
 
-    for (let i = 0; i < totalSupply; i++) {
+    for (let i = startPoint; i < endPoint; i++) {
       const result = (await viem.readContract({
         address: contract.metadata.address as Address,
         abi: contract.metadata.abi,
         functionName: "getMetadata",
-        args: [i + 1],
+        args: [i],
       })) as any[];
       metadata.push(result);
     }
@@ -127,8 +135,6 @@ export const getMetadataByMicrochipId = async (
       certificate: certificationData,
     };
 
-    // console.log(parsed);
-
     return parsed;
   } catch (error) {
     console.log(error);
@@ -137,18 +143,63 @@ export const getMetadataByMicrochipId = async (
 
 export const getMetadataByMicrochip = async (microchip: string) => {
   try {
-    const metadata = (await viem.readContract({
+    // const metadata = await getAllMetadata(page);
+    const result = (await viem.readContract({
       address: contract.metadata.address as Address,
       abi: contract.metadata.abi,
-      functionName: "getAllMetadata",
-    })) as any[];
+      functionName: "microchipToTokenId",
+      args: [microchip],
+    })) as bigint;
 
-    const tokenId =
-      metadata.map((m) => m.certify.microchip === microchip).indexOf(true) + 1;
+    const tokenId = parseInt(result.toString());
+    // const tokenId =
+    //   metadata!.map((m) => m.microchip === microchip).indexOf(true) + 1;
 
     const data = await getMetadataByMicrochipId(microchip, tokenId);
     return { tokenId, ...data };
   } catch (error) {
     console.log(error);
   }
+};
+
+export const getMetadataBatch = async (microchip: string[]) => {
+  let metadata = [];
+  for (let i = 0; i < microchip.length; i++) {
+    const result = await getMetadataByMicrochip(microchip[i]);
+    metadata.push(result);
+  }
+
+  const m = await Promise.all(
+    metadata.map(async (m, index) => {
+      if (m == undefined) return {};
+      return {
+        tokenId: m.tokenId,
+        name: m.name,
+        origin: m.origin,
+        color: m.color,
+        image: getImageUrl(`${m.tokenId.toString()}.jpg`),
+        detail: m.detail,
+        sex: m.sex,
+        birthdate: +m.birthdate?.toString()!,
+        birthday: new Date(
+          +m.birthdate?.toString()! * 1000
+        ).toLocaleDateString(),
+        height: m.height?.toString(),
+        microchip: m.certify?.microchip,
+        certNo: m.certify?.certNo,
+        rarity: m.certify?.rarity,
+        dna: m.certify?.dna,
+        fatherId: m.relation?.motherTokenId,
+        motherId: m.relation?.fatherTokenId,
+        createdAt: new Date(
+          +m.createdAt?.toString()! * 1000
+        ).toLocaleDateString(),
+        updatedAt: new Date(
+          +m.updatedAt?.toString()! * 1000
+        ).toLocaleDateString(),
+      };
+    })
+  );
+
+  return m as IMetadata[];
 };

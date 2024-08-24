@@ -9,7 +9,10 @@ import NotFound from "../../components/Shared/Utils/Notfound";
 import { trpc } from "../../utils/trpc";
 
 const CertMainPage: NextPage = () => {
-  const { data, isLoading } = trpc.metadata.getAll.useQuery();
+  const [maxPage, setMaxPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
+  const { data: totalSupply } = trpc.metadata.totalSupply.useQuery();
+  const { data, isLoading, refetch } = trpc.metadata.getAll.useQuery(page);
   const [sortState, setSortState] = useState<number>(0);
   const [currentData, setCurrentData] = useState<IMetadata[]>(data!);
 
@@ -35,6 +38,23 @@ const CertMainPage: NextPage = () => {
       }
     }
     setSortState(target.value);
+  }
+
+  useEffect(() => {
+    refetch();
+  }, [page]);
+
+  useEffect(() => {
+    setMaxPage(Math.floor(totalSupply! / 9));
+  }, [totalSupply]);
+
+  function handleNextPage() {
+    setPage(page + 1);
+  }
+
+  function handlePrevPage() {
+    if (page <= 1) return;
+    setPage(page - 1);
   }
 
   useEffect(() => {
@@ -90,6 +110,25 @@ const CertMainPage: NextPage = () => {
               )}
             </>
           )}
+        </div>
+        <div className="w-full flex justify-center gap-10 mb-10">
+          <button
+            disabled={page <= 1}
+            className="btn btn-primary"
+            onClick={() => handlePrevPage()}
+          >
+            Prev
+          </button>
+          <div className="font-bold">
+            {page} of {maxPage + 1}
+          </div>
+          <button
+            disabled={maxPage < page}
+            className="btn btn-primary"
+            onClick={() => handleNextPage()}
+          >
+            Next
+          </button>
         </div>
       </Layout>
     </>

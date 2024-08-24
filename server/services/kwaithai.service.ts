@@ -16,22 +16,23 @@ export const getMemberData = async (wallet: string) => {
 
     const avatar = getAvatarUrl(user?.avatar!);
 
-    const allMeta = await getAllMetadata();
+    // const allMeta = await getAllMetadata();
 
-    const userBuffaloMata =
-      user && certificates.length <= 0
-        ? []
-        : certificates.map((cert) => {
-            const found = allMeta?.find(
-              (meta) => meta.microchip == cert.microchip
-            );
+    // const userBuffaloMata =
+    //   user && certificates.length <= 0
+    //     ? []
+    //     : certificates.map((cert) => {
+    //         const found = allMeta?.find(
+    //           (meta) => meta.microchip == cert.microchip
+    //         );
 
-            if (found) {
-              return found;
-            }
-          });
+    //         if (found) {
+    //           return found;
+    //         }
+    //       });
 
-    const output = { ...user, avatar, Certificate: userBuffaloMata };
+    // const output = { ...user, avatar, Certificate: userBuffaloMata };
+    const output = { ...user, avatar, Certificate: [] };
 
     return user == null ? null : (output as Member | null);
     // return undefined;
