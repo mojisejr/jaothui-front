@@ -51,11 +51,11 @@ export const getAllMetadata = async (nextPage: number) => {
     const m = await Promise.all(
       metadata.map(async (m, index) => {
         return {
-          tokenId: index + 1,
+          tokenId: startPoint + index,
           name: m.name,
           origin: m.origin,
           color: m.color,
-          image: getImageUrl(`${(index + 1).toString()}.jpg`),
+          image: getImageUrl(`${(startPoint + index).toString()}.jpg`),
           detail: m.detail,
           sex: m.sex,
           birthdate: +m.birthdate.toString(),
