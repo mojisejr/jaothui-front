@@ -8,8 +8,17 @@ import { IMetadata } from "../../../interfaces/iMetadata";
 import Loading from "../../Shared/Indicators/Loading";
 
 const Pedigree = () => {
-  const [data, setData] = useState<IMetadata[]>([]);
-  const { data: allMetadata, isLoading } = trpc.metadata.getAll.useQuery();
+  // const [data, setData] = useState<IMetadata[]>([]);
+  const { data, isLoading } = trpc.metadata.getBatch.useQuery([
+    "764040226300035",
+    "764040226600001",
+    "933004022017321",
+    "900115003414178",
+    "900115003414472",
+    "764040226600008",
+    "900115003739216",
+    "764040226301331",
+  ]);
   // const { allMetadata } = useGetAllMetadata();
   // const data = allMetadata
 
@@ -18,22 +27,22 @@ const Pedigree = () => {
 
   // const data = _.take(allMetadata, 8);
 
-  useEffect(() => {
-    if (allMetadata != undefined) {
-      const data = [
-        allMetadata![8],
-        allMetadata![70],
-        allMetadata![79],
-        allMetadata![81],
-        allMetadata![72],
-        allMetadata![76],
-        allMetadata![155],
-        allMetadata![65],
-      ];
+  // useEffect(() => {
+  //   if (allMetadata != undefined) {
+  //     const data = [
+  //       allMetadata![8],
+  //       allMetadata![70],
+  //       allMetadata![79],
+  //       allMetadata![81],
+  //       allMetadata![72],
+  //       allMetadata![76],
+  //       allMetadata![155],
+  //       allMetadata![65],
+  //     ];
 
-      setData(data);
-    }
-  }, [allMetadata, isLoading]);
+  //     setData(data);
+  //   }
+  // }, [allMetadata, isLoading]);
 
   return (
     <>

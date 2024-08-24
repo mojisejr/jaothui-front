@@ -8,25 +8,36 @@ import { trpc } from "../../../utils/trpc";
 const SearchResultPage = () => {
   const [found, setFound] = useState<any[]>();
   const { query } = useRouter();
-  const { data: allMetadata } = trpc.metadata.getAll.useQuery();
+  // const { data: allMetadata } = trpc.metadata.getAll.useQuery();
 
-  useEffect(() => {
-    if (query.q != undefined && allMetadata != undefined) {
-      handleSearchResult();
-    }
-  }, [query, allMetadata]);
+  // useEffect(() => {
+  //   if (query.q != undefined && allMetadata != undefined) {
+  //     handleSearchResult();
+  //   }
+  // }, [query, allMetadata]);
 
   const handleSearchResult = () => {
-    const keyword = query.q;
-    const found = allMetadata?.filter((buffalo) =>
-      buffalo.name.includes(keyword as string)
-    );
-    setFound(found);
+    // const keyword = query.q;
+    // const found = allMetadata?.filter((buffalo) =>
+    //   buffalo.name.includes(keyword as string)
+    // );
+    // setFound(found);
   };
 
   return (
     <Layout>
-      {allMetadata == undefined || found == undefined ? (
+      <div className="w-full flex justify-center items-center flex-col mt-10">
+        <div className="text-xl font-bold">ขออภัย !</div>
+        <div className="text-xl font-bold text-center text-error">
+          ปิดปรับปรุงระบบ ค้นหาด้วย ชื่อ และ คีย์เวิร์ด
+        </div>
+        <div>กรุณาค้นหาด้วย microchip เท่านั้น</div>
+        <div className="text-xs">
+          หากระบบกลับมาใช้งานได้ทีมงานจะแจ้งอีกครั้ง
+        </div>
+      </div>
+
+      {/* {allMetadata == undefined || found == undefined ? (
         <div className="min-h-screen flex justify-center">
           <Loading size="lg" />
         </div>
@@ -42,7 +53,7 @@ const SearchResultPage = () => {
             )}
           </div>
         </>
-      )}
+      )} */}
     </Layout>
   );
 };
