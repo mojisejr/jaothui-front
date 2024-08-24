@@ -71,8 +71,6 @@ export const getAllMetadata = async () => {
       })
     );
 
-    console.log(m);
-
     return m as IMetadata[];
   } catch (error) {
     console.log(error);
