@@ -45,15 +45,21 @@ const CertMainPage: NextPage = () => {
   }, [page]);
 
   useEffect(() => {
-    setMaxPage(Math.floor(totalSupply! / 9));
+    setMaxPage(Math.floor(totalSupply! / 15));
   }, [totalSupply]);
 
   function handleNextPage() {
+    if (typeof window != undefined) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
     setPage(page + 1);
   }
 
   function handlePrevPage() {
     if (page <= 1) return;
+    if (typeof window != undefined) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
     setPage(page - 1);
   }
 
