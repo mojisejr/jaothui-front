@@ -169,37 +169,33 @@ export const getMetadataBatch = async (microchip: string[]) => {
     metadata.push(result);
   }
 
-  const m = await Promise.all(
-    metadata.map(async (m, index) => {
-      if (m == undefined) return {};
-      return {
-        tokenId: m.tokenId,
-        name: m.name,
-        origin: m.origin,
-        color: m.color,
-        image: getImageUrl(`${m.tokenId.toString()}.jpg`),
-        detail: m.detail,
-        sex: m.sex,
-        birthdate: +m.birthdate?.toString()!,
-        birthday: new Date(
-          +m.birthdate?.toString()! * 1000
-        ).toLocaleDateString(),
-        height: m.height?.toString(),
-        microchip: m.certify?.microchip,
-        certNo: m.certify?.certNo,
-        rarity: m.certify?.rarity,
-        dna: m.certify?.dna,
-        fatherId: m.relation?.motherTokenId,
-        motherId: m.relation?.fatherTokenId,
-        createdAt: new Date(
-          +m.createdAt?.toString()! * 1000
-        ).toLocaleDateString(),
-        updatedAt: new Date(
-          +m.updatedAt?.toString()! * 1000
-        ).toLocaleDateString(),
-      };
-    })
-  );
+  const m = metadata.map((m, index) => {
+    if (m == undefined) return {};
+    return {
+      tokenId: m.tokenId,
+      name: m.name,
+      origin: m.origin,
+      color: m.color,
+      image: getImageUrl(`${m.tokenId.toString()}.jpg`),
+      detail: m.detail,
+      sex: m.sex,
+      birthdate: +m.birthdate?.toString()!,
+      birthday: new Date(+m.birthdate?.toString()! * 1000).toLocaleDateString(),
+      height: m.height?.toString(),
+      microchip: m.certify?.microchip,
+      certNo: m.certify?.certNo,
+      rarity: m.certify?.rarity,
+      dna: m.certify?.dna,
+      fatherId: m.relation?.motherTokenId,
+      motherId: m.relation?.fatherTokenId,
+      createdAt: new Date(
+        +m.createdAt?.toString()! * 1000
+      ).toLocaleDateString(),
+      updatedAt: new Date(
+        +m.updatedAt?.toString()! * 1000
+      ).toLocaleDateString(),
+    };
+  });
 
   return m as IMetadata[];
 };
