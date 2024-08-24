@@ -10,13 +10,35 @@ const viem = createPublicClient({
   transport: http(),
 });
 
+export const getAllMetadataV2 = async () => {
+  const totalSupply = (await viem.readContract({
+    address: contract.nft.address,
+    abi: contract.nft.abi,
+    functionName: "totalSupply",
+  })) as bigint;
+
+  return parseInt(totalSupply.toString());
+};
+
 export const getAllMetadata = async () => {
   try {
-    const metadata = (await viem.readContract({
-      address: contract.metadata.address as Address,
-      abi: contract.metadata.abi,
-      functionName: "getAllMetadata",
-    })) as any[];
+    const totalSupply = await getAllMetadataV2();
+    let metadata: any[] = [];
+
+    for (let i = 0; i < totalSupply; i++) {
+      const result = (await viem.readContract({
+        address: contract.metadata.address as Address,
+        abi: contract.metadata.abi,
+        functionName: "getMetadata",
+        args: [i + 1],
+      })) as any[];
+      metadata.push(result);
+    }
+    // const metadata = (await viem.readContract({
+    //   address: contract.metadata.address as Address,
+    //   abi: contract.metadata.abi,
+    //   functionName: "getAllMetadata",
+    // })) as any[];
 
     const m = await Promise.all(
       metadata.map(async (m, index) => {
