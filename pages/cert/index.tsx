@@ -7,6 +7,8 @@ import { IMetadata } from "../../interfaces/iMetadata";
 import Loading from "../../components/Shared/Indicators/Loading";
 import NotFound from "../../components/Shared/Utils/Notfound";
 import { trpc } from "../../utils/trpc";
+import { FiChevronsRight } from "react-icons/fi";
+import { FiChevronsLeft } from "react-icons/fi";
 
 const CertMainPage: NextPage = () => {
   const [maxPage, setMaxPage] = useState<number>(0);
@@ -117,12 +119,13 @@ const CertMainPage: NextPage = () => {
             </>
           )}
         </div>
-        <div className="w-full flex justify-center gap-10 mb-10">
+        <div className="w-full flex justify-center gap-10 mb-10 items-center">
           <button
             disabled={page <= 1}
             className="btn btn-primary"
             onClick={() => handlePrevPage()}
           >
+            <FiChevronsLeft size={24} />
             Prev
           </button>
           <div className="font-bold">
@@ -133,7 +136,8 @@ const CertMainPage: NextPage = () => {
             className="btn btn-primary"
             onClick={() => handleNextPage()}
           >
-            Next
+            NEXT
+            <FiChevronsRight size={24} />
           </button>
         </div>
       </Layout>
