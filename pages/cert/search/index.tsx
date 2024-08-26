@@ -5,8 +5,6 @@ import Loading from "../../../components/Shared/Indicators/Loading";
 import PedigreeCard from "../../../components/Shared/Card/PedigreeCard";
 import { trpc } from "../../../utils/trpc";
 
-export const maxDuration = 300;
-
 const SearchResultPage = () => {
   const { query } = useRouter();
   const {
