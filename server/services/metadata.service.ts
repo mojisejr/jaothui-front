@@ -4,6 +4,7 @@ import { contract } from "../../blockchain/contract";
 import { isCertificateActivated } from "./certificate.service";
 import { IMetadata } from "../../interfaces/iMetadata";
 import { getImageUrl } from "../supabase";
+import { prisma } from "../prisma";
 
 const viem = createPublicClient({
   chain: bitkub_mainnet,
@@ -198,4 +199,19 @@ export const getMetadataBatch = async (microchip: string[]) => {
   });
 
   return m as IMetadata[];
+};
+
+export const searchByKeyword = async (keyword: string) => {
+  const found = await prisma.pedigree.findMany({
+    where: {
+      name: {
+        contains: keyword,
+      },
+    },
+  });
+
+  const mircrochips = found.map((d) => d.microchip);
+  const metadata = await getMetadataBatch(mircrochips);
+
+  return metadata;
 };
