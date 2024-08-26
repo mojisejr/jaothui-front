@@ -4,6 +4,7 @@ import {
   getMetadataByMicrochip,
   getTotalSupply,
   getMetadataBatch,
+  searchByKeyword,
 } from "../services/metadata.service";
 import { getCertificateImageOf } from "../services/renderer.service";
 // import { renderPedigree } from "../services/renderer.service";
@@ -29,6 +30,11 @@ export const metadataRouter = router({
     .input(z.object({ microchip: z.string() }))
     .query(async ({ ctx, input }) => {
       return await getMetadataByMicrochip(input.microchip);
+    }),
+  searchByKeyword: publicProcedure
+    .input(z.string())
+    .query(async ({ input }) => {
+      return await searchByKeyword(input);
     }),
   // .input(z.object({ microchip: z.string(), tokenId: z.number() }))
   // .query(async ({ ctx, input }) => {
