@@ -5,6 +5,7 @@ import { isCertificateActivated } from "./certificate.service";
 import { IMetadata } from "../../interfaces/iMetadata";
 import { getImageUrl } from "../supabase";
 import { prisma } from "../prisma";
+import dayjs from "dayjs";
 
 const viem = createPublicClient({
   chain: bitkub_mainnet,
@@ -202,7 +203,7 @@ export const getMetadataBatch = async (microchip: string[]) => {
 };
 
 export const searchByKeyword = async (keyword: string) => {
-  const found = await prisma.pedigree.findMany({
+  const metadata = await prisma.pedigree.findMany({
     where: {
       name: {
         contains: keyword,
@@ -210,8 +211,15 @@ export const searchByKeyword = async (keyword: string) => {
     },
   });
 
-  const mircrochips = found.map((d) => d.microchip);
-  const metadata = await getMetadataBatch(mircrochips);
-
-  return metadata;
+  return metadata.map((d) => ({
+    ...d,
+    image: `${d.image}.jpg`,
+    origin: d.origin ?? "thai",
+    birthdate: new Date(d.birthday).getTime() / 1000,
+    tokenId: +d.tokenId.toString(),
+    height: d.height?.toString() ?? "0",
+    certNo: d.certNo ?? "N/A",
+    fatherId: d.fatherId ?? "N/A",
+    motherId: d.motherId ?? "N/A",
+  }));
 };
