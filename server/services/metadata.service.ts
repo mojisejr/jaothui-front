@@ -164,54 +164,18 @@ export const getMetadataByMicrochip = async (microchip: string) => {
   }
 };
 
-export const getMetadataBatch = async (microchip: string[]) => {
-  let metadata = [];
-  for (let i = 0; i < microchip.length; i++) {
-    const result = await getMetadataByMicrochip(microchip[i]);
-    metadata.push(result);
-  }
-
-  const m = metadata.map((m, index) => {
-    if (m == undefined) return {};
-    return {
-      tokenId: m.tokenId,
-      name: m.name,
-      origin: m.origin,
-      color: m.color,
-      image: getImageUrl(`${m.tokenId.toString()}.jpg`),
-      detail: m.detail,
-      sex: m.sex,
-      birthdate: +m.birthdate?.toString()!,
-      birthday: new Date(+m.birthdate?.toString()! * 1000).toLocaleDateString(),
-      height: m.height?.toString(),
-      microchip: m.certify?.microchip,
-      certNo: m.certify?.certNo,
-      rarity: m.certify?.rarity,
-      dna: m.certify?.dna,
-      fatherId: m.relation?.motherTokenId,
-      motherId: m.relation?.fatherTokenId,
-      createdAt: new Date(
-        +m.createdAt?.toString()! * 1000
-      ).toLocaleDateString(),
-      updatedAt: new Date(
-        +m.updatedAt?.toString()! * 1000
-      ).toLocaleDateString(),
-    };
-  });
-
-  return m as IMetadata[];
-};
-
-export const searchByKeyword = async (keyword: string) => {
+export const getMetadataBatch = async (microchips: string[]) => {
   const metadata = await prisma.pedigree.findMany({
     where: {
-      name: {
-        contains: keyword,
+      microchip: {
+        in: microchips,
       },
     },
   });
 
-  return metadata.map((d) => ({
+  console.log(metadata);
+
+  const parsed = metadata.map((d) => ({
     ...d,
     image: `${d.image}.jpg`,
     origin: d.origin ?? "thai",
@@ -222,4 +186,68 @@ export const searchByKeyword = async (keyword: string) => {
     fatherId: d.fatherId ?? "N/A",
     motherId: d.motherId ?? "N/A",
   }));
+
+  return parsed;
+};
+
+// export const getMetadataBatch = async (microchip: string[]) => {
+//   let metadata = [];
+//   for (let i = 0; i < microchip.length; i++) {
+//     const result = await getMetadataByMicrochip(microchip[i]);
+//     metadata.push(result);
+//   }
+
+//   const m = metadata.map((m, index) => {
+//     if (m == undefined) return {};
+//     return {
+//       tokenId: m.tokenId,
+//       name: m.name,
+//       origin: m.origin,
+//       color: m.color,
+//       image: getImageUrl(`${m.tokenId.toString()}.jpg`),
+//       detail: m.detail,
+//       sex: m.sex,
+//       birthdate: +m.birthdate?.toString()!,
+//       birthday: new Date(+m.birthdate?.toString()! * 1000).toLocaleDateString(),
+//       height: m.height?.toString(),
+//       microchip: m.certify?.microchip,
+//       certNo: m.certify?.certNo,
+//       rarity: m.certify?.rarity,
+//       dna: m.certify?.dna,
+//       fatherId: m.relation?.motherTokenId,
+//       motherId: m.relation?.fatherTokenId,
+//       createdAt: new Date(
+//         +m.createdAt?.toString()! * 1000
+//       ).toLocaleDateString(),
+//       updatedAt: new Date(
+//         +m.updatedAt?.toString()! * 1000
+//       ).toLocaleDateString(),
+//     };
+//   });
+
+//   return m as IMetadata[];
+// };
+
+export const searchByKeyword = async (keyword: string) => {
+  const metadata = await prisma.pedigree.findMany({
+    where: {
+      name: {
+        contains: keyword,
+      },
+    },
+  });
+
+  const parsed = metadata.map((d) => ({
+    ...d,
+    image: `${d.image}.jpg`,
+    origin: d.origin ?? "thai",
+    birthdate: new Date(d.birthday).getTime() / 1000,
+    tokenId: +d.tokenId.toString(),
+    height: d.height?.toString() ?? "0",
+    certNo: d.certNo ?? "N/A",
+    fatherId: d.fatherId ?? "N/A",
+    motherId: d.motherId ?? "N/A",
+  }));
+
+  return parsed;
 };
