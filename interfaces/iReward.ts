@@ -1,5 +1,8 @@
 export interface RewardData {
-  ipfs: string;
-  active: boolean;
-  createdAt: number;
+  id: string;
+  microchip: string;
+  eventName: string;
+  eventDate: string | null;
+  rewardName: string;
+  rewardImage: string | null;
 }

@@ -245,8 +245,8 @@ const ProfileBoxV2 = ({
                             <Link
                               className="text-gray-600 hover:text-primary"
                               key={index}
-                              href={r.ipfs}
-                              target="_blank"
+                              href={`/cert/${r.microchip}/reward?id=${r.id}&name=${certNft.name}`}
+                              // target="_blank"
                             >
                               <RiMedalFill size={30} />
                             </Link>

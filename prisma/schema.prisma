@@ -69,22 +69,23 @@ model Payment {
 
 model Pedigree {
   microchip String   @id @unique
-  tokenId   BigInt
   name      String
-  origin    String?  @default("thai")
-  color     String
-  image     String?
-  detail    String
-  sex       String
-  birthday  DateTime
-  height    Int?     @default(0)
   certNo    String?
-  dna       String
-  rarity    String   @default("Normal")
+  birthday  DateTime
+  sex       String
   motherId  String?
   fatherId  String?
+  origin    String?  @default("thai")
+  height    Int?     @default(0)
+  color     String
   createdAt String
+  detail    String
+  dna       String
+  image     String?
+  rarity    String   @default("Normal")
+  tokenId   BigInt
   updatedAt String
+  Reward    Reward[]
 }
 
 model Advertisements {
@@ -156,4 +157,14 @@ model CertificateApprover {
   position     Int
   user         User          @relation(fields: [wallet], references: [wallet])
   certificates Certificate[] @relation("CertificateToCertificateApprover")
+}
+
+model Reward {
+  id          String    @id
+  microchip   String
+  rewardImage String?
+  eventName   String
+  eventDate   DateTime?
+  rewardName  String
+  Pedigree    Pedigree  @relation(fields: [microchip], references: [microchip])
 }

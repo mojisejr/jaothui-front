@@ -7,6 +7,10 @@ import {
   searchByKeyword,
 } from "../services/metadata.service";
 import { getCertificateImageOf } from "../services/renderer.service";
+import {
+  gerRewardByMicrochip,
+  getRewardById,
+} from "../services/reward.service";
 // import { renderPedigree } from "../services/renderer.service";
 import { router } from "../trpc";
 import { publicProcedure } from "../trpc";
@@ -45,4 +49,12 @@ export const metadataRouter = router({
     .query(async ({ input }) => {
       return await getCertificateImageOf(input.microchip, input.tokenId);
     }),
+  getRewardByMicrochip: publicProcedure
+    .input(z.string())
+    .query(async ({ input }) => {
+      return await gerRewardByMicrochip(input);
+    }),
+  getRewardById: publicProcedure.input(z.string()).query(async ({ input }) => {
+    return await getRewardById(input);
+  }),
 });
