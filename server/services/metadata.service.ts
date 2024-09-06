@@ -5,7 +5,6 @@ import { isCertificateActivated } from "./certificate.service";
 import { IMetadata } from "../../interfaces/iMetadata";
 import { getImageUrl } from "../supabase";
 import { prisma } from "../prisma";
-import dayjs from "dayjs";
 
 const viem = createPublicClient({
   chain: bitkub_mainnet,
@@ -173,7 +172,7 @@ export const getMetadataBatch = async (microchips: string[]) => {
     },
   });
 
-  console.log(metadata);
+  // console.log(metadata);
 
   const parsed = metadata.map((d) => ({
     ...d,
