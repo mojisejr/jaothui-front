@@ -47,7 +47,7 @@ const CertMainPage: NextPage = () => {
   }, [page]);
 
   useEffect(() => {
-    setMaxPage(Math.floor(totalSupply! / 15));
+    setMaxPage(Math.floor(totalSupply! / 30));
   }, [totalSupply]);
 
   function handleNextPage() {

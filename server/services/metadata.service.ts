@@ -24,7 +24,7 @@ export const getTotalSupply = async () => {
 export const getAllMetadata = async (nextPage: number) => {
   const totalSupply = await getTotalSupply();
   const page = nextPage <= 1 ? 1 : nextPage;
-  const itemsPerPage = 15;
+  const itemsPerPage = 30;
   const endPoint =
     page * itemsPerPage + 1 > totalSupply
       ? totalSupply + 1
