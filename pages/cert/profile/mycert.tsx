@@ -1,10 +1,4 @@
-import {
-  FunctionComponent,
-  PropsWithChildren,
-  SyntheticEvent,
-  useEffect,
-  useState,
-} from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import Layout from "../../../components/Layouts";
 import BitkubNextConnectButton from "../../../components/Shared/BitkubNext";
@@ -17,7 +11,7 @@ import { useRouter } from "next/router";
 
 const MyCert = () => {
   const { replace } = useRouter();
-  const { isConnected, walletAddress } = useBitkubNext();
+  const { isConnected } = useBitkubNext();
   const { metadataOfOwner } = useGetMetadataOf();
   const [sortState, setSortState] = useState<number>(0);
   const [currentData, setCurrentData] = useState<IMetadata[]>(metadataOfOwner);
