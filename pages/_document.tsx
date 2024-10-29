@@ -22,7 +22,7 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
 
-          <meta
+          {/* <meta
             key="keywords"
             name="keywords"
             content={`Jaothui, JaothuiNFT, NFT, Pedigree, Kwaithai, Jaothui Official`}
@@ -70,7 +70,7 @@ class MyDocument extends Document {
             content={`https://nftstorage.link/ipfs/bafkreifuxnild7y5degh4bt4puu3cnkk6r74cqcboukih5rwipr2xzaeoy`}
           />
 
-          <link rel="canonical" href="https://jaothui.com/" />
+          <link rel="canonical" href="https://jaothui.com/" /> */}
         </Head>
         <body>
           <Main />

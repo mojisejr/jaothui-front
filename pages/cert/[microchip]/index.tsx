@@ -36,10 +36,30 @@ const CertDetail = ({
 
         {/* Open Graph Meta Tags */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={seo?.ogUrl} />
-        <meta property="og:title" content={seo?.title} />
-        <meta property="og:description" content={seo?.description} />
-        <meta property="og:image" content={seo?.ogImage} />
+        <meta
+          property="og:url"
+          key="og-url"
+          name="og:url"
+          content={seo?.ogUrl}
+        />
+        <meta
+          property="og:title"
+          key="og-title"
+          name="og:title"
+          content={seo?.title}
+        />
+        <meta
+          property="og:description"
+          key="og-description"
+          name="og:description"
+          content={seo?.description}
+        />
+        <meta
+          property="og:image"
+          key="og-image"
+          name="og:image"
+          content={seo?.ogImage}
+        />
 
         {/* Twitter Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
