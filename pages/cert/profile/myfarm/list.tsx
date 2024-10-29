@@ -1,13 +1,7 @@
-import {
-  FunctionComponent,
-  PropsWithChildren,
-  SyntheticEvent,
-  useRef,
-} from "react";
+import { SyntheticEvent, useRef } from "react";
 
 import { FiSearch } from "react-icons/fi";
 
-import { useMenu } from "../../../../contexts/menuContext";
 import { useBitkubNext } from "../../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
 import AssetList from "../../../../components/MyFarm/AssetList";
@@ -17,11 +11,10 @@ import { trpc } from "../../../../utils/trpc";
 import Layout from "../../../../components/Layouts";
 import BitkubNextConnectButton from "../../../../components/Shared/BitkubNext";
 
-const BuffaloList= () => {
+const BuffaloList = () => {
   const { push } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected, walletAddress } = useBitkubNext();
-  const { isOpen } = useMenu();
   const { data, isLoading } = trpc.farm.get.useQuery({ wallet: walletAddress });
   const { replace } = useRouter();
 
@@ -36,11 +29,10 @@ const BuffaloList= () => {
     push(`/cert/profile/myfarm/buffalo/${data.farm.id}?microchip=${value}`);
   }
 
-  if(!isConnected) {
+  if (!isConnected) {
     replace("/unauthorized");
     return;
   }
-
 
   return (
     <>

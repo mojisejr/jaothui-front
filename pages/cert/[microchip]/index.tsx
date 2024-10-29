@@ -28,14 +28,10 @@ const CertDetail = ({
   return (
     <>
       <Head>
-        <title>{seo?.title || "Jaothui NFT Official"}</title>
-        <meta
-          name="description"
-          content={seo?.description || "Jaothui NFT Official"}
-        />
+        <title>{seo?.title}</title>
 
         {/* Open Graph Meta Tags */}
-        <meta property="og:type" content="website" />
+        <meta property="og:type" key="og-url" name="og:url" content="website" />
         <meta
           property="og:url"
           key="og-url"
@@ -60,12 +56,6 @@ const CertDetail = ({
           name="og:image"
           content={seo?.ogImage}
         />
-
-        {/* Twitter Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={seo?.ogTwitterTitle} />
-        <meta name="twitter:description" content={seo?.ogTwitterDescription} />
-        <meta name="twitter:image" content={seo?.ogTwitterImage} />
       </Head>
       <Layout>
         {metadata == undefined || metadata == null || metadata.length <= 0 ? (

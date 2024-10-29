@@ -1,14 +1,8 @@
-import {
-  FunctionComponent,
-  PropsWithChildren,
-  SyntheticEvent,
-  useRef,
-} from "react";
+import { SyntheticEvent, useRef } from "react";
 
 import MyFarmDashboard from "../../../../components/MyFarm/Dashboard";
 import { FiSearch } from "react-icons/fi";
 
-import { useMenu } from "../../../../contexts/menuContext";
 import { useBitkubNext } from "../../../../contexts/bitkubNextContext";
 import { useRouter } from "next/router";
 import { useFarm } from "../../../../hooks/useFarm";
@@ -21,8 +15,7 @@ const MyFarm = () => {
   const { push, replace } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
   const { isConnected } = useBitkubNext();
-  const { isOpen } = useMenu();
-  const { farmData, isFarmError } = useFarm();
+  const { farmData } = useFarm();
 
   function handleSearch(e: SyntheticEvent) {
     const value =
@@ -37,9 +30,9 @@ const MyFarm = () => {
     );
   }
 
-  if(!isConnected) {
+  if (!isConnected) {
     replace("/unauthorized");
-    return
+    return;
   }
 
   return (
