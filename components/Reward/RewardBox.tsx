@@ -17,7 +17,8 @@ interface RewardBoxProps {
 
 const RewardBox = ({ reward, buffaloName }: RewardBoxProps) => {
   const { back } = useRouter();
-  const thaiDate = parseThaiDate(new Date(reward.eventDate!).getTime());
+  const eventDate = reward.eventDate ?? new Date().getTime();
+  const thaiDate = parseThaiDate(new Date(eventDate).getTime());
   return (
     <>
       <motion.div

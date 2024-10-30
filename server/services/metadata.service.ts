@@ -157,7 +157,11 @@ export const getMetadataByMicrochip = async (microchip: string) => {
     //   metadata!.map((m) => m.microchip === microchip).indexOf(true) + 1;
 
     const data = await getMetadataByMicrochipId(microchip, tokenId);
-    return { tokenId, ...data };
+    return {
+      tokenId,
+      ...data,
+      certificate: { ...data?.certificate, approvers: [] },
+    };
   } catch (error) {
     console.log(error);
   }

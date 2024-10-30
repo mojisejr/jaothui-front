@@ -10,20 +10,23 @@ import {
 } from "../../../server/services/seo.service";
 import Head from "next/head";
 import { InferGetStaticPropsType } from "next";
+import { getMetadataByMicrochip } from "../../../server/services/metadata.service";
+import { gerRewardByMicrochip } from "../../../server/services/reward.service";
 
 const CertDetail = ({
   seo,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const router = useRouter();
-  const { microchip } = router.query;
-  const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
-    microchip: microchip! as string,
-  }) as any;
+  rewards,
+  metadata,
+}: InferGetStaticPropsType<typeof getServerSideProps>) => {
+  // const router = useRouter();
+  // const { microchip } = router.query;
+  // const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
+  //   microchip: microchip! as string,
+  // }) as any;
 
-  const { data: rewards } = trpc.metadata.getRewardByMicrochip.useQuery(
-    microchip as string
-  );
-  const { approvedBy } = useGetApprovalDataByMicrochip(microchip as string);
+  // const { data: rewards } = trpc.metadata.getRewardByMicrochip.useQuery(
+  //   microchip as string
+  // );
 
   return (
     <>
@@ -58,18 +61,18 @@ const CertDetail = ({
         />
       </Head>
       <Layout>
-        {metadata == undefined || metadata == null || metadata.length <= 0 ? (
+        {/* {metadata == undefined || metadata == null || metadata.length <= 0 ? (
           <div className="min-h-screen flex justify-center">
             <Loading size="lg" />
           </div>
-        ) : (
-          <ProfileBoxV2
-            tokenId={metadata.tokenId}
-            certNft={metadata!}
-            rewards={rewards!}
-            approvedBy={approvedBy}
-          />
-        )}
+        ) : ( */}
+        <ProfileBoxV2
+          tokenId={metadata!.tokenId.toString()}
+          certNft={metadata!}
+          rewards={rewards!}
+          // approvedBy={approvedBy}
+        />
+        {/* )} */}
       </Layout>
     </>
   );
@@ -77,33 +80,38 @@ const CertDetail = ({
 
 export default CertDetail;
 
-// export const getServerSideProps = async (context: {
-//   params: { microchip: string };
-// }) => {
-//   const { microchip } = context.params!;
-//   const metadata = await getSEOMetadata(microchip as string);
+export const getServerSideProps = async (context: {
+  params: { microchip: string };
+}) => {
+  const { microchip } = context.params!;
+  const seo = await getSEOMetadata(microchip);
+  const rewards = await gerRewardByMicrochip(microchip);
+  const metadata = await getMetadataByMicrochip(microchip);
 
+  return {
+    props: { seo, rewards, metadata },
+  };
+};
+
+// export const getStaticPaths = async () => {
+//   const paths = await getAllPathParams();
 //   return {
-//     props: { seo: metadata },
+//     paths,
+//     fallback: true,
 //   };
 // };
 
-export const getStaticPaths = async () => {
-  const paths = await getAllPathParams();
-  return {
-    paths,
-    fallback: true,
-  };
-};
-
-export const getStaticProps = async ({
-  params,
-}: {
-  params: { microchip: string };
-}) => {
-  const metadata = await getSEOMetadata(params.microchip);
-  return {
-    props: { seo: metadata },
-    revalidate: 60,
-  };
-};
+// export const getStaticProps = async ({
+//   params,
+// }: {
+//   params: { microchip: string };
+// }) => {
+//   const seo = await getSEOMetadata(params.microchip);
+//   const rewards = await gerRewardByMicrochip(params.microchip);
+//   console.log(rewards);
+//   const metadata = await getMetadataByMicrochip(params.microchip);
+//   return {
+//     props: { seo, rewards, metadata },
+//     revalidate: 60,
+//   };
+// };
