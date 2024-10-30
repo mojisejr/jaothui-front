@@ -13,7 +13,7 @@ import { InferGetStaticPropsType } from "next";
 
 const CertDetail = ({
   seo,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+}: InferGetStaticPropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { microchip } = router.query;
   const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
@@ -77,22 +77,33 @@ const CertDetail = ({
 
 export default CertDetail;
 
-export const getStaticPaths = async () => {
-  const paths = await getAllPathParams();
+export const getServerSideProps = async (context: {
+  params: { microchip: string };
+}) => {
+  const { microchip } = context.params!;
+  const metadata = await getSEOMetadata(microchip as string);
+
   return {
-    paths,
-    fallback: true,
+    props: { seo: metadata },
   };
 };
 
-export const getStaticProps = async ({
-  params,
-}: {
-  params: { microchip: string };
-}) => {
-  const metadata = await getSEOMetadata(params.microchip);
-  return {
-    props: { seo: metadata },
-    revalidate: 60,
-  };
-};
+// export const getStaticPaths = async () => {
+//   const paths = await getAllPathParams();
+//   return {
+//     paths,
+//     fallback: true,
+//   };
+// };
+
+// export const getStaticProps = async ({
+//   params,
+// }: {
+//   params: { microchip: string };
+// }) => {
+//   const metadata = await getSEOMetadata(params.microchip);
+//   return {
+//     props: { seo: metadata },
+//     revalidate: 60,
+//   };
+// };
