@@ -29,7 +29,7 @@ const CertDetail = ({
   // );
 
   return (
-    <>
+    <Layout>
       <Head>
         <title>{seo?.title}</title>
 
@@ -60,21 +60,19 @@ const CertDetail = ({
           content={`https://jaothui.com/api/seo/og?tokenId=${seo?.tokenId}`}
         />
       </Head>
-      <Layout>
-        {/* {metadata == undefined || metadata == null || metadata.length <= 0 ? (
+      {/* {metadata == undefined || metadata == null || metadata.length <= 0 ? (
           <div className="min-h-screen flex justify-center">
             <Loading size="lg" />
           </div>
         ) : ( */}
-        <ProfileBoxV2
-          tokenId={metadata!.tokenId.toString()}
-          certNft={metadata!}
-          rewards={rewards!}
-          // approvedBy={approvedBy}
-        />
-        {/* )} */}
-      </Layout>
-    </>
+      <ProfileBoxV2
+        tokenId={metadata!.tokenId.toString()}
+        certNft={metadata!}
+        rewards={rewards!}
+        // approvedBy={approvedBy}
+      />
+      {/* )} */}
+    </Layout>
   );
 };
 

@@ -16,6 +16,7 @@ import { QueryClient } from "@tanstack/react-query";
 
 import StoreProvider from "../contexts/storeContext";
 import { PrivilegeProvider } from "../contexts/privilegeContext";
+import { useRouter } from "next/router";
 
 const queryClient = new QueryClient();
 
@@ -40,9 +41,21 @@ const wagmiClient = createClient({
 });
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
+  const router = useRouter();
   const [showChild, setShowChild] = useState(false);
   useEffect(() => {
+    const handleStart = () => {
+      setShowChild(true);
+    };
+    const handleComplete = () => {
+      setShowChild(true);
+    };
+
     setShowChild(true);
+
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", handleComplete);
+    router.events.on("routeChangeError", handleComplete);
   }, []);
 
   if (!showChild) {
