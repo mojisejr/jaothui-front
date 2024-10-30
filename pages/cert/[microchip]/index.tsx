@@ -10,6 +10,7 @@ import {
 } from "../../../server/services/seo.service";
 import Head from "next/head";
 import { InferGetStaticPropsType } from "next";
+import { FacebookIcon, FacebookShareButton } from "react-share";
 
 const CertDetail = ({
   seo,
@@ -54,7 +55,7 @@ const CertDetail = ({
           property="og:image"
           key="og-image"
           name="og:image"
-          content={seo?.ogImage}
+          content={`https://jaothui.com/api/seo/og?${seo?.tokenId}`}
         />
       </Head>
       <Layout>
@@ -70,6 +71,9 @@ const CertDetail = ({
             approvedBy={approvedBy}
           />
         )}
+        {/* <FacebookShareButton url={`https://jaothui.com/cert/${microchip}`}>
+          <FacebookIcon />
+        </FacebookShareButton> */}
       </Layout>
     </>
   );

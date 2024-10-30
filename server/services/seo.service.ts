@@ -20,6 +20,7 @@ export const getSEOMetadata = async (microchip: string) => {
   const image = `https://wtnqjxerhmdnqszkhbvs.supabase.co/storage/v1/object/public/slipstorage/buffalo/${result.tokenId}.jpg`;
 
   const metadata = {
+    tokenId: parseInt(result.tokenId.toString()),
     title: `${result.name} #${result.microchip}`,
     description: title,
     ogUrl: `https://jaothui.com/cert/${result.microchip}`,
