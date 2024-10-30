@@ -21,16 +21,9 @@ export interface ProfileBoxProps {
   tokenId: string;
   certNft: any;
   rewards: RewardData[];
-  approvedBy: ApprovedBy[];
 }
 
-const ProfileBoxV2 = ({
-  tokenId,
-  certNft,
-  rewards,
-  approvedBy = [],
-}: ProfileBoxProps) => {
-  // const { isConnected } = useAccount();
+const ProfileBoxV2 = ({ tokenId, certNft, rewards }: ProfileBoxProps) => {
   const { isConnected } = useBitkubNext();
   const thaiDate = parseThaiDate(certNft.birthdate * 1000);
   const { back } = useRouter();

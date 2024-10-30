@@ -2,7 +2,7 @@ export interface RewardData {
   id: string;
   microchip: string;
   eventName: string;
-  eventDate: string | null;
+  eventDate?: string;
   rewardName: string;
   rewardImage: string | null;
 }
