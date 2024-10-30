@@ -10,11 +10,10 @@ import {
 } from "../../../server/services/seo.service";
 import Head from "next/head";
 import { InferGetStaticPropsType } from "next";
-import { FacebookIcon, FacebookShareButton } from "react-share";
 
 const CertDetail = ({
   seo,
-}: InferGetStaticPropsType<typeof getServerSideProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const router = useRouter();
   const { microchip } = router.query;
   const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
@@ -55,7 +54,7 @@ const CertDetail = ({
           property="og:image"
           key="og-image"
           name="og:image"
-          content={`https://jaothui.com/api/seo/og?${seo?.tokenId}`}
+          content={`https://jaothui.com/api/seo/og?tokenId=${seo?.tokenId}`}
         />
       </Head>
       <Layout>
@@ -71,9 +70,6 @@ const CertDetail = ({
             approvedBy={approvedBy}
           />
         )}
-        {/* <FacebookShareButton url={`https://jaothui.com/cert/${microchip}`}>
-          <FacebookIcon />
-        </FacebookShareButton> */}
       </Layout>
     </>
   );
@@ -81,33 +77,33 @@ const CertDetail = ({
 
 export default CertDetail;
 
-export const getServerSideProps = async (context: {
-  params: { microchip: string };
-}) => {
-  const { microchip } = context.params!;
-  const metadata = await getSEOMetadata(microchip as string);
+// export const getServerSideProps = async (context: {
+//   params: { microchip: string };
+// }) => {
+//   const { microchip } = context.params!;
+//   const metadata = await getSEOMetadata(microchip as string);
 
+//   return {
+//     props: { seo: metadata },
+//   };
+// };
+
+export const getStaticPaths = async () => {
+  const paths = await getAllPathParams();
   return {
-    props: { seo: metadata },
+    paths,
+    fallback: true,
   };
 };
 
-// export const getStaticPaths = async () => {
-//   const paths = await getAllPathParams();
-//   return {
-//     paths,
-//     fallback: true,
-//   };
-// };
-
-// export const getStaticProps = async ({
-//   params,
-// }: {
-//   params: { microchip: string };
-// }) => {
-//   const metadata = await getSEOMetadata(params.microchip);
-//   return {
-//     props: { seo: metadata },
-//     revalidate: 60,
-//   };
-// };
+export const getStaticProps = async ({
+  params,
+}: {
+  params: { microchip: string };
+}) => {
+  const metadata = await getSEOMetadata(params.microchip);
+  return {
+    props: { seo: metadata },
+    revalidate: 60,
+  };
+};
