@@ -2,8 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSEOMetadata } from "../../../server/services/seo.service";
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  // const { searchParams } = new URL(req.url!);
-  // const microchip = searchParams.get("microchip");
   const { microchip } = req.query;
 
   if (!microchip) {
@@ -26,13 +24,13 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         <title>${metadata.title}</title>
         <meta charset="UTF-8">
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="${metadata.ogUrl}" />
+        <meta property="og:url" content="https://jaothui.com/cert/${microchip}" />
         <meta property="og:title" content="${metadata.title}" />
         <meta property="og:description" content="${metadata.description}" />
         <meta property="og:image" content="${metadata.ogImage}" />
         <script>
           setTimeout(() => {
-            window.location.href = "/cert/${microchip}";
+            window.location.href = "https://www.jaothui.com/cert/${microchip}";
           }, 300);
         </script>
       <head>
