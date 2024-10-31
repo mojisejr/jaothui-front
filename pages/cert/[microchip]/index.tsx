@@ -15,18 +15,16 @@ import { gerRewardByMicrochip } from "../../../server/services/reward.service";
 
 const CertDetail = ({
   seo,
-  rewards,
-  metadata,
 }: InferGetStaticPropsType<typeof getServerSideProps>) => {
-  // const router = useRouter();
-  // const { microchip } = router.query;
-  // const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
-  //   microchip: microchip! as string,
-  // }) as any;
+  const router = useRouter();
+  const { microchip } = router.query;
+  const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
+    microchip: microchip! as string,
+  }) as any;
 
-  // const { data: rewards } = trpc.metadata.getRewardByMicrochip.useQuery(
-  //   microchip as string
-  // );
+  const { data: rewards } = trpc.metadata.getRewardByMicrochip.useQuery(
+    microchip as string
+  );
 
   return (
     <Layout>
@@ -60,18 +58,18 @@ const CertDetail = ({
           content={`https://jaothui.com/api/seo/og?tokenId=${seo?.tokenId}`}
         />
       </Head>
-      {/* {metadata == undefined || metadata == null || metadata.length <= 0 ? (
-          <div className="min-h-screen flex justify-center">
-            <Loading size="lg" />
-          </div>
-        ) : ( */}
-      <ProfileBoxV2
-        tokenId={metadata!.tokenId.toString()}
-        certNft={metadata!}
-        rewards={rewards!}
-        // approvedBy={approvedBy}
-      />
-      {/* )} */}
+      {metadata == undefined || metadata == null || metadata.length <= 0 ? (
+        <div className="min-h-screen flex justify-center">
+          <Loading size="lg" />
+        </div>
+      ) : (
+        <ProfileBoxV2
+          tokenId={metadata.tokenId}
+          certNft={metadata!}
+          rewards={rewards!}
+          // approvedBy={approvedBy}
+        />
+      )}
     </Layout>
   );
 };
@@ -83,11 +81,9 @@ export const getServerSideProps = async (context: {
 }) => {
   const { microchip } = context.params!;
   const seo = await getSEOMetadata(microchip);
-  const rewards = await gerRewardByMicrochip(microchip);
-  const metadata = await getMetadataByMicrochip(microchip);
 
   return {
-    props: { seo, rewards, metadata },
+    props: { seo },
   };
 };
 

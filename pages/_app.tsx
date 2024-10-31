@@ -56,10 +56,10 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     router.events.on("routeChangeStart", handleStart);
     router.events.on("routeChangeComplete", handleComplete);
     router.events.on("routeChangeError", handleComplete);
-  }, []);
+  }, [router]);
 
   if (!showChild) {
-    return null;
+    return <div className="loading loading-spinner"></div>;
   }
 
   if (typeof window === "undefined") {
