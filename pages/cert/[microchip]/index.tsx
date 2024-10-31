@@ -10,8 +10,6 @@ import {
 } from "../../../server/services/seo.service";
 import Head from "next/head";
 import { InferGetStaticPropsType } from "next";
-import { getMetadataByMicrochip } from "../../../server/services/metadata.service";
-import { gerRewardByMicrochip } from "../../../server/services/reward.service";
 
 const CertDetail = ({
   seo,

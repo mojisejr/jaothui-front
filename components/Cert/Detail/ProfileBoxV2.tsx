@@ -1,11 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FaArrowCircleLeft, FaStamp } from "react-icons/fa";
+import { FaArrowCircleLeft, FaStamp, FaLink } from "react-icons/fa";
 import { RiMedalFill } from "react-icons/ri";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import CountryFlag from "../../Shared/CountryFlag";
 import { RewardData } from "../../../interfaces/iReward";
-import { ApprovedBy } from "../../../interfaces/iApprovedBy";
 
 import { HiExternalLink, HiOutlineDocumentText } from "react-icons/hi";
 import { BiRfid, BiRuler } from "react-icons/bi";
@@ -16,6 +15,19 @@ import { MdColorLens } from "react-icons/md";
 import { motion } from "framer-motion";
 import { parseThaiDate } from "../../../helpers/parseThaiDate";
 import { useRouter } from "next/router";
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  LineIcon,
+  LineShareButton,
+  TelegramIcon,
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+} from "react-share";
+
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { useState } from "react";
 
 export interface ProfileBoxProps {
   tokenId: string;
@@ -24,6 +36,7 @@ export interface ProfileBoxProps {
 }
 
 const ProfileBoxV2 = ({ tokenId, certNft, rewards }: ProfileBoxProps) => {
+  const [copied, setCopied] = useState<{ copied: boolean }>({ copied: false });
   const { isConnected } = useBitkubNext();
   const thaiDate = parseThaiDate(certNft.birthdate * 1000);
   const { back } = useRouter();
@@ -67,6 +80,40 @@ const ProfileBoxV2 = ({ tokenId, certNft, rewards }: ProfileBoxProps) => {
             <figure>
               <img src={certNft.imageUri!} />
             </figure>
+            <div className="flex justify-end items-center pt-2 gap-2">
+              <div className="font-semibold">share</div>
+              <FacebookShareButton
+                url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}&social=true`}
+              >
+                <FacebookIcon size={32} />
+              </FacebookShareButton>
+              <LineShareButton
+                url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+              >
+                <LineIcon size={32} />
+              </LineShareButton>
+              {/* <TelegramShareButton
+                url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+              >
+                <TelegramIcon size={32} />
+              </TelegramShareButton> */}
+              {/* <TwitterShareButton
+                url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+              >
+                <TwitterIcon size={32} />
+              </TwitterShareButton> */}
+              <CopyToClipboard
+                text={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+                onCopy={() => setCopied({ copied: true })}
+              >
+                <button
+                  disabled={copied.copied}
+                  className="btn btn-sm btn-square rounded-none"
+                >
+                  <FaLink size={16} />
+                </button>
+              </CopyToClipboard>
+            </div>
             <div className="card-body">
               <div className="card-title">Information</div>
               <div className="stats stats-vertical shadow">
