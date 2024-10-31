@@ -50,7 +50,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           <title>${metadata.title}</title>
           <meta charset="UTF-8">
           <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://jaothui.com/cert/${microchip}" />
+          <meta property="og:url" content="https://jaothui.com/api/seo/og?microchip=${microchip}&social=true" />
           <meta property="og:title" content="${metadata.title}" />
           <meta property="og:description" content="${metadata.description}" />
           <meta property="og:image" content="${metadata.ogImage}" />
