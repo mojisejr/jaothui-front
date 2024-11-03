@@ -2,7 +2,7 @@ import { NextPage } from "next";
 
 import Layout from "../../components/Layouts";
 import PedigreeCard from "../../components/Shared/Card/PedigreeCard";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import { IMetadata } from "../../interfaces/iMetadata";
 import Loading from "../../components/Shared/Indicators/Loading";
 import NotFound from "../../components/Shared/Utils/Notfound";
@@ -17,6 +17,7 @@ const CertMainPage: NextPage = () => {
   const { data, isLoading, refetch } = trpc.metadata.getAll.useQuery(page);
   const [sortState, setSortState] = useState<number>(0);
   const [currentData, setCurrentData] = useState<IMetadata[]>(data!);
+  const gotoPageRef = useRef<HTMLInputElement>(null);
 
   function handleSorting(e: SyntheticEvent) {
     e.preventDefault();
@@ -65,6 +66,26 @@ const CertMainPage: NextPage = () => {
     setPage(page - 1);
   }
 
+  function handleGoToPage(e: SyntheticEvent) {
+    e.preventDefault();
+    const inputPage = parseInt(gotoPageRef.current?.value!);
+
+    if (!inputPage) {
+      alert("กรุณากรอกข้อมูลว่าจะไปที่หน้าไหน");
+      return;
+    }
+
+    if (inputPage < 1 || inputPage > maxPage + 1) {
+      alert("ไม่มีหน้าที่ต้องการ");
+      return;
+    }
+
+    if (typeof window != undefined) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    setPage(inputPage);
+  }
+
   useEffect(() => {
     if (data && data!.length > 0 && sortState == 0) {
       setCurrentData(data!);
@@ -79,16 +100,35 @@ const CertMainPage: NextPage = () => {
             <div className="text-xl font-bold">Pedigrees</div>
             <div
               id="search-bar"
-              className="flex items-center gap-3 mt-1 mb-1
+              className="flex flex-col  items-end gap-3 mt-1 mb-1
         tabletS:mt-3
+        tabletS:flex-row
+        tabletS:items-center
         "
             >
+              <form className="flex items-center gap-2">
+                <div>Goto: </div>
+                <input
+                  type="number"
+                  min={1}
+                  max={maxPage}
+                  required
+                  ref={gotoPageRef}
+                  className="input input-bordered w-18 input-sm tabletS:input-md"
+                />
+                <button
+                  onClick={(e) => handleGoToPage(e)}
+                  className="btn btn-primary btn-sm tabletS:btn-md"
+                >
+                  Go
+                </button>
+              </form>
               <label htmlFor="sort" className="space-x-2">
-                <span className="text-thuiwhite">sortBy:</span>
+                <span>Filter:</span>
                 <select
                   onChange={(e) => handleSorting(e)}
                   id="sort"
-                  className="p-2 rounded-md"
+                  className="p-2 rounded-md tabletS:select-md select-sm"
                 >
                   <option value={0}>All</option>
                   <option value={1}>Female</option>
