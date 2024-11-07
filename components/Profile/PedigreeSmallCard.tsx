@@ -12,7 +12,7 @@ interface PedigreeCardProps {
 
 const PedigreeSmallCard = ({ data }: PedigreeCardProps) => {
   const [exit, setExit] = useState<boolean>(false);
-  const thaiDate = parseThaiDate(new Date(data?.birthdate! * 1000).getTime());
+  const thaiDate = parseThaiDate(new Date(data?.birthdate!).getTime());
   return (
     <div className="relative w-52">
       {exit ? (
