@@ -346,7 +346,7 @@ const ProfileBoxV2 = ({ tokenId, certNft, rewards }: ProfileBoxProps) => {
                               )}
                             </>
                           ))} */}
-                      {certNft.certificate == null ? (
+                      {!certNft.certificate.microchip ? (
                         "N/A"
                       ) : (
                         <Link
