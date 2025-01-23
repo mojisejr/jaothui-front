@@ -8,6 +8,7 @@ export interface IMetadata {
   sex: string;
   birthdate: number;
   birthday: string;
+  calculatedAge?: number;
   height: string;
   microchip: string;
   certNo: string;

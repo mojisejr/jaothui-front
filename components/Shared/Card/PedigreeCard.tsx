@@ -71,11 +71,12 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
                   )}
                 </div>
               </div>
-              <div>
+              <div className="flex flex-col items-end gap-1">
                 <CountryFlag
                   country={data ? data.origin : "thai"}
                   size="48x36"
                 />
+                <div className="font-semibold">{data.calculatedAge} ด.</div>
               </div>
             </div>
           </div>

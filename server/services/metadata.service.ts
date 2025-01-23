@@ -5,6 +5,7 @@ import { isCertificateActivated } from "./certificate.service";
 import { IMetadata } from "../../interfaces/iMetadata";
 import { getImageUrl } from "../supabase";
 import { prisma } from "../prisma";
+import { calculateBuffaloAge } from "../../utils/age-calculator";
 
 const viem = createPublicClient({
   chain: bitkub_mainnet,
@@ -63,6 +64,7 @@ export const getAllMetadata = async (nextPage: number) => {
           birthday: new Date(
             +m.birthdate.toString() * 1000
           ).toLocaleDateString(),
+          calculatedAge: calculateBuffaloAge(+m.birthdate.toString() * 1000),
           height: m.height.toString(),
           microchip: m.certify.microchip,
           certNo: m.certify.certNo,
@@ -106,6 +108,7 @@ export interface Metadata {
   createdAt: bigint;
   updatedAt: bigint;
   certificate: any;
+  calculatedAge?: number;
 }
 
 export const getMetadataByMicrochipId = async (
@@ -162,15 +165,18 @@ export const getMetadataByMicrochip = async (microchip: string) => {
       where: { microchip: microchip },
     });
 
-    return {
+    const out = {
       tokenId,
       ...data,
+      calculatedAge: calculateBuffaloAge(data?.birthdate! * 1000),
       certify: {
         ...data?.certify,
         dna: fromDB?.dna,
       },
       certificate: { ...data?.certificate, approvers: [] },
     };
+
+    return out;
   } catch (error) {
     console.log(error);
   }
@@ -192,6 +198,7 @@ export const getMetadataBatch = async (microchips: string[]) => {
     image: `${d.image}.jpg`,
     origin: d.origin ?? "thai",
     birthdate: new Date(d.birthday).getTime() / 1000,
+    calculatedAge: calculateBuffaloAge(d.birthday.getTime()),
     tokenId: +d.tokenId.toString(),
     height: d.height?.toString() ?? "0",
     certNo: d.certNo ?? "N/A",
@@ -254,6 +261,7 @@ export const searchByKeyword = async (keyword: string) => {
     image: `${d.image}.jpg`,
     origin: d.origin ?? "thai",
     birthdate: new Date(d.birthday).getTime() / 1000,
+    calculatedAge: calculateBuffaloAge(d.birthday.getTime()),
     tokenId: +d.tokenId.toString(),
     height: d.height?.toString() ?? "0",
     certNo: d.certNo ?? "N/A",

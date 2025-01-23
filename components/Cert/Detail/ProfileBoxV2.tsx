@@ -12,6 +12,7 @@ import { TbNfc } from "react-icons/tb";
 import { BsGenderAmbiguous, BsFileEarmarkBinary } from "react-icons/bs";
 import { GiTrophyCup } from "react-icons/gi";
 import { MdColorLens } from "react-icons/md";
+import { IoCalendarNumberOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
 import { parseThaiDate } from "../../../helpers/parseThaiDate";
 import { useRouter } from "next/router";
@@ -136,6 +137,21 @@ const ProfileBoxV2 = ({ tokenId, certNft, rewards }: ProfileBoxProps) => {
                     <div className="stat-desc">Buffalo{"'"}s name</div>
                   </div>
                 </div>
+
+                <div className="stat flex items-center gap-4">
+                  <div className="stat-figure text-secondary">
+                    <IoCalendarNumberOutline size={30} />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-secondary">
+                      <div className="text-2xl font-bold text-secondary">
+                        {certNft.calculatedAge ?? "N/A"} เดือน
+                      </div>
+                    </div>
+                    <div className="stat-desc">Buffalo Age {"(Month)"}</div>
+                  </div>
+                </div>
+
                 <div className="stat flex items-center gap-4">
                   <div className="stat-figure text-secondary">
                     <BiRfid size={30} />
