@@ -157,9 +157,18 @@ export const getMetadataByMicrochip = async (microchip: string) => {
     //   metadata!.map((m) => m.microchip === microchip).indexOf(true) + 1;
 
     const data = await getMetadataByMicrochipId(microchip, tokenId);
+
+    const fromDB = await prisma.pedigree.findUnique({
+      where: { microchip: microchip },
+    });
+
     return {
       tokenId,
       ...data,
+      certify: {
+        ...data?.certify,
+        dna: fromDB?.dna,
+      },
       certificate: { ...data?.certificate, approvers: [] },
     };
   } catch (error) {
