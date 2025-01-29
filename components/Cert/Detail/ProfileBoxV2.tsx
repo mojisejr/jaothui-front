@@ -233,7 +233,7 @@ const ProfileBoxV2 = ({ tokenId, certNft, rewards }: ProfileBoxProps) => {
                 </div>
                 <div className="stat flex items-center gap-4">
                   <div className="stat-figure text-secondary">
-                    {certNft.certify.dna ? (
+                    {certNft.certify.dna != "N/A" ? (
                       <Link href={certNft.certify.dna!} target="_blank">
                         <BsFileEarmarkBinary
                           className="text-primary hover:text-accent"
@@ -252,7 +252,7 @@ const ProfileBoxV2 = ({ tokenId, certNft, rewards }: ProfileBoxProps) => {
                             country={certNft.origin}
                             size={"48x36"}
                           />
-                          {certNft.certify.dna ? (
+                          {certNft.certify.dna != "N/A" ? (
                             <span className="text-xs text-accent font-semibold">
                               Verified
                             </span>
