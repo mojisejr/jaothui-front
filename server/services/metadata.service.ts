@@ -6,6 +6,7 @@ import { IMetadata } from "../../interfaces/iMetadata";
 import { getImageUrl } from "../supabase";
 import { prisma } from "../prisma";
 import { calculateBuffaloAge } from "../../utils/age-calculator";
+import dayjs from "dayjs";
 
 const viem = createPublicClient({
   chain: bitkub_mainnet,
@@ -31,58 +32,79 @@ export const getAllMetadata = async (nextPage: number) => {
       ? totalSupply + 1
       : page * itemsPerPage + 1;
   const startPoint = (page - 1) * itemsPerPage + 1;
-
   try {
-    let metadata: any[] = [];
+    const data = await prisma.pedigree.findMany();
 
-    for (let i = startPoint; i < endPoint; i++) {
-      const result = (await viem.readContract({
-        address: contract.metadata.address as Address,
-        abi: contract.metadata.abi,
-        functionName: "getMetadata",
-        args: [i],
-      })) as any[];
-      metadata.push(result);
-    }
-    // const metadata = (await viem.readContract({
-    //   address: contract.metadata.address as Address,
-    //   abi: contract.metadata.abi,
-    //   functionName: "getAllMetadata",
-    // })) as any[];
+    const dataPerPage = data.slice(startPoint - 1, endPoint - 1).map((m) => ({
+      tokenId: +m.tokenId.toString(),
+      name: m.name,
+      origin: m.origin,
+      color: m.color,
+      image: getImageUrl(`${m.tokenId.toString()}.jpg`),
+      detail: m.detail,
+      sex: m.sex,
+      birthdate: new Date(m.birthday).getTime() / 1000,
+      birthday: dayjs(m.birthday).format("DD/MM/YYYY"),
+      calculatedAge: calculateBuffaloAge(new Date(m.birthday).getTime()),
+      height: m.height ?? "0",
+      microchip: m.microchip,
+      certNo: m.certNo,
+      rarity: m.rarity,
+      dna: m.dna,
+      fatherId: m.fatherId,
+      motherId: m.motherId,
+      createdAt: new Date(+m.createdAt.toString() * 1000).toLocaleDateString(),
+      updatedAt: new Date(+m.updatedAt.toString() * 1000).toLocaleDateString(),
+    }));
 
-    const m = await Promise.all(
-      metadata.map(async (m, index) => {
-        return {
-          tokenId: startPoint + index,
-          name: m.name,
-          origin: m.origin,
-          color: m.color,
-          image: getImageUrl(`${(startPoint + index).toString()}.jpg`),
-          detail: m.detail,
-          sex: m.sex,
-          birthdate: +m.birthdate.toString(),
-          birthday: new Date(
-            +m.birthdate.toString() * 1000
-          ).toLocaleDateString(),
-          calculatedAge: calculateBuffaloAge(+m.birthdate.toString() * 1000),
-          height: m.height.toString(),
-          microchip: m.certify.microchip,
-          certNo: m.certify.certNo,
-          rarity: m.certify.rarity,
-          dna: m.certify.dna,
-          fatherId: m.relation.motherTokenId,
-          motherId: m.relation.fatherTokenId,
-          createdAt: new Date(
-            +m.createdAt.toString() * 1000
-          ).toLocaleDateString(),
-          updatedAt: new Date(
-            +m.updatedAt.toString() * 1000
-          ).toLocaleDateString(),
-        };
-      })
-    );
+    return dataPerPage as IMetadata[];
 
-    return m as IMetadata[];
+    // try {
+    // let metadata: any[] = [];
+
+    // for (let i = startPoint; i < endPoint; i++) {
+    //   const result = (await viem.readContract({
+    //     address: contract.metadata.address as Address,
+    //     abi: contract.metadata.abi,
+    //     functionName: "getMetadata",
+    //     args: [i],
+    //   })) as any[];
+    //   metadata.push(result);
+    // }
+
+    // const m = await Promise.all(
+    //   metadata.map(async (m, index) => {
+    //     return {
+    //       tokenId: startPoint + index,
+    //       name: m.name,
+    //       origin: m.origin,
+    //       color: m.color,
+    //       image: getImageUrl(`${(startPoint + index).toString()}.jpg`),
+    //       detail: m.detail,
+    //       sex: m.sex,
+    //       birthdate: +m.birthdate.toString(),
+    //       birthday: new Date(
+    //         +m.birthdate.toString() * 1000
+    //       ).toLocaleDateString(),
+    //       calculatedAge: calculateBuffaloAge(+m.birthdate.toString() * 1000),
+    //       height: m.height.toString(),
+    //       microchip: m.certify.microchip,
+    //       certNo: m.certify.certNo,
+    //       rarity: m.certify.rarity,
+    //       dna: m.certify.dna,
+    //       fatherId: m.relation.motherTokenId,
+    //       motherId: m.relation.fatherTokenId,
+    //       createdAt: new Date(
+    //         +m.createdAt.toString() * 1000
+    //       ).toLocaleDateString(),
+    //       updatedAt: new Date(
+    //         +m.updatedAt.toString() * 1000
+    //       ).toLocaleDateString(),
+    //     };
+    //   })
+    // );
+
+    // return m as IMetadata[];
   } catch (error) {
     console.log(error);
   }
