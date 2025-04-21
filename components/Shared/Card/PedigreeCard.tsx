@@ -5,14 +5,28 @@ import Loading from "../Indicators/Loading";
 import { motion } from "framer-motion";
 import { parseThaiDate } from "../../../helpers/parseThaiDate";
 import { useState } from "react";
+import { useBitkubNext } from "../../../contexts/bitkubNextContext";
+import { FaHeart } from "react-icons/fa";
 
 interface PedigreeCardProps {
   data: IMetadata;
+  vote?: boolean;
+  canVote?: boolean;
+  eventId?: string;
+  votedMicrochip?: string;
 }
 
-const PedigreeCard = ({ data }: PedigreeCardProps) => {
+const PedigreeCard = ({
+  data,
+  canVote = false,
+  votedMicrochip,
+  eventId,
+  vote = false,
+}: PedigreeCardProps) => {
+  const { isConnected } = useBitkubNext();
   const [exit, setExit] = useState<boolean>(false);
   const thaiDate = parseThaiDate(new Date(data?.birthdate! * 1000).getTime());
+
   return (
     <div className="relative w-84">
       {exit ? (
@@ -37,9 +51,17 @@ const PedigreeCard = ({ data }: PedigreeCardProps) => {
         <Link
           onClick={() => setExit(true)}
           // href={`/cert/${data ? data.microchip : null}?i=${data.tokenId}`}
-          href={`/cert/${data ? data.microchip : null}`}
-          className="w-full rounded-xl shadow-xl"
+          href={`/cert/${data ? data.microchip : null}${isConnected && vote && eventId != undefined ? `?e=${eventId}&vote=true` : ""}`}
+          className="relative w-full rounded-xl shadow-xl"
         >
+          {isConnected && vote && eventId != undefined ? (
+            <div className="absolute top-[8%] right-[8%] z-50">
+              <FaHeart
+                className={`${votedMicrochip == data.microchip ? "text-primary" : `${canVote ? "text-[#333]" : "text-[#333] opacity-60"}`}`}
+                size={28}
+              />
+            </div>
+          ) : null}
           <div className="p-4">
             <img
               className="w-full rounded-xl"

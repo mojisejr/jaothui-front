@@ -9,8 +9,12 @@ import NotFound from "../../components/Shared/Utils/Notfound";
 import { trpc } from "../../utils/trpc";
 import { FiChevronsRight } from "react-icons/fi";
 import { FiChevronsLeft } from "react-icons/fi";
+import { useRouter } from "next/router";
+import { useBitkubNext } from "../../contexts/bitkubNextContext";
 
 const CertMainPage: NextPage = () => {
+  const { query } = useRouter();
+  const { isConnected, walletAddress } = useBitkubNext();
   const [maxPage, setMaxPage] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const { data: totalSupply } = trpc.metadata.totalSupply.useQuery();
@@ -18,6 +22,18 @@ const CertMainPage: NextPage = () => {
   const [sortState, setSortState] = useState<number>(0);
   const [currentData, setCurrentData] = useState<IMetadata[]>(data!);
   const gotoPageRef = useRef<HTMLInputElement>(null);
+
+  const { data: event, refetch: fetchEvent } =
+    trpc.voteEvent.getVoteEventByUser.useQuery(
+      { eventId: query.e! as string, wallet: walletAddress! },
+      { enabled: false }
+    );
+
+  useEffect(() => {
+    if (query.vote && isConnected && walletAddress) {
+      fetchEvent();
+    }
+  }, [event, isConnected, walletAddress]);
 
   function handleSorting(e: SyntheticEvent) {
     e.preventDefault();
@@ -149,7 +165,14 @@ const CertMainPage: NextPage = () => {
                 <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:px-[10rem] labtop:grid-cols-3 desktopM:grid-cols-4 labtop:px-[13rem] desktopM:px-[18rem] gap-2 desktopM:gap-3 tabletS:px-10 px-2">
                   {currentData ? (
                     currentData.map((d, index) => (
-                      <PedigreeCard key={index} data={d} />
+                      <PedigreeCard
+                        key={index}
+                        data={d}
+                        vote={Boolean(query.vote)}
+                        eventId={query.e as string}
+                        canVote={event?.canVote!}
+                        votedMicrochip={event?.votedMicrochip!}
+                      />
                     ))
                   ) : (
                     <Loading size="lg" />

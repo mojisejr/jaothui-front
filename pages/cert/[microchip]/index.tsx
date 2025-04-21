@@ -4,10 +4,7 @@ import Layout from "../../../components/Layouts";
 import ProfileBoxV2 from "../../../components/Cert/Detail/ProfileBoxV2";
 import Loading from "../../../components/Shared/Indicators/Loading";
 import { trpc } from "../../../utils/trpc";
-import {
-  getAllPathParams,
-  getSEOMetadata,
-} from "../../../server/services/seo.service";
+import { getSEOMetadata } from "../../../server/services/seo.service";
 import Head from "next/head";
 import { InferGetStaticPropsType } from "next";
 
@@ -15,7 +12,7 @@ const CertDetail = ({
   seo,
 }: InferGetStaticPropsType<typeof getServerSideProps>) => {
   const router = useRouter();
-  const { microchip } = router.query;
+  const { microchip, e, vote } = router.query;
   const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
     microchip: microchip! as string,
   }) as any;
@@ -65,6 +62,8 @@ const CertDetail = ({
           tokenId={metadata.tokenId}
           certNft={metadata!}
           rewards={rewards!}
+          vote={Boolean(vote)!}
+          eventId={e as string}
           // approvedBy={approvedBy}
         />
       )}

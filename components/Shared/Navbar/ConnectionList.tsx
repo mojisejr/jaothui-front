@@ -26,7 +26,7 @@ const ConnectedList = () => {
         whileHover="whileHover"
       >
         <Link
-          href="/cert/profile"
+          href="/profile"
           className={`${
             pathname == "/cert/profile"
               ? "bg-primary hover:bg-primary"
@@ -39,7 +39,7 @@ const ConnectedList = () => {
           </motion.div>
         </Link>
       </motion.li>
-      <motion.li
+      {/* <motion.li
         variants={linkHoverVariant}
         initial="initial"
         whileHover="whileHover"
@@ -57,8 +57,8 @@ const ConnectedList = () => {
             My Pedigrees
           </motion.div>
         </Link>
-      </motion.li>
-      <motion.li
+      </motion.li> */}
+      {/* <motion.li
         variants={linkHoverVariant}
         initial="initial"
         whileHover="whileHover"
@@ -76,8 +76,8 @@ const ConnectedList = () => {
             My Privilege
           </motion.div>
         </Link>
-      </motion.li>
-      <motion.li
+      </motion.li> */}
+      {/* <motion.li
         variants={linkHoverVariant}
         initial="initial"
         whileHover="whileHover"
@@ -95,7 +95,7 @@ const ConnectedList = () => {
             My Farm
           </motion.div>
         </Link>
-      </motion.li>
+      </motion.li> */}
       <li>{/* <StoreMenu /> */}</li>
     </ul>
   );

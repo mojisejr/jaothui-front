@@ -3,12 +3,9 @@ import BottomNav from "../Shared/Navbar/Bottom";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { BiSearchAlt2 } from "react-icons/bi";
 import Link from "next/link";
-import FooterSection from "../Shared/Footer";
 import { useRouter } from "next/router";
 
-import CartButton from "../Cart/Buttons/CartButton";
 import MenuList from "../Shared/Navbar/MenuList";
-import { trpc } from "../../utils/trpc";
 
 interface LayoutProps {
   children: ReactNode;
@@ -16,8 +13,6 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const { pathname, push, query } = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
-  // const { data: allMetadata, isLoading } = trpc.metadata.getAll.useQuery();
-  //bad
 
   function handleSearch(e: SyntheticEvent) {
     const value =
@@ -30,18 +25,16 @@ const Layout = ({ children }: LayoutProps) => {
     const isNumberic = /^\d+$/.test(value.toString()!);
 
     if (isNumberic) {
-      // const index = allMetadata?.findIndex((m) => m.microchip === value);
-
-      // if (index == undefined || index < 0) return;
-
-      // push(`/cert/${value}?i=${index! + 1}`);
+      if (query.e != null) {
+        push(`/cert/${value}?e=${query.e}&vote=${query.vote}`);
+        return;
+      }
       push(`/cert/${value}`);
     } else {
-      // const found = allMetadata.find((buffalo) =>
-      //   buffalo.name.includes(value.toString())
-      // );
-
-      // if (!found) return;
+      if (query.e != null) {
+        push(`/cert/search?q=${value}&e=${query.e}&vote=${query.vote}`);
+        return;
+      }
 
       push(`/cert/search?q=${value}`);
     }

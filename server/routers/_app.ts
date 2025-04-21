@@ -6,6 +6,7 @@ import { storeRouter } from "./store";
 import { privilegeRouter } from "./privilege";
 import { metadataRouter } from "./metadata";
 import { gameRouter } from "./game";
+import { voteEventRouter } from "./voteevent";
 
 export const appRouter = router({
   user: userRouter,
@@ -15,6 +16,7 @@ export const appRouter = router({
   privilege: privilegeRouter,
   metadata: metadataRouter,
   game: gameRouter,
+  voteEvent: voteEventRouter,
 });
 
 export type AppRouter = typeof appRouter;
