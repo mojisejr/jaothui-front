@@ -4,7 +4,24 @@ import Image from "next/image";
 
 const ProfileMenuList = () => {
   return (
-    <div className="grid grid-cols-3 gap-4 w-full p-2 rounded-xl">
+    <div className="grid grid-cols-3 gap-4 w-full p-2 rounded-xl mb-10">
+      <Link
+        href="/profile/buffalo-summit-2025"
+        className="grid grid-cols-1 place-items-center gap-1 rounded-xl bg-opacity-30"
+      >
+        <figure className="w-24 rounded-xl overflow-hidden">
+          <Image
+            src="/images/icons/SUMMIT-2025.png"
+            height={1000}
+            width={1000}
+            alt="buffalo-sumit"
+          />
+        </figure>
+        <div className="flex flex-col items-center">
+          <span className="text-xs">Buffalo Summit</span>
+          <span className="text-[9px]">2025</span>
+        </div>
+      </Link>
       <Link
         href="https://line.me/R/ti/p/@551lwpun"
         className="grid grid-cols-1 place-items-center bg-opacity-30 gap-1"

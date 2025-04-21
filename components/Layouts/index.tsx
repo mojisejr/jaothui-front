@@ -35,6 +35,10 @@ const Layout = ({ children }: LayoutProps) => {
       // if (index == undefined || index < 0) return;
 
       // push(`/cert/${value}?i=${index! + 1}`);
+      if (query.e != null) {
+        push(`/cert/${value}?e=${query.e}&vote=${query.vote}`);
+        return;
+      }
       push(`/cert/${value}`);
     } else {
       // const found = allMetadata.find((buffalo) =>
@@ -42,6 +46,11 @@ const Layout = ({ children }: LayoutProps) => {
       // );
 
       // if (!found) return;
+
+      if (query.e != null) {
+        push(`/cert/search?q=${value}&e=${query.e}&vote=${query.vote}`);
+        return;
+      }
 
       push(`/cert/search?q=${value}`);
     }

@@ -1,6 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FaArrowCircleLeft, FaStamp, FaLink } from "react-icons/fa";
+import {
+  FaArrowCircleLeft,
+  FaStamp,
+  FaLink,
+  FaHeart,
+  FaHardHat,
+} from "react-icons/fa";
 import { RiMedalFill } from "react-icons/ri";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import CountryFlag from "../../Shared/CountryFlag";
@@ -21,26 +27,72 @@ import {
   FacebookShareButton,
   LineIcon,
   LineShareButton,
-  TelegramIcon,
-  TelegramShareButton,
-  TwitterIcon,
-  TwitterShareButton,
 } from "react-share";
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { trpc } from "../../../utils/trpc";
 
 export interface ProfileBoxProps {
   tokenId: string;
   certNft: any;
   rewards: RewardData[];
+  vote: boolean;
+  eventId: string;
 }
 
-const ProfileBoxV2 = ({ tokenId, certNft, rewards }: ProfileBoxProps) => {
+const ProfileBoxV2 = ({
+  tokenId,
+  certNft,
+  rewards,
+  vote,
+  eventId,
+}: ProfileBoxProps) => {
   const [copied, setCopied] = useState<{ copied: boolean }>({ copied: false });
-  const { isConnected } = useBitkubNext();
+  const { isConnected, walletAddress } = useBitkubNext();
   const thaiDate = parseThaiDate(certNft.birthdate * 1000);
   const { back } = useRouter();
+
+  const { data: event, refetch: fetchEvent } =
+    trpc.voteEvent.getVoteEventByUser.useQuery(
+      { eventId, wallet: walletAddress! },
+      { enabled: false }
+    );
+
+  const {
+    mutate: doVote,
+    isLoading,
+    isSuccess,
+    isError,
+  } = trpc.voteEvent.voteFor.useMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      alert("voting success!");
+      fetchEvent();
+      return;
+    }
+    if (isError) {
+      alert("voting failed!");
+      fetchEvent();
+      return;
+    }
+  }, [isSuccess, isError]);
+
+  useEffect(() => {
+    if (vote && isConnected && walletAddress) {
+      fetchEvent();
+    }
+  }, [event, isConnected, walletAddress]);
+
+  const handleVote = () => {
+    const microchip = certNft.certify.microchip;
+    const wallet = walletAddress;
+    const event = eventId;
+
+    doVote({ microchip, wallet, eventId: event });
+  };
 
   if (Object.keys(certNft).length === 0) {
     return (
@@ -81,39 +133,66 @@ const ProfileBoxV2 = ({ tokenId, certNft, rewards }: ProfileBoxProps) => {
             <figure>
               <img src={certNft.imageUri!} />
             </figure>
-            <div className="flex justify-end items-center pt-2 gap-2">
-              <div className="font-semibold">share</div>
-              <FacebookShareButton
-                url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}&social=true`}
-              >
-                <FacebookIcon size={32} />
-              </FacebookShareButton>
-              <LineShareButton
-                url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
-              >
-                <LineIcon size={32} />
-              </LineShareButton>
-              {/* <TelegramShareButton
+            <div className="flex justify-between items-center">
+              <div>
+                {event && event.canVote && isConnected && vote ? (
+                  <button
+                    onClick={handleVote}
+                    disabled={isLoading || (event && !event.canVote)}
+                    className="btn btn-sm bg-gradient-to-bl from-[#0a0a0a] via-[#0d3528] to-[#00d47e] text-thuiwhite"
+                  >
+                    <FaHeart className="text-primary" />
+                    <div className="flex flex-col leading-tight items-start">
+                      <span className="font-semibold">โหวต</span>
+                      <span className="text-[8px]">Bitkub Summit 2025</span>
+                    </div>
+                  </button>
+                ) : (
+                  <>
+                    {event &&
+                    event.votedMicrochip == certNft.certify.microchip ? (
+                      <div className="flex gap-2 items-center">
+                        <FaHeart className="text-primary" size={28} />
+                        <span className="text-bold">คุณโหวต</span>
+                      </div>
+                    ) : null}
+                  </>
+                )}
+              </div>
+              <div className="flex justify-end items-center pt-2 gap-2">
+                <div className="font-semibold">share</div>
+                <FacebookShareButton
+                  url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}&social=true`}
+                >
+                  <FacebookIcon size={32} />
+                </FacebookShareButton>
+                <LineShareButton
+                  url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+                >
+                  <LineIcon size={32} />
+                </LineShareButton>
+                {/* <TelegramShareButton
                 url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
               >
                 <TelegramIcon size={32} />
               </TelegramShareButton> */}
-              {/* <TwitterShareButton
+                {/* <TwitterShareButton
                 url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
               >
                 <TwitterIcon size={32} />
               </TwitterShareButton> */}
-              <CopyToClipboard
-                text={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
-                onCopy={() => setCopied({ copied: true })}
-              >
-                <button
-                  disabled={copied.copied}
-                  className="btn btn-sm btn-square rounded-none"
+                <CopyToClipboard
+                  text={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+                  onCopy={() => setCopied({ copied: true })}
                 >
-                  <FaLink size={16} />
-                </button>
-              </CopyToClipboard>
+                  <button
+                    disabled={copied.copied}
+                    className="btn btn-sm btn-square rounded-none"
+                  >
+                    <FaLink size={16} />
+                  </button>
+                </CopyToClipboard>
+              </div>
             </div>
             <div className="card-body">
               <div className="card-title">Information</div>
