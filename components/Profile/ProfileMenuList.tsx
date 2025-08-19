@@ -76,7 +76,8 @@ const ProfileMenuList = () => {
       </Link>
 
       <Link
-        href="/cert/profile/myfarm"
+        href="https://jaothuiid.com/"
+        target="_blank"
         className="grid grid-cols-1 place-items-center gap-1 rounded-xl bg-opacity-30"
       >
         <figure className="w-24">
