@@ -7,9 +7,12 @@ import { useBitkubNext } from "../../contexts/bitkubNextContext";
 
 const ConnectedPedigreeList = () => {
   const { walletAddress } = useBitkubNext();
-  const { data, isLoading } = trpc.user.kGetMember.useQuery({
-    wallet: walletAddress!,
-  });
+  const { data, isLoading } = trpc.user.kGetMember.useQuery(
+    {
+      wallet: walletAddress!,
+    },
+    { enabled: !!walletAddress }
+  );
 
   if (!data) {
     return (

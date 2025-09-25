@@ -14,7 +14,10 @@ const ProfilePage = () => {
   const [wallet, setWallet] = useState<string>();
   const { walletAddress, isConnected } = useBitkubNext();
   const { data: member, isLoading: memberLoading } =
-    trpc.user.kGetMember.useQuery({ wallet: wallet! });
+    trpc.user.kGetMember.useQuery(
+      { wallet: wallet! },
+      { enabled: !!wallet }
+    );
 
   useEffect(() => {
     if (!isConnected) {
