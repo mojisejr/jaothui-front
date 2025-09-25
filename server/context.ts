@@ -11,7 +11,7 @@ export const createContext = async ({ req, res }: CreateNextContextOptions) => {
     if (!token || typeof token !== "string") return false;
 
     try {
-      const verify = jwt.verify(token, process.env.JWT_SECRET as string);
+      const verify = jwt.verify(token, process.env.private_procedure_secret as string);
       return Boolean(verify);
     } catch (_e) {
       return false;

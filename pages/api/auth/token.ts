@@ -48,7 +48,7 @@ export default async function handler(
 
     // 2) Issue our own short-lived session JWT containing only the wallet.
     const payload = { wallet };
-    const sessionToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
+    const sessionToken = jwt.sign(payload, process.env.private_procedure_secret as string, {
       algorithm: "HS256",
       expiresIn: "1d",
       issuer: "jaothui",
