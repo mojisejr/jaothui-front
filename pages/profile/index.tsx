@@ -14,7 +14,10 @@ const ProfilePage = () => {
   const [wallet, setWallet] = useState<string>();
   const { walletAddress, isConnected } = useBitkubNext();
   const { data: member, isLoading: memberLoading } =
-    trpc.user.kGetMember.useQuery({ wallet: wallet! });
+    trpc.user.kGetMember.useQuery(
+      { wallet: wallet! },
+      { enabled: !!wallet }
+    );
 
   useEffect(() => {
     if (!isConnected) {
@@ -29,7 +32,7 @@ const ProfilePage = () => {
   return (
     <Layout>
       <div className="p-2 bg-[#000] text-thuiwhite min-h-screen">
-        {member == null && !isConnected ? (
+        {!isConnected ? (
           <div className="grid grid-cols-1 w-full overflow-hidden">
             <NoConnectProfileCard />
             <NoConnectPedigreeList />

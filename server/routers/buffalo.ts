@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { router } from "../trpc";
-import { publicProcedure } from "../trpc";
+import { privateProcedure } from "../trpc";
 import {
   createBuffaloByFarmId,
   getBuffaloByMicrochip,
@@ -12,7 +12,7 @@ import {
 } from "../services/buffalo.service";
 
 export const buffaloRouter = router({
-  create: publicProcedure
+  create: privateProcedure
     .input(
       z.object({
         farmId: z.number(),
@@ -33,25 +33,25 @@ export const buffaloRouter = router({
       const result = await createBuffaloByFarmId(input.farmId, input.data);
       return result;
     }),
-  getByMicrochip: publicProcedure
+  getByMicrochip: privateProcedure
     .input(z.object({ farmId: z.number(), microchip: z.string() }))
     .query(async ({ input }) => {
       const result = await getBuffaloByMicrochip(input.farmId, input.microchip);
       return result;
     }),
-  markAsDead: publicProcedure
+  markAsDead: privateProcedure
     .input(z.object({ buffaloId: z.number() }))
     .mutation(async ({ input }) => {
       const result = await markBuffaloAsDead(input.buffaloId);
       return result;
     }),
-  markAsSold: publicProcedure
+  markAsSold: privateProcedure
     .input(z.object({ buffaloId: z.number() }))
     .mutation(async ({ input }) => {
       const result = await markBuffaloAsSold(input.buffaloId);
       return result;
     }),
-  markOvul: publicProcedure
+  markOvul: privateProcedure
     .input(
       z.object({
         buffaloId: z.number(),
@@ -65,7 +65,7 @@ export const buffaloRouter = router({
       );
       return result;
     }),
-  markPreg: publicProcedure
+  markPreg: privateProcedure
     .input(
       z.object({
         buffaloId: z.number(),
@@ -79,7 +79,7 @@ export const buffaloRouter = router({
       );
       return result;
     }),
-  markUnPreg: publicProcedure
+  markUnPreg: privateProcedure
     .input(z.object({ buffaloId: z.number(), timestamp: z.string() }))
     .mutation(async ({ input }) => {
       const result = await markBuffaloAsUnpregnant(

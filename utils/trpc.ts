@@ -14,16 +14,14 @@ function getBaseUrl() {
 }
 
 export const trpc = createTRPCNext<AppRouter>({
-  config(opts) {
+  config(_opts) {
     return {
       links: [
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          // Remove explicit Authorization header; rely on HttpOnly cookies
           async headers() {
-            console.log("OK");
-            return {
-              authorization: `Bearer ${process.env.NEXT_PUBLIC_private_procedure_key}`,
-            };
+            return {};
           },
         }),
       ],

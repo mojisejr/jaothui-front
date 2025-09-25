@@ -7,7 +7,6 @@ import {
 import { useRouter } from "next/router";
 import {
   exchangeAuthorizationCode,
-  exchangeRefreshToken,
 } from "@bitkub-blockchain/react-bitkubnext-oauth2";
 
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
@@ -41,20 +40,16 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
   }, [query]);
 
   async function getAccessToken(code: string) {
-    //1. get accessTokenFrom storage
-    //2. check if access token is valid
-    //3. if valid then set to storage
-    //4. if not valid get new access token
     const newTokens = await exchangeAuthorizationCode(
       clientId,
       redirectUrl,
       code as string
     );
-    localStorage.setItem("bkc_at", newTokens.access_token);
-    localStorage.setItem("bkc_rt", newTokens.refresh_token);
-    const userData = await getUserData(localStorage.getItem("bkc_at")!);
+    // Do not store tokens client-side; send them to server to set HttpOnly cookies
+    const userData = await getUserData(newTokens.access_token);
     if (userData.success) {
       setMessage("Authentication Successful.");
+      // Persist wallet/email for UI convenience
       localStorage.setItem("bkc_wallet", userData.wallet_address);
       localStorage.setItem("bkc_email", userData.email);
       save({
@@ -64,11 +59,15 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
         tel: null,
       });
       loggedIn();
-      setCookies(
-        localStorage.getItem("bkc_at")!,
-        localStorage.getItem("bkc_rt")!,
-        userData.wallet_address
-      );
+      // Server-side cookie issuance: validate access_token, issue session JWT, and set HttpOnly cookies.
+      await fetch("/api/auth/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_token: newTokens.access_token,
+          refresh_token: newTokens.refresh_token,
+        }),
+      });
       setMessage("Loading Dashboard...");
       replace("/profile");
     } else if (!userData.success) {
