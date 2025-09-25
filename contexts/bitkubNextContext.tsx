@@ -47,11 +47,11 @@ export function BitkubNextProvider({ children }: Props) {
     getUserDataFromCookies();
   }, []);
 
-  //get user data from cookies via /api/auth/token
+  //get user data from cookies via /api/auth/me
   const getUserDataFromCookies = async () => {
     try {
-      // Call our /api/auth/token endpoint to get tokens from cookies
-      const response = await fetch('/api/auth/token', {
+      // Call our /api/auth/me endpoint to get user data from cookies
+      const response = await fetch('/api/auth/me', {
         method: 'GET',
         credentials: 'include', // Include cookies
       });
@@ -61,19 +61,11 @@ export function BitkubNextProvider({ children }: Props) {
         return;
       }
 
-      const { access_token } = await response.json();
+      const userData = await response.json();
 
-      if (!access_token) {
-        setIsConnected(false);
-        return;
-      }
-
-      // Get user data using the access token
-      const userData = await getUserData(access_token);
-
-      if (userData.success) {
+      if (userData.success && userData.wallet_address) {
         setWalletAddress(userData.wallet_address as `0x${string}`);
-        setEmail(userData.email);
+        setEmail(userData.email || "");
         setIsConnected(true);
       } else {
         setWalletAddress("");
