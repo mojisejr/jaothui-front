@@ -32,7 +32,7 @@ const ProfilePage = () => {
   return (
     <Layout>
       <div className="p-2 bg-[#000] text-thuiwhite min-h-screen">
-        {member == null && !isConnected ? (
+        {!isConnected ? (
           <div className="grid grid-cols-1 w-full overflow-hidden">
             <NoConnectProfileCard />
             <NoConnectPedigreeList />
