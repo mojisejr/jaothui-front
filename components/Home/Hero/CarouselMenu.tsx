@@ -1,90 +1,51 @@
-import { EffectCoverflow, Scrollbar } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { GiMicrochip, GiTrophyCup } from "react-icons/gi";
 import { BsPostcard, BsGenderAmbiguous } from "react-icons/bs";
 import { FaBirthdayCake, FaDna } from "react-icons/fa";
+import { ReactElement } from "react";
 
-import "swiper/css";
-import "swiper/css/effect-coverflow";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
+interface IconItem {
+  icon: ReactElement;
+  label: string;
+  id: string;
+}
 
-const CarouselMenu = () => {
+const CarouselMenu = (): ReactElement => {
+  // Define icon items for better maintainability
+  const iconItems: IconItem[] = [
+    { icon: <GiMicrochip size={40} />, label: "Microchip", id: "microchip" },
+    { icon: <BsPostcard size={40} />, label: "Name", id: "name" },
+    { icon: <BsGenderAmbiguous size={40} />, label: "Sex", id: "sex" },
+    { icon: <GiTrophyCup size={40} />, label: "Reward", id: "reward" },
+    { icon: <FaBirthdayCake size={40} />, label: "Birthday", id: "birthday" },
+    { icon: <FaDna size={40} />, label: "GNOME", id: "gnome" },
+  ];
+
+  // Duplicate items for seamless infinite loop
+  const duplicatedItems: IconItem[] = [...iconItems, ...iconItems];
+
   return (
-    <>
-      <div className="w-full">
-        <Swiper
-          effect={"coverflow"}
-          grabCursor={true}
-          centeredSlides={true}
-          loop={true}
-          slidesPerView={3}
-          mousewheel={true}
-          coverflowEffect={{
-            slideShadows: true,
-            rotate: 0,
-            stretch: 0,
-            depth: 100,
-            modifier: 2.5,
-          }}
-          modules={[EffectCoverflow, Scrollbar]}
-        >
-          <SwiperSlide>
-            <div className="flex flex-col justify-center items-center">
-              <button className="btn btn-circle btn-lg hover:btn-primary">
-                <GiMicrochip size={40} />
+    <div className="w-full">
+      <div className="marquee-container h-24 flex items-center">
+        <div className="marquee-content">
+          {duplicatedItems.map((item: IconItem, index: number) => (
+            <div
+              key={`${item.id}-${index}`}
+              className="flex flex-col justify-center items-center min-w-[120px] flex-shrink-0"
+            >
+              <button 
+                className="btn btn-circle btn-lg hover:btn-primary transition-all duration-300 ease-in-out transform hover:scale-110"
+                aria-label={`${item.label} button`}
+              >
+                {item.icon}
               </button>
-              <div>Microchip</div>
+              <div className="text-sm mt-2 text-center whitespace-nowrap">
+                {item.label}
+              </div>
             </div>
-          </SwiperSlide>
-
-          <SwiperSlide>
-            <div className="flex flex-col justify-center items-center">
-              <button className="btn btn-circle btn-lg hover:btn-primary">
-                <BsPostcard size={40} />
-              </button>
-              <div>Name</div>
-            </div>
-          </SwiperSlide>
-
-          <SwiperSlide>
-            <div className="flex flex-col justify-center items-center">
-              <button className="btn btn-circle btn-lg hover:btn-primary">
-                <BsGenderAmbiguous size={40} />
-              </button>
-              <div>Sex</div>
-            </div>
-          </SwiperSlide>
-
-          <SwiperSlide>
-            <div className="flex flex-col justify-center items-center">
-              <button className="btn btn-circle btn-lg hover:btn-primary">
-                <GiTrophyCup size={40} />
-              </button>
-              <div>Reward</div>
-            </div>
-          </SwiperSlide>
-
-          <SwiperSlide>
-            <div className="flex flex-col justify-center items-center">
-              <button className="btn btn-circle btn-lg hover:btn-primary">
-                <FaBirthdayCake size={40} />
-              </button>
-              <div>Birthday</div>
-            </div>
-          </SwiperSlide>
-
-          <SwiperSlide>
-            <div className="flex flex-col justify-center items-center">
-              <button className="btn btn-circle btn-lg hover:btn-primary">
-                <FaDna size={40} />
-              </button>
-              <div>GNOME</div>
-            </div>
-          </SwiperSlide>
-        </Swiper>
+          ))}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -6,3 +6,46 @@
   font-family: "Prompt", sans-serif;
   font-weight: 300;
 }
+
+/* Marquee Animation for Hero Icons */
+@keyframes marquee {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.marquee-container {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.marquee-content {
+  display: flex;
+  animation: marquee 20s linear infinite;
+  gap: 2rem;
+  align-items: center;
+}
+
+.marquee-content:hover {
+  animation-play-state: paused;
+}
+
+/* Responsive marquee speed */
+@media (max-width: 768px) {
+  .marquee-content {
+    animation-duration: 15s;
+  }
+}
