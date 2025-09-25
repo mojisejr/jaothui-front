@@ -7,45 +7,52 @@
   font-weight: 300;
 }
 
-/* Marquee Animation for Hero Icons */
-@keyframes marquee {
-  0% {
-    transform: translateX(-100%);
+/* 3D Coverflow Animation Styles */
+.coverflow-container {
+  perspective: 1000px;
+  perspective-origin: center center;
+}
+
+.coverflow-item {
+  transform-style: preserve-3d;
+  transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backface-visibility: hidden;
+}
+
+.coverflow-item:hover {
+  filter: brightness(1.2);
+}
+
+/* Enhanced 3D depth effect */
+.coverflow-item.center {
+  transform: translateX(0) scale(1) rotateY(0deg) translateZ(0);
+  opacity: 1;
+  z-index: 10;
+}
+
+.coverflow-item.side {
+  opacity: 0.7;
+  z-index: 5;
+}
+
+.coverflow-item.far {
+  opacity: 0.4;
+  z-index: 1;
+}
+
+/* Smooth transitions for responsive behavior */
+@media (max-width: 1024px) {
+  .coverflow-container {
+    perspective: 800px;
   }
-  100% {
-    transform: translateX(100%);
+}
+
+@media (max-width: 640px) {
+  .coverflow-container {
+    perspective: 600px;
   }
-}
-
-@keyframes marquee-reverse {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.marquee-container {
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-}
-
-.marquee-content {
-  display: flex;
-  animation: marquee 20s linear infinite;
-  gap: 2rem;
-  align-items: center;
-}
-
-.marquee-content:hover {
-  animation-play-state: paused;
-}
-
-/* Responsive marquee speed */
-@media (max-width: 768px) {
-  .marquee-content {
-    animation-duration: 15s;
+  
+  .coverflow-item {
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 }

@@ -1,48 +1,68 @@
-import { GiMicrochip, GiTrophyCup } from "react-icons/gi";
-import { BsPostcard, BsGenderAmbiguous } from "react-icons/bs";
-import { FaBirthdayCake, FaDna } from "react-icons/fa";
-import { ReactElement } from "react";
+import React from "react";
+import { GiMicrochip } from "react-icons/gi";
+import { BsPostcard } from "react-icons/bs";
+import { FaVenusMars } from "react-icons/fa";
+import { FaTrophy } from "react-icons/fa";
+import { FaBirthdayCake } from "react-icons/fa";
+import { useCoverflowAnimation } from "../../../hooks/useCoverflowAnimation";
 
 interface IconItem {
-  icon: ReactElement;
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   id: string;
 }
 
-const CarouselMenu = (): ReactElement => {
-  // Define icon items for better maintainability
+const CarouselMenu: React.FC = () => {
   const iconItems: IconItem[] = [
-    { icon: <GiMicrochip size={40} />, label: "Microchip", id: "microchip" },
-    { icon: <BsPostcard size={40} />, label: "Name", id: "name" },
-    { icon: <BsGenderAmbiguous size={40} />, label: "Sex", id: "sex" },
-    { icon: <GiTrophyCup size={40} />, label: "Reward", id: "reward" },
-    { icon: <FaBirthdayCake size={40} />, label: "Birthday", id: "birthday" },
-    { icon: <FaDna size={40} />, label: "GNOME", id: "gnome" },
+    { icon: GiMicrochip, label: "Microchip", id: "microchip" },
+    { icon: BsPostcard, label: "Name", id: "name" },
+    { icon: FaVenusMars, label: "Sex", id: "sex" },
+    { icon: FaTrophy, label: "Reward", id: "reward" },
+    { icon: FaBirthdayCake, label: "Birthday", id: "birthday" },
   ];
 
-  // Duplicate items for seamless infinite loop
-  const duplicatedItems: IconItem[] = [...iconItems, ...iconItems];
+  const {
+    getItemStyle,
+    pause,
+    resume,
+    isPlaying
+  } = useCoverflowAnimation({
+    items: iconItems,
+    autoPlaySpeed: 3000,
+    pauseOnHover: true
+  });
 
   return (
-    <div className="w-full">
-      <div className="marquee-container h-24 flex items-center">
-        <div className="marquee-content">
-          {duplicatedItems.map((item: IconItem, index: number) => (
-            <div
-              key={`${item.id}-${index}`}
-              className="flex flex-col justify-center items-center min-w-[120px] flex-shrink-0"
-            >
-              <button 
-                className="btn btn-circle btn-lg hover:btn-primary transition-all duration-300 ease-in-out transform hover:scale-110"
-                aria-label={`${item.label} button`}
+    <div className="w-full bg-black py-12 overflow-hidden">
+      <div 
+        className="relative h-32 flex items-center justify-center"
+        style={{ perspective: '1000px' }}
+        onMouseEnter={pause}
+        onMouseLeave={resume}
+      >
+        <div className="relative flex items-center justify-center w-full">
+          {iconItems.map((item, index) => {
+            const IconComponent = item.icon;
+            const style = getItemStyle(index);
+            
+            return (
+              <div
+                key={`${item.id}-${index}`}
+                className="absolute flex flex-col items-center justify-center transition-all duration-700 ease-in-out cursor-pointer"
+                style={{
+                  transform: style.transform,
+                  opacity: style.opacity,
+                  zIndex: style.zIndex,
+                  transformStyle: 'preserve-3d'
+                }}
               >
-                {item.icon}
-              </button>
-              <div className="text-sm mt-2 text-center whitespace-nowrap">
-                {item.label}
+                <button className="flex flex-col items-center justify-center p-4 text-white hover:text-yellow-400 transition-colors duration-300 min-w-[120px]">
+                  <IconComponent className="text-4xl mb-2" />
+                  <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>
+                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
