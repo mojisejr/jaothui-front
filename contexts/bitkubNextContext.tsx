@@ -8,6 +8,7 @@ import {
 
 import { exchangeRefreshToken } from "@bitkub-blockchain/react-bitkubnext-oauth2";
 import { getUserData } from "../helpers/getUserData";
+import { trpc } from "../utils/trpc";
 
 import { useRouter } from "next/router";
 
@@ -43,63 +44,67 @@ export function BitkubNextProvider({ children }: Props) {
   const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
-    const wallet = localStorage.getItem("bkc_wallet");
-    setWalletAddress(wallet as `0x${string}`);
+    getUserDataFromCookies();
+  }, []);
 
-    getUserDataFromRefreshToken();
-  }, [isConnected]);
+  //get user data from cookies via /api/auth/token
+  const getUserDataFromCookies = async () => {
+    try {
+      // Call our /api/auth/token endpoint to get tokens from cookies
+      const response = await fetch('/api/auth/token', {
+        method: 'GET',
+        credentials: 'include', // Include cookies
+      });
 
-  //get user from refresh token
-  const getUserDataFromRefreshToken = async () => {
-    const accessToken = localStorage.getItem("bkc_at");
-    const refreshToken = localStorage.getItem("bkc_rt");
-
-    if (accessToken == undefined || refreshToken == undefined) {
-      setIsConnected(false);
-    } else {
-      const userData = await getUserData(accessToken!);
-      if (userData.success) {
-        localStorage.setItem("bkc_wallet", userData.wallet_address);
-        localStorage.setItem("bkc_email", userData.email);
-        setIsConnected(true);
+      if (!response.ok) {
+        setIsConnected(false);
         return;
       }
-    }
 
-    const tokens = await exchangeRefreshToken(
-      process.env.NEXT_PUBLIC_client_id_dev as string,
-      refreshToken!
-    );
+      const { access_token } = await response.json();
 
-    if (tokens.access_token == undefined || tokens.refresh_token == undefined) {
-      setIsConnected(false);
-    }
+      if (!access_token) {
+        setIsConnected(false);
+        return;
+      }
 
-    const userData = await getUserData(tokens.access_token!);
+      // Get user data using the access token
+      const userData = await getUserData(access_token);
 
-    if (userData.success) {
-      localStorage.setItem("bkc_wallet", userData.wallet_address);
-      localStorage.setItem("bkc_email", userData.email);
-      setWalletAddress(userData.wallet_address!);
-      setIsConnected(true);
-    } else if (!userData.success) {
+      if (userData.success) {
+        setWalletAddress(userData.wallet_address as `0x${string}`);
+        setEmail(userData.email);
+        setIsConnected(true);
+      } else {
+        setWalletAddress("");
+        setIsConnected(false);
+      }
+    } catch (error) {
+      console.error('Error getting user data from cookies:', error);
       setWalletAddress("");
       setIsConnected(false);
     }
   };
 
   function loggedIn() {
-    const wallet = localStorage.getItem("bkc_wallet");
-    setWalletAddress(wallet as `0x${string}`);
-    setIsConnected(true);
+    // Refresh user data from cookies after login
+    getUserDataFromCookies();
   }
 
-  function disconnect() {
-    localStorage.removeItem("bkc_wallet");
-    localStorage.removeItem("bkc_email");
-    localStorage.removeItem("bkc_at");
-    localStorage.removeItem("bkc_rt");
-    localStorage.removeItem("customer");
+  async function disconnect() {
+    try {
+      // Call logout endpoint to clear cookies
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+    
+    // Clear local state
+    setWalletAddress("");
+    setEmail("");
     setIsConnected(false);
   }
 
