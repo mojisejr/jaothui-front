@@ -44,7 +44,21 @@ export function BitkubNextProvider({ children }: Props) {
   const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
-    getUserDataFromCookies();
+    // Only try to get user data if there's an access_token cookie
+    const checkAndGetUserData = () => {
+      // Check if access_token cookie exists
+      const cookies = document.cookie;
+      const hasAccessToken = cookies.includes('access_token=');
+      
+      if (hasAccessToken) {
+        getUserDataFromCookies();
+      } else {
+        // No access token, set as disconnected
+        setIsConnected(false);
+      }
+    };
+
+    checkAndGetUserData();
   }, []);
 
   //get user data from cookies via /api/auth/me
