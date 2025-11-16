@@ -27,15 +27,17 @@ export const getAllMetadata = async (nextPage: number) => {
   const totalSupply = await getTotalSupply();
   const page = nextPage <= 1 ? 1 : nextPage;
   const itemsPerPage = 30;
-  const endPoint =
-    page * itemsPerPage + 1 > totalSupply
-      ? totalSupply + 1
-      : page * itemsPerPage + 1;
-  const startPoint = (page - 1) * itemsPerPage + 1;
+  
   try {
-    const data = await prisma.pedigree.findMany();
+    // ✅ Robust approach: Database-level pagination with consistent ordering
+    const skip = (page - 1) * itemsPerPage;
+    const data = await prisma.pedigree.findMany({
+      orderBy: { createdAt: 'desc' },  // Newest first, ensures new buffalo appear at top
+      skip: skip,
+      take: itemsPerPage,
+    });
 
-    const dataPerPage = data.slice(startPoint - 1, endPoint - 1).map((m) => ({
+    const dataPerPage = data.map((m) => ({
       tokenId: +m.tokenId.toString(),
       name: m.name,
       origin: m.origin,
@@ -58,53 +60,6 @@ export const getAllMetadata = async (nextPage: number) => {
     }));
 
     return dataPerPage as IMetadata[];
-
-    // try {
-    // let metadata: any[] = [];
-
-    // for (let i = startPoint; i < endPoint; i++) {
-    //   const result = (await viem.readContract({
-    //     address: contract.metadata.address as Address,
-    //     abi: contract.metadata.abi,
-    //     functionName: "getMetadata",
-    //     args: [i],
-    //   })) as any[];
-    //   metadata.push(result);
-    // }
-
-    // const m = await Promise.all(
-    //   metadata.map(async (m, index) => {
-    //     return {
-    //       tokenId: startPoint + index,
-    //       name: m.name,
-    //       origin: m.origin,
-    //       color: m.color,
-    //       image: getImageUrl(`${(startPoint + index).toString()}.jpg`),
-    //       detail: m.detail,
-    //       sex: m.sex,
-    //       birthdate: +m.birthdate.toString(),
-    //       birthday: new Date(
-    //         +m.birthdate.toString() * 1000
-    //       ).toLocaleDateString(),
-    //       calculatedAge: calculateBuffaloAge(+m.birthdate.toString() * 1000),
-    //       height: m.height.toString(),
-    //       microchip: m.certify.microchip,
-    //       certNo: m.certify.certNo,
-    //       rarity: m.certify.rarity,
-    //       dna: m.certify.dna,
-    //       fatherId: m.relation.motherTokenId,
-    //       motherId: m.relation.fatherTokenId,
-    //       createdAt: new Date(
-    //         +m.createdAt.toString() * 1000
-    //       ).toLocaleDateString(),
-    //       updatedAt: new Date(
-    //         +m.updatedAt.toString() * 1000
-    //       ).toLocaleDateString(),
-    //     };
-    //   })
-    // );
-
-    // return m as IMetadata[];
   } catch (error) {
     console.log(error);
   }
@@ -270,12 +225,15 @@ export const getMetadataBatch = async (microchips: string[]) => {
 // };
 
 export const searchByKeyword = async (keyword: string) => {
+  // ✅ Robust search with consistent ordering
   const metadata = await prisma.pedigree.findMany({
     where: {
       name: {
         contains: keyword,
+        mode: 'insensitive',  // Case-insensitive search
       },
     },
+    orderBy: { createdAt: 'desc' },  // Consistent ordering with main list
   });
 
   const parsed = metadata.map((d) => ({

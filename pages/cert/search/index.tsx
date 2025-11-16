@@ -49,6 +49,7 @@ const SearchResultPage = () => {
                   data={d}
                   eventId={query.e as string}
                   vote={Boolean(query.vote)}
+                  index={index + 1}
                 />
               ))
             ) : (
