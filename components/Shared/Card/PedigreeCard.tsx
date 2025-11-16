@@ -14,6 +14,7 @@ interface PedigreeCardProps {
   canVote?: boolean;
   eventId?: string;
   votedMicrochip?: string;
+  index?: number;  // Index/position number in list
 }
 
 const PedigreeCard = ({
@@ -22,6 +23,7 @@ const PedigreeCard = ({
   votedMicrochip,
   eventId,
   vote = false,
+  index,  // Add index here
 }: PedigreeCardProps) => {
   const { isConnected } = useBitkubNext();
   const [exit, setExit] = useState<boolean>(false);
@@ -83,7 +85,6 @@ const PedigreeCard = ({
                       {data?.name ?? "loading"}
                     </div>
                   )}
-                  {/* {data ? data.name : <Loading size="sm" />} */}
                 </div>
                 <div className="text-sm">
                   {data ? (
@@ -94,6 +95,12 @@ const PedigreeCard = ({
                 </div>
               </div>
               <div className="flex flex-col items-end gap-1">
+                {/* 🔢 Index Number Badge */}
+                {index !== undefined && (
+                  <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                    {index}
+                  </div>
+                )}
                 <CountryFlag
                   country={data ? data.origin : "thai"}
                   size="48x36"

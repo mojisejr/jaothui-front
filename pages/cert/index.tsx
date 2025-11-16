@@ -172,6 +172,7 @@ const CertMainPage: NextPage = () => {
                         eventId={query.e as string}
                         canVote={event?.canVote!}
                         votedMicrochip={event?.votedMicrochip!}
+                        index={(page - 1) * 30 + index + 1}
                       />
                     ))
                   ) : (
