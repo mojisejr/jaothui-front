@@ -4,13 +4,16 @@ import {
   CanvasRenderingContext2D,
   registerFont,
 } from "canvas";
+import path from "path";
 import { pedigreeRenderingConfig } from "./position-config/config";
 import qrcode from "qrcode-generator";
 import { getMetadataForRendering } from "../services/renderer.service";
 import { parseThaiDate } from "./helpers/parse-thai-date";
 import { calculateXPositionOfName } from "./helpers/calculate-name-length";
 
-registerFont(`${process.cwd()}/server/renderer/font/Kanit/Kanit-Regular.ttf`, {
+// Use public folder - Vercel always includes public/ in deployment
+const fontPath = path.join(process.cwd(), "public", "renderer", "font", "Kanit", "Kanit-Regular.ttf");
+registerFont(fontPath, {
   family: "Kanit",
 });
 
@@ -79,8 +82,8 @@ export const renderPedigree = async (microchip: string, tokenId: string) => {
       imageInfo,
     } = pedigreeRenderingConfig;
 
-    // Use local template path
-    const framePath = `${process.cwd()}/server/renderer/template/template.png`;
+    // Use public folder - Vercel always includes public/ in deployment
+    const framePath = path.join(process.cwd(), "public", "renderer", "template", "template.png");
 
     console.log(`\n📁 [File Paths]`);
     console.log(`   - Template: ${framePath}`);
