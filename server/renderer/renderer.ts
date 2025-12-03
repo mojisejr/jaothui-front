@@ -30,12 +30,14 @@ const renderText = (
 };
 
 export const renderPedigree = async (microchip: string, tokenId: string) => {
+  const startTime = Date.now(); // Total time tracking
   try {
     console.log(`\n${'╔'.padEnd(70, '═')}╗`);
     console.log(`║ 🎨 RENDER PEDIGREE STARTED`.padEnd(71) + `║`);
     console.log(`║ Microchip: ${microchip} | TokenId: ${tokenId}`.padEnd(71) + `║`);
     console.log(`${'╚'.padEnd(70, '═')}╝\n`);
 
+    console.time("⏱️ Total Render Time");
     console.time("⏱️ Database Query");
     const buffaloData = await getMetadataForRendering(microchip);
     console.timeEnd("⏱️ Database Query");
@@ -374,10 +376,18 @@ export const renderPedigree = async (microchip: string, tokenId: string) => {
     );
 
     console.timeEnd("⏱️ Canvas Rendering");
+    console.timeEnd("⏱️ Total Render Time");
+
+    const totalTime = Date.now() - startTime;
+    const performanceStatus = totalTime < 2700 ? '✅ PASS' : totalTime < 3000 ? '⚠️ CLOSE' : '❌ FAIL';
 
     console.log(`\n✅ [Render Complete]`);
     console.log(`   - Canvas size: ${canvas.width}x${canvas.height}`);
     console.log(`   - Output: Base64 string (${canvas.toBuffer().toString("base64").length} chars)`);
+    console.log(`\n📊 [Performance Summary]`);
+    console.log(`   - Total Time: ${totalTime}ms (${(totalTime/1000).toFixed(2)}s)`);
+    console.log(`   - Target: < 2700ms (2.7s)`);
+    console.log(`   - Status: ${performanceStatus}`);
     console.log(`${'╔'.padEnd(70, '═')}╗`);
     console.log(`║ ✅ RENDER PEDIGREE COMPLETED SUCCESSFULLY`.padEnd(71) + `║`);
     console.log(`${'╚'.padEnd(70, '═')}╝\n`);
