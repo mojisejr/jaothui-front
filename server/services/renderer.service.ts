@@ -103,10 +103,10 @@ export const getMetadataForRendering = async (
     console.log(`   - Approvers: ${certificate.approvers.length}`);
 
     // Transform to rendering format
-    const imageUrl = pedigree.image ?? null;
+    const imageUrl = pedigree.image ? `${pedigree.image}.jpg` : null; // Add .jpg extension
     console.log(`\n🔍 [Image URL Debug]`);
     console.log(`   - pedigree.image: ${pedigree.image === null ? '❌ NULL' : `✅ "${pedigree.image}"`}`);
-    console.log(`   - imageUrl (final): ${imageUrl === null ? '❌ NULL' : `✅ "${imageUrl}"`}`);
+    console.log(`   - imageUrl (with .jpg): ${imageUrl === null ? '❌ NULL' : `✅ "${imageUrl}"`}`);
 
     const result: RenderingMetadata = {
       name: pedigree.name,
