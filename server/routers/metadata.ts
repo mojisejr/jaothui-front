@@ -6,12 +6,11 @@ import {
   getMetadataBatch,
   searchByKeyword,
 } from "../services/metadata.service";
-import { getCertificateImageOf } from "../services/renderer.service";
+import { renderPedigree } from "../renderer";
 import {
   gerRewardByMicrochip,
   getRewardById,
 } from "../services/reward.service";
-// import { renderPedigree } from "../services/renderer.service";
 import { router } from "../trpc";
 import { publicProcedure } from "../trpc";
 import { z } from "zod";
@@ -47,7 +46,7 @@ export const metadataRouter = router({
   renderPedigree: publicProcedure
     .input(z.object({ microchip: z.string(), tokenId: z.string() }))
     .query(async ({ input }) => {
-      return await getCertificateImageOf(input.microchip, input.tokenId);
+      return await renderPedigree(input.microchip, input.tokenId);
     }),
   getRewardByMicrochip: publicProcedure
     .input(z.string())
