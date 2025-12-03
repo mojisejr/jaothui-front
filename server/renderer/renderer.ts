@@ -31,11 +31,28 @@ const renderText = (
 
 export const renderPedigree = async (microchip: string, tokenId: string) => {
   try {
+    console.log(`\n${'╔'.padEnd(70, '═')}╗`);
+    console.log(`║ 🎨 RENDER PEDIGREE STARTED`.padEnd(71) + `║`);
+    console.log(`║ Microchip: ${microchip} | TokenId: ${tokenId}`.padEnd(71) + `║`);
+    console.log(`${'╚'.padEnd(70, '═')}╝\n`);
+
     console.time("⏱️ Database Query");
     const buffaloData = await getMetadataForRendering(microchip);
     console.timeEnd("⏱️ Database Query");
 
-    if (buffaloData == undefined || !buffaloData!.certificate?.isActive) return null;
+    if (buffaloData == undefined || !buffaloData!.certificate?.isActive) {
+      console.log(`❌ [FATAL] Invalid buffalo data or certificate not active`);
+      return null;
+    }
+
+    // DEBUG: Log buffalo data structure
+    console.log(`\n📦 [Buffalo Data Structure]`);
+    console.log(`   - Name: ${buffaloData.name}`);
+    console.log(`   - Microchip: ${buffaloData.certify.microchip}`);
+    console.log(`   - 🖼️  imageUrl: ${buffaloData.imageUrl === null ? '❌ NULL/UNDEFINED' : `✅ "${buffaloData.imageUrl}"`}`);
+    console.log(`   - Certificate: ${buffaloData.certificate?.no || 'N/A'}`);
+    console.log(`   - Approvers: ${buffaloData.certificate?.approvers?.length || 0}`);
+
     const {
       noPos,
       qrPos,
@@ -63,13 +80,27 @@ export const renderPedigree = async (microchip: string, tokenId: string) => {
     // Use local template path
     const framePath = `${process.cwd()}/server/renderer/template/template.png`;
 
+    console.log(`\n📁 [File Paths]`);
+    console.log(`   - Template: ${framePath}`);
+    console.log(`   - Image URL: ${buffaloData.imageUrl || '❌ NONE (Will be NULL)'}`);
+
     console.time("⏱️ Load Images (Parallel)");
+    console.log(`\n🔄 [Loading Images]`);
+    console.log(`   1️⃣  Frame (template)`);
+    console.log(`   2️⃣  Buffalo Image: ${buffaloData.imageUrl ? `✅ Attempting to load "${buffaloData.imageUrl}"` : '❌ SKIP - imageUrl is NULL'}`);
+    console.log(`   3️⃣  Signature 1 (position 0): ${buffaloData.certificate?.approvers?.[0]?.signatureUrl || '❌ NOT FOUND'}`);
+    console.log(`   4️⃣  Signature 2 (position 1): ${buffaloData.certificate?.approvers?.[1]?.signatureUrl || '❌ NOT FOUND'}`);
+    console.log(`   5️⃣  Signature 3 (position 2): ${buffaloData.certificate?.approvers?.[2]?.signatureUrl || '❌ NOT FOUND'}`);
+
     // Load all images in parallel for better performance
     const [frame, buffaloImage, signature1, signature2, signature3] = await Promise.all([
       loadImage(framePath),
       buffaloData.imageUrl
-        ? loadImage(buffaloData.imageUrl).catch(() => null)
-        : null,
+        ? loadImage(buffaloData.imageUrl).catch((err) => {
+            console.log(`   ⚠️  Failed to load buffalo image: ${err.message}`);
+            return null;
+          })
+        : (console.log(`   ⏭️  Skipping buffalo image load (imageUrl is NULL)`), null),
       loadImage(
         buffaloData?.certificate?.approvers.find(
           (approver) => approver.position == 0
@@ -87,12 +118,23 @@ export const renderPedigree = async (microchip: string, tokenId: string) => {
       ).catch(() => null),
     ]);
     console.timeEnd("⏱️ Load Images (Parallel)");
+
+    console.log(`\n📊 [Images Loaded Result]`);
+    console.log(`   ✅ Frame: Loaded (${frame.width}x${frame.height})`);
+    console.log(`   ${buffaloImage ? `✅ Buffalo Image: Loaded (${buffaloImage.width}x${buffaloImage.height})` : `❌ Buffalo Image: NULL (Won't be drawn)`}`);
+    console.log(`   ${signature1 ? `✅ Signature 1: Loaded` : `❌ Signature 1: NULL`}`);
+    console.log(`   ${signature2 ? `✅ Signature 2: Loaded` : `❌ Signature 2: NULL`}`);
+    console.log(`   ${signature3 ? `✅ Signature 3: Loaded` : `❌ Signature 3: NULL`}`);
+
     console.time("⏱️ Canvas Rendering");
     const canvas = createCanvas(frame.width, frame.height);
     const ctx = canvas.getContext("2d");
 
     ctx.drawImage(frame, 0, 0, frame.width, frame.height);
     if (buffaloImage) {
+      console.log(`\n🎨 [Drawing]`);
+      console.log(`   ✅ Drawing buffalo image at position (${imageInfo.x}, ${imageInfo.y})`);
+
       ctx.drawImage(
         buffaloImage,
         imageInfo.x,
@@ -333,8 +375,16 @@ export const renderPedigree = async (microchip: string, tokenId: string) => {
 
     console.timeEnd("⏱️ Canvas Rendering");
 
+    console.log(`\n✅ [Render Complete]`);
+    console.log(`   - Canvas size: ${canvas.width}x${canvas.height}`);
+    console.log(`   - Output: Base64 string (${canvas.toBuffer().toString("base64").length} chars)`);
+    console.log(`${'╔'.padEnd(70, '═')}╗`);
+    console.log(`║ ✅ RENDER PEDIGREE COMPLETED SUCCESSFULLY`.padEnd(71) + `║`);
+    console.log(`${'╚'.padEnd(70, '═')}╝\n`);
+
     return canvas.toBuffer().toString("base64");
   } catch (error) {
+    console.log(`\n❌ [CRITICAL ERROR] ${error}`);
     console.log(error);
     return null;
   }

@@ -60,15 +60,26 @@ export const getMetadataForRendering = async (
   microchip: string
 ): Promise<RenderingMetadata | null> => {
   try {
+    console.log(`\n${'='.repeat(60)}`);
+    console.log(`📥 [getMetadataForRendering] Starting for microchip: ${microchip}`);
+    console.log(`${'='.repeat(60)}`);
+
     // Query Pedigree with Certificate and Approvers in one query
     const pedigree = await prisma.pedigree.findUnique({
       where: { microchip },
     });
 
     if (!pedigree) {
-      console.log(`❌ Pedigree not found: ${microchip}`);
+      console.log(`❌ [ERROR] Pedigree not found: ${microchip}`);
       return null;
     }
+
+    console.log(`✅ [Pedigree Found]`);
+    console.log(`   - Name: ${pedigree.name}`);
+    console.log(`   - Microchip: ${pedigree.microchip}`);
+    console.log(`   - TokenID: ${pedigree.tokenId}`);
+    console.log(`   - Birthday: ${pedigree.birthday}`);
+    console.log(`   - 🖼️  IMAGE FIELD: ${pedigree.image === null ? '❌ NULL' : `✅ ${pedigree.image}`}`);
 
     // Query Certificate separately with approvers
     const certificate = await prisma.certificate.findUnique({
@@ -82,11 +93,21 @@ export const getMetadataForRendering = async (
     });
 
     if (!certificate || !certificate.isActive) {
-      console.log(`❌ Certificate not active: ${microchip}`);
+      console.log(`❌ [ERROR] Certificate not active: ${microchip}`);
       return null;
     }
 
+    console.log(`✅ [Certificate Found]`);
+    console.log(`   - Cert No: ${certificate.no}/${certificate.updatedAt.getFullYear() + 543}`);
+    console.log(`   - Owner: ${certificate.ownerName}`);
+    console.log(`   - Approvers: ${certificate.approvers.length}`);
+
     // Transform to rendering format
+    const imageUrl = pedigree.image ?? null;
+    console.log(`\n🔍 [Image URL Debug]`);
+    console.log(`   - pedigree.image: ${pedigree.image === null ? '❌ NULL' : `✅ "${pedigree.image}"`}`);
+    console.log(`   - imageUrl (final): ${imageUrl === null ? '❌ NULL' : `✅ "${imageUrl}"`}`);
+
     const result: RenderingMetadata = {
       name: pedigree.name,
       color: pedigree.color,
@@ -94,7 +115,7 @@ export const getMetadataForRendering = async (
       birthdate: new Date(pedigree.birthday).getTime(), // Convert DateTime to timestamp
       height: pedigree.height ?? 0,
       tokenId: pedigree.tokenId.toString(),
-      imageUrl: pedigree.image ?? null, // Get image URL from Pedigree data
+      imageUrl: imageUrl, // Get image URL from Pedigree data
       certify: {
         microchip: pedigree.microchip,
         certNo: pedigree.certNo,
@@ -130,9 +151,13 @@ export const getMetadataForRendering = async (
       },
     };
 
+    console.log(`\n✅ [Result Ready]`);
+    console.log(`   - imageUrl in result: ${result.imageUrl === null ? '❌ NULL' : `✅ "${result.imageUrl}"`}`);
+    console.log(`${'='.repeat(60)}\n`);
+
     return result;
   } catch (error) {
-    console.error("❌ Error fetching rendering metadata:", error);
+    console.error("❌ [EXCEPTION] Error fetching rendering metadata:", error);
     return null;
   }
 };
