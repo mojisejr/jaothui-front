@@ -67,7 +67,9 @@ export const renderPedigree = async (microchip: string, tokenId: string) => {
     // Load all images in parallel for better performance
     const [frame, buffaloImage, signature1, signature2, signature3] = await Promise.all([
       loadImage(framePath),
-      loadImage(`${process.env.base_url}/${tokenId}.jpg`).catch(() => null),
+      buffaloData.imageUrl
+        ? loadImage(buffaloData.imageUrl).catch(() => null)
+        : null,
       loadImage(
         buffaloData?.certificate?.approvers.find(
           (approver) => approver.position == 0

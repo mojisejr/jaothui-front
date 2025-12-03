@@ -13,6 +13,7 @@ export interface RenderingMetadata {
   birthdate: number; // timestamp in milliseconds
   height: number;
   tokenId: string;
+  imageUrl: string | null; // Image URL from Pedigree data
   certify: {
     microchip: string;
     certNo: string | null;
@@ -93,6 +94,7 @@ export const getMetadataForRendering = async (
       birthdate: new Date(pedigree.birthday).getTime(), // Convert DateTime to timestamp
       height: pedigree.height ?? 0,
       tokenId: pedigree.tokenId.toString(),
+      imageUrl: pedigree.image ?? null, // Get image URL from Pedigree data
       certify: {
         microchip: pedigree.microchip,
         certNo: pedigree.certNo,
