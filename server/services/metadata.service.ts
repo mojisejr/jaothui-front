@@ -1,6 +1,3 @@
-import { Address, createPublicClient, http } from "viem";
-import { bitkub_mainnet } from "../../blockchain/chain";
-import { contract } from "../../blockchain/contract";
 import { isCertificateActivated } from "./certificate.service";
 import { IMetadata } from "../../interfaces/iMetadata";
 import { getImageUrl } from "../supabase";
@@ -8,31 +5,15 @@ import { prisma } from "../prisma";
 import { calculateBuffaloAge } from "../../utils/age-calculator";
 import dayjs from "dayjs";
 
-const viem = createPublicClient({
-  chain: bitkub_mainnet,
-  transport: http(),
-});
-
-export const getTotalSupply = async () => {
-  const totalSupply = (await viem.readContract({
-    address: contract.nft.address,
-    abi: contract.nft.abi,
-    functionName: "totalSupply",
-  })) as bigint;
-
-  return parseInt(totalSupply.toString());
-};
-
 export const getAllMetadata = async (nextPage: number) => {
-  const totalSupply = await getTotalSupply();
   const page = nextPage <= 1 ? 1 : nextPage;
   const itemsPerPage = 30;
   
   try {
-    // ✅ Robust approach: Database-level pagination with consistent ordering
+    // ✅ Database-only approach: Single source of truth
     const skip = (page - 1) * itemsPerPage;
     const data = await prisma.pedigree.findMany({
-      orderBy: { createdAt: 'desc' },  // Newest first, ensures new buffalo appear at top
+      orderBy: { createdAt: 'desc' },
       skip: skip,
       take: itemsPerPage,
     });
@@ -61,101 +42,57 @@ export const getAllMetadata = async (nextPage: number) => {
 
     return dataPerPage as IMetadata[];
   } catch (error) {
-    console.log(error);
-  }
-};
-
-export interface Metadata {
-  name: string;
-  origin: string;
-  color: string;
-  imageUri: string;
-  detail: string;
-  sex: string;
-  birthdate: bigint;
-  height: bigint;
-  certify: {
-    microchip: string;
-    certNo: string;
-    rarity: string;
-    dna: string;
-    issuedAt: bigint;
-  };
-  relation: { motherTokenId: string; fatherTokenId: string };
-  createdAt: bigint;
-  updatedAt: bigint;
-  certificate: any;
-  calculatedAge?: number;
-}
-
-export const getMetadataByMicrochipId = async (
-  microchipId: string,
-  tokenId: number
-) => {
-  try {
-    const data = (await viem.readContract({
-      address: contract.metadata.address as Address,
-      abi: contract.metadata.abi,
-      functionName: "getMetadataByMicrochip",
-      args: [microchipId],
-    })) as Metadata;
-
-    const certificationData = await isCertificateActivated(microchipId);
-
-    const parsed = {
-      ...data!,
-      imageUri: getImageUrl(`${tokenId}.jpg`),
-      birthdate: +data.birthdate!.toString(),
-      height: +data.height.toString(),
-      certify: {
-        ...data.certify,
-        issuedAt: +data.certify.issuedAt.toString(),
-      },
-      createdAt: +data.createdAt.toString(),
-      updatedAt: +data.updatedAt.toString(),
-      certificate: certificationData,
-    };
-
-    return parsed;
-  } catch (error) {
-    console.log(error);
+    console.error("Error fetching all metadata:", error);
+    throw error;
   }
 };
 
 export const getMetadataByMicrochip = async (microchip: string) => {
   try {
-    // const metadata = await getAllMetadata(page);
-    const result = (await viem.readContract({
-      address: contract.metadata.address as Address,
-      abi: contract.metadata.abi,
-      functionName: "microchipToTokenId",
-      args: [microchip],
-    })) as bigint;
-
-    const tokenId = parseInt(result.toString());
-    // const tokenId =
-    //   metadata!.map((m) => m.microchip === microchip).indexOf(true) + 1;
-
-    const data = await getMetadataByMicrochipId(microchip, tokenId);
-
-    const fromDB = await prisma.pedigree.findUnique({
-      where: { microchip: microchip },
+    // Fetch from database only
+    const pedigree = await prisma.pedigree.findUnique({
+      where: { microchip },
     });
 
+    if (!pedigree) {
+      throw new Error(`Pedigree not found for microchip: ${microchip}`);
+    }
+
+    // Get certificate info
+    const certificate = await isCertificateActivated(microchip);
+
+    // Build response object with consistent structure
     const out = {
-      tokenId,
-      ...data,
-      calculatedAge: calculateBuffaloAge(data?.birthdate! * 1000),
+      tokenId: +pedigree.tokenId.toString(),
+      name: pedigree.name,
+      origin: pedigree.origin ?? "thai",
+      color: pedigree.color,
+      imageUri: getImageUrl(`${pedigree.tokenId.toString()}.jpg`),
+      detail: pedigree.detail,
+      sex: pedigree.sex,
+      birthdate: new Date(pedigree.birthday).getTime() / 1000,
+      height: pedigree.height?.toString() ?? "0",
       certify: {
-        ...data?.certify,
-        dna: fromDB?.dna,
+        microchip: pedigree.microchip,
+        certNo: pedigree.certNo ?? "N/A",
+        rarity: pedigree.rarity,
+        dna: pedigree.dna,
+        issuedAt: new Date(pedigree.birthday).getTime() / 1000,
       },
-      certificate: { ...data?.certificate, approvers: [] },
+      relation: {
+        motherTokenId: pedigree.motherId ?? "",
+        fatherTokenId: pedigree.fatherId ?? "",
+      },
+      createdAt: +pedigree.createdAt,
+      updatedAt: +pedigree.updatedAt,
+      certificate: certificate || {},
+      calculatedAge: calculateBuffaloAge(new Date(pedigree.birthday).getTime()),
     };
 
     return out;
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching metadata by microchip:", error);
+    throw error;
   }
 };
 
