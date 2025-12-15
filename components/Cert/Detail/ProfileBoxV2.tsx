@@ -87,9 +87,14 @@ const ProfileBoxV2 = ({
   }, [event, isConnected, walletAddress]);
 
   const handleVote = () => {
-    const microchip = certNft.certify.microchip;
+    const microchip = certNft?.certify?.microchip;
     const wallet = walletAddress;
     const event = eventId;
+
+    if (!microchip) {
+      console.error("Microchip not found in certificate data");
+      return;
+    }
 
     doVote({ microchip, wallet, eventId: event });
   };
@@ -150,7 +155,7 @@ const ProfileBoxV2 = ({
                 ) : (
                   <>
                     {event &&
-                    event.votedMicrochip == certNft.certify.microchip ? (
+                    event.votedMicrochip == certNft?.certify?.microchip ? (
                       <div className="flex gap-2 items-center">
                         <FaHeart className="text-primary" size={28} />
                         <span className="text-bold">คุณโหวต</span>
@@ -162,27 +167,27 @@ const ProfileBoxV2 = ({
               <div className="flex justify-end items-center pt-2 gap-2">
                 <div className="font-semibold">share</div>
                 <FacebookShareButton
-                  url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}&social=true`}
+                  url={`https://jaothui.com/api/seo/og?microchip=${certNft?.certify?.microchip || ""}&social=true`}
                 >
                   <FacebookIcon size={32} />
                 </FacebookShareButton>
                 <LineShareButton
-                  url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+                  url={`https://jaothui.com/api/seo/og?microchip=${certNft?.certify?.microchip || ""}`}
                 >
                   <LineIcon size={32} />
                 </LineShareButton>
                 {/* <TelegramShareButton
-                url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+                url={`https://jaothui.com/api/seo/og?microchip=${certNft?.certify?.microchip || ""}`}
               >
                 <TelegramIcon size={32} />
               </TelegramShareButton> */}
                 {/* <TwitterShareButton
-                url={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+                url={`https://jaothui.com/api/seo/og?microchip=${certNft?.certify?.microchip || ""}`}
               >
                 <TwitterIcon size={32} />
               </TwitterShareButton> */}
                 <CopyToClipboard
-                  text={`https://jaothui.com/api/seo/og?microchip=${certNft.certify.microchip}`}
+                  text={`https://jaothui.com/api/seo/og?microchip=${certNft?.certify?.microchip || ""}`}
                   onCopy={() => setCopied({ copied: true })}
                 >
                   <button
@@ -203,13 +208,13 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-secondary">
-                      {certNft.name.includes("คุณ") ? (
+                      {certNft?.name && certNft.name.includes("คุณ") ? (
                         <div className="text-2xl font-bold bg-gradient-to-br from-[#FFE15D] via-[#e59a28] to-[#FFE15D] text-transparent bg-clip-text">
                           {certNft.name}
                         </div>
                       ) : (
                         <div className="text-2xl font-bold text-secondary">
-                          {certNft.name}
+                          {certNft?.name || "ไม่มีชื่อ"}
                         </div>
                       )}
                     </div>
@@ -237,7 +242,7 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.certify.microchip}
+                      {certNft?.certify?.microchip || "N/A"}
                     </div>
                     <div className="stat-desc">Signature ID</div>
                   </div>
@@ -270,9 +275,10 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.relation.motherTokenId &&
+                      {certNft?.relation?.motherTokenId &&
                       certNft.relation.motherTokenId != 0 &&
-                      certNft.relation.motherTokenId != '""' ? (
+                      certNft.relation.motherTokenId != '""' &&
+                      certNft.relation.motherTokenId != "" ? (
                         <Link
                           className="font-bold text-secondary xl:text-[2rem] hover:text-thuiyellow"
                           href={`/cert/${certNft.relation.motherTokenId}`}
@@ -293,9 +299,10 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.relation.fatherTokenId &&
+                      {certNft?.relation?.fatherTokenId &&
                       certNft.relation.fatherTokenId != 0 &&
-                      certNft.relation.fatherTokenId != '""' ? (
+                      certNft.relation.fatherTokenId != '""' &&
+                      certNft.relation.fatherTokenId != "" ? (
                         <Link
                           className="font-bold text-secondary xl:text-[2rem] hover:text-thuiyellow"
                           href={`/cert/${certNft.relation.fatherTokenId}`}
@@ -312,8 +319,8 @@ const ProfileBoxV2 = ({
                 </div>
                 <div className="stat flex items-center gap-4">
                   <div className="stat-figure text-secondary">
-                    {certNft.certify.dna != "N/A" ? (
-                      <Link href={certNft.certify.dna!} target="_blank">
+                    {certNft?.certify?.dna && certNft.certify.dna != "N/A" ? (
+                      <Link href={certNft.certify.dna} target="_blank">
                         <BsFileEarmarkBinary
                           className="text-primary hover:text-accent"
                           size={30}
@@ -325,13 +332,13 @@ const ProfileBoxV2 = ({
                   </div>
                   <div>
                     <div className="stat-title font-bold text-secondary xl:text-[2rem]">
-                      {certNft.origin ? (
+                      {certNft?.origin ? (
                         <div className="flex gap-2 items-center">
                           <CountryFlag
                             country={certNft.origin}
                             size={"48x36"}
                           />
-                          {certNft.certify.dna != "N/A" ? (
+                          {certNft?.certify?.dna && certNft.certify.dna != "N/A" ? (
                             <span className="text-xs text-accent font-semibold">
                               Verified
                             </span>
@@ -441,11 +448,11 @@ const ProfileBoxV2 = ({
                               )}
                             </>
                           ))} */}
-                      {!certNft.certificate.microchip ? (
+                      {!certNft?.certificate?.microchip ? (
                         "N/A"
                       ) : (
                         <Link
-                          href={`/cert/${certNft.certify.microchip}/certificate?microchip=${certNft.certify.microchip}&tokenId=${tokenId}`}
+                          href={`/cert/${certNft?.certify?.microchip || ""}/certificate?microchip=${certNft?.certify?.microchip || ""}&tokenId=${tokenId}`}
                         >
                           <Image
                             src={"/images/logo.png"}

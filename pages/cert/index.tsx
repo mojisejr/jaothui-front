@@ -15,9 +15,8 @@ import { useBitkubNext } from "../../contexts/bitkubNextContext";
 const CertMainPage: NextPage = () => {
   const { query } = useRouter();
   const { isConnected, walletAddress } = useBitkubNext();
-  const [maxPage, setMaxPage] = useState<number>(0);
+  const [maxPage, setMaxPage] = useState<number>(100); // Default max page
   const [page, setPage] = useState<number>(1);
-  const { data: totalSupply } = trpc.metadata.totalSupply.useQuery();
   const { data, isLoading, refetch } = trpc.metadata.getAll.useQuery(page);
   const [sortState, setSortState] = useState<number>(0);
   const [currentData, setCurrentData] = useState<IMetadata[]>(data!);
@@ -64,8 +63,12 @@ const CertMainPage: NextPage = () => {
   }, [page]);
 
   useEffect(() => {
-    setMaxPage(Math.floor(totalSupply! / 30));
-  }, [totalSupply]);
+    // Update max page based on data availability
+    // If we get less than 30 items, we've reached the end
+    if (data && data.length < 30 && data.length > 0) {
+      setMaxPage(page);
+    }
+  }, [data, page]);
 
   function handleNextPage() {
     if (typeof window != undefined) {
