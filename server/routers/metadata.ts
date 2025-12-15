@@ -1,8 +1,6 @@
 import {
   getAllMetadata,
-  getMetadataByMicrochipId,
   getMetadataByMicrochip,
-  getTotalSupply,
   getMetadataBatch,
   searchByKeyword,
 } from "../services/metadata.service";
@@ -16,9 +14,6 @@ import { publicProcedure } from "../trpc";
 import { z } from "zod";
 
 export const metadataRouter = router({
-  totalSupply: publicProcedure.query(async () => {
-    return await getTotalSupply();
-  }),
   getAll: publicProcedure.input(z.number()).query(async ({ ctx, input }) => {
     const metadata = await getAllMetadata(input);
     return metadata;
@@ -32,7 +27,13 @@ export const metadataRouter = router({
   getByMicrochip: publicProcedure
     .input(z.object({ microchip: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await getMetadataByMicrochip(input.microchip);
+      const metadata = await getMetadataByMicrochip(input.microchip);
+      
+      if (!metadata) {
+        throw new Error(`Metadata not found for microchip: ${input.microchip}`);
+      }
+      
+      return metadata;
     }),
   searchByKeyword: publicProcedure
     .input(z.string())
