@@ -39,9 +39,14 @@ export const parseThaiDate = (timestamp: number) => {
     "ธ.ค.",
   ];
 
-  const date = dayjs(timestamp).get("date");
-  const month = dayjs(timestamp).get("month");
-  const year = dayjs(timestamp).get("year");
+  // Convert UTC timestamp to Bangkok local time (UTC+7)
+  // Database stores dates in UTC, but they represent local Thailand dates
+  const utcDate = dayjs(timestamp);
+  const bangkokDate = utcDate.subtract(7, "hours");
+
+  const date = bangkokDate.get("date");
+  const month = bangkokDate.get("month");
+  const year = bangkokDate.get("year");
   const thaiMonth = thaiMonths[month];
   const thaiMonth2 = thaiMonthsAbbreviated[month];
   const thaiYear = year + 543;
