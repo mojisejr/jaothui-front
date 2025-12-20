@@ -51,7 +51,7 @@ const ProfileBoxV2 = ({
 }: ProfileBoxProps) => {
   const [copied, setCopied] = useState<{ copied: boolean }>({ copied: false });
   const { isConnected, walletAddress } = useBitkubNext();
-  const thaiDate = parseThaiDate(certNft.birthdate * 1000);
+  const thaiDate = parseThaiDate(certNft.birthdate);
   const { back } = useRouter();
 
   const { data: event, refetch: fetchEvent } =
