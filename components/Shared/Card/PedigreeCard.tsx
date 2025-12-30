@@ -27,7 +27,7 @@ const PedigreeCard = ({
 }: PedigreeCardProps) => {
   const { isConnected } = useBitkubNext();
   const [exit, setExit] = useState<boolean>(false);
-  const thaiDate = parseThaiDate(new Date(data?.birthdate! * 1000).getTime());
+  const thaiDate = parseThaiDate(data?.birthdate!);
 
   return (
     <div className="relative w-84">

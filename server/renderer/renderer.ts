@@ -8,7 +8,7 @@ import path from "path";
 import { pedigreeRenderingConfig } from "./position-config/config";
 import qrcode from "qrcode-generator";
 import { getMetadataForRendering } from "../services/renderer.service";
-import { parseThaiDate } from "./helpers/parse-thai-date";
+import { parseThaiDate } from "../../helpers/parseThaiDate";
 import { calculateXPositionOfName } from "./helpers/calculate-name-length";
 
 // Use public folder - Vercel always includes public/ in deployment
