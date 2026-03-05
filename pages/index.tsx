@@ -10,7 +10,7 @@ import { ToastContainer } from "react-toastify";
 
 const Home: NextPage = () => {
   return (
-    <div className="relative">
+    <div className="relative bg-thuiwhite text-thuidark">
       <Layout>
         {/* <MainTitle2 /> */}
         <Hero>

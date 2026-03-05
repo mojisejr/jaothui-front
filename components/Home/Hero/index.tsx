@@ -12,7 +12,7 @@ const Hero = ({ children }: HeroProps) => {
       tabletS:items-center
       tabletS:px-10
       labtop:px-20
-      bg-[#000]"
+      bg-thuiwhite"
       >
         {children}
       </div>

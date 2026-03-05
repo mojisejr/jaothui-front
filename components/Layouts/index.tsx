@@ -4,6 +4,7 @@ import { HiMenuAlt2 } from "react-icons/hi";
 import { BiSearchAlt2 } from "react-icons/bi";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 import MenuList from "../Shared/Navbar/MenuList";
 
@@ -46,15 +47,24 @@ const Layout = ({ children }: LayoutProps) => {
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col">
           {/* Navbar */}
-          <div className="navbar bg-base-200 bg-opacity-60 px-[22px] sticky top-0 left-0 z-[1]">
+          <div className="navbar bg-thuiwhite/95 border-b border-base-300 px-[22px] sticky top-0 left-0 z-[1] backdrop-blur-sm">
             <div className="navbar-start">
-              <div className="hidden tabletS:block">
+              <div className="hidden tabletS:flex tabletS:items-center tabletS:gap-2">
                 <label
                   htmlFor="my-drawer-3"
                   className="btn btn-square btn-ghost"
                 >
                   <HiMenuAlt2 size={24} />
                 </label>
+                <Link href="/" className="flex items-center gap-2">
+                  <Image
+                    src="/images/thuiLogo.png"
+                    width={28}
+                    height={28}
+                    alt="jaothui-logo"
+                  />
+                  <span className="font-bold text-sm text-thuidark">JAOTHUI</span>
+                </Link>
               </div>
             </div>
             <div className="navbar-center">

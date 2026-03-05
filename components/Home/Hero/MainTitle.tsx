@@ -5,7 +5,7 @@ const MainTitle = () => {
   return (
     <>
       <div
-        className="grid grid-cols-1 text-center text-base-200 
+        className="grid grid-cols-1 text-center text-thuidark 
       tabletS:grid-cols-12"
       >
         <div className="flex justify-center col-span-5">
