@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { trpc } from "../../../utils/trpc";
-import Loading from "../../Shared/Indicators/Loading";
 
 const Pedigree = () => {
   const { data, isLoading } = trpc.metadata.getBatch.useQuery([
@@ -58,8 +57,21 @@ const Pedigree = () => {
               : "ไม่มีข้อมูล"}
           </div>
         ) : (
-          <div className="flex h-[220px] items-center justify-center">
-            <Loading size="lg" />
+          <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-[22px] py-2">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={`pedigree-skeleton-${index}`}
+                className="flex animate-pulse items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm"
+              >
+                <div className="h-20 w-20 flex-shrink-0 rounded-xl bg-base-300" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-5 w-2/3 rounded bg-base-300" />
+                  <div className="h-4 w-1/2 rounded bg-base-300" />
+                  <div className="h-4 w-3/4 rounded bg-base-300" />
+                </div>
+                <div className="h-4 w-8 rounded bg-base-300" />
+              </div>
+            ))}
           </div>
         )}
       </div>
