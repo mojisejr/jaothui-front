@@ -37,7 +37,10 @@ const BottomNav = () => {
             alt="jaothui-logo"
           />
         </Link>
-        <Link href="/profile">
+        <div
+          className="flex flex-col justify-center items-center pointer-events-none opacity-50"
+          aria-disabled="true"
+        >
           <div className="flex flex-col justify-center items-center">
             <MdAccountCircle
               className={`text-base-200 hover:text-base-300 ${
@@ -51,7 +54,7 @@ const BottomNav = () => {
               โปรไฟล์
             </span>
           </div>
-        </Link>
+        </div>
       </div>
     </>
   );
