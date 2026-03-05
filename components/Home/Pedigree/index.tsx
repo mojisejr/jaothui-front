@@ -1,14 +1,8 @@
 import Link from "next/link";
-import { useGetAllMetadata } from "../../../blockchain/Metadata/read";
-import PedigreeCard from "../../Shared/Card/PedigreeCard";
-import _ from "lodash";
 import { trpc } from "../../../utils/trpc";
-import { useEffect, useState } from "react";
-import { IMetadata } from "../../../interfaces/iMetadata";
 import Loading from "../../Shared/Indicators/Loading";
 
 const Pedigree = () => {
-  // const [data, setData] = useState<IMetadata[]>([]);
   const { data, isLoading } = trpc.metadata.getBatch.useQuery([
     "764040226300035",
     "764040226600001",
@@ -19,48 +13,52 @@ const Pedigree = () => {
     "900115003739216",
     "764040226301331",
   ]);
-  // const { allMetadata } = useGetAllMetadata();
-  // const data = allMetadata
-
-  //   ? [allMetadata[0], allMetadata[1], allMetadata[2], allMetadata[3]]
-  //   : [];
-
-  // const data = _.take(allMetadata, 8);
-
-  // useEffect(() => {
-  //   if (allMetadata != undefined) {
-  //     const data = [
-  //       allMetadata![8],
-  //       allMetadata![70],
-  //       allMetadata![79],
-  //       allMetadata![81],
-  //       allMetadata![72],
-  //       allMetadata![76],
-  //       allMetadata![155],
-  //       allMetadata![65],
-  //     ];
-
-  //     setData(data);
-  //   }
-  // }, [allMetadata, isLoading]);
 
   return (
     <>
       <div className="py-6">
-        <div className="flex justify-between items-center px-[22px] py-2">
-          <div className="text-xl font-bold">Pedigrees</div>
-          <Link href="/cert" className="text-sm">
+        <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-[22px] py-2">
+          <div className="text-xl font-bold text-thuidark">Pedigrees</div>
+          <Link href="/cert" className="text-sm font-semibold text-thuigray">
             ดูทั้งหมด{">"}
           </Link>
         </div>
         {!isLoading ? (
-          <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4">
+          <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-[22px] py-2">
             {data
-              ? data.map((d, index) => <PedigreeCard key={index} data={d} />)
+              ? data.map((item, index) => (
+                  <Link
+                    key={item.microchip}
+                    href={`/cert/${item.microchip}`}
+                    className="flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
+                  >
+                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-base-200">
+                      <img
+                        className="h-full w-full object-cover"
+                        src={item.image ? item.image : "/images/thuiLogo.png"}
+                        alt={item.name}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1 text-left text-thuidark">
+                      <div className="truncate text-lg font-bold leading-tight">
+                        {item.name}
+                      </div>
+                      <div className="mt-1 truncate text-sm font-bold text-thuigray">
+                        Microchip: {item.microchip}
+                      </div>
+                      <div className="mt-1 line-clamp-1 text-sm font-semibold text-thuigray">
+                        สายเลือด: {item.detail ? item.detail : "-"}
+                      </div>
+                    </div>
+                    <div className="text-right text-xs font-bold text-thuigray">
+                      #{index + 1}
+                    </div>
+                  </Link>
+                ))
               : "ไม่มีข้อมูล"}
           </div>
         ) : (
-          <div className="grid grid-cols-1 place-items-center tabletS:grid-cols-2 tabletM:grid-cols-4 desktopM:grid-cols-4 px-2 tabletS:px-10 gap-2 labtop:gap-4 h-[300px]">
+          <div className="flex h-[220px] items-center justify-center">
             <Loading size="lg" />
           </div>
         )}
