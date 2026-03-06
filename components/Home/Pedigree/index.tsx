@@ -1,78 +1,155 @@
 import Link from "next/link";
 import { trpc } from "../../../utils/trpc";
 
+const pedigreeBatch = [
+  "764040226300035",
+  "764040226600001",
+  "933004022017321",
+  "900115003414178",
+  "900115003414472",
+  "764040226600008",
+  "900115003739216",
+  "764040226301331",
+];
+
 const Pedigree = () => {
-  const { data, isLoading } = trpc.metadata.getBatch.useQuery([
-    "764040226300035",
-    "764040226600001",
-    "933004022017321",
-    "900115003414178",
-    "900115003414472",
-    "764040226600008",
-    "900115003739216",
-    "764040226301331",
-  ]);
+  const { data, isLoading } = trpc.metadata.getBatch.useQuery(pedigreeBatch);
 
   return (
     <>
-      <div className="py-6">
-        <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-[22px] py-2">
+      <div className="py-6 tabletS:pb-8 tabletS:pt-0">
+        <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-[22px] py-2 tabletS:max-w-[1400px]">
           <div className="text-xl font-bold text-thuidark">Pedigrees</div>
           <Link href="/cert" className="text-sm font-semibold text-thuigray">
             ดูทั้งหมด{">"}
           </Link>
         </div>
         {!isLoading ? (
-          <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-[22px] py-2">
-            {data
-              ? data.map((item, index) => (
-                  <Link
-                    key={item.microchip}
-                    href={`/cert/${item.microchip}`}
-                    className="flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
-                  >
-                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-base-200">
-                      <img
-                        className="h-full w-full object-cover"
-                        src={item.image ? item.image : "/images/thuiLogo.png"}
-                        alt={item.name}
-                      />
-                    </div>
-                    <div className="min-w-0 flex-1 text-left text-thuidark">
-                      <div className="truncate text-lg font-bold leading-tight">
-                        {item.name}
+          <>
+            <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-[22px] py-2 tabletS:hidden">
+              {data
+                ? data.map((item, index) => (
+                    <Link
+                      key={item.microchip}
+                      href={`/cert/${item.microchip}`}
+                      className="flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
+                    >
+                      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-base-200">
+                        <img
+                          className="h-full w-full object-cover"
+                          src={item.image ? item.image : "/images/thuiLogo.png"}
+                          alt={item.name}
+                        />
                       </div>
-                      <div className="mt-1 truncate text-sm font-bold text-thuigray">
-                        Microchip: {item.microchip}
+                      <div className="min-w-0 flex-1 text-left text-thuidark">
+                        <div className="truncate text-lg font-bold leading-tight">
+                          {item.name}
+                        </div>
+                        <div className="mt-1 truncate text-sm font-bold text-thuigray">
+                          Microchip: {item.microchip}
+                        </div>
+                        {/* <div className="mt-1 line-clamp-1 text-sm font-semibold text-thuigray">
+                          สายเลือด: {item.detail ? item.detail : "-"}
+                        </div> */}
                       </div>
-                      {/* <div className="mt-1 line-clamp-1 text-sm font-semibold text-thuigray">
-                        สายเลือด: {item.detail ? item.detail : "-"}
-                      </div> */}
-                    </div>
-                    <div className="text-right text-xs font-bold text-thuigray">
-                      #{index + 1}
-                    </div>
-                  </Link>
-                ))
-              : "ไม่มีข้อมูล"}
-          </div>
-        ) : (
-          <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-[22px] py-2">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div
-                key={`pedigree-skeleton-${index}`}
-                className="flex animate-pulse items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm"
-              >
-                <div className="h-20 w-20 flex-shrink-0 rounded-xl bg-base-300" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-5 w-2/3 rounded bg-base-300" />
-                  <div className="h-4 w-1/2 rounded bg-base-300" />
-                  <div className="h-4 w-3/4 rounded bg-base-300" />
+                      <div className="text-right text-xs font-bold text-thuigray">
+                        #{index + 1}
+                      </div>
+                    </Link>
+                  ))
+                : "ไม่มีข้อมูล"}
+            </div>
+
+            <div className="hidden tabletS:block">
+              <div className="mx-auto w-full max-w-[1400px] px-[22px] py-2">
+                <div className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4">
+                  {data
+                    ? data.map((item, index) => (
+                        <Link
+                          key={item.microchip}
+                          href={`/cert/${item.microchip}`}
+                          className="group flex h-[230px] w-[320px] shrink-0 snap-center flex-col overflow-hidden rounded-[28px] border border-base-300 bg-thuiwhite shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
+                        >
+                          <div className="relative h-[136px] w-full overflow-hidden bg-base-200">
+                            <img
+                              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                              src={item.image ? item.image : "/images/thuiLogo.png"}
+                              alt={item.name}
+                            />
+                            <div className="absolute left-4 top-4 rounded-full bg-thuiwhite/90 px-3 py-1 text-xs font-bold text-thuidark shadow-sm">
+                              #{index + 1}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-1 flex-col justify-between p-5 text-left text-thuidark">
+                            <div>
+                              <div className="line-clamp-1 text-xl font-bold leading-tight">
+                                {item.name}
+                              </div>
+                              <div className="mt-2 text-sm font-bold text-thuigray">
+                                Microchip
+                              </div>
+                              <div className="mt-1 truncate text-sm text-thuigray/90">
+                                {item.microchip}
+                              </div>
+                            </div>
+
+                            <div className="mt-4 flex items-center justify-between text-sm font-semibold text-thuigray">
+                              <span>เปิดดูใบพันธุ์ประวัติ</span>
+                              <span className="text-thuiyellow transition group-hover:translate-x-1">
+                                →
+                              </span>
+                            </div>
+                          </div>
+                        </Link>
+                      ))
+                    : <div className="rounded-2xl border border-dashed border-base-300 bg-thuiwhite px-6 py-10 text-thuigray">ไม่มีข้อมูล</div>}
                 </div>
-                <div className="h-4 w-8 rounded bg-base-300" />
               </div>
-            ))}
-          </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-[22px] py-2 tabletS:hidden">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={`pedigree-skeleton-mobile-${index}`}
+                  className="flex animate-pulse items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm"
+                >
+                  <div className="h-20 w-20 flex-shrink-0 rounded-xl bg-base-300" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-5 w-2/3 rounded bg-base-300" />
+                    <div className="h-4 w-1/2 rounded bg-base-300" />
+                    <div className="h-4 w-3/4 rounded bg-base-300" />
+                  </div>
+                  <div className="h-4 w-8 rounded bg-base-300" />
+                </div>
+              ))}
+            </div>
+
+            <div className="hidden tabletS:block">
+              <div className="mx-auto w-full max-w-[1400px] px-[22px] py-2">
+                <div className="scrollbar-none flex gap-6 overflow-x-auto pb-4">
+                  {Array.from({ length: 4 }).map((_, index) => (
+                    <div
+                      key={`pedigree-skeleton-desktop-${index}`}
+                      className="flex h-[230px] w-[320px] shrink-0 animate-pulse flex-col overflow-hidden rounded-[28px] border border-base-300 bg-thuiwhite shadow-sm"
+                    >
+                      <div className="h-[136px] w-full bg-base-300" />
+                      <div className="flex flex-1 flex-col justify-between p-5">
+                        <div className="space-y-3">
+                          <div className="h-6 w-2/3 rounded bg-base-300" />
+                          <div className="h-4 w-1/3 rounded bg-base-300" />
+                          <div className="h-4 w-1/2 rounded bg-base-300" />
+                        </div>
+                        <div className="h-4 w-1/2 rounded bg-base-300" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </>
