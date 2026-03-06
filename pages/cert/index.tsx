@@ -11,6 +11,7 @@ import { FiChevronsRight } from "react-icons/fi";
 import { FiChevronsLeft } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
+import Link from "next/link";
 
 type AgeOperator = ">" | "<" | ">=" | "<=" | "=";
 type SortBy = "latest" | "oldest" | "youngest";
@@ -24,6 +25,13 @@ interface FilterParams {
   search: string;
 }
 
+interface RecentlyViewedItem {
+  microchip: string;
+  name: string;
+  image?: string;
+  timestamp: number;
+}
+
 const DEFAULT_FILTER_PARAMS: FilterParams = {
   sex: "all",
   color: "all",
@@ -34,6 +42,8 @@ const DEFAULT_FILTER_PARAMS: FilterParams = {
 };
 
 const MONTH_IN_MS = 30 * 24 * 60 * 60 * 1000;
+const RECENTLY_VIEWED_KEY = "jaothui-cert-recently-viewed";
+const RECENTLY_VIEWED_LIMIT = 8;
 
 function normalizeColor(color: string) {
   const normalized = color.toLowerCase().trim();
@@ -110,7 +120,13 @@ function applyFiltersAndSort(data: IMetadata[], filterParams: FilterParams) {
         filterParams.ageOperator
       );
 
-    return matchedSex && matchedColor && matchedAge;
+    const search = filterParams.search.trim().toLowerCase();
+    const matchedSearch =
+      search.length === 0 ||
+      item.name.toLowerCase().includes(search) ||
+      item.microchip.toLowerCase().includes(search);
+
+    return matchedSex && matchedColor && matchedAge && matchedSearch;
   });
 
   return [...filteredData].sort((a, b) => {
@@ -151,6 +167,7 @@ const CertMainPage: NextPage = () => {
   const [filterParams, setFilterParams] =
     useState<FilterParams>(DEFAULT_FILTER_PARAMS);
   const [currentData, setCurrentData] = useState<IMetadata[]>(data!);
+  const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewedItem[]>([]);
   const gotoPageRef = useRef<HTMLInputElement>(null);
 
   const { data: event, refetch: fetchEvent } =
@@ -173,6 +190,33 @@ const CertMainPage: NextPage = () => {
       ...prev,
       [key]: value,
     }));
+  }
+
+  function handleClearFilters() {
+    setFilterParams(DEFAULT_FILTER_PARAMS);
+  }
+
+  function handlePedigreeOpen(metadata: IMetadata) {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const nextItem: RecentlyViewedItem = {
+      microchip: metadata.microchip,
+      name: metadata.name,
+      image: metadata.image,
+      timestamp: Date.now(),
+    };
+
+    setRecentlyViewed((prev) => {
+      const nextData = [
+        nextItem,
+        ...prev.filter((item) => item.microchip !== metadata.microchip),
+      ].slice(0, RECENTLY_VIEWED_LIMIT);
+
+      window.localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(nextData));
+      return nextData;
+    });
   }
 
   useEffect(() => {
@@ -230,21 +274,69 @@ const CertMainPage: NextPage = () => {
     setCurrentData([]);
   }, [data, filterParams]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const storedData = window.localStorage.getItem(RECENTLY_VIEWED_KEY);
+    if (!storedData) {
+      return;
+    }
+
+    try {
+      const parsedData = JSON.parse(storedData) as RecentlyViewedItem[];
+      if (Array.isArray(parsedData)) {
+        setRecentlyViewed(parsedData.slice(0, RECENTLY_VIEWED_LIMIT));
+      }
+    } catch {
+      setRecentlyViewed([]);
+    }
+  }, []);
+
   return (
     <>
       <Layout>
         <div className="py-6">
           <div className="flex justify-between items-center px-[22px] py-2">
             <div className="text-xl font-bold">Pedigrees</div>
+            <div className="text-sm font-semibold text-primary">
+              Live: {currentData.length} / {data?.length || 0}
+            </div>
+          </div>
+
+          {recentlyViewed.length > 0 ? (
+            <div className="px-[22px] mb-3">
+              <div className="text-sm font-semibold mb-2">Recently Viewed</div>
+              <div className="flex gap-3 overflow-x-auto pb-2">
+                {recentlyViewed.map((item) => (
+                  <Link
+                    key={item.microchip}
+                    href={`/cert/${item.microchip}`}
+                    className="flex-shrink-0 flex flex-col items-center gap-1"
+                  >
+                    <div className="w-14 h-14 rounded-full overflow-hidden border border-white/10">
+                      <img
+                        src={item.image || "images/thuiLogo.png"}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="text-xs max-w-[72px] text-center truncate">
+                      {item.name}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="px-[22px] py-2">
             <div
               id="search-bar"
-              className="flex flex-col  items-end gap-3 mt-1 mb-1
-        tabletS:mt-3
-        tabletS:flex-row
-        tabletS:items-center
-        "
+              className="rounded-2xl backdrop-blur border border-white/10 p-3 grid grid-cols-1 gap-3 tabletS:grid-cols-2 desktopS:grid-cols-3"
             >
-              <form className="flex items-center gap-2">
+              <form className="flex items-center gap-2 flex-wrap">
                 <div>Goto: </div>
                 <input
                   type="number"
@@ -261,7 +353,18 @@ const CertMainPage: NextPage = () => {
                   Go
                 </button>
               </form>
-              <label htmlFor="sort" className="space-x-2">
+              <label htmlFor="search" className="space-x-2 flex items-center">
+                <span>Search:</span>
+                <input
+                  id="search"
+                  type="text"
+                  value={filterParams.search}
+                  onChange={(e) => updateFilterParams("search", e.target.value)}
+                  placeholder="Name / Microchip"
+                  className="input input-bordered input-sm tabletS:input-md w-44"
+                />
+              </label>
+              <label htmlFor="sort" className="space-x-2 flex items-center">
                 <span>Sex:</span>
                 <select
                   value={filterParams.sex}
@@ -279,7 +382,7 @@ const CertMainPage: NextPage = () => {
                   <option value="male">Male</option>
                 </select>
               </label>
-              <label htmlFor="color" className="space-x-2">
+              <label htmlFor="color" className="space-x-2 flex items-center">
                 <span>Color:</span>
                 <select
                   value={filterParams.color}
@@ -297,7 +400,7 @@ const CertMainPage: NextPage = () => {
                   <option value="albino">เผือก</option>
                 </select>
               </label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span>Age:</span>
                 <select
                   value={filterParams.ageOperator}
@@ -324,7 +427,7 @@ const CertMainPage: NextPage = () => {
                   className="input input-bordered w-24 input-sm tabletS:input-md"
                 />
               </div>
-              <label htmlFor="sortBy" className="space-x-2">
+              <label htmlFor="sortBy" className="space-x-2 flex items-center">
                 <span>Sort:</span>
                 <select
                   value={filterParams.sortBy}
@@ -342,6 +445,15 @@ const CertMainPage: NextPage = () => {
                   <option value="youngest">Youngest First</option>
                 </select>
               </label>
+              <div className="flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={handleClearFilters}
+                  className="btn btn-outline btn-sm tabletS:btn-md"
+                >
+                  Clear Filters
+                </button>
+              </div>
             </div>
           </div>
           {isLoading || currentData == undefined ? (
@@ -364,6 +476,7 @@ const CertMainPage: NextPage = () => {
                         canVote={event?.canVote!}
                         votedMicrochip={event?.votedMicrochip!}
                         index={(page - 1) * 30 + index + 1}
+                        onOpen={handlePedigreeOpen}
                       />
                     ))
                   ) : (

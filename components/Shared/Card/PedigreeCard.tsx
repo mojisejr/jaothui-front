@@ -15,6 +15,7 @@ interface PedigreeCardProps {
   eventId?: string;
   votedMicrochip?: string;
   index?: number;  // Index/position number in list
+  onOpen?: (metadata: IMetadata) => void;
 }
 
 const PedigreeCard = ({
@@ -24,6 +25,7 @@ const PedigreeCard = ({
   eventId,
   vote = false,
   index,  // Add index here
+  onOpen,
 }: PedigreeCardProps) => {
   const { isConnected } = useBitkubNext();
   const [exit, setExit] = useState<boolean>(false);
@@ -51,7 +53,10 @@ const PedigreeCard = ({
         }}
       >
         <Link
-          onClick={() => setExit(true)}
+          onClick={() => {
+            setExit(true);
+            onOpen?.(data);
+          }}
           // href={`/cert/${data ? data.microchip : null}?i=${data.tokenId}`}
           href={`/cert/${data ? data.microchip : null}${isConnected && vote && eventId != undefined ? `?e=${eventId}&vote=true` : ""}`}
           className="relative w-full rounded-xl shadow-xl"
