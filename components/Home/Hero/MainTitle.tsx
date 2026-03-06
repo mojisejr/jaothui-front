@@ -25,10 +25,10 @@ const MainTitle = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-[22px] py-10 text-center text-thuidark tabletS:py-16">
+    <div className="mx-auto w-full max-w-4xl px-[22px] py-10 text-center text-thuidark tabletS:max-w-5xl tabletS:py-8 tabletM:py-6 labtop:py-10">
       <div className="flex justify-center">
         <Image
-          className="h-auto w-[220px] tabletS:w-[260px]"
+          className="h-auto w-[220px] tabletS:w-[210px] tabletM:w-[220px] labtop:w-[260px]"
           src="/images/herov2.png"
           width={260}
           height={260}
@@ -36,16 +36,16 @@ const MainTitle = () => {
           priority
         />
       </div>
-      <h1 className="mt-3 text-3xl font-bold tracking-tight tabletS:text-5xl">
+      <h1 className="mt-3 text-3xl font-bold tracking-tight tabletS:mt-2 tabletS:text-4xl labtop:text-5xl">
         ตรวจสอบข้อมูลควายไทย
       </h1>
-      <p className="mt-2 text-sm text-thuigray tabletS:text-lg">
+      <p className="mt-2 text-sm text-thuigray tabletS:text-base labtop:text-lg">
         ค้นหาด้วยเลขไมโครชิป หรือชื่อที่ต้องการ
       </p>
 
       <form
         onSubmit={handleSearch}
-        className="mx-auto mt-6 flex w-full max-w-3xl flex-col gap-3 tabletS:flex-row"
+        className="mx-auto mt-5 flex w-full max-w-3xl flex-col gap-3 tabletS:mt-4 tabletS:max-w-[920px] tabletS:flex-row"
       >
         <input
           type="text"
@@ -56,13 +56,13 @@ const MainTitle = () => {
         />
         <button
           type="submit"
-          className="btn h-14 min-h-14 rounded-2xl border-0 bg-thuiyellow px-8 text-base font-bold text-thuidark hover:bg-thuiyellow"
+          className="btn h-14 min-h-14 rounded-2xl border-0 bg-thuiyellow px-8 text-base font-bold text-thuidark tabletS:flex-none tabletS:px-10 hover:bg-thuiyellow"
         >
           ค้นหา
         </button>
       </form>
 
-      <p className="mt-3 text-xs text-thuigray tabletS:text-sm">
+      <p className="mt-3 text-xs text-thuigray tabletS:mt-2 tabletS:text-sm">
         กด Enter เพื่อค้นหาได้ทันที
       </p>
     </div>

@@ -17,7 +17,7 @@ const Pedigree = () => {
 
   return (
     <>
-      <div className="py-6 tabletS:pb-8 tabletS:pt-0">
+      <div className="py-6 tabletS:pb-6 tabletS:pt-0 labtop:pb-8">
         <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-[22px] py-2 tabletS:max-w-[1400px]">
           <div className="text-xl font-bold text-thuidark">Pedigrees</div>
           <Link href="/cert" className="text-sm font-semibold text-thuigray">
@@ -62,7 +62,10 @@ const Pedigree = () => {
 
             <div className="hidden tabletS:block">
               <div className="mx-auto w-full max-w-[1400px] px-[22px] py-2">
-                <div className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4">
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-16 bg-gradient-to-r from-thuiwhite via-thuiwhite/90 to-transparent tabletM:block" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-l from-thuiwhite via-thuiwhite/95 to-transparent tabletM:block" />
+                  <div className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16">
                   {data
                     ? data.map((item, index) => (
                         <Link
@@ -104,6 +107,7 @@ const Pedigree = () => {
                         </Link>
                       ))
                     : <div className="rounded-2xl border border-dashed border-base-300 bg-thuiwhite px-6 py-10 text-thuigray">ไม่มีข้อมูล</div>}
+                  </div>
                 </div>
               </div>
             </div>
@@ -129,7 +133,10 @@ const Pedigree = () => {
 
             <div className="hidden tabletS:block">
               <div className="mx-auto w-full max-w-[1400px] px-[22px] py-2">
-                <div className="scrollbar-none flex gap-6 overflow-x-auto pb-4">
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-16 bg-gradient-to-r from-thuiwhite via-thuiwhite/90 to-transparent tabletM:block" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-l from-thuiwhite via-thuiwhite/95 to-transparent tabletM:block" />
+                  <div className="scrollbar-none flex gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16">
                   {Array.from({ length: 4 }).map((_, index) => (
                     <div
                       key={`pedigree-skeleton-desktop-${index}`}
@@ -146,6 +153,7 @@ const Pedigree = () => {
                       </div>
                     </div>
                   ))}
+                  </div>
                 </div>
               </div>
             </div>
