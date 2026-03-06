@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRef } from "react";
 import { trpc } from "../../../utils/trpc";
 
 const pedigreeBatch = [
@@ -13,16 +14,54 @@ const pedigreeBatch = [
 ];
 
 const Pedigree = () => {
+  const desktopRailRef = useRef<HTMLDivElement>(null);
   const { data, isLoading } = trpc.metadata.getBatch.useQuery(pedigreeBatch);
+
+  const scrollDesktopRail = (direction: "left" | "right") => {
+    if (!desktopRailRef.current) {
+      return;
+    }
+
+    const cardWidth = 380;
+    const cardGap = 24;
+    const scrollAmount = cardWidth + cardGap;
+
+    desktopRailRef.current.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <>
       <div className="py-6 tabletS:pb-6 tabletS:pt-0 labtop:pb-8">
         <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-[22px] py-2 tabletS:max-w-[1400px]">
           <div className="text-xl font-bold text-thuidark">Pedigrees</div>
-          <Link href="/cert" className="text-sm font-semibold text-thuigray">
-            ดูทั้งหมด{">"}
-          </Link>
+          <div className="flex items-center gap-3">
+            {!isLoading && data && data.length > 1 ? (
+              <div className="hidden items-center gap-2 tabletS:flex">
+                <button
+                  type="button"
+                  aria-label="เลื่อนการ์ดไปทางซ้าย"
+                  onClick={() => scrollDesktopRail("left")}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-base-300 bg-thuiwhite text-lg font-bold text-thuidark shadow-sm transition hover:-translate-y-0.5 hover:border-thuiyellow hover:text-thuiyellow"
+                >
+                  &lt;
+                </button>
+                <button
+                  type="button"
+                  aria-label="เลื่อนการ์ดไปทางขวา"
+                  onClick={() => scrollDesktopRail("right")}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-base-300 bg-thuiwhite text-lg font-bold text-thuidark shadow-sm transition hover:-translate-y-0.5 hover:border-thuiyellow hover:text-thuiyellow"
+                >
+                  &gt;
+                </button>
+              </div>
+            ) : null}
+            <Link href="/cert" className="text-sm font-semibold text-thuigray">
+              ดูทั้งหมด{">"}
+            </Link>
+          </div>
         </div>
         {!isLoading ? (
           <>
@@ -65,7 +104,10 @@ const Pedigree = () => {
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-16 bg-gradient-to-r from-thuiwhite via-thuiwhite/90 to-transparent tabletM:block" />
                   <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-l from-thuiwhite via-thuiwhite/95 to-transparent tabletM:block" />
-                  <div className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16">
+                  <div
+                    ref={desktopRailRef}
+                    className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16"
+                  >
                   {data
                     ? data.map((item, index) => (
                         <Link
