@@ -12,6 +12,7 @@ import { FiChevronsLeft } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import Link from "next/link";
+import Image from "next/image";
 
 type AgeOperator = ">" | "<" | ">=" | "<=" | "=";
 type SortBy = "latest" | "oldest" | "youngest";
@@ -40,132 +41,25 @@ const DEFAULT_FILTER_PARAMS: FilterParams = {
   sortBy: "latest",
   search: "",
 };
-
-const MONTH_IN_MS = 30 * 24 * 60 * 60 * 1000;
 const RECENTLY_VIEWED_KEY = "jaothui-cert-recently-viewed";
 const RECENTLY_VIEWED_LIMIT = 8;
-
-function normalizeColor(color: string) {
-  const normalized = color.toLowerCase().trim();
-  if (normalized.includes("เผือก") || normalized.includes("albino")) {
-    return "albino";
-  }
-  if (normalized.includes("ดำ") || normalized.includes("black")) {
-    return "black";
-  }
-  return "other";
-}
-
-function calculateAgeInMonths(metadata: IMetadata) {
-  if (metadata.calculatedAge && metadata.calculatedAge > 0) {
-    return metadata.calculatedAge;
-  }
-  if (!metadata.birthdate) {
-    return 0;
-  }
-
-  const birthTimestamp = Number(metadata.birthdate);
-  const nowTimestamp = Date.now();
-
-  if (!birthTimestamp || birthTimestamp > nowTimestamp) {
-    return 0;
-  }
-
-  return Math.floor((nowTimestamp - birthTimestamp) / MONTH_IN_MS);
-}
-
-function compareAgeWithOperator(
-  currentAge: number,
-  targetAge: number,
-  operator: AgeOperator
-) {
-  switch (operator) {
-    case ">":
-      return currentAge > targetAge;
-    case "<":
-      return currentAge < targetAge;
-    case ">=":
-      return currentAge >= targetAge;
-    case "<=":
-      return currentAge <= targetAge;
-    case "=":
-      return currentAge === targetAge;
-    default:
-      return true;
-  }
-}
-
-function applyFiltersAndSort(data: IMetadata[], filterParams: FilterParams) {
-  const targetAge = Number(filterParams.ageValue);
-  const hasAgeFilter =
-    filterParams.ageValue.trim().length > 0 && Number.isFinite(targetAge);
-
-  const filteredData = data.filter((item) => {
-    const sex = item.sex.toLowerCase();
-    const itemColor = normalizeColor(item.color);
-
-    const matchedSex =
-      filterParams.sex === "all" ||
-      (filterParams.sex === "female" && sex === "female") ||
-      (filterParams.sex === "male" && sex === "male");
-
-    const matchedColor =
-      filterParams.color === "all" || filterParams.color === itemColor;
-
-    const matchedAge =
-      !hasAgeFilter ||
-      compareAgeWithOperator(
-        calculateAgeInMonths(item),
-        targetAge,
-        filterParams.ageOperator
-      );
-
-    const search = filterParams.search.trim().toLowerCase();
-    const matchedSearch =
-      search.length === 0 ||
-      item.name.toLowerCase().includes(search) ||
-      item.microchip.toLowerCase().includes(search);
-
-    return matchedSex && matchedColor && matchedAge && matchedSearch;
-  });
-
-  return [...filteredData].sort((a, b) => {
-    const aBirthdate = Number(a.birthdate) || 0;
-    const bBirthdate = Number(b.birthdate) || 0;
-    const aAge = calculateAgeInMonths(a);
-    const bAge = calculateAgeInMonths(b);
-
-    if (filterParams.sortBy === "oldest") {
-      if (aAge === bAge) {
-        return aBirthdate - bBirthdate;
-      }
-      return bAge - aAge;
-    }
-
-    if (filterParams.sortBy === "youngest") {
-      if (aAge === bAge) {
-        return bBirthdate - aBirthdate;
-      }
-      return aAge - bAge;
-    }
-
-    const aTokenId = a.tokenId || 0;
-    const bTokenId = b.tokenId || 0;
-    if (aTokenId !== bTokenId) {
-      return bTokenId - aTokenId;
-    }
-    return bBirthdate - aBirthdate;
-  });
-}
 
 const CertMainPage: NextPage = () => {
   const { query } = useRouter();
   const { isConnected, walletAddress } = useBitkubNext();
-  const [maxPage, setMaxPage] = useState<number>(100); // Default max page
+  const [maxPage, setMaxPage] = useState<number>(1);
   const [page, setPage] = useState<number>(1);
-  const { data, isLoading, refetch } = trpc.metadata.getAll.useQuery(page);
   const [filterParams, setFilterParams] =
     useState<FilterParams>(DEFAULT_FILTER_PARAMS);
+  const queryInput = {
+    page,
+    filter: {
+      ...filterParams,
+      ageValue: filterParams.ageValue.trim(),
+      search: filterParams.search.trim(),
+    },
+  };
+  const { data, isLoading } = trpc.metadata.getAll.useQuery(queryInput);
   const [currentData, setCurrentData] = useState<IMetadata[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewedItem[]>([]);
   const gotoPageRef = useRef<HTMLInputElement>(null);
@@ -180,12 +74,13 @@ const CertMainPage: NextPage = () => {
     if (query.vote && isConnected && walletAddress) {
       fetchEvent();
     }
-  }, [event, isConnected, walletAddress]);
+  }, [fetchEvent, isConnected, query.vote, walletAddress]);
 
   function updateFilterParams<K extends keyof FilterParams>(
     key: K,
     value: FilterParams[K]
   ) {
+    setPage(1);
     setFilterParams((prev) => ({
       ...prev,
       [key]: value,
@@ -193,6 +88,7 @@ const CertMainPage: NextPage = () => {
   }
 
   function handleClearFilters() {
+    setPage(1);
     setFilterParams(DEFAULT_FILTER_PARAMS);
   }
 
@@ -220,16 +116,8 @@ const CertMainPage: NextPage = () => {
   }
 
   useEffect(() => {
-    refetch();
-  }, [page]);
-
-  useEffect(() => {
-    // Update max page based on data availability
-    // If we get less than 30 items, we've reached the end
-    if (data && data.length < 30 && data.length > 0) {
-      setMaxPage(page);
-    }
-  }, [data, page]);
+    setMaxPage(Math.max(data?.totalPages || 0, 1));
+  }, [data]);
 
   function handleNextPage() {
     if (typeof window != undefined) {
@@ -255,7 +143,7 @@ const CertMainPage: NextPage = () => {
       return;
     }
 
-    if (inputPage < 1 || inputPage > maxPage + 1) {
+    if (inputPage < 1 || inputPage > maxPage) {
       alert("ไม่มีหน้าที่ต้องการ");
       return;
     }
@@ -267,12 +155,12 @@ const CertMainPage: NextPage = () => {
   }
 
   useEffect(() => {
-    if (data && data.length > 0) {
-      setCurrentData(applyFiltersAndSort(data, filterParams));
+    if (data?.items && data.items.length > 0) {
+      setCurrentData(data.items);
       return;
     }
     setCurrentData([]);
-  }, [data, filterParams]);
+  }, [data]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -301,7 +189,7 @@ const CertMainPage: NextPage = () => {
           <div className="flex justify-between items-center px-[22px] py-2">
             <div className="text-xl font-bold">Pedigrees</div>
             <div className="text-sm font-semibold text-primary">
-              Live: {currentData?.length || 0} / {data?.length || 0}
+              Live: {currentData?.length || 0} / {data?.totalCount || 0}
             </div>
           </div>
 
@@ -315,11 +203,13 @@ const CertMainPage: NextPage = () => {
                     href={`/cert/${item.microchip}`}
                     className="flex-shrink-0 flex flex-col items-center gap-1"
                   >
-                    <div className="w-14 h-14 rounded-full overflow-hidden border border-white/10">
-                      <img
+                    <div className="relative w-14 h-14 rounded-full overflow-hidden border border-white/10">
+                      <Image
                         src={item.image || "images/thuiLogo.png"}
                         alt={item.name}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="56px"
+                        className="object-cover"
                       />
                     </div>
                     <div className="text-xs max-w-[72px] text-center truncate">
@@ -497,10 +387,10 @@ const CertMainPage: NextPage = () => {
             Prev
           </button>
           <div className="font-bold">
-            {page} of {maxPage + 1}
+            {page} of {maxPage}
           </div>
           <button
-            disabled={maxPage < page}
+            disabled={page >= maxPage}
             className="btn btn-primary"
             onClick={() => handleNextPage()}
           >
