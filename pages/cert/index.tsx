@@ -166,7 +166,7 @@ const CertMainPage: NextPage = () => {
   const { data, isLoading, refetch } = trpc.metadata.getAll.useQuery(page);
   const [filterParams, setFilterParams] =
     useState<FilterParams>(DEFAULT_FILTER_PARAMS);
-  const [currentData, setCurrentData] = useState<IMetadata[]>(data!);
+  const [currentData, setCurrentData] = useState<IMetadata[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewedItem[]>([]);
   const gotoPageRef = useRef<HTMLInputElement>(null);
 
@@ -301,7 +301,7 @@ const CertMainPage: NextPage = () => {
           <div className="flex justify-between items-center px-[22px] py-2">
             <div className="text-xl font-bold">Pedigrees</div>
             <div className="text-sm font-semibold text-primary">
-              Live: {currentData.length} / {data?.length || 0}
+              Live: {currentData?.length || 0} / {data?.length || 0}
             </div>
           </div>
 
