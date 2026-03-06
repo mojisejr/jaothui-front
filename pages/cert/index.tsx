@@ -5,11 +5,11 @@ import PedigreeCard from "../../components/Shared/Card/PedigreeCard";
 import { SyntheticEvent, useEffect, useMemo, useRef, useState } from "react";
 import { IMetadata } from "../../interfaces/iMetadata";
 import Loading from "../../components/Shared/Indicators/Loading";
-import NotFound from "../../components/Shared/Utils/Notfound";
 import { trpc } from "../../utils/trpc";
 import {
   FiChevronsLeft,
   FiChevronsRight,
+  FiLoader,
   FiSearch,
   FiSliders,
   FiX,
@@ -49,6 +49,7 @@ const DEFAULT_FILTER_PARAMS: FilterParams = {
 
 const RECENTLY_VIEWED_KEY = "jaothui-cert-recently-viewed";
 const RECENTLY_VIEWED_LIMIT = 8;
+const SKELETON_CARD_COUNT = 8;
 
 function getActiveFilterBadges(filterParams: FilterParams) {
   const badges: Array<{ key: keyof FilterParams | "age"; label: string }> = [];
@@ -87,6 +88,81 @@ function getActiveFilterBadges(filterParams: FilterParams) {
   return badges;
 }
 
+function DiscoverySkeletonGrid() {
+  return (
+    <div className="grid grid-cols-1 gap-2 px-2 place-items-center tabletS:grid-cols-2 tabletS:px-10 tabletM:px-[10rem] labtop:grid-cols-3 labtop:px-[13rem] desktopM:grid-cols-4 desktopM:gap-3 desktopM:px-[18rem]">
+      {Array.from({ length: SKELETON_CARD_COUNT }).map((_, index) => (
+        <div
+          key={index}
+          className="w-full max-w-[320px] overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur animate-pulse"
+        >
+          <div className="mb-4 h-52 rounded-2xl bg-white/10" />
+          <div className="space-y-3">
+            <div className="h-5 w-2/3 rounded-full bg-white/10" />
+            <div className="h-4 w-1/2 rounded-full bg-white/10" />
+            <div className="h-4 w-5/6 rounded-full bg-white/10" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DiscoveryEmptyState({
+  hasActiveFilters,
+  search,
+  onClear,
+  onOpenDrawer,
+}: {
+  hasActiveFilters: boolean;
+  search: string;
+  onClear: () => void;
+  onOpenDrawer: () => void;
+}) {
+  return (
+    <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 rounded-[28px] border border-white/10 bg-white/5 px-6 py-10 text-center backdrop-blur-xl">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/5 text-primary">
+        <FiSearch size={24} />
+      </div>
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold">No pedigree matches found</h2>
+        <p className="text-sm text-base-content/70">
+          {search.trim().length > 0
+            ? `No results for \"${search.trim()}\" with the current discovery setup.`
+            : "No results matched the current discovery filters."}
+        </p>
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-base-content/70">
+        <span className="rounded-full border border-white/10 px-3 py-1.5">
+          {hasActiveFilters ? "Active filters are narrowing the list" : "Try a broader search term"}
+        </span>
+        <span className="rounded-full border border-white/10 px-3 py-1.5">
+          Global search is running against the full pedigree database
+        </span>
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        {hasActiveFilters ? (
+          <button
+            type="button"
+            onClick={onClear}
+            className="btn btn-primary rounded-2xl"
+          >
+            Clear Filters
+          </button>
+        ) : null}
+        <button
+          type="button"
+          onClick={onOpenDrawer}
+          className="btn btn-outline rounded-2xl border-white/10"
+        >
+          <FiSliders size={16} />
+          Refine Discovery
+        </button>
+      </div>
+    </div>
+  );
+}
+
 const CertMainPage: NextPage = () => {
   const { query } = useRouter();
   const { isConnected, walletAddress } = useBitkubNext();
@@ -95,15 +171,23 @@ const CertMainPage: NextPage = () => {
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [filterParams, setFilterParams] =
     useState<FilterParams>(DEFAULT_FILTER_PARAMS);
-  const queryInput = {
-    page,
-    filter: {
-      ...filterParams,
-      ageValue: filterParams.ageValue.trim(),
-      search: filterParams.search.trim(),
-    },
-  };
-  const { data, isLoading } = trpc.metadata.getAll.useQuery(queryInput);
+  const queryInput = useMemo(
+    () => ({
+      page,
+      filter: {
+        ...filterParams,
+        ageValue: filterParams.ageValue.trim(),
+        search: filterParams.search.trim(),
+      },
+    }),
+    [filterParams, page]
+  );
+  const { data, isFetching, isLoading } = trpc.metadata.getAll.useQuery(
+    queryInput,
+    {
+      keepPreviousData: true,
+    }
+  );
   const [currentData, setCurrentData] = useState<IMetadata[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewedItem[]>([]);
   const gotoPageRef = useRef<HTMLInputElement>(null);
@@ -112,6 +196,8 @@ const CertMainPage: NextPage = () => {
     [filterParams]
   );
   const hasActiveFilters = activeFilterBadges.length > 0;
+  const isInitialLoading = isLoading && currentData.length === 0;
+  const isRefreshingResults = isFetching && !isInitialLoading;
 
   const { data: event, refetch: fetchEvent } =
     trpc.voteEvent.getVoteEventByUser.useQuery(
@@ -336,6 +422,12 @@ const CertMainPage: NextPage = () => {
               </label>
 
               <div className="flex items-center gap-2 text-sm text-base-content/70">
+                {isRefreshingResults ? (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-primary">
+                    <FiLoader className="animate-spin" size={14} />
+                    Updating results...
+                  </span>
+                ) : null}
                 <span className="rounded-full border border-white/10 px-3 py-1.5">
                   Page {page}/{maxPage}
                 </span>
@@ -572,16 +664,34 @@ const CertMainPage: NextPage = () => {
             </div>
           ) : null}
 
-          {isLoading || currentData === undefined ? (
-            <div className="flex h-screen w-full items-start justify-center">
-              <Loading size="lg" />
+          {isInitialLoading ? (
+            <div className="space-y-6 pt-6">
+              <div className="flex w-full justify-center">
+                <Loading size="lg" />
+              </div>
+              <DiscoverySkeletonGrid />
             </div>
           ) : (
             <>
               {currentData.length <= 0 ? (
-                <NotFound />
+                <div className="px-[22px] pt-6">
+                  <DiscoveryEmptyState
+                    hasActiveFilters={hasActiveFilters}
+                    search={filterParams.search}
+                    onClear={handleClearFilters}
+                    onOpenDrawer={() => setIsFilterDrawerOpen(true)}
+                  />
+                </div>
               ) : (
-                <div className="place-items-center grid grid-cols-1 gap-2 px-2 tabletS:grid-cols-2 tabletS:px-10 tabletM:px-[10rem] labtop:grid-cols-3 labtop:px-[13rem] desktopM:grid-cols-4 desktopM:gap-3 desktopM:px-[18rem]">
+                <div className="space-y-4">
+                  {isRefreshingResults ? (
+                    <div className="px-[22px]">
+                      <div className="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary backdrop-blur">
+                        Refreshing global results from the server...
+                      </div>
+                    </div>
+                  ) : null}
+                  <div className="place-items-center grid grid-cols-1 gap-2 px-2 tabletS:grid-cols-2 tabletS:px-10 tabletM:px-[10rem] labtop:grid-cols-3 labtop:px-[13rem] desktopM:grid-cols-4 desktopM:gap-3 desktopM:px-[18rem]">
                   {currentData.map((d, index) => (
                     <PedigreeCard
                       key={index}
@@ -594,6 +704,7 @@ const CertMainPage: NextPage = () => {
                       onOpen={handlePedigreeOpen}
                     />
                   ))}
+                  </div>
                 </div>
               )}
             </>
