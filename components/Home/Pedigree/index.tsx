@@ -45,9 +45,9 @@ const Pedigree = () => {
                       <div className="mt-1 truncate text-sm font-bold text-thuigray">
                         Microchip: {item.microchip}
                       </div>
-                      <div className="mt-1 line-clamp-1 text-sm font-semibold text-thuigray">
+                      {/* <div className="mt-1 line-clamp-1 text-sm font-semibold text-thuigray">
                         สายเลือด: {item.detail ? item.detail : "-"}
-                      </div>
+                      </div> */}
                     </div>
                     <div className="text-right text-xs font-bold text-thuigray">
                       #{index + 1}
