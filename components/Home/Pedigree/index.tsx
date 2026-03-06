@@ -71,36 +71,45 @@ const Pedigree = () => {
                         <Link
                           key={item.microchip}
                           href={`/cert/${item.microchip}`}
-                          className="group flex h-[230px] w-[320px] shrink-0 snap-center flex-col overflow-hidden rounded-[28px] border border-base-300 bg-thuiwhite shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
+                          className="group flex h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
                         >
-                          <div className="relative h-[136px] w-full overflow-hidden bg-base-200">
+                          <div className="relative flex w-[168px] shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br from-[#fff7df] via-[#fffdf4] to-thuiwhite p-4">
                             <img
-                              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                              className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
                               src={item.image ? item.image : "/images/thuiLogo.png"}
                               alt={item.name}
                             />
-                            <div className="absolute left-4 top-4 rounded-full bg-thuiwhite/90 px-3 py-1 text-xs font-bold text-thuidark shadow-sm">
+                            <div className="absolute left-4 top-4 rounded-full bg-thuiwhite/95 px-3 py-1 text-xs font-bold text-thuidark shadow-sm">
                               #{index + 1}
+                            </div>
+                            <div className="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-thuigray backdrop-blur-sm">
+                              Pedigree
                             </div>
                           </div>
 
-                          <div className="flex flex-1 flex-col justify-between p-5 text-left text-thuidark">
-                            <div>
-                              <div className="line-clamp-1 text-xl font-bold leading-tight">
+                          <div className="flex flex-1 flex-col justify-between p-6 text-left text-thuidark">
+                            <div className="min-w-0">
+                              <div className="text-xs font-bold uppercase tracking-[0.24em] text-thuigray/70">
+                                Thai Buffalo
+                              </div>
+                              <div className="mt-2 line-clamp-2 text-2xl font-bold leading-tight">
                                 {item.name}
                               </div>
-                              <div className="mt-2 text-sm font-bold text-thuigray">
+                              <div className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-thuigray/70">
                                 Microchip
                               </div>
-                              <div className="mt-1 truncate text-sm text-thuigray/90">
-                                {item.microchip}
+                              <div className="mt-2 inline-flex max-w-full rounded-full bg-base-200/70 px-3 py-1 text-sm font-semibold text-thuigray/90">
+                                <span className="truncate">{item.microchip}</span>
                               </div>
                             </div>
 
-                            <div className="mt-4 flex items-center justify-between text-sm font-semibold text-thuigray">
-                              <span>เปิดดูใบพันธุ์ประวัติ</span>
-                              <span className="text-thuiyellow transition group-hover:translate-x-1">
-                                →
+                            <div className="mt-4 flex items-center justify-between border-t border-base-300/70 pt-4 text-sm font-semibold text-thuigray">
+                              <span className="text-thuidark/80">เปิดดูใบพันธุ์ประวัติ</span>
+                              <span className="flex items-center gap-2 text-thuiyellow transition group-hover:translate-x-1">
+                                <span className="text-xs uppercase tracking-[0.2em] text-thuigray/70">
+                                  View
+                                </span>
+                                <span className="text-lg leading-none">→</span>
                               </span>
                             </div>
                           </div>
