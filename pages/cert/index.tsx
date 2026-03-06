@@ -12,13 +12,144 @@ import { FiChevronsLeft } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 
+type AgeOperator = ">" | "<" | ">=" | "<=" | "=";
+type SortBy = "latest" | "oldest" | "youngest";
+
+interface FilterParams {
+  sex: "all" | "female" | "male";
+  color: "all" | "black" | "albino";
+  ageOperator: AgeOperator;
+  ageValue: string;
+  sortBy: SortBy;
+  search: string;
+}
+
+const DEFAULT_FILTER_PARAMS: FilterParams = {
+  sex: "all",
+  color: "all",
+  ageOperator: ">=",
+  ageValue: "",
+  sortBy: "latest",
+  search: "",
+};
+
+const MONTH_IN_MS = 30 * 24 * 60 * 60 * 1000;
+
+function normalizeColor(color: string) {
+  const normalized = color.toLowerCase().trim();
+  if (normalized.includes("เผือก") || normalized.includes("albino")) {
+    return "albino";
+  }
+  if (normalized.includes("ดำ") || normalized.includes("black")) {
+    return "black";
+  }
+  return "other";
+}
+
+function calculateAgeInMonths(metadata: IMetadata) {
+  if (metadata.calculatedAge && metadata.calculatedAge > 0) {
+    return metadata.calculatedAge;
+  }
+  if (!metadata.birthdate) {
+    return 0;
+  }
+
+  const birthTimestamp = Number(metadata.birthdate);
+  const nowTimestamp = Date.now();
+
+  if (!birthTimestamp || birthTimestamp > nowTimestamp) {
+    return 0;
+  }
+
+  return Math.floor((nowTimestamp - birthTimestamp) / MONTH_IN_MS);
+}
+
+function compareAgeWithOperator(
+  currentAge: number,
+  targetAge: number,
+  operator: AgeOperator
+) {
+  switch (operator) {
+    case ">":
+      return currentAge > targetAge;
+    case "<":
+      return currentAge < targetAge;
+    case ">=":
+      return currentAge >= targetAge;
+    case "<=":
+      return currentAge <= targetAge;
+    case "=":
+      return currentAge === targetAge;
+    default:
+      return true;
+  }
+}
+
+function applyFiltersAndSort(data: IMetadata[], filterParams: FilterParams) {
+  const targetAge = Number(filterParams.ageValue);
+  const hasAgeFilter =
+    filterParams.ageValue.trim().length > 0 && Number.isFinite(targetAge);
+
+  const filteredData = data.filter((item) => {
+    const sex = item.sex.toLowerCase();
+    const itemColor = normalizeColor(item.color);
+
+    const matchedSex =
+      filterParams.sex === "all" ||
+      (filterParams.sex === "female" && sex === "female") ||
+      (filterParams.sex === "male" && sex === "male");
+
+    const matchedColor =
+      filterParams.color === "all" || filterParams.color === itemColor;
+
+    const matchedAge =
+      !hasAgeFilter ||
+      compareAgeWithOperator(
+        calculateAgeInMonths(item),
+        targetAge,
+        filterParams.ageOperator
+      );
+
+    return matchedSex && matchedColor && matchedAge;
+  });
+
+  return [...filteredData].sort((a, b) => {
+    const aBirthdate = Number(a.birthdate) || 0;
+    const bBirthdate = Number(b.birthdate) || 0;
+    const aAge = calculateAgeInMonths(a);
+    const bAge = calculateAgeInMonths(b);
+
+    if (filterParams.sortBy === "oldest") {
+      if (aAge === bAge) {
+        return aBirthdate - bBirthdate;
+      }
+      return bAge - aAge;
+    }
+
+    if (filterParams.sortBy === "youngest") {
+      if (aAge === bAge) {
+        return bBirthdate - aBirthdate;
+      }
+      return aAge - bAge;
+    }
+
+    const aTokenId = a.tokenId || 0;
+    const bTokenId = b.tokenId || 0;
+    if (aTokenId !== bTokenId) {
+      return bTokenId - aTokenId;
+    }
+    return bBirthdate - aBirthdate;
+  });
+}
+
 const CertMainPage: NextPage = () => {
   const { query } = useRouter();
   const { isConnected, walletAddress } = useBitkubNext();
   const [maxPage, setMaxPage] = useState<number>(100); // Default max page
   const [page, setPage] = useState<number>(1);
   const { data, isLoading, refetch } = trpc.metadata.getAll.useQuery(page);
-  const [sortState, setSortState] = useState<number>(0);
+  const [filterParams, setFilterParams] =
+    useState<FilterParams>(DEFAULT_FILTER_PARAMS);
   const [currentData, setCurrentData] = useState<IMetadata[]>(data!);
   const gotoPageRef = useRef<HTMLInputElement>(null);
 
@@ -34,28 +165,14 @@ const CertMainPage: NextPage = () => {
     }
   }, [event, isConnected, walletAddress]);
 
-  function handleSorting(e: SyntheticEvent) {
-    e.preventDefault();
-    const target = e.target as typeof e.target & {
-      value: number;
-    };
-
-    switch (+target.value) {
-      case 1: {
-        const sorted = data!.filter((f) => f.sex == "Female");
-        setCurrentData(sorted);
-        break;
-      }
-      case 2: {
-        const sorted = data!.filter((f) => f.sex == "Male");
-        setCurrentData(sorted);
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-    setSortState(target.value);
+  function updateFilterParams<K extends keyof FilterParams>(
+    key: K,
+    value: FilterParams[K]
+  ) {
+    setFilterParams((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   }
 
   useEffect(() => {
@@ -106,10 +223,12 @@ const CertMainPage: NextPage = () => {
   }
 
   useEffect(() => {
-    if (data && data!.length > 0 && sortState == 0) {
-      setCurrentData(data!);
+    if (data && data.length > 0) {
+      setCurrentData(applyFiltersAndSort(data, filterParams));
+      return;
     }
-  }, [data, sortState]);
+    setCurrentData([]);
+  }, [data, filterParams]);
 
   return (
     <>
@@ -143,15 +262,84 @@ const CertMainPage: NextPage = () => {
                 </button>
               </form>
               <label htmlFor="sort" className="space-x-2">
-                <span>Filter:</span>
+                <span>Sex:</span>
                 <select
-                  onChange={(e) => handleSorting(e)}
+                  value={filterParams.sex}
+                  onChange={(e) =>
+                    updateFilterParams(
+                      "sex",
+                      e.target.value as FilterParams["sex"]
+                    )
+                  }
                   id="sort"
                   className="p-2 rounded-md tabletS:select-md select-sm"
                 >
-                  <option value={0}>All</option>
-                  <option value={1}>Female</option>
-                  <option value={2}>Male</option>
+                  <option value="all">All</option>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                </select>
+              </label>
+              <label htmlFor="color" className="space-x-2">
+                <span>Color:</span>
+                <select
+                  value={filterParams.color}
+                  onChange={(e) =>
+                    updateFilterParams(
+                      "color",
+                      e.target.value as FilterParams["color"]
+                    )
+                  }
+                  id="color"
+                  className="p-2 rounded-md tabletS:select-md select-sm"
+                >
+                  <option value="all">All</option>
+                  <option value="black">ดำ</option>
+                  <option value="albino">เผือก</option>
+                </select>
+              </label>
+              <div className="flex items-center gap-2">
+                <span>Age:</span>
+                <select
+                  value={filterParams.ageOperator}
+                  onChange={(e) =>
+                    updateFilterParams(
+                      "ageOperator",
+                      e.target.value as FilterParams["ageOperator"]
+                    )
+                  }
+                  className="p-2 rounded-md tabletS:select-md select-sm"
+                >
+                  <option value=">">{`>`}</option>
+                  <option value="<">{`<`}</option>
+                  <option value=">=">{`>=`}</option>
+                  <option value="<=">{`<=`}</option>
+                  <option value="=">{`=`}</option>
+                </select>
+                <input
+                  type="number"
+                  min={0}
+                  value={filterParams.ageValue}
+                  onChange={(e) => updateFilterParams("ageValue", e.target.value)}
+                  placeholder="months"
+                  className="input input-bordered w-24 input-sm tabletS:input-md"
+                />
+              </div>
+              <label htmlFor="sortBy" className="space-x-2">
+                <span>Sort:</span>
+                <select
+                  value={filterParams.sortBy}
+                  onChange={(e) =>
+                    updateFilterParams(
+                      "sortBy",
+                      e.target.value as FilterParams["sortBy"]
+                    )
+                  }
+                  id="sortBy"
+                  className="p-2 rounded-md tabletS:select-md select-sm"
+                >
+                  <option value="latest">Latest</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="youngest">Youngest First</option>
                 </select>
               </label>
             </div>
