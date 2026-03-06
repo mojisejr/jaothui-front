@@ -145,20 +145,31 @@ const Pedigree = () => {
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-16 bg-gradient-to-r from-thuiwhite via-thuiwhite/90 to-transparent tabletM:block" />
                   <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-l from-thuiwhite via-thuiwhite/95 to-transparent tabletM:block" />
-                  <div className="scrollbar-none flex gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16">
+                  <div className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16">
                   {Array.from({ length: 4 }).map((_, index) => (
                     <div
                       key={`pedigree-skeleton-desktop-${index}`}
-                      className="flex h-[230px] w-[320px] shrink-0 animate-pulse flex-col overflow-hidden rounded-[28px] border border-base-300 bg-thuiwhite shadow-sm"
+                      className="flex h-[184px] w-[380px] shrink-0 snap-center animate-pulse overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm"
                     >
-                      <div className="h-[136px] w-full bg-base-300" />
-                      <div className="flex flex-1 flex-col justify-between p-5">
+                      <div className="relative flex w-[168px] shrink-0 items-center justify-center bg-gradient-to-br from-[#fff7df] via-[#fffdf4] to-thuiwhite p-4">
+                        <div className="h-full w-full rounded-[24px] bg-base-300/80" />
+                        <div className="absolute left-4 top-4 h-6 w-10 rounded-full bg-white/80" />
+                        <div className="absolute bottom-4 left-4 h-6 w-24 rounded-full bg-white/70" />
+                      </div>
+                      <div className="flex flex-1 flex-col justify-between p-6">
                         <div className="space-y-3">
-                          <div className="h-6 w-2/3 rounded bg-base-300" />
-                          <div className="h-4 w-1/3 rounded bg-base-300" />
-                          <div className="h-4 w-1/2 rounded bg-base-300" />
+                          <div className="h-3 w-20 rounded-full bg-base-300/70" />
+                          <div className="h-7 w-11/12 rounded-xl bg-base-300" />
+                          <div className="h-7 w-8/12 rounded-xl bg-base-300/90" />
+                          <div className="pt-1 space-y-2">
+                            <div className="h-3 w-24 rounded-full bg-base-300/70" />
+                            <div className="h-8 w-9/12 rounded-full bg-base-300/90" />
+                          </div>
                         </div>
-                        <div className="h-4 w-1/2 rounded bg-base-300" />
+                        <div className="flex items-center justify-between border-t border-base-300/70 pt-4">
+                          <div className="h-4 w-28 rounded-full bg-base-300/80" />
+                          <div className="h-4 w-12 rounded-full bg-base-300/70" />
+                        </div>
                       </div>
                     </div>
                   ))}
