@@ -16,11 +16,12 @@ const Layout = ({ children }: LayoutProps) => {
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col">
           {/* Navbar */}
-          <div className="navbar bg-thuiwhite/95 border-b border-base-300 px-[22px] sticky top-0 left-0 z-[1] backdrop-blur-sm">
+          <div className="navbar sticky left-0 top-0 z-30 border-b border-base-300 bg-thuiwhite/95 px-[22px] backdrop-blur-sm">
             <div className="navbar-start flex items-center gap-2">
               <label
                 htmlFor="my-drawer-3"
-                className="btn btn-square btn-ghost"
+                className="btn btn-square btn-ghost hidden tabletM:inline-flex"
+                aria-label="Open navigation menu"
               >
                 <HiMenuAlt2 size={24} />
               </label>

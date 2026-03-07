@@ -381,7 +381,7 @@ const CertMainPage: NextPage = () => {
     <>
       <Layout>
         <div className="py-6">
-          <div className="sticky top-0 z-20 border-b border-white/10 bg-base-100/80 px-[22px] pb-3 pt-2 backdrop-blur-xl">
+          <div className="sticky top-16 z-20 border-b border-white/10 bg-base-100/80 px-[22px] pb-3 pt-2 backdrop-blur-xl">
             <div className="flex items-center justify-between gap-4 py-2">
               <div>
                 <div className="text-xl font-bold">Pedigrees</div>
