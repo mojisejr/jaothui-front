@@ -3,13 +3,22 @@ import BottomNav from "../Shared/Navbar/Bottom";
 import { HiMenuAlt2 } from "react-icons/hi";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 import MenuList from "../Shared/Navbar/MenuList";
+import GlobalNavSearch from "../Shared/Navbar/GlobalNavSearch";
 
 interface LayoutProps {
   children: ReactNode;
 }
 const Layout = ({ children }: LayoutProps) => {
+  const router = useRouter();
+
+  // Condition to hide global search: Home or exactly /cert (Landing)
+  const hideSearch =
+    router.pathname === "/" ||
+    (router.pathname === "/cert" && router.asPath === "/cert");
+
   return (
     <>
       <div className="drawer">
@@ -34,6 +43,10 @@ const Layout = ({ children }: LayoutProps) => {
                 />
                 <span className="font-bold text-sm text-thuidark">JAOTHUI</span>
               </Link>
+            </div>
+
+            <div className="navbar-end">
+              {!hideSearch && <GlobalNavSearch />}
             </div>
           </div>
           <div className="mb-10">{children}</div>
