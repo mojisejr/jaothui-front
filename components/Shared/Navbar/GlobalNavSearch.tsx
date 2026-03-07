@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
 import { BiSearchAlt2 } from "react-icons/bi";
+import { FiX } from "react-icons/fi";
 
 const GlobalNavSearch = () => {
   const router = useRouter();
@@ -61,11 +62,11 @@ const GlobalNavSearch = () => {
             />
             <button
               type="button"
-              className="text-base-content/50"
+              className="flex h-6 w-6 items-center justify-center rounded-full text-base-content/50 transition hover:bg-base-300/50"
               aria-label="Collapse search"
               onClick={() => setIsMobileExpanded(false)}
             >
-              ✕
+              <FiX size={14} />
             </button>
           </label>
         </form>
