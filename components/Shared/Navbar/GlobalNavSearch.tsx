@@ -51,7 +51,7 @@ const GlobalNavSearch = () => {
             className="input input-bordered flex h-10 items-center gap-2 rounded-full border-white/10 bg-base-200/50 px-3 backdrop-blur-md"
             aria-label="Global pedigree search mobile"
           >
-            <BiSearchAlt2 className="text-base-content/60" size={18} />
+            {/* <BiSearchAlt2 className="text-base-content/60" size={18} /> */}
             <input
               type="text"
               className="grow bg-transparent"
@@ -62,11 +62,11 @@ const GlobalNavSearch = () => {
             />
             <button
               type="button"
-              className="flex h-6 w-6 items-center justify-center rounded-full text-base-content/50 transition hover:bg-base-300/50"
+              className="absolute right-2 h-8 w-8 rounded-full text-base-content/50 transition hover:bg-base-300/50"
               aria-label="Collapse search"
               onClick={() => setIsMobileExpanded(false)}
             >
-              <FiX size={14} />
+              <FiX size={24} />
             </button>
           </label>
         </form>
