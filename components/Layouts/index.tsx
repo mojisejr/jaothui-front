@@ -1,44 +1,22 @@
-import { ReactNode, SyntheticEvent, useRef } from "react";
+import { ReactNode } from "react";
 import BottomNav from "../Shared/Navbar/Bottom";
 import { HiMenuAlt2 } from "react-icons/hi";
-import { BiSearchAlt2 } from "react-icons/bi";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 
 import MenuList from "../Shared/Navbar/MenuList";
+import GlobalNavSearch from "../Shared/Navbar/GlobalNavSearch";
 
 interface LayoutProps {
   children: ReactNode;
 }
 const Layout = ({ children }: LayoutProps) => {
-  const { pathname, push, query } = useRouter();
-  const searchRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
-  function handleSearch(e: SyntheticEvent) {
-    const value =
-      searchRef.current?.value == undefined ? 0 : searchRef.current.value;
-
-    if (+value <= 0) {
-      return;
-    }
-
-    const isNumberic = /^\d+$/.test(value.toString()!);
-
-    if (isNumberic) {
-      if (query.e != null) {
-        push(`/cert/${value}?e=${query.e}&vote=${query.vote}`);
-        return;
-      }
-      push(`/cert/${value}`);
-    } else {
-      if (query.e != null) {
-        push(`/cert/search?q=${value}&e=${query.e}&vote=${query.vote}`);
-        return;
-      }
-
-      push(`/cert/search?q=${value}`);
-    }
-  }
+  const hideSearch =
+    router.pathname === "/" ||
+    (router.pathname === "/cert" && router.asPath === "/cert");
 
   return (
     <>
@@ -46,67 +24,28 @@ const Layout = ({ children }: LayoutProps) => {
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col">
           {/* Navbar */}
-          <div className="navbar bg-base-200 bg-opacity-60 px-[22px] sticky top-0 left-0 z-[1]">
-            <div className="navbar-start">
-              <div className="hidden tabletS:block">
-                <label
-                  htmlFor="my-drawer-3"
-                  className="btn btn-square btn-ghost"
-                >
-                  <HiMenuAlt2 size={24} />
-                </label>
-              </div>
+          <div className="navbar sticky left-0 top-0 z-30 border-b border-base-300 bg-thuiwhite/95 px-[22px] backdrop-blur-sm">
+            <div className="navbar-start flex items-center gap-2">
+              <label
+                htmlFor="my-drawer-3"
+                className="btn btn-square btn-ghost hidden tabletM:inline-flex"
+                aria-label="Open navigation menu"
+              >
+                <HiMenuAlt2 size={24} />
+              </label>
+              <Link href="/" className="flex items-center gap-2">
+                <Image
+                  src="/images/thuiLogo.png"
+                  width={28}
+                  height={28}
+                  alt="jaothui-logo"
+                />
+                <span className="font-bold text-sm text-thuidark">JAOTHUI</span>
+              </Link>
             </div>
-            <div className="navbar-center">
-              <div className="tabs bg-base-200 rounded-full p-1">
-                <Link
-                  href="/"
-                  className={`tab ${
-                    pathname.includes("arttoy")
-                      ? null
-                      : "bg-primary text-neutral"
-                  } font-bold rounded-full`}
-                >
-                  PED
-                </Link>
-                <Link
-                  href="/store/arttoy"
-                  className={`tab ${
-                    pathname.includes("arttoy")
-                      ? "bg-primary text-neutral"
-                      : null
-                  } font-bold rounded-full`}
-                >
-                  ART
-                </Link>
-              </div>
-            </div>
-            <div className="navbar-end flex items-center gap-2">
-              <div className="dropdown dropdown-end">
-                <label tabIndex={0} className="btn btn-primary btn-circle">
-                  <BiSearchAlt2 size={24} />
-                </label>
-                <div
-                  tabIndex={0}
-                  className="dropdown-content z-[1] menu p-2 shadow bg-base-200 w-52"
-                >
-                  <div className="join">
-                    <input
-                      type="text"
-                      className="input join-item w-3/4"
-                      placeholder="id/name"
-                      ref={searchRef}
-                    />
-                    <button
-                      // disabled={isLoading}
-                      onClick={handleSearch}
-                      className="btn btn-primary join-item w-1/4"
-                    >
-                      Go!
-                    </button>
-                  </div>
-                </div>
-              </div>
+
+            <div className="navbar-end flex-1 justify-end">
+              {!hideSearch && <GlobalNavSearch />}
             </div>
           </div>
           <div className="mb-10">{children}</div>

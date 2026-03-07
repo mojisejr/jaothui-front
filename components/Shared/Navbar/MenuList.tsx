@@ -24,7 +24,7 @@ const MenuList = () => {
   const { isConnected } = useBitkubNext();
   const { pathname } = useRouter();
   return (
-    <div className="drawer-side z-[10]">
+    <div className="drawer-side z-[60]">
       <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
       <ul className="menu p-4 w-52 min-h-full bg-neutral text-thuiwhite rounded-tr-3xl shadow-2xl">
         <li>

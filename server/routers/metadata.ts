@@ -13,8 +13,24 @@ import { router } from "../trpc";
 import { publicProcedure } from "../trpc";
 import { z } from "zod";
 
+const metadataFilterSchema = z.object({
+  sex: z.enum(["all", "female", "male"]).optional(),
+  color: z.enum(["all", "black", "albino"]).optional(),
+  ageOperator: z.enum([">", "<", ">=", "<=", "="]).optional(),
+  ageValue: z.string().optional(),
+  sortBy: z.enum(["latest", "oldest", "youngest"]).optional(),
+  search: z.string().optional(),
+});
+
 export const metadataRouter = router({
-  getAll: publicProcedure.input(z.number()).query(async ({ ctx, input }) => {
+  getAll: publicProcedure
+    .input(
+      z.object({
+        page: z.number().int().min(1),
+        filter: metadataFilterSchema.optional(),
+      })
+    )
+    .query(async ({ input }) => {
     const metadata = await getAllMetadata(input);
     return metadata;
   }),

@@ -7,12 +7,12 @@ const Hero = ({ children }: HeroProps) => {
   return (
     <>
       <div
-        className="tabletS:min-h-[60vh]
+        className="tabletS:flex-1
       tabletS:flex
       tabletS:items-center
       tabletS:px-10
       labtop:px-20
-      bg-[#000]"
+      bg-thuiwhite"
       >
         {children}
       </div>

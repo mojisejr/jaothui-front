@@ -24,17 +24,7 @@ module.exports = {
       thuidark: "#0F0F0F",
       thuiwhite: "#fff",
     },
-    extend: {
-      animation: {
-        scroll: "infinite-scroll 6s linear infinite",
-      },
-      keyframes: {
-        "infinite-scroll": {
-          from: { transform: "translateX(0)" },
-          to: { transform: "translateX(-100%)" },
-        },
-      },
-    },
+    extend: {},
   },
   daisyui: {
     themes: [
