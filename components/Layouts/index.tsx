@@ -14,7 +14,6 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
 
-  // Condition to hide global search: Home or exactly /cert (Landing)
   const hideSearch =
     router.pathname === "/" ||
     (router.pathname === "/cert" && router.asPath === "/cert");
@@ -45,7 +44,7 @@ const Layout = ({ children }: LayoutProps) => {
               </Link>
             </div>
 
-            <div className="navbar-end">
+            <div className="navbar-end flex-1 justify-end">
               {!hideSearch && <GlobalNavSearch />}
             </div>
           </div>
