@@ -15,7 +15,14 @@ const GlobalNavSearch = () => {
       return;
     }
 
-    await router.push(`/cert?search=${encodeURIComponent(trimmedQuery)}`);
+    const isNumeric = /^\d+$/.test(trimmedQuery);
+
+    if (isNumeric) {
+      await router.push(`/cert/${trimmedQuery}`);
+    } else {
+      await router.push(`/cert/search?q=${encodeURIComponent(trimmedQuery)}`);
+    }
+
     setIsMobileExpanded(false);
   };
 
