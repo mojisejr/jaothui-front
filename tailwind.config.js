@@ -62,6 +62,8 @@ module.exports = {
         "gradient-ring": "var(--gradient-ring)",
         "gradient-gold": "var(--gradient-gold)",
         "gradient-hero": "var(--gradient-hero)",
+        "gradient-hero-scrim": "var(--gradient-hero-scrim)",
+        "gradient-hero-fade": "var(--gradient-hero-fade)",
       },
       fontFamily: {
         sans: ["Prompt", "sans-serif"],

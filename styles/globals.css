@@ -58,6 +58,9 @@
   --gradient-ring: var(--ref-gradient-ring);
   --gradient-gold: var(--ref-gradient-gold);
   --gradient-hero: var(--ref-gradient-hero);
+  /* hero image treatment: left→right scrim for headline legibility + bottom fade into the page */
+  --gradient-hero-scrim: linear-gradient(to right, rgba(7, 7, 7, 0.92) 0%, rgba(7, 7, 7, 0.55) 42%, rgba(7, 7, 7, 0.12) 100%);
+  --gradient-hero-fade: linear-gradient(to top, rgba(7, 7, 7, 1) 0%, rgba(7, 7, 7, 0) 42%);
 }
 
 * {
