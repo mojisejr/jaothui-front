@@ -44,8 +44,8 @@ export function BuffaloCard({
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-raised">
         {image}
-        {/* real age badge — replaces the invented status badge */}
-        <span className="absolute left-3 top-3 rounded-pill border border-border-soft bg-overlay-badge px-2.5 py-1 text-[11px] font-semibold text-accent backdrop-blur-sm">
+        {/* real age badge — bottom-right over the image (near the legs) */}
+        <span className="absolute bottom-3 right-3 rounded-pill border border-border-soft bg-overlay-badge px-2.5 py-1 text-[11px] font-semibold text-accent backdrop-blur-sm">
           {formatBuffaloAge(ageMonths)}
         </span>
       </div>
@@ -58,7 +58,10 @@ export function BuffaloCard({
             </span>
           )}
         </div>
-        <p className="truncate text-xs text-muted">CHIP : {chip}</p>
+        {/* microchip: no "CHIP" label so the full number stays on one line */}
+        <p className="overflow-hidden text-ellipsis whitespace-nowrap text-xs tabular-nums text-muted">
+          {chip}
+        </p>
         {birthdate && <p className="text-xs text-muted">วันเกิด : {birthdate}</p>}
       </div>
     </button>

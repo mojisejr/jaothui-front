@@ -153,7 +153,7 @@ export default function V2BuffaloPage() {
 
       <section className="mx-auto w-full max-w-5xl px-5 py-4">
         {isLoading ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 tabletS:grid-cols-3 labtop:grid-cols-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
@@ -169,7 +169,7 @@ export default function V2BuffaloPage() {
           </div>
         ) : items.length > 0 ? (
           <div className={isFetching ? "opacity-60 transition-opacity" : "transition-opacity"}>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 tabletS:grid-cols-3 labtop:grid-cols-4">
               {items.map((item) => (
                 <BuffaloCard
                   key={item.microchip}

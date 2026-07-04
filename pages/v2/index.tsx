@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 import { BsGem } from "react-icons/bs";
 import { FiUsers, FiDatabase, FiActivity, FiShield } from "react-icons/fi";
 import { trpc } from "../../utils/trpc";
@@ -30,6 +31,13 @@ const STATS = [
   { icon: <FiShield />, value: "980+", unit: "ตัว", label: "กระบือยืนยันแล้ว" },
 ];
 
+/** manual fade-up (reliable stagger via incremental delay) */
+const fadeUp = (delay: number) => ({
+  initial: { opacity: 0, y: 22 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] as const },
+});
+
 function Hero() {
   const router = useRouter();
   return (
@@ -48,31 +56,56 @@ function Hero() {
         <div className="absolute inset-0 bg-gradient-hero-fade" />
       </div>
 
-      <div className="relative z-10 flex min-h-[460px] flex-col justify-between px-6 pb-8 pt-7">
-        <div className="flex items-center gap-2">
+      <div className="relative z-10 flex min-h-[460px] flex-col justify-between px-6 pb-8 pt-7 tabletS:min-h-[560px] tabletS:px-10 labtop:px-14">
+        <motion.div {...fadeUp(0.15)} className="flex items-center gap-2">
           <Image src="/images/thuiLogo.png" alt="เจ้าทุย" width={36} height={36} className="h-9 w-9 object-contain" />
           <div className="leading-tight">
             <p className="text-lg font-bold tracking-wide text-accent">JAOTHUI</p>
             <p className="text-[10px] uppercase tracking-[0.22em] text-muted">Thai Buffalo Platform</p>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="max-w-[15rem]">
-          <h1 className="text-3xl font-bold leading-tight text-foreground">
+        <div className="max-w-[15rem] tabletS:max-w-md labtop:max-w-xl">
+          <motion.h1
+            {...fadeUp(0.3)}
+            className="text-[clamp(1.9rem,6vw,3.5rem)] font-bold leading-[1.08] text-foreground"
+          >
             PRESERVING <span className="text-accent">THAI BUFFALO</span> HERITAGE
-            <span className="block text-lg font-semibold text-muted">THROUGH TECHNOLOGY</span>
-          </h1>
-          <p className="mt-3 text-sm text-muted">
+            <span className="block text-[clamp(1rem,2.6vw,1.5rem)] font-semibold text-muted">
+              THROUGH TECHNOLOGY
+            </span>
+          </motion.h1>
+          <motion.p {...fadeUp(0.45)} className="mt-3 text-sm text-muted tabletS:text-base">
             &ldquo;อนุรักษ์สายพันธุ์ไทย<br />ด้วยเทคโนโลยี เพื่ออนาคตที่ยั่งยืน&rdquo;
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
+          </motion.p>
+          <motion.div {...fadeUp(0.6)} className="mt-5 flex flex-wrap gap-3">
             <Button variant="gold-fill" onClick={() => router.push("/v2/buffalo")}>
               ค้นหาควาย
             </Button>
-            <Button variant="gold-outline" onClick={() => router.push("/v2/buffalo")}>
-              <BsGem className="h-4 w-4" /> NFT เพชรดีกรี
-            </Button>
-          </div>
+
+            {/* NFT button: flip-in on load + repeating gold shimmer sweep (option A) */}
+            <motion.div
+              initial={{ rotateY: -90, opacity: 0 }}
+              animate={{ rotateY: 0, opacity: 1 }}
+              transition={{ delay: 0.95, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformPerspective: 800 }}
+            >
+              <Button
+                variant="gold-outline"
+                onClick={() => router.push("/v2/buffalo")}
+                className="relative overflow-hidden"
+              >
+                <motion.span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-y-0 left-0 w-1/3 -skew-x-[20deg] bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.28)] to-transparent"
+                  initial={{ x: "-140%" }}
+                  animate={{ x: "460%" }}
+                  transition={{ duration: 1.25, ease: "easeInOut", repeat: Infinity, repeatDelay: 2.8, delay: 1.7 }}
+                />
+                <BsGem className="h-4 w-4" /> NFT เพชรดีกรี
+              </Button>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -103,7 +136,7 @@ function Featured() {
   const { data, isLoading } = trpc.metadata.getBatch.useQuery(FEATURED_MICROCHIPS);
 
   return (
-    <section className="px-5 py-6">
+    <section className="mx-auto w-full max-w-5xl px-5 py-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-semibold text-foreground">กระบือแนะนำ</h2>
         <button
@@ -118,7 +151,7 @@ function Featured() {
       {isLoading ? (
         <FeaturedSkeleton />
       ) : data && data.length > 0 ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 tabletS:grid-cols-4">
           {data.slice(0, 4).map((item) => (
             <BuffaloCard
               key={item.microchip}
@@ -151,7 +184,7 @@ export default function V2HomePage() {
     <V2Layout activeTab="home">
       <Hero />
 
-      <section className="grid grid-cols-2 gap-3 px-5 py-6">
+      <section className="mx-auto grid w-full max-w-5xl grid-cols-2 gap-3 px-5 py-6 tabletS:grid-cols-4 tabletS:gap-4">
         {STATS.map((s) => (
           <StatCard key={s.label} icon={s.icon} value={s.value} unit={s.unit} label={s.label} />
         ))}
