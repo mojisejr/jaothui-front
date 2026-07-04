@@ -19,6 +19,7 @@
   --ref-gold-500: #d6b15f;
   --ref-gold-400: #e3c77a;
   --ref-green-500: #3fa66a;
+  --ref-blue-500: #5b8def;
   --ref-paper-100: #f5f5f5;
   --ref-paper-400: #a3a3a3;
   --ref-radius-card: 1rem;
@@ -34,8 +35,17 @@
   --accent-primary: var(--ref-gold-500);
   --accent-hover: var(--ref-gold-400);
   --success: var(--ref-green-500);
+  --info: var(--ref-blue-500);
+  --danger: #dc2626;
   --border-soft: rgba(214, 177, 95, 0.14);
   --focus-ring: var(--ref-gold-500);
+
+  /* Soft tint fills (badges/chips) — precomputed so no Tailwind opacity-modifier
+     is needed on CSS-var colors (which don't support the /alpha syntax). */
+  --accent-soft: rgba(214, 177, 95, 0.15);
+  --info-soft: rgba(91, 141, 239, 0.15);
+  --success-soft: rgba(63, 166, 106, 0.15);
+  --danger-soft: rgba(220, 38, 38, 0.15);
 }
 
 * {

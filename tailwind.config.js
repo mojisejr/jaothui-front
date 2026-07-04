@@ -28,6 +28,13 @@ module.exports = {
     // styles/globals.css :root. Legacy `thui*` (above) + daisyUI theme stay untouched.
     extend: {
       colors: {
+        // safety: theme.colors (above) replaced the default palette, so re-add the
+        // keyword colors v2 components rely on.
+        transparent: "transparent",
+        current: "currentColor",
+        white: "#ffffff",
+        black: "#000000",
+        // v2 semantic roles (consume CSS vars from globals.css :root)
         background: "var(--background)",
         surface: "var(--surface)",
         "surface-raised": "var(--surface-raised)",
@@ -36,8 +43,11 @@ module.exports = {
         accent: {
           DEFAULT: "var(--accent-primary)",
           hover: "var(--accent-hover)",
+          soft: "var(--accent-soft)",
         },
-        success: "var(--success)",
+        success: { DEFAULT: "var(--success)", soft: "var(--success-soft)" },
+        info: { DEFAULT: "var(--info)", soft: "var(--info-soft)" },
+        danger: { DEFAULT: "var(--danger)", soft: "var(--danger-soft)" },
         "border-soft": "var(--border-soft)",
       },
       borderRadius: {
