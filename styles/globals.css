@@ -25,6 +25,10 @@
   --ref-radius-card: 1rem;
   --ref-radius-pill: 9999px;
   --ref-shadow-gold: 0 14px 36px rgba(214, 177, 95, 0.18);
+  /* gradients (premium accents) */
+  --ref-gradient-ring: linear-gradient(135deg, #f5f5f5 0%, #e3c77a 45%, #b8924a 100%);
+  --ref-gradient-gold: linear-gradient(135deg, #e3c77a 0%, #d6b15f 50%, #b8924a 100%);
+  --ref-gradient-hero: linear-gradient(180deg, #151515 0%, #050505 100%);
 
   /* Layer 2 — system tokens (semantic roles) */
   --background: var(--ref-ink-950);
@@ -46,6 +50,11 @@
   --info-soft: rgba(91, 141, 239, 0.15);
   --success-soft: rgba(63, 166, 106, 0.15);
   --danger-soft: rgba(220, 38, 38, 0.15);
+
+  /* semantic gradients */
+  --gradient-ring: var(--ref-gradient-ring);
+  --gradient-gold: var(--ref-gradient-gold);
+  --gradient-hero: var(--ref-gradient-hero);
 }
 
 * {

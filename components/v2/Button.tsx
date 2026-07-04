@@ -12,6 +12,8 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         "gold-fill": "bg-accent text-background hover:bg-accent-hover",
+        "gold-gradient":
+          "bg-gradient-gold text-background shadow-gold hover:brightness-105",
         "gold-outline":
           "border border-accent bg-transparent text-accent hover:bg-accent hover:text-background",
       },

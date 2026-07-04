@@ -19,9 +19,12 @@ verify_tokens:
     expect: "Prompt"
     probe: "font-family on body text (any v2 element)"
 primitives:
+  - name: Avatar
+    file: components/v2/Avatar.tsx
+    variants: [md, lg, xl]
   - name: V2Button
     file: components/v2/Button.tsx
-    variants: [gold-fill, gold-outline]
+    variants: [gold-fill, gold-gradient, gold-outline]
   - name: StatCard
     file: components/v2/StatCard.tsx
     variants: [default]
@@ -113,6 +116,15 @@ Depth comes from **gold-tinted shadows** and **atmospheric glow**, not neutral d
 `--surface` → `--surface-raised`. Subtle gold radial glow spots keep `#070707` from reading as a
 flat void (see `atmospheric-canvas-background`).
 
+**Gradients** (premium accents, semantic tokens → Tailwind `bg-gradient-*`): `--gradient-ring`
+(white→gold, the Avatar ring), `--gradient-gold` (optional premium button fill, `V2Button`
+variant `gold-gradient`), `--gradient-hero` (dark hero panel). Use sparingly — gradients are
+accents, not the base surface.
+
+**Icons**: reuse `react-icons` (Feather `Fi*`, Bootstrap `Bs*`) with `currentColor` so an icon
+inherits its context token (`text-accent` = gold, `text-success` = green). Brand marks (buffalo
+logo, Bitkub) stay as image assets in `public/images`, not icon fonts.
+
 ## 7. Do's & Don'ts
 - ✅ Use semantic tokens (`bg-surface`, `text-accent`, `text-muted`) — never raw hex in components.
 - ✅ Set explicit font weight on headings (global default is 300).
@@ -140,7 +152,8 @@ avoid layout flash.
 ## Primitives (reuse-first)
 | Primitive | File | Variants |
 |-----------|------|----------|
-| V2Button | components/v2/Button.tsx | gold-fill, gold-outline |
+| Avatar | components/v2/Avatar.tsx | md, lg, xl (white→gold gradient ring + camera) |
+| V2Button | components/v2/Button.tsx | gold-fill, gold-gradient, gold-outline |
 | StatCard | components/v2/StatCard.tsx | default |
 | BuffaloCard | components/v2/BuffaloCard.tsx | champion, breeding, verified, for-sale |
 | WalletCard | components/v2/WalletCard.tsx | connected, disconnected |

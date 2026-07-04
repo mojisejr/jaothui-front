@@ -57,6 +57,11 @@ module.exports = {
       boxShadow: {
         gold: "var(--ref-shadow-gold)",
       },
+      backgroundImage: {
+        "gradient-ring": "var(--gradient-ring)",
+        "gradient-gold": "var(--gradient-gold)",
+        "gradient-hero": "var(--gradient-hero)",
+      },
       fontFamily: {
         sans: ["Prompt", "sans-serif"],
       },

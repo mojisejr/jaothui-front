@@ -1,7 +1,9 @@
 import { useRouter } from "next/router";
 import type { GetServerSideProps } from "next";
+import { BsGem } from "react-icons/bs";
 import {
   V2Layout,
+  Avatar,
   Button,
   Badge,
   StatCard,
@@ -43,6 +45,12 @@ const SWATCHES: Array<{ name: string; className: string }> = [
   { name: "danger", className: "bg-danger" },
 ];
 
+const GRADIENTS: Array<{ name: string; className: string }> = [
+  { name: "gradient-ring", className: "bg-gradient-ring" },
+  { name: "gradient-gold", className: "bg-gradient-gold" },
+  { name: "gradient-hero", className: "bg-gradient-hero" },
+];
+
 export default function DesignShowcase() {
   const router = useRouter();
   const isStatic = router.query.static === "1";
@@ -55,6 +63,40 @@ export default function DesignShowcase() {
             <h1 className="text-3xl font-bold text-accent">JAOTHUI v2</h1>
             <p className="text-sm text-muted">Design showcase · dark · gold · green</p>
           </div>
+
+          <Section title="Profile header (avatar + gradient ring)">
+            <div className="flex items-center gap-4">
+              <Avatar
+                size="xl"
+                onEdit={() => {}}
+                image={
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src="/images/thuiLogo.png" alt="เจ้าทุย ฟาร์ม" className="h-full w-full object-contain p-2" />
+                }
+              />
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h2 className="text-xl font-bold text-foreground">เจ้าทุย ฟาร์ม</h2>
+                  <span className="text-success" title="verified">&#10004;</span>
+                </div>
+                <p className="text-sm text-muted">jaothuifarm@gmail.com</p>
+                <span className="mt-2 inline-block">
+                  <Badge variant="champion">เจ้าของฟาร์ม</Badge>
+                </span>
+              </div>
+            </div>
+          </Section>
+
+          <Section title="Gradients">
+            <div className="grid grid-cols-3 gap-3">
+              {GRADIENTS.map((g) => (
+                <div key={g.name} className="flex flex-col gap-1">
+                  <div className={`h-12 rounded-card border border-border-soft ${g.className}`} />
+                  <span className="text-[10px] text-muted">{g.name}</span>
+                </div>
+              ))}
+            </div>
+          </Section>
 
           <Section title="Color tokens">
             <div className="grid grid-cols-4 gap-3">
@@ -72,7 +114,10 @@ export default function DesignShowcase() {
               <Button data-testid="v2-gold-button" variant="gold-fill">
                 ค้นหาควาย
               </Button>
-              <Button variant="gold-outline">NFT เพชรดีกรี</Button>
+              <Button variant="gold-gradient">ค้นหาควาย (gradient)</Button>
+              <Button variant="gold-outline">
+                <BsGem className="h-4 w-4" /> NFT เพชรดีกรี
+              </Button>
               <Button variant="gold-fill" loading={!isStatic}>
                 กำลังโหลด
               </Button>
