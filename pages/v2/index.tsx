@@ -118,7 +118,7 @@ function Featured() {
       {isLoading ? (
         <FeaturedSkeleton />
       ) : data && data.length > 0 ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {data.slice(0, 4).map((item) => (
             <BuffaloCard
               key={item.microchip}

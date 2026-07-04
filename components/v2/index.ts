@@ -11,6 +11,12 @@ export { RemoteImage, type RemoteImageProps } from "./RemoteImage";
 export { WalletCard, type WalletCardProps } from "./WalletCard";
 export { BottomNav, type BottomNavProps, type V2NavTab } from "./BottomNav";
 export { FilterChip, filterChipVariants, type FilterChipProps } from "./FilterChip";
+export {
+  FilterDrawer,
+  DEFAULT_FILTER,
+  type FilterDrawerProps,
+  type BuffaloFilter,
+} from "./FilterDrawer";
 export { SettingsRow, settingsRowVariants, type SettingsRowProps } from "./SettingsRow";
 export { SearchInput, type SearchInputProps } from "./SearchInput";
 export { V2Layout, type V2LayoutProps } from "./V2Layout";
