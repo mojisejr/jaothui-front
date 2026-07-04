@@ -49,6 +49,7 @@ module.exports = {
         info: { DEFAULT: "var(--info)", soft: "var(--info-soft)" },
         danger: { DEFAULT: "var(--danger)", soft: "var(--danger-soft)" },
         "border-soft": "var(--border-soft)",
+        "overlay-badge": "var(--overlay-badge)",
       },
       borderRadius: {
         card: "var(--ref-radius-card)",

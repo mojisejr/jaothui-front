@@ -12,6 +12,7 @@ import {
   FilterChip,
   SettingsRow,
   SearchInput,
+  Pagination,
 } from "../components/v2";
 
 /**
@@ -163,24 +164,26 @@ export default function DesignShowcase() {
             </div>
           </Section>
 
-          <Section title="Buffalo cards">
+          <Section title="Buffalo cards (age badge = real calculatedAge)">
             <div className="grid grid-cols-2 gap-3">
               <BuffaloCard
                 name="เพชรอุดร"
                 chip="123456789012345"
-                farm="อุดรฟาร์ม"
-                owner="นายอุดร ศรีสุวรรณ"
-                status="champion"
+                birthdate="12/05/2566"
+                ageMonths={14}
               />
               <BuffaloCard
                 name="พญาเพชร"
                 chip="741852963852741"
-                farm="เพชรฟาร์ม"
-                owner="นายเพชร รุ่งเรือง"
-                status="verified"
+                birthdate="03/06/2567"
+                ageMonths={0}
                 verified
               />
             </div>
+          </Section>
+
+          <Section title="Pagination">
+            <Pagination page={1} totalPages={10} onChange={() => {}} />
           </Section>
 
           <Section title="Wallet card">

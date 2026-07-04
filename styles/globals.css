@@ -51,6 +51,9 @@
   --success-soft: rgba(63, 166, 106, 0.15);
   --danger-soft: rgba(220, 38, 38, 0.15);
 
+  /* dark scrim for badges/labels floating over imagery (age chip, overlays) */
+  --overlay-badge: rgba(7, 7, 7, 0.72);
+
   /* semantic gradients */
   --gradient-ring: var(--ref-gradient-ring);
   --gradient-gold: var(--ref-gradient-gold);

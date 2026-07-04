@@ -1,26 +1,21 @@
 import type { ReactNode } from "react";
 import { cn } from "./cn";
-import { Badge } from "./Badge";
-
-export type BuffaloStatus = "champion" | "breeding" | "verified" | "for-sale";
-
-const STATUS_LABEL: Record<BuffaloStatus, string> = {
-  champion: "Champion",
-  breeding: "Breeding",
-  verified: "Verified",
-  "for-sale": "For Sale",
-};
+import { formatBuffaloAge } from "./formatAge";
 
 /**
- * BuffaloCard — a pedigree/NFT card: image, status badge, verified shield, name + chip + farm + owner.
- * Presentational only; the page wires real data (metadata.getAll) and the click target.
+ * BuffaloCard — a pedigree card re-skinned from the real `/cert` PedigreeCard.
+ * Overlay badge shows the REAL age (human-readable months), not an invented status.
+ * Body = name · microchip · birthdate. Presentational only; the page wires real data
+ * (metadata.getBatch / getAll → real Supabase image) and the click target.
  */
 export interface BuffaloCardProps {
   name: ReactNode;
+  /** microchip id */
   chip: ReactNode;
-  farm?: ReactNode;
-  owner?: ReactNode;
-  status?: BuffaloStatus;
+  /** Thai birthdate string (already formatted) */
+  birthdate?: ReactNode;
+  /** real age in months (calculatedAge) → rendered as the overlay badge */
+  ageMonths?: number | null;
   verified?: boolean;
   /** image node (next/image or img) so the primitive stays framework-agnostic */
   image?: ReactNode;
@@ -31,9 +26,8 @@ export interface BuffaloCardProps {
 export function BuffaloCard({
   name,
   chip,
-  farm,
-  owner,
-  status = "champion",
+  birthdate,
+  ageMonths,
   verified,
   image,
   onClick,
@@ -50,24 +44,22 @@ export function BuffaloCard({
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-raised">
         {image}
-        <span className="absolute left-3 top-3">
-          <Badge variant={status} dot={status === "verified"}>
-            {STATUS_LABEL[status]}
-          </Badge>
+        {/* real age badge — replaces the invented status badge */}
+        <span className="absolute left-3 top-3 rounded-pill border border-border-soft bg-overlay-badge px-2.5 py-1 text-[11px] font-semibold text-accent backdrop-blur-sm">
+          {formatBuffaloAge(ageMonths)}
         </span>
       </div>
       <div className="flex flex-col gap-1 p-3">
         <div className="flex items-center gap-1.5">
-          <h3 className="font-bold text-foreground">{name}</h3>
+          <h3 className="truncate font-bold text-foreground">{name}</h3>
           {verified && (
-            <span aria-label="verified" className="text-success" title="Verified">
+            <span aria-label="verified" className="shrink-0 text-success" title="Verified">
               &#10004;
             </span>
           )}
         </div>
-        <p className="text-xs text-muted">CHIP : {chip}</p>
-        {farm && <p className="text-xs text-muted">ฟาร์ม : {farm}</p>}
-        {owner && <p className="text-xs text-muted">เจ้าของ : {owner}</p>}
+        <p className="truncate text-xs text-muted">CHIP : {chip}</p>
+        {birthdate && <p className="text-xs text-muted">วันเกิด : {birthdate}</p>}
       </div>
     </button>
   );
