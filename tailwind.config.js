@@ -24,7 +24,33 @@ module.exports = {
       thuidark: "#0F0F0F",
       thuiwhite: "#fff",
     },
-    extend: {},
+    // v2 dark-gold-green semantic layer — ADDITIVE (extend), consumes CSS vars from
+    // styles/globals.css :root. Legacy `thui*` (above) + daisyUI theme stay untouched.
+    extend: {
+      colors: {
+        background: "var(--background)",
+        surface: "var(--surface)",
+        "surface-raised": "var(--surface-raised)",
+        foreground: "var(--foreground)",
+        muted: "var(--muted)",
+        accent: {
+          DEFAULT: "var(--accent-primary)",
+          hover: "var(--accent-hover)",
+        },
+        success: "var(--success)",
+        "border-soft": "var(--border-soft)",
+      },
+      borderRadius: {
+        card: "var(--ref-radius-card)",
+        pill: "var(--ref-radius-pill)",
+      },
+      boxShadow: {
+        gold: "var(--ref-shadow-gold)",
+      },
+      fontFamily: {
+        sans: ["Prompt", "sans-serif"],
+      },
+    },
   },
   daisyui: {
     themes: [

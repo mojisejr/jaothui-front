@@ -2,6 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * v2 design tokens — dark · gold · green (redesign/v2 reskin).
+ * ADDITIVE ONLY: legacy `thui*` colors + the daisyUI (light) theme are untouched.
+ * Layer 1 = reference (raw values), Layer 2 = system (semantic roles that consume Layer 1).
+ * Tailwind maps these via theme.extend (see tailwind.config.js) so `bg-surface`/`text-accent`
+ * work for v2 while legacy `bg-primary`/`base-100` keep compiling.
+ */
+:root {
+  /* Layer 1 — reference tokens (raw values) */
+  --ref-ink-950: #070707;
+  --ref-ink-900: #121212;
+  --ref-ink-800: #1a1a1a;
+  --ref-ink-700: #242424;
+  --ref-gold-600: #b8924a;
+  --ref-gold-500: #d6b15f;
+  --ref-gold-400: #e3c77a;
+  --ref-green-500: #3fa66a;
+  --ref-paper-100: #f5f5f5;
+  --ref-paper-400: #a3a3a3;
+  --ref-radius-card: 1rem;
+  --ref-radius-pill: 9999px;
+  --ref-shadow-gold: 0 14px 36px rgba(214, 177, 95, 0.18);
+
+  /* Layer 2 — system tokens (semantic roles) */
+  --background: var(--ref-ink-950);
+  --surface: var(--ref-ink-900);
+  --surface-raised: var(--ref-ink-800);
+  --foreground: var(--ref-paper-100);
+  --muted: var(--ref-paper-400);
+  --accent-primary: var(--ref-gold-500);
+  --accent-hover: var(--ref-gold-400);
+  --success: var(--ref-green-500);
+  --border-soft: rgba(214, 177, 95, 0.14);
+  --focus-ring: var(--ref-gold-500);
+}
+
 * {
   font-family: "Prompt", sans-serif;
   font-weight: 300;
