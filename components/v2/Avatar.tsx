@@ -33,7 +33,7 @@ export function Avatar({ size, image, onEdit, className }: AvatarProps) {
       <div className="h-full w-full rounded-pill bg-gradient-ring p-[2px]">
         {/* dark gap */}
         <div className="h-full w-full rounded-pill bg-background p-1">
-          <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-pill bg-surface">
+          <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-pill bg-surface">
             {image}
           </div>
         </div>

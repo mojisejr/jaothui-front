@@ -9,7 +9,7 @@ import { cn } from "./cn";
  * replaces the chevron (e.g. a Dark/Light toggle or a value label).
  */
 export const settingsRowVariants = cva(
-  "flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+  "flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent",
   {
     variants: {
       variant: {
@@ -27,6 +27,8 @@ export interface SettingsRowProps extends VariantProps<typeof settingsRowVariant
   /** right-side content; when omitted a chevron is shown (except danger) */
   right?: ReactNode;
   onClick?: () => void;
+  /** dim + block the row (feature not shipped yet — pair with a "เร็วๆ นี้" right slot) */
+  disabled?: boolean;
   className?: string;
 }
 
@@ -36,12 +38,15 @@ export function SettingsRow({
   icon,
   right,
   onClick,
+  disabled,
   className,
 }: SettingsRowProps) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
+      aria-disabled={disabled}
       className={cn(settingsRowVariants({ variant }), className)}
     >
       <span className="flex items-center gap-3">

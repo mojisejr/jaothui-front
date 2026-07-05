@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { FiHome, FiGrid, FiUser, FiCreditCard } from "react-icons/fi";
+import { FiHome, FiGrid, FiUser } from "react-icons/fi";
 import type { IconType } from "react-icons";
 import { cn } from "./cn";
 
+// "wallet" stays in the union for forward-compat, but the Wallet tab is intentionally
+// NOT shipped yet (no /v2/wallet route + undecided scope) → 3 live tabs only.
 export type V2NavTab = "home" | "buffalo" | "profile" | "wallet";
 
 interface TabDef {
@@ -16,7 +18,6 @@ const DEFAULT_TABS: TabDef[] = [
   { key: "home", label: "Home", href: "/v2", Icon: FiHome },
   { key: "buffalo", label: "Buffalo", href: "/v2/buffalo", Icon: FiGrid },
   { key: "profile", label: "Profile", href: "/v2/profile", Icon: FiUser },
-  { key: "wallet", label: "Wallet", href: "/v2/wallet", Icon: FiCreditCard },
 ];
 
 /**
