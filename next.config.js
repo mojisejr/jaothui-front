@@ -1,6 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Demo flow entry: land visitors on the v2 (dark-gold) home. Temporary (permanent:false)
+  // so it is trivially reversible; the legacy home file at pages/index.tsx is untouched.
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/v2",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

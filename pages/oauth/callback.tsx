@@ -14,7 +14,8 @@ import { isEmpty } from "../../helpers/dataValidator";
 import { getUserData } from "../../helpers/getUserData";
 import { setCookies } from "../../helpers/setCookies";
 import { trpc } from "../../utils/trpc";
-import Loading from "../../components/Shared/Indicators/Loading";
+import Image from "next/image";
+import { Spinner } from "../../components/v2";
 
 const clientId =
   process.env.NODE_ENV == "production"
@@ -69,7 +70,11 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
         }),
       });
       setMessage("Loading Dashboard...");
-      replace("/profile");
+      // Return-to override (additive): a page can set `bkc_post_login` before the OAuth
+      // redirect to land back on itself (e.g. /v2/profile). Legacy default stays "/profile".
+      const returnTo = localStorage.getItem("bkc_post_login");
+      localStorage.removeItem("bkc_post_login");
+      replace(returnTo && returnTo.startsWith("/") ? returnTo : "/profile");
     } else if (!userData.success) {
       setMessage("Authentication Failed.");
       localStorage.setItem("bkc_wallet", "");
@@ -79,9 +84,14 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
   }
 
   return (
-    <div className="bg-base-200 h-screen w-screeen flex flex-col justify-center items-center p-10">
-      <Loading size="lg" />
-      <div className="font-bold">{message}</div>
+    <div className="flex min-h-screen w-full flex-col items-center justify-center gap-6 bg-background p-10 text-foreground">
+      <div className="relative flex h-24 w-24 items-center justify-center rounded-pill bg-gradient-ring p-[2px]">
+        <div className="flex h-full w-full items-center justify-center rounded-pill bg-background">
+          <Image src="/images/thuiLogo.png" alt="เจ้าทุย" width={56} height={56} className="h-14 w-14 object-contain" />
+        </div>
+      </div>
+      <Spinner size="md" />
+      <div className="font-semibold text-muted">{message}</div>
     </div>
   );
 };

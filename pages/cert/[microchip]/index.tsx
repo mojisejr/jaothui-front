@@ -1,16 +1,14 @@
 import { useRouter } from "next/router";
-import { useGetApprovalDataByMicrochip } from "../../../blockchain/Metadata/read";
-import Layout from "../../../components/Layouts";
-import ProfileBoxV2 from "../../../components/Cert/Detail/ProfileBoxV2";
-import Loading from "../../../components/Shared/Indicators/Loading";
+import Head from "next/head";
+import { InferGetServerSidePropsType } from "next";
 import { trpc } from "../../../utils/trpc";
 import { getSEOMetadata } from "../../../server/services/seo.service";
-import Head from "next/head";
-import { InferGetStaticPropsType } from "next";
+import BuffaloDetailV2 from "../../../components/Cert/Detail/BuffaloDetailV2";
+import { V2Layout, Spinner } from "../../../components/v2";
 
 const CertDetail = ({
   seo,
-}: InferGetStaticPropsType<typeof getServerSideProps>) => {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { microchip, e, vote } = router.query;
   const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
@@ -21,25 +19,17 @@ const CertDetail = ({
     microchip as string
   );
 
+  const loading =
+    metadata == undefined || metadata == null || metadata.length <= 0;
+
   return (
-    <Layout>
+    <>
       <Head>
         <title>{seo?.title}</title>
-
         {/* Open Graph Meta Tags */}
         <meta property="og:type" key="og-url" name="og:url" content="website" />
-        <meta
-          property="og:url"
-          key="og-url"
-          name="og:url"
-          content={seo?.ogUrl}
-        />
-        <meta
-          property="og:title"
-          key="og-title"
-          name="og:title"
-          content={seo?.title}
-        />
+        <meta property="og:url" key="og-url" name="og:url" content={seo?.ogUrl} />
+        <meta property="og:title" key="og-title" name="og:title" content={seo?.title} />
         <meta
           property="og:description"
           key="og-description"
@@ -53,21 +43,22 @@ const CertDetail = ({
           content={`https://jaothui.com/api/seo/og?tokenId=${seo?.tokenId}`}
         />
       </Head>
-      {metadata == undefined || metadata == null || metadata.length <= 0 ? (
-        <div className="min-h-screen flex justify-center">
-          <Loading size="lg" />
-        </div>
+      {loading ? (
+        <V2Layout activeTab="buffalo">
+          <div className="flex min-h-[60vh] items-center justify-center">
+            <Spinner size="lg" />
+          </div>
+        </V2Layout>
       ) : (
-        <ProfileBoxV2
+        <BuffaloDetailV2
           tokenId={metadata.tokenId}
           certNft={metadata!}
           rewards={rewards!}
           vote={Boolean(vote)!}
           eventId={e as string}
-          // approvedBy={approvedBy}
         />
       )}
-    </Layout>
+    </>
   );
 };
 
@@ -83,26 +74,3 @@ export const getServerSideProps = async (context: {
     props: { seo },
   };
 };
-
-// export const getStaticPaths = async () => {
-//   const paths = await getAllPathParams();
-//   return {
-//     paths,
-//     fallback: true,
-//   };
-// };
-
-// export const getStaticProps = async ({
-//   params,
-// }: {
-//   params: { microchip: string };
-// }) => {
-//   const seo = await getSEOMetadata(params.microchip);
-//   const rewards = await gerRewardByMicrochip(params.microchip);
-//   console.log(rewards);
-//   const metadata = await getMetadataByMicrochip(params.microchip);
-//   return {
-//     props: { seo, rewards, metadata },
-//     revalidate: 60,
-//   };
-// };

@@ -2,6 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * v2 design tokens — dark · gold · green (redesign/v2 reskin).
+ * ADDITIVE ONLY: legacy `thui*` colors + the daisyUI (light) theme are untouched.
+ * Layer 1 = reference (raw values), Layer 2 = system (semantic roles that consume Layer 1).
+ * Tailwind maps these via theme.extend (see tailwind.config.js) so `bg-surface`/`text-accent`
+ * work for v2 while legacy `bg-primary`/`base-100` keep compiling.
+ */
+:root {
+  /* Layer 1 — reference tokens (raw values) */
+  --ref-ink-950: #070707;
+  --ref-ink-900: #121212;
+  --ref-ink-800: #1a1a1a;
+  --ref-ink-700: #242424;
+  --ref-gold-600: #b8924a;
+  --ref-gold-500: #d6b15f;
+  --ref-gold-400: #e3c77a;
+  --ref-green-500: #3fa66a;
+  --ref-blue-500: #5b8def;
+  --ref-paper-100: #f5f5f5;
+  --ref-paper-400: #a3a3a3;
+  --ref-radius-card: 1rem;
+  --ref-radius-pill: 9999px;
+  --ref-shadow-gold: 0 14px 36px rgba(214, 177, 95, 0.18);
+  /* gradients (premium accents) */
+  --ref-gradient-ring: linear-gradient(135deg, #f5f5f5 0%, #e3c77a 45%, #b8924a 100%);
+  --ref-gradient-gold: linear-gradient(135deg, #e3c77a 0%, #d6b15f 50%, #b8924a 100%);
+  --ref-gradient-hero: linear-gradient(180deg, #151515 0%, #050505 100%);
+
+  /* Layer 2 — system tokens (semantic roles) */
+  --background: var(--ref-ink-950);
+  --surface: var(--ref-ink-900);
+  --surface-raised: var(--ref-ink-800);
+  --foreground: var(--ref-paper-100);
+  --muted: var(--ref-paper-400);
+  --accent-primary: var(--ref-gold-500);
+  --accent-hover: var(--ref-gold-400);
+  --success: var(--ref-green-500);
+  --info: var(--ref-blue-500);
+  --danger: #dc2626;
+  --border-soft: rgba(214, 177, 95, 0.14);
+  --focus-ring: var(--ref-gold-500);
+
+  /* Soft tint fills (badges/chips) — precomputed so no Tailwind opacity-modifier
+     is needed on CSS-var colors (which don't support the /alpha syntax). */
+  --accent-soft: rgba(214, 177, 95, 0.15);
+  --info-soft: rgba(91, 141, 239, 0.15);
+  --success-soft: rgba(63, 166, 106, 0.15);
+  --danger-soft: rgba(220, 38, 38, 0.15);
+
+  /* dark scrim for badges/labels floating over imagery (age chip, overlays) */
+  --overlay-badge: rgba(7, 7, 7, 0.72);
+
+  /* semantic gradients */
+  --gradient-ring: var(--ref-gradient-ring);
+  --gradient-gold: var(--ref-gradient-gold);
+  --gradient-hero: var(--ref-gradient-hero);
+  /* hero image treatment: left→right scrim for headline legibility + bottom fade into the page */
+  --gradient-hero-scrim: linear-gradient(to right, rgba(7, 7, 7, 0.92) 0%, rgba(7, 7, 7, 0.55) 42%, rgba(7, 7, 7, 0.12) 100%);
+  --gradient-hero-fade: linear-gradient(to top, rgba(7, 7, 7, 1) 0%, rgba(7, 7, 7, 0) 42%);
+}
+
 * {
   font-family: "Prompt", sans-serif;
   font-weight: 300;

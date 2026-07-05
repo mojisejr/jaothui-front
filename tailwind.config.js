@@ -24,7 +24,51 @@ module.exports = {
       thuidark: "#0F0F0F",
       thuiwhite: "#fff",
     },
-    extend: {},
+    // v2 dark-gold-green semantic layer — ADDITIVE (extend), consumes CSS vars from
+    // styles/globals.css :root. Legacy `thui*` (above) + daisyUI theme stay untouched.
+    extend: {
+      colors: {
+        // safety: theme.colors (above) replaced the default palette, so re-add the
+        // keyword colors v2 components rely on.
+        transparent: "transparent",
+        current: "currentColor",
+        white: "#ffffff",
+        black: "#000000",
+        // v2 semantic roles (consume CSS vars from globals.css :root)
+        background: "var(--background)",
+        surface: "var(--surface)",
+        "surface-raised": "var(--surface-raised)",
+        foreground: "var(--foreground)",
+        muted: "var(--muted)",
+        accent: {
+          DEFAULT: "var(--accent-primary)",
+          hover: "var(--accent-hover)",
+          soft: "var(--accent-soft)",
+        },
+        success: { DEFAULT: "var(--success)", soft: "var(--success-soft)" },
+        info: { DEFAULT: "var(--info)", soft: "var(--info-soft)" },
+        danger: { DEFAULT: "var(--danger)", soft: "var(--danger-soft)" },
+        "border-soft": "var(--border-soft)",
+        "overlay-badge": "var(--overlay-badge)",
+      },
+      borderRadius: {
+        card: "var(--ref-radius-card)",
+        pill: "var(--ref-radius-pill)",
+      },
+      boxShadow: {
+        gold: "var(--ref-shadow-gold)",
+      },
+      backgroundImage: {
+        "gradient-ring": "var(--gradient-ring)",
+        "gradient-gold": "var(--gradient-gold)",
+        "gradient-hero": "var(--gradient-hero)",
+        "gradient-hero-scrim": "var(--gradient-hero-scrim)",
+        "gradient-hero-fade": "var(--gradient-hero-fade)",
+      },
+      fontFamily: {
+        sans: ["Prompt", "sans-serif"],
+      },
+    },
   },
   daisyui: {
     themes: [
