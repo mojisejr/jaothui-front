@@ -29,7 +29,7 @@ export function V2Layout({ children, activeTab = "home", className, hideNav }: V
             "radial-gradient(60% 40% at 50% 0%, rgba(214,177,95,0.10), transparent 70%), radial-gradient(40% 30% at 90% 20%, rgba(91,141,239,0.06), transparent 70%)",
         }}
       />
-      <main className={cn("relative z-10 mx-auto w-full max-w-screen-sm", !hideNav && "pb-24", className)}>
+      <main className={cn("relative z-10 mx-auto w-full max-w-screen-sm", !hideNav && "pb-28", className)}>
         {children}
       </main>
       {!hideNav && <BottomNav active={activeTab} />}
