@@ -18,5 +18,7 @@ export {
   type BuffaloFilter,
 } from "./FilterDrawer";
 export { SettingsRow, settingsRowVariants, type SettingsRowProps } from "./SettingsRow";
+export { Spinner, spinnerVariants, type SpinnerProps } from "./Spinner";
+export { StatRow, type StatRowProps } from "./StatRow";
 export { SearchInput, type SearchInputProps } from "./SearchInput";
 export { V2Layout, type V2LayoutProps } from "./V2Layout";
