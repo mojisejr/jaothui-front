@@ -82,7 +82,17 @@ function SoonTag() {
 
 /** Bitkub NEXT OAuth connect button, restyled to the v2 gold theme (reuses the SDK, no rebuild). */
 function ConnectButton() {
-  return (
+  // Set the post-login return path BEFORE the SDK fires the OAuth redirect. onClickCapture
+  // runs in the capture phase (ahead of the SDK's own click handler), and the OAuth callback
+  // reads `bkc_post_login` to land back here instead of the legacy /profile.
+  const markReturn = () => {
+    try {
+      localStorage.setItem("bkc_post_login", "/v2/profile");
+    } catch {
+      /* localStorage unavailable — falls back to /profile */
+    }
+  };
+  const oauth = (
     // @ts-ignore — SDK children/props are loosely typed
     <ReactBitkubNextOauth2 clientId={clientId} redirectURI={redirectURI} mode="redirect">
       <Button variant="gold-fill" block>
@@ -90,6 +100,7 @@ function ConnectButton() {
       </Button>
     </ReactBitkubNextOauth2>
   );
+  return <div onClickCapture={markReturn}>{oauth}</div>;
 }
 
 /** Settings list shared by connected states — app settings not shipped yet (disabled). */

@@ -69,7 +69,11 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
         }),
       });
       setMessage("Loading Dashboard...");
-      replace("/profile");
+      // Return-to override (additive): a page can set `bkc_post_login` before the OAuth
+      // redirect to land back on itself (e.g. /v2/profile). Legacy default stays "/profile".
+      const returnTo = localStorage.getItem("bkc_post_login");
+      localStorage.removeItem("bkc_post_login");
+      replace(returnTo && returnTo.startsWith("/") ? returnTo : "/profile");
     } else if (!userData.success) {
       setMessage("Authentication Failed.");
       localStorage.setItem("bkc_wallet", "");
