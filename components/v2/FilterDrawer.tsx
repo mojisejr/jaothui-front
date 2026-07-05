@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { FiX } from "react-icons/fi";
 import { cn } from "./cn";
 import { Button } from "./Button";
@@ -67,15 +69,22 @@ function Segmented<T extends string>({
  * /cert filters: sex · color · age (operator + months) · sort. No invented status categories.
  */
 export function FilterDrawer({ open, onClose, value, onChange, onReset }: FilterDrawerProps) {
-  return (
+  // portal to <body> so the overlay escapes the app-shell stacking context
+  // (V2Layout <main> is `relative z-10`, which would otherwise trap this below the z-40 nav).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+
+  return createPortal(
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-end justify-center sm:items-center",
+        // overlay above the BottomNav (z-40). mobile = bottom sheet; tabletS+ = top-right panel near the trigger.
+        "fixed inset-0 z-[60] flex items-end justify-center tabletS:items-start tabletS:justify-end tabletS:p-5",
         open ? "pointer-events-auto" : "pointer-events-none"
       )}
       aria-hidden={!open}
     >
-      {/* scrim */}
+      {/* scrim (click-outside to close) */}
       <div
         onClick={onClose}
         className={cn(
@@ -83,18 +92,22 @@ export function FilterDrawer({ open, onClose, value, onChange, onReset }: Filter
           open ? "opacity-100" : "opacity-0"
         )}
       />
-      {/* sheet */}
+      {/* sheet(mobile) / panel(tabletS+) — header · scrolling body · PINNED footer (buttons never cut off) */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label="ตัวกรอง"
         className={cn(
-          "relative w-full max-w-md rounded-t-[24px] border border-border-soft bg-surface-raised p-5 shadow-gold transition-transform duration-300 sm:rounded-card",
-          "max-h-[85vh] overflow-y-auto",
-          open ? "translate-y-0" : "translate-y-full sm:translate-y-4"
+          "relative flex w-full max-w-md flex-col overflow-hidden rounded-t-[24px] border border-border-soft bg-surface-raised shadow-gold transition-all duration-300",
+          "max-h-[82vh] tabletS:mt-[60px] tabletS:max-w-sm tabletS:rounded-card",
+          open ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 tabletS:translate-y-2"
         )}
       >
-        <div className="mb-5 flex items-center justify-between">
+        {/* grab handle (mobile only) */}
+        <div className="mx-auto mt-3 h-1 w-10 shrink-0 rounded-pill bg-border-soft tabletS:hidden" />
+
+        {/* header (pinned) */}
+        <div className="flex shrink-0 items-center justify-between px-5 pb-3 pt-4">
           <h2 className="text-lg font-bold text-foreground">ตัวกรอง</h2>
           <button
             type="button"
@@ -106,7 +119,8 @@ export function FilterDrawer({ open, onClose, value, onChange, onReset }: Filter
           </button>
         </div>
 
-        <div className="flex flex-col gap-5">
+        {/* body (scrolls) */}
+        <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-5 pb-4">
           <Segmented
             label="เพศ"
             value={value.sex}
@@ -164,17 +178,19 @@ export function FilterDrawer({ open, onClose, value, onChange, onReset }: Filter
               { value: "youngest", label: "อายุน้อยสุด" },
             ]}
           />
+        </div>
 
-          <div className="flex gap-3 pt-2">
-            <Button variant="gold-outline" block onClick={onReset}>
-              ล้างตัวกรอง
-            </Button>
-            <Button variant="gold-fill" block onClick={onClose}>
-              ดูผลลัพธ์
-            </Button>
-          </div>
+        {/* footer (PINNED — always visible, clears the nav via safe-area padding) */}
+        <div className="flex shrink-0 gap-3 border-t border-border-soft p-5 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] tabletS:pb-5">
+          <Button variant="gold-outline" block onClick={onReset}>
+            ล้างตัวกรอง
+          </Button>
+          <Button variant="gold-fill" block onClick={onClose}>
+            ดูผลลัพธ์
+          </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -135,10 +135,29 @@ logo, Bitkub) stay as image assets in `public/images`, not icon fonts.
 - ❌ Do not flip daisyUI `base-100` to dark globally (breaks every legacy screen).
 
 ## 8. Responsive Behavior
-Mobile-first breakpoints (custom device-named scale: `mobileS 375 … desktopM 2330` — do **not**
-rename). Touch targets ≥ 44px. Bottom nav respects safe-area. z-index: bottom nav above content,
-modal above nav. Runtime is **CSR-only** (`ssr:false`) → every data card ships a skeleton state to
-avoid layout flash.
+
+### ⚠️ Breakpoints — CUSTOM device-named scale ONLY (read before writing any responsive class)
+`tailwind.config.js` sets `screens` at the **top level**, which **REPLACES** Tailwind's default
+scale. The default prefixes **`sm:` `md:` `lg:` `xl:` `2xl:` DO NOT EXIST** — using them fails
+**silently** (the class is dropped, the layout never goes responsive). Use only these names:
+
+| Name | min-width | typical use |
+|------|-----------|-------------|
+| `mobileS` | 375px | smallest phones |
+| `mobileM` | 425px | larger phones |
+| `tabletS` | 768px | tablet / "small screen → big screen" flip (2-col → 4-col, sheet → panel) |
+| `tabletM` | 1024px | landscape tablet / small laptop |
+| `labtop` | 1440px | laptop (note the spelling `labtop`, **do not rename**) |
+| `desktop` | 1920px | desktop |
+| `desktopM` | 2330px | large desktop |
+
+Rules: mobile-first base + layer up with `tabletS:` / `labtop:` (never `sm:`/`lg:`). Cap wide
+layouts with `max-w-*` + `mx-auto` so boxes don't stretch forever. Grids flip at `tabletS`
+(e.g. `grid-cols-2 tabletS:grid-cols-4`).
+
+Touch targets ≥ 44px. Bottom nav (`z-40`) respects safe-area; modals/overlays sit at `z-[60]`
+(above nav) with a **pinned footer** so action buttons never get cut off by the nav. Runtime is
+**CSR-only** (`ssr:false`) → every data card ships a skeleton state to avoid layout flash.
 
 ## 9. Agent Prompt Guide
 > Build jaothui v2 UI with the `components/v2/` primitives + the additive dark-gold-green semantic
