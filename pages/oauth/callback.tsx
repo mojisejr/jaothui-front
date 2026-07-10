@@ -18,7 +18,11 @@ import { setCookies } from "../../helpers/setCookies";
 import { trpc } from "../../utils/trpc";
 import Image from "next/image";
 import { Spinner } from "../../components/v2";
-import { createMobileBitkubNextDeepLink } from "../../server/mobile/bitkub-next-handoff";
+import {
+  buildMobileCallbackPagePath,
+  getMobileStateHint,
+  getSingleQueryValue,
+} from "../../server/mobile/bitkub-next-routing";
 
 const clientId =
   process.env.NODE_ENV == "production"
@@ -29,57 +33,6 @@ const redirectUrl =
     ? (process.env.NEXT_PUBLIC_redirect_prod as string)
     : (process.env.NEXT_PUBLIC_redirect_dev as string);
 
-function decodeBase64UrlJson(payload: string) {
-  const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = normalized.padEnd(
-    normalized.length + ((4 - (normalized.length % 4)) % 4),
-    "="
-  );
-
-  if (typeof window === "undefined") {
-    return JSON.parse(Buffer.from(padded, "base64").toString("utf8"));
-  }
-
-  return JSON.parse(window.atob(padded));
-}
-
-function getMobileStateHint(state: string) {
-  try {
-    const payload = state.split(".")[1];
-    if (!payload) return false;
-
-    const decoded = decodeBase64UrlJson(payload);
-
-    return (
-      decoded?.typ === "jaothui-mobile-oauth-state" &&
-      decoded?.flow === "mobile"
-    );
-  } catch {
-    return false;
-  }
-}
-
-function getSingleQueryValue(value: string | string[] | undefined) {
-  if (Array.isArray(value)) return value[0];
-  return value;
-}
-
-function buildMobileCallbackErrorUrl(error: string) {
-  const url = new URL("jaothui://oauth/callback");
-  url.searchParams.set("error", error);
-  return url.toString();
-}
-
-function redirectToNativeCallback(
-  res: Parameters<GetServerSideProps>[0]["res"],
-  location: string
-) {
-  res.statusCode = 302;
-  res.setHeader("Cache-Control", "no-store");
-  res.setHeader("Location", location);
-  res.end();
-}
-
 export const getServerSideProps: GetServerSideProps = async ({ query, res }) => {
   const code = getSingleQueryValue(query.code);
   const state = getSingleQueryValue(query.state);
@@ -88,23 +41,12 @@ export const getServerSideProps: GetServerSideProps = async ({ query, res }) => 
     return { props: {} };
   }
 
-  try {
-    redirectToNativeCallback(
-      res,
-      await createMobileBitkubNextDeepLink({ code, state })
-    );
-  } catch (error) {
-    console.error(
-      "Mobile Bitkub NEXT callback redirect failed:",
-      error instanceof Error ? error.message : "unknown error"
-    );
-    redirectToNativeCallback(
-      res,
-      buildMobileCallbackErrorUrl("mobile_auth_failed")
-    );
-  }
-
-  return { props: {} };
+  return {
+    redirect: {
+      destination: buildMobileCallbackPagePath({ code, state }),
+      permanent: false,
+    },
+  };
 };
 
 const Callback: FunctionComponent<PropsWithChildren> = () => {
@@ -113,38 +55,6 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
 
   const { query, replace } = useRouter();
   const [message, setMessage] = useState("Authorizing...");
-  const [mobileDeepLink, setMobileDeepLink] = useState<string | null>(null);
-
-  const getMobileHandoff = useCallback(async (code: string, state: string) => {
-    setMessage("Returning to JAOTHUI mobile...");
-
-    try {
-      const response = await fetch("/api/oauth/mobile/handoff", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, state }),
-      });
-      const result = await response.json();
-
-      if (response.ok && result.success && result.deepLink) {
-        setMobileDeepLink(result.deepLink);
-        setMessage("Opening JAOTHUI mobile...");
-        window.location.replace(result.deepLink);
-        window.setTimeout(() => {
-          setMessage("Tap Open JAOTHUI mobile to continue.");
-        }, 1200);
-        return;
-      }
-    } catch (error) {
-      console.error(
-        "Mobile Bitkub NEXT handoff request failed:",
-        error instanceof Error ? error.message : "unknown error"
-      );
-    }
-
-    setMessage("Mobile Authentication Failed.");
-    replace("/v2/profile?mobile_auth=failed");
-  }, [replace]);
 
   const getAccessToken = useCallback(async (code: string) => {
     const newTokens = await exchangeAuthorizationCode(
@@ -196,11 +106,12 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
     if (!code) {
       setMessage("Authenticating...");
     } else if (state && getMobileStateHint(state)) {
-      getMobileHandoff(code, state);
+      setMessage("Returning to JAOTHUI mobile...");
+      window.location.replace(buildMobileCallbackPagePath({ code, state }));
     } else {
       getAccessToken(code);
     }
-  }, [getAccessToken, getMobileHandoff, query]);
+  }, [getAccessToken, query]);
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center gap-6 bg-background p-10 text-foreground">
@@ -211,14 +122,6 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
       </div>
       <Spinner size="md" />
       <div className="font-semibold text-muted">{message}</div>
-      {mobileDeepLink ? (
-        <a
-          className="rounded-pill bg-accent px-6 py-3 font-semibold text-background"
-          href={mobileDeepLink}
-        >
-          Open JAOTHUI mobile
-        </a>
-      ) : null}
     </div>
   );
 };
