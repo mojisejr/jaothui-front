@@ -9,6 +9,7 @@ import { redeemHistoryType } from "./jaothuiPoint/redeemHistory";
 import { redeemItemType } from "./jaothuiPoint/redeemItem";
 import { gameType } from "./game/game";
 import { userJaothuiPoint } from "./jaothuiPoint/userJaothuiPoint";
+import { newsEventType } from "./newsEvent";
 
 // export const schema = [
 
@@ -26,5 +27,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     userJaothuiPoint,
     redeemHistoryType,
     redeemItemType,
+    newsEventType,
   ],
 };
