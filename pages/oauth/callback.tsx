@@ -1,6 +1,7 @@
 import {
   FunctionComponent,
   PropsWithChildren,
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -26,21 +27,54 @@ const redirectUrl =
     ? (process.env.NEXT_PUBLIC_redirect_prod as string)
     : (process.env.NEXT_PUBLIC_redirect_dev as string);
 
+function getMobileStateHint(state: string) {
+  try {
+    const payload = state.split(".")[1];
+    if (!payload) return false;
+
+    const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized.padEnd(
+      normalized.length + ((4 - (normalized.length % 4)) % 4),
+      "="
+    );
+    const decoded = JSON.parse(window.atob(padded));
+
+    return (
+      decoded?.typ === "jaothui-mobile-oauth-state" &&
+      decoded?.flow === "mobile"
+    );
+  } catch {
+    return false;
+  }
+}
+
 const Callback: FunctionComponent<PropsWithChildren> = () => {
   const { loggedIn } = useBitkubNext();
   const { mutate: save } = trpc.user.create.useMutation();
 
   const { query, replace } = useRouter();
   const [message, setMessage] = useState("Authorizing...");
-  useEffect(() => {
-    if (!query.code) {
-      setMessage("Authenticating...");
-    } else {
-      getAccessToken(query.code as string);
-    }
-  }, [query]);
 
-  async function getAccessToken(code: string) {
+  const getMobileHandoff = useCallback(async (code: string, state: string) => {
+    setMessage("Returning to JAOTHUI mobile...");
+
+    const response = await fetch("/api/oauth/mobile/handoff", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, state }),
+    });
+    const result = await response.json();
+
+    if (response.ok && result.success && result.deepLink) {
+      window.location.assign(result.deepLink);
+      return;
+    }
+
+    setMessage("Mobile Authentication Failed.");
+    replace("/v2/profile?mobile_auth=failed");
+  }, [replace]);
+
+  const getAccessToken = useCallback(async (code: string) => {
     const newTokens = await exchangeAuthorizationCode(
       clientId,
       redirectUrl,
@@ -81,7 +115,20 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
       localStorage.setItem("bkc_email", "");
       replace("/");
     }
-  }
+  }, [loggedIn, replace, save]);
+
+  useEffect(() => {
+    const code = typeof query.code === "string" ? query.code : undefined;
+    const state = typeof query.state === "string" ? query.state : undefined;
+
+    if (!code) {
+      setMessage("Authenticating...");
+    } else if (state && getMobileStateHint(state)) {
+      getMobileHandoff(code, state);
+    } else {
+      getAccessToken(code);
+    }
+  }, [getAccessToken, getMobileHandoff, query]);
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center gap-6 bg-background p-10 text-foreground">
