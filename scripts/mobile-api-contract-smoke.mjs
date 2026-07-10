@@ -8,10 +8,12 @@ const requiredFiles = [
   "server/mobile/constants.ts",
   "server/mobile/auth-session.ts",
   "server/mobile/bitkub-next-auth.ts",
+  "server/mobile/bitkub-next-handoff.ts",
   "server/mobile/profile.ts",
   "server/mobile/public-journey.ts",
   "server/mobile/response.ts",
   "server/mobile/view-models.ts",
+  "pages/oauth/callback.tsx",
   "pages/api/mobile/v1/auth/bitkub-next/session.ts",
   "pages/api/mobile/v1/home.ts",
   "pages/api/mobile/v1/me.ts",
@@ -72,6 +74,20 @@ if (!response.includes("Authorization")) {
 const profile = readFileSync(path.join(root, "server/mobile/profile.ts"), "utf8");
 if (!profile.includes("getMemberData") || !profile.includes("toMobileBuffaloCard")) {
   failures.push("mobile profile does not reuse member data and buffalo view-model mapping");
+}
+
+const handoff = readFileSync(path.join(root, "server/mobile/bitkub-next-handoff.ts"), "utf8");
+if (!handoff.includes("createMobileBitkubNextDeepLink")) {
+  failures.push("mobile auth does not expose shared deep-link handoff helper");
+}
+
+const callbackPage = readFileSync(path.join(root, "pages/oauth/callback.tsx"), "utf8");
+if (
+  !callbackPage.includes("getServerSideProps") ||
+  !callbackPage.includes("redirectToNativeCallback") ||
+  !callbackPage.includes("createMobileBitkubNextDeepLink")
+) {
+  failures.push("mobile OAuth callback does not server-redirect mobile state to native callback");
 }
 
 if (failures.length) {
