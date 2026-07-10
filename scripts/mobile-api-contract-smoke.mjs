@@ -72,6 +72,25 @@ const response = readFileSync(path.join(root, "server/mobile/response.ts"), "utf
 if (!response.includes("Authorization")) {
   failures.push("mobile response CORS does not allow Authorization header");
 }
+const noStoreResponseMarkers = [
+  "setMobileNoStoreHeaders",
+  "Cache-Control",
+  "no-store, no-cache, max-age=0, must-revalidate",
+  "Pragma",
+  "no-cache",
+  "Expires",
+  "Surrogate-Control",
+  "Vary",
+  "Authorization, X-Request-Id",
+];
+for (const marker of noStoreResponseMarkers) {
+  if (!response.includes(marker)) {
+    failures.push(`mobile response helper does not enforce no-store marker: ${marker}`);
+  }
+}
+if (!response.includes("Cache-Control, Content-Type")) {
+  failures.push("mobile response CORS does not allow Cache-Control request header");
+}
 
 const profile = readFileSync(path.join(root, "server/mobile/profile.ts"), "utf8");
 if (!profile.includes("getMemberData") || !profile.includes("toMobileBuffaloCard")) {

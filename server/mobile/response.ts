@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export type MobileErrorCode =
@@ -25,19 +26,31 @@ export type MobileErr = {
 
 export type MobileResponse<T> = MobileOk<T> | MobileErr;
 
+export function setMobileNoStoreHeaders(res: NextApiResponse) {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, max-age=0, must-revalidate"
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.setHeader("Surrogate-Control", "no-store");
+  res.setHeader("Vary", "Authorization, X-Request-Id");
+}
+
 export function setMobileCorsHeaders(res: NextApiResponse) {
+  setMobileNoStoreHeaders(res);
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Accept, Authorization, Content-Type, X-Request-Id"
+    "Accept, Authorization, Cache-Control, Content-Type, X-Request-Id"
   );
 }
 
 export function getRequestId(req: NextApiRequest): string | undefined {
   const raw = req.headers["x-request-id"];
   if (Array.isArray(raw)) return raw[0];
-  return raw;
+  return raw ?? randomUUID();
 }
 
 export function sendMobileOk<T>(
