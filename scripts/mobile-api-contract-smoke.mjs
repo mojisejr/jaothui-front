@@ -9,11 +9,13 @@ const requiredFiles = [
   "server/mobile/auth-session.ts",
   "server/mobile/bitkub-next-auth.ts",
   "server/mobile/bitkub-next-handoff.ts",
+  "server/mobile/bitkub-next-routing.ts",
   "server/mobile/profile.ts",
   "server/mobile/public-journey.ts",
   "server/mobile/response.ts",
   "server/mobile/view-models.ts",
   "pages/oauth/callback.tsx",
+  "pages/oauth/mobile/callback.tsx",
   "pages/api/mobile/v1/auth/bitkub-next/session.ts",
   "pages/api/mobile/v1/home.ts",
   "pages/api/mobile/v1/me.ts",
@@ -100,10 +102,32 @@ for (const forbidden of forbiddenCallbackBackgroundWork) {
 const callbackPage = readFileSync(path.join(root, "pages/oauth/callback.tsx"), "utf8");
 if (
   !callbackPage.includes("getServerSideProps") ||
-  !callbackPage.includes("redirectToNativeCallback") ||
-  !callbackPage.includes("createMobileBitkubNextDeepLink")
+  !callbackPage.includes("buildMobileCallbackPagePath")
 ) {
-  failures.push("mobile OAuth callback does not server-redirect mobile state to native callback");
+  failures.push("web OAuth callback does not route mobile state to the mobile callback");
+}
+if (callbackPage.includes("createMobileBitkubNextDeepLink")) {
+  failures.push("web OAuth callback still owns mobile handoff business logic");
+}
+
+const mobileCallbackPage = readFileSync(
+  path.join(root, "pages/oauth/mobile/callback.tsx"),
+  "utf8"
+);
+if (
+  !mobileCallbackPage.includes("getServerSideProps") ||
+  !mobileCallbackPage.includes("createMobileBitkubNextDeepLink") ||
+  !mobileCallbackPage.includes("redirectNoStore")
+) {
+  failures.push("mobile OAuth callback route does not own native handoff redirect");
+}
+
+const sessionRoute = readFileSync(
+  path.join(root, "pages/api/mobile/v1/auth/bitkub-next/session.ts"),
+  "utf8"
+);
+if (sessionRoute.includes("registerUser") || sessionRoute.includes("hasUser")) {
+  failures.push("mobile handoff redemption reintroduces blocking user provisioning");
 }
 
 if (failures.length) {
