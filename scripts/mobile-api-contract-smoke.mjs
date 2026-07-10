@@ -80,6 +80,12 @@ const handoff = readFileSync(path.join(root, "server/mobile/bitkub-next-handoff.
 if (!handoff.includes("createMobileBitkubNextDeepLink")) {
   failures.push("mobile auth does not expose shared deep-link handoff helper");
 }
+if (/await\s+registerUserBestEffort/.test(handoff)) {
+  failures.push("mobile OAuth callback blocks native redirect on best-effort registration");
+}
+if (!handoff.includes("scheduleUserRegistrationBestEffort")) {
+  failures.push("mobile OAuth callback does not schedule registration off the critical path");
+}
 
 const callbackPage = readFileSync(path.join(root, "pages/oauth/callback.tsx"), "utf8");
 if (
