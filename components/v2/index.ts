@@ -22,3 +22,5 @@ export { Spinner, spinnerVariants, type SpinnerProps } from "./Spinner";
 export { StatRow, type StatRowProps } from "./StatRow";
 export { SearchInput, type SearchInputProps } from "./SearchInput";
 export { V2Layout, type V2LayoutProps } from "./V2Layout";
+export { NewsEventCard, type NewsEventCardProps } from "./NewsEventCard";
+export { NewsEventRail, type NewsEventRailProps } from "./NewsEventRail";
