@@ -83,8 +83,18 @@ if (!handoff.includes("createMobileBitkubNextDeepLink")) {
 if (/await\s+registerUserBestEffort/.test(handoff)) {
   failures.push("mobile OAuth callback blocks native redirect on best-effort registration");
 }
-if (!handoff.includes("scheduleUserRegistrationBestEffort")) {
-  failures.push("mobile OAuth callback does not schedule registration off the critical path");
+const forbiddenCallbackBackgroundWork = [
+  "register_user_best_effort",
+  "registerUserBestEffort",
+  "scheduleUserRegistrationBestEffort",
+  "setTimeout",
+];
+for (const forbidden of forbiddenCallbackBackgroundWork) {
+  if (handoff.includes(forbidden)) {
+    failures.push(
+      `mobile OAuth callback helper contains forbidden background work: ${forbidden}`
+    );
+  }
 }
 
 const callbackPage = readFileSync(path.join(root, "pages/oauth/callback.tsx"), "utf8");

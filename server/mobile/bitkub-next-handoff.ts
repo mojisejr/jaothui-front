@@ -1,7 +1,6 @@
 import { exchangeAuthorizationCode } from "@bitkub-blockchain/react-bitkubnext-oauth2";
 
 import { getUserData } from "../../helpers/getUserData";
-import { hasUser, registerUser } from "../services/user.service";
 import {
   appendHandoffToMobileReturnTo,
   createMobileOAuthHandoff,
@@ -14,10 +13,7 @@ type MobileHandoffStage =
   | "state_verify"
   | "exchange_authorization_code"
   | "get_user_data"
-  | "register_user_best_effort"
   | "create_handoff";
-
-const USER_REGISTRATION_BEST_EFFORT_TIMEOUT_MS = 2500;
 
 function getDurationMs(startedAt: number) {
   return Date.now() - startedAt;
@@ -59,24 +55,6 @@ function classifyMobileHandoffError(error: unknown) {
   return "unexpected_error";
 }
 
-function withTimeout<T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-  message: string
-): Promise<T> {
-  let timeoutId: ReturnType<typeof setTimeout> | undefined;
-
-  const timeout = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(() => {
-      reject(new Error(message));
-    }, timeoutMs);
-  });
-
-  return Promise.race([promise, timeout]).finally(() => {
-    if (timeoutId) clearTimeout(timeoutId);
-  });
-}
-
 function logMobileHandoffStageStart(stage: MobileHandoffStage) {
   console.info("Mobile Bitkub NEXT handoff stage started", { stage });
 }
@@ -103,40 +81,6 @@ function logMobileHandoffStageFailed(
     durationMs: getDurationMs(startedAt),
     errorClass: classifyMobileHandoffError(error),
   });
-}
-
-async function registerUserBestEffort(wallet: string, email: string | null) {
-  const startedAt = Date.now();
-  logMobileHandoffStageStart("register_user_best_effort");
-
-  try {
-    const foundUser = await withTimeout(
-      (async () => {
-        const existingUser = await hasUser(wallet);
-        if (!existingUser) {
-          await registerUser({ wallet, email, name: null, tel: null });
-        }
-
-        return existingUser;
-      })(),
-      USER_REGISTRATION_BEST_EFFORT_TIMEOUT_MS,
-      "Mobile Bitkub NEXT best-effort registration timed out"
-    );
-
-    logMobileHandoffStageComplete("register_user_best_effort", startedAt, {
-      foundUser,
-      hasEmail: Boolean(email),
-      timeoutMs: USER_REGISTRATION_BEST_EFFORT_TIMEOUT_MS,
-    });
-  } catch (error) {
-    logMobileHandoffStageFailed("register_user_best_effort", startedAt, error);
-  }
-}
-
-function scheduleUserRegistrationBestEffort(wallet: string, email: string | null) {
-  setTimeout(() => {
-    void registerUserBestEffort(wallet, email);
-  }, 0);
 }
 
 export async function createMobileBitkubNextDeepLink(input: {
@@ -201,11 +145,6 @@ export async function createMobileBitkubNextDeepLink(input: {
 
   const deepLink = appendHandoffToMobileReturnTo(verifiedState.returnTo, handoff);
   logMobileHandoffStageComplete("create_handoff", startedAt);
-
-  scheduleUserRegistrationBestEffort(
-    userData.wallet_address,
-    userData.email ?? null
-  );
 
   return deepLink;
 }
