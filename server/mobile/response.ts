@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export type MobileErrorCode =
   | "METHOD_NOT_ALLOWED"
   | "BAD_REQUEST"
+  | "UNAUTHORIZED"
   | "NOT_FOUND"
   | "CERTIFICATE_UNAVAILABLE"
   | "INTERNAL_ERROR";
@@ -26,8 +27,11 @@ export type MobileResponse<T> = MobileOk<T> | MobileErr;
 
 export function setMobileCorsHeaders(res: NextApiResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Accept, Content-Type, X-Request-Id");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Accept, Authorization, Content-Type, X-Request-Id"
+  );
 }
 
 export function getRequestId(req: NextApiRequest): string | undefined {
