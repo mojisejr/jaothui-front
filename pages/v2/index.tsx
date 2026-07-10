@@ -1,8 +1,11 @@
 import Image from "next/image";
+import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { BsGem } from "react-icons/bs";
 import { FiUsers, FiDatabase, FiActivity, FiShield } from "react-icons/fi";
+import type { NewsEventHomeItem } from "../../interfaces/NewsEvent";
+import { getHomeNewsEvents } from "../../server/services/news-event.service";
 import { trpc } from "../../utils/trpc";
 import {
   V2Layout,
@@ -10,6 +13,7 @@ import {
   StatCard,
   BuffaloCard,
   RemoteImage,
+  NewsEventRail,
   formatThaiBirthdate,
 } from "../../components/v2";
 
@@ -179,7 +183,24 @@ function Featured() {
   );
 }
 
-export default function V2HomePage() {
+interface V2HomePageProps {
+  newsEvents: NewsEventHomeItem[];
+}
+
+export const getStaticProps: GetStaticProps<V2HomePageProps> = async () => {
+  const newsEvents = await getHomeNewsEvents();
+
+  return {
+    props: {
+      newsEvents,
+    },
+    revalidate: 60,
+  };
+};
+
+export default function V2HomePage({
+  newsEvents,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <V2Layout activeTab="home">
       <Hero />
@@ -192,7 +213,7 @@ export default function V2HomePage() {
 
       <Featured />
 
-      {/* TODO(feature): LATEST NEWS & EVENTS — no data source yet, add in a later pass. */}
+      <NewsEventRail items={newsEvents} />
     </V2Layout>
   );
 }
