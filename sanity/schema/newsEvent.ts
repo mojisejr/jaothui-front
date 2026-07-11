@@ -114,6 +114,8 @@ export const newsEventType = defineType({
       name: "coverImage",
       title: "Cover Image",
       type: "image",
+      description:
+        "แนะนำรูปแนวนอน 16:9 เช่น 1920x1080, 1600x900 หรือ 1280x720 และวางข้อความ/โลโก้/จุดสำคัญไว้กลางภาพเพื่อรองรับการครอปบนเว็บและมือถือ",
       options: {
         hotspot: true,
       },

@@ -1,4 +1,5 @@
 import { groq } from "next-sanity";
+import type { Image } from "sanity";
 
 import type {
   NewsEventHomeItem,
@@ -6,6 +7,7 @@ import type {
   NewsEventType,
 } from "../../interfaces/NewsEvent";
 import { client } from "../../sanity/lib/client";
+import { urlForNewsEventCoverImage } from "../../sanity/lib/image";
 
 interface SanityNewsEventDocument {
   _id?: string;
@@ -20,7 +22,8 @@ interface SanityNewsEventDocument {
   eventEndAt?: string | null;
   location?: string | null;
   excerpt?: string;
-  coverImageUrl?: string | null;
+  coverImage?: Image | null;
+  rawCoverImageUrl?: string | null;
   ctaLabel?: string | null;
   ctaUrl?: string | null;
 }
@@ -41,7 +44,8 @@ const homeNewsEventsQuery = groq`*[_type == "newsEvent" && status == "published"
     eventEndAt,
     location,
     excerpt,
-    "coverImageUrl": coverImage.asset->url,
+    coverImage,
+    "rawCoverImageUrl": coverImage.asset->url,
     ctaLabel,
     ctaUrl
   }`;
@@ -82,10 +86,26 @@ export function mapNewsEventHomeItem(
     eventEndAt: item.eventEndAt ?? null,
     location: item.location ?? null,
     excerpt: item.excerpt,
-    coverImageUrl: item.coverImageUrl ?? null,
+    coverImageUrl: getNewsEventCoverImageUrl(item.coverImage, item.rawCoverImageUrl),
     ctaLabel: item.ctaLabel ?? null,
     ctaUrl: item.ctaUrl ?? null,
   };
+}
+
+export function getNewsEventCoverImageUrl(
+  coverImage?: Image | null,
+  fallbackUrl?: string | null
+) {
+  if (!coverImage) {
+    return fallbackUrl ?? null;
+  }
+
+  try {
+    return urlForNewsEventCoverImage(coverImage).url();
+  } catch (error) {
+    console.warn("[news-event.service] Failed to build news event cover image URL", error);
+    return fallbackUrl ?? null;
+  }
 }
 
 export async function getHomeNewsEvents(): Promise<NewsEventHomeItem[]> {

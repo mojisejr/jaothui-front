@@ -57,7 +57,7 @@ export function NewsEventCard({ item, className, priority }: NewsEventCardProps)
         className
       )}
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-raised">
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-surface-raised">
         <RemoteImage
           src={item.coverImageUrl}
           alt={item.title}
