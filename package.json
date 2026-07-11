@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test:home-version-toggle": "node scripts/home-version-toggle-contract-check.mjs",
     "test:news-events-image": "node scripts/news-event-image-ratio-contract-check.mjs",
     "postinstall": "prisma generate"
   },
