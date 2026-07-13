@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { requireMobileBitkubNextSession } from "../../../../server/mobile/auth-session";
-import { getMobileProfile } from "../../../../server/mobile/profile";
+import { requireMobileSession } from "../../../../server/mobile/auth-session";
+import { getMobileAccountProfile } from "../../../../server/mobile/account-profile";
 import {
   MobileResponse,
   requireMethod,
@@ -11,17 +11,17 @@ import {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<MobileResponse<Awaited<ReturnType<typeof getMobileProfile>>>>
+  res: NextApiResponse<MobileResponse<Awaited<ReturnType<typeof getMobileAccountProfile>>>>
 ) {
   if (!requireMethod(req, res, "GET")) return;
 
   try {
-    const session = requireMobileBitkubNextSession(req);
+    const session = requireMobileSession(req);
     if (!session) {
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Missing bearer token");
     }
 
-    return sendMobileOk(req, res, await getMobileProfile(session));
+    return sendMobileOk(req, res, await getMobileAccountProfile(session));
   } catch (error) {
     if (
       error instanceof Error &&
@@ -30,7 +30,8 @@ export default async function handler(
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
     }
 
-    console.error("Mobile profile error:", error);
+    console.error("Mobile v2 profile error:", error);
     return sendMobileError(req, res, 500, "INTERNAL_ERROR", "Unable to load profile");
   }
 }
+
