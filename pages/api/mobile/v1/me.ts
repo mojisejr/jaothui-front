@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { requireMobileSession } from "../../../../server/mobile/auth-session";
+import { requireMobileBitkubNextSession } from "../../../../server/mobile/auth-session";
 import {
   MobileResponse,
   requireMethod,
@@ -21,7 +21,7 @@ export default function handler(
   if (!requireMethod(req, res, "GET")) return;
 
   try {
-    const session = requireMobileSession(req);
+    const session = requireMobileBitkubNextSession(req);
     if (!session) {
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Missing bearer token");
     }

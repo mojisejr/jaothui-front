@@ -1,8 +1,8 @@
-import type { MobileSessionPayload } from "./auth-session";
+import type { MobileBitkubNextSessionPayload } from "./auth-session";
 import { toMobileBuffaloCard } from "./view-models";
 import { getMemberData } from "../services/kwaithai.service";
 
-export async function getMobileProfile(session: MobileSessionPayload) {
+export async function getMobileProfile(session: MobileBitkubNextSessionPayload) {
   const member = await getMemberData(session.walletAddress);
   const ownedBuffalos = member?.Certificate?.map(toMobileBuffaloCard) ?? [];
 

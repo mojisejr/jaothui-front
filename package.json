@@ -11,6 +11,9 @@
     "test:home-version-toggle": "node scripts/home-version-toggle-contract-check.mjs",
     "test:news-events-image": "node scripts/news-event-image-ratio-contract-check.mjs",
     "test:news-admin-contract": "bun scripts/news-admin-contract-smoke.mjs",
+    "test:account-service-contract": "bun scripts/account-service-contract-smoke.mjs",
+    "test:mobile-auth-contract": "bun scripts/mobile-auth-contract-smoke.mjs",
+    "test:mobile-account-profile-contract": "bun scripts/mobile-account-profile-contract-smoke.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

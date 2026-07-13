@@ -7,6 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id          String            @id @default(cuid())
+  displayName String?
+  avatarUrl   String?
+  email       String?
+  role        String            @default("USER")
+  status      String            @default("ACTIVE")
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  identities  AccountIdentity[]
+  walletLinks WalletLink[]
+}
+
+model AccountIdentity {
+  id             String   @id @default(cuid())
+  accountId      String
+  provider       String
+  providerUserId String
+  email          String?
+  displayName    String?
+  avatarUrl      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  account        Account  @relation(fields: [accountId], references: [id])
+
+  @@unique([provider, providerUserId])
+  @@index([accountId])
+}
+
+model WalletLink {
+  id            String    @id @default(cuid())
+  accountId     String
+  walletAddress String    @unique
+  provider      String    @default("bitkub-next")
+  email         String?
+  status        String    @default("LINKED")
+  linkedAt      DateTime  @default(now())
+  verifiedAt    DateTime?
+  account       Account   @relation(fields: [accountId], references: [id])
+
+  @@index([accountId])
+}
+
 model User {
   id                  Int                  @id @default(autoincrement())
   avatar              String?

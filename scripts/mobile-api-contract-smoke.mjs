@@ -20,6 +20,8 @@ const requiredFiles = [
   "pages/api/mobile/v1/home.ts",
   "pages/api/mobile/v1/me.ts",
   "pages/api/mobile/v1/profile.ts",
+  "pages/api/mobile/v2/me.ts",
+  "pages/api/mobile/v2/profile.ts",
   "pages/api/mobile/v1/buffalos/index.ts",
   "pages/api/mobile/v1/buffalos/featured.ts",
   "pages/api/mobile/v1/certs/[microchip]/index.ts",
