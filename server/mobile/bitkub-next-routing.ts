@@ -30,12 +30,38 @@ export function getMobileStateHint(state: string) {
     const decoded = decodeBase64UrlJson(payload);
 
     return (
-      decoded?.typ === "jaothui-mobile-oauth-state" &&
-      decoded?.flow === "mobile"
+      (decoded?.typ === "jaothui-mobile-oauth-state" &&
+        decoded?.flow === "mobile") ||
+      (decoded?.typ === "jaothui-mobile-wallet-link-state" &&
+        decoded?.flow === "mobile-wallet-link" &&
+        decoded?.purpose === "link")
     );
   } catch {
     return false;
   }
+}
+
+export function getMobileStateKind(state: string) {
+  try {
+    const payload = state.split(".")[1];
+    if (!payload) return "unknown" as const;
+
+    const decoded = decodeBase64UrlJson(payload);
+    if (
+      decoded?.typ === "jaothui-mobile-wallet-link-state" &&
+      decoded?.flow === "mobile-wallet-link" &&
+      decoded?.purpose === "link"
+    ) {
+      return "wallet-link" as const;
+    }
+    if (decoded?.typ === "jaothui-mobile-oauth-state" && decoded?.flow === "mobile") {
+      return "legacy-login" as const;
+    }
+  } catch {
+    return "unknown" as const;
+  }
+
+  return "unknown" as const;
 }
 
 export function buildMobileCallbackPagePath(input: {

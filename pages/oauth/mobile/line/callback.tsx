@@ -1,55 +1,49 @@
 import type { GetServerSideProps } from "next";
 import Image from "next/image";
 
-import { Spinner } from "../../../components/v2";
-import { createMobileBitkubNextDeepLink } from "../../../server/mobile/bitkub-next-handoff";
-import { createMobileBitkubNextLinkDeepLink } from "../../../server/mobile/bitkub-next-link";
-import {
-  buildMobileNativeCallbackErrorUrl,
-  getMobileStateKind,
-  getMobileStateHint,
-  getSingleQueryValue,
-  redirectNoStore,
-} from "../../../server/mobile/bitkub-next-routing";
+import { Spinner } from "../../../../components/v2";
+import { buildMobileNativeCallbackErrorUrl, getSingleQueryValue, redirectNoStore } from "../../../../server/mobile/bitkub-next-routing";
+import { completeMobileLineCallback } from "../../../../server/mobile/line-auth";
 
-type MobileCallbackProps = {
+type MobileLineCallbackProps = {
   error?: string;
 };
 
-export const getServerSideProps: GetServerSideProps<MobileCallbackProps> =
+export const getServerSideProps: GetServerSideProps<MobileLineCallbackProps> =
   async ({ query, res }) => {
     const code = getSingleQueryValue(query.code);
     const state = getSingleQueryValue(query.state);
+    const providerError = getSingleQueryValue(query.error);
 
-    if (!code || !state || !getMobileStateHint(state)) {
+    if (providerError) {
+      redirectNoStore(res, buildMobileNativeCallbackErrorUrl(providerError));
+      return { props: {} };
+    }
+
+    if (!code || !state) {
       res.statusCode = 400;
       return {
         props: {
-          error: "Invalid mobile authentication callback",
+          error: "Invalid mobile LINE authentication callback",
         },
       };
     }
 
     try {
-      const stateKind = getMobileStateKind(state);
-      redirectNoStore(
-        res,
-        stateKind === "wallet-link"
-          ? await createMobileBitkubNextLinkDeepLink({ code, state })
-          : await createMobileBitkubNextDeepLink({ code, state })
-      );
+      const callback = await completeMobileLineCallback({ code, state });
+      redirectNoStore(res, callback.deepLink);
     } catch (error) {
       console.error(
-        "Mobile Bitkub NEXT callback redirect failed:",
+        "Mobile LINE callback redirect failed:",
         error instanceof Error ? error.message : "unknown error"
       );
-      redirectNoStore(res, buildMobileNativeCallbackErrorUrl("mobile_auth_failed"));
+      redirectNoStore(res, buildMobileNativeCallbackErrorUrl("mobile_line_auth_failed"));
     }
 
     return { props: {} };
   };
 
-export default function MobileOauthCallback({ error }: MobileCallbackProps) {
+export default function MobileLineOauthCallback({ error }: MobileLineCallbackProps) {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center gap-6 bg-background p-10 text-center text-foreground">
       <div className="relative flex h-24 w-24 items-center justify-center rounded-pill bg-gradient-ring p-[2px]">

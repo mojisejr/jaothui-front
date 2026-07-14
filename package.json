@@ -14,6 +14,8 @@
     "test:account-service-contract": "bun scripts/account-service-contract-smoke.mjs",
     "test:mobile-auth-contract": "bun scripts/mobile-auth-contract-smoke.mjs",
     "test:mobile-account-profile-contract": "bun scripts/mobile-account-profile-contract-smoke.mjs",
+    "test:mobile-line-auth-contract": "bun scripts/mobile-line-auth-contract-smoke.mjs",
+    "test:mobile-wallet-link-contract": "bun scripts/mobile-wallet-link-contract-smoke.mjs",
     "test:line-web-auth-contract": "bun scripts/line-web-auth-contract-smoke.mjs",
     "test:line-wallet-link-contract": "bun scripts/line-wallet-link-contract-smoke.mjs",
     "postinstall": "prisma generate"
