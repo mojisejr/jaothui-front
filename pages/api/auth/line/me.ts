@@ -1,30 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { getLineWebSessionFromRequest } from "../../../../server/auth/line-web-session";
+import {
+  getFreshLineWebAccount,
+  type LineWebAccountResponse,
+} from "../../../../server/auth/line-web-account";
 
 type LineMeResponse =
   | {
       success: true;
-      account: {
-        accountId: string;
-        provider: "line";
-        lineUserId: string;
-        email: string | null;
-        displayName: string | null;
-        avatarUrl: string | null;
-        linkedWallet: {
-          walletAddress: string;
-          provider: "bitkub-next";
-          email: string | null;
-        } | null;
-      };
+      account: LineWebAccountResponse;
     }
   | {
       success: false;
       message: string;
     };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<LineMeResponse>
 ) {
@@ -41,17 +33,14 @@ export default function handler(
       return res.status(401).json({ success: false, message: "No LINE session" });
     }
 
+    const account = await getFreshLineWebAccount(session);
+    if (!account) {
+      return res.status(401).json({ success: false, message: "Invalid LINE session" });
+    }
+
     return res.status(200).json({
       success: true,
-      account: {
-        accountId: session.accountId,
-        provider: "line",
-        lineUserId: session.lineUserId,
-        email: session.email,
-        displayName: session.displayName,
-        avatarUrl: session.avatarUrl,
-        linkedWallet: session.linkedWallet,
-      },
+      account,
     });
   } catch {
     return res
