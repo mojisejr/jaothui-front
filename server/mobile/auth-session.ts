@@ -253,3 +253,12 @@ export function requireMobileBitkubNextSession(req: NextApiRequest) {
   }
   return session;
 }
+
+export function requireMobileLineAccountSession(req: NextApiRequest) {
+  const session = requireMobileSession(req);
+  if (!session) return null;
+  if (!("primaryProvider" in session) || session.primaryProvider !== "line") {
+    throw new Error("Invalid mobile session token");
+  }
+  return session;
+}

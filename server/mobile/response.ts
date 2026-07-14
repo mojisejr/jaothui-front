@@ -5,6 +5,7 @@ export type MobileErrorCode =
   | "METHOD_NOT_ALLOWED"
   | "BAD_REQUEST"
   | "UNAUTHORIZED"
+  | "CONFLICT"
   | "NOT_FOUND"
   | "CERTIFICATE_UNAVAILABLE"
   | "INTERNAL_ERROR";
