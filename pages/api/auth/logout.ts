@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { LINE_WEB_SESSION_COOKIE } from '../../../server/auth/line-web-session';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -19,6 +20,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       `access_token=; ${Object.entries(cookieOptions).map(([key, value]) => `${key}=${value}`).join('; ')}`,
       `refresh_token=; ${Object.entries(cookieOptions).map(([key, value]) => `${key}=${value}`).join('; ')}`,
       `session_token=; ${Object.entries(cookieOptions).map(([key, value]) => `${key}=${value}`).join('; ')}`,
+      `${LINE_WEB_SESSION_COOKIE}=; ${Object.entries(cookieOptions).map(([key, value]) => `${key}=${value}`).join('; ')}`,
     ]);
 
     res.status(200).json({ success: true, message: 'Logged out successfully' });

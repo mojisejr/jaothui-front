@@ -36,6 +36,20 @@ const redirectURI =
     ? (process.env.NEXT_PUBLIC_redirect_prod as string)
     : (process.env.NEXT_PUBLIC_redirect_dev as string);
 
+type LineAccount = {
+  accountId: string;
+  provider: "line";
+  lineUserId: string;
+  email: string | null;
+  displayName: string | null;
+  avatarUrl: string | null;
+  linkedWallet: {
+    walletAddress: string;
+    provider: "bitkub-next";
+    email: string | null;
+  } | null;
+};
+
 function shortWallet(w?: string) {
   if (!w || w.length < 12) return w ?? "";
   return `${w.slice(0, 6)}...${w.slice(-4)}`;
@@ -103,6 +117,51 @@ function ConnectButton() {
   return <div onClickCapture={markReturn}>{oauth}</div>;
 }
 
+function LineLoginButton() {
+  return (
+    <Button
+      variant="gold-fill"
+      block
+      onClick={() => {
+        window.location.href = "/oauth/web/line/start?returnTo=/v2/profile";
+      }}
+    >
+      เข้าสู่ระบบด้วย LINE
+    </Button>
+  );
+}
+
+function LinkedWalletPanel({
+  walletAddress,
+}: {
+  walletAddress?: string | null;
+}) {
+  if (walletAddress) {
+    return (
+      <WalletCard
+        connected
+        provider="Bitkub NEXT"
+        address={<CopyAddress address={walletAddress} />}
+      />
+    );
+  }
+
+  return (
+    <section className="rounded-card border border-border-soft bg-surface p-4">
+      <div className="flex items-center justify-between">
+        <p className="font-semibold text-accent">Wallet Status</p>
+        <Badge variant="for-sale">Disconnected</Badge>
+      </div>
+      <p className="mt-3 text-sm text-muted">
+        ผูก Bitkub NEXT เพื่อดูข้อมูลกระบือ ใบรับรอง และสิทธิ์ที่อ้างอิงจาก wallet
+      </p>
+      <div className="mt-4">
+        <ConnectButton />
+      </div>
+    </section>
+  );
+}
+
 /** Settings list shared by connected states — app settings not shipped yet (disabled). */
 function SettingsList({ onLogout }: { onLogout: () => void }) {
   return (
@@ -147,19 +206,67 @@ export default function V2ProfilePage() {
   const router = useRouter();
   const { isConnected, walletAddress, email, disconnect } = useBitkubNext();
   const [wallet, setWallet] = useState<string>();
+  const [lineAccount, setLineAccount] = useState<LineAccount | null>(null);
+  const [lineLoading, setLineLoading] = useState(true);
 
   useEffect(() => {
     if (!isConnected) setWallet(undefined);
     else if (walletAddress) setWallet(walletAddress);
   }, [isConnected, walletAddress]);
 
+  useEffect(() => {
+    let alive = true;
+    const loadLineSession = async () => {
+      try {
+        const response = await fetch("/api/auth/line/me", {
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+        if (!alive) return;
+        if (!response.ok) {
+          setLineAccount(null);
+          return;
+        }
+        const payload = await response.json();
+        setLineAccount(payload.success ? payload.account : null);
+      } catch {
+        if (alive) setLineAccount(null);
+      } finally {
+        if (alive) setLineLoading(false);
+      }
+    };
+
+    loadLineSession();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const profileWallet = lineAccount?.linkedWallet?.walletAddress ?? wallet;
+  const isProfileConnected = Boolean(lineAccount || isConnected);
+
   const { data: member, isLoading: memberLoading } = trpc.user.kGetMember.useQuery(
-    { wallet: wallet! },
-    { enabled: !!wallet }
+    { wallet: profileWallet! },
+    { enabled: !!profileWallet }
   );
 
-  const logout = () => disconnect();
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      /* best-effort local logout */
+    }
+    setLineAccount(null);
+    disconnect();
+  };
   const certificates = member?.Certificate ?? [];
+  const displayName = member?.name || lineAccount?.displayName || "LINE Member";
+  const displayEmail =
+    member?.email ||
+    lineAccount?.email ||
+    email ||
+    shortWallet(profileWallet ?? walletAddress);
+  const avatarSrc = member?.avatar || lineAccount?.avatarUrl || "/images/thuiLogo.png";
 
   return (
     <V2Layout activeTab="profile">
@@ -168,7 +275,19 @@ export default function V2ProfilePage() {
       </div>
 
       {/* ── State B: not connected ───────────────────────────── */}
-      {!isConnected ? (
+      {lineLoading && !isConnected ? (
+        <div className="space-y-6 px-5 py-4">
+          <div className="flex items-center gap-4">
+            <div className="h-24 w-24 shrink-0 animate-pulse rounded-pill bg-surface-raised" />
+            <div className="flex-1 space-y-2">
+              <div className="h-5 w-2/3 animate-pulse rounded bg-surface-raised" />
+              <div className="h-4 w-1/2 animate-pulse rounded bg-surface-raised" />
+              <div className="h-6 w-24 animate-pulse rounded-pill bg-surface-raised" />
+            </div>
+          </div>
+          <div className="h-28 animate-pulse rounded-card bg-surface-raised" />
+        </div>
+      ) : !isProfileConnected ? (
         <div className="flex flex-col items-center px-5 py-10 text-center">
           <Avatar
             size="xl"
@@ -176,13 +295,13 @@ export default function V2ProfilePage() {
           />
           <h2 className="mt-6 text-xl font-bold text-foreground">ยินดีต้อนรับสู่ Jaothui</h2>
           <p className="mt-2 max-w-xs text-sm text-muted">
-            เชื่อมต่อ Bitkub NEXT เพื่อดูโปรไฟล์และกระบือของคุณ
+            เข้าสู่ระบบด้วย LINE เพื่อจัดการโปรไฟล์ของคุณ แล้วค่อยผูก Bitkub NEXT เมื่อพร้อม
           </p>
           <div className="mt-8 w-full max-w-xs">
-            <ConnectButton />
+            <LineLoginButton />
           </div>
         </div>
-      ) : memberLoading ? (
+      ) : profileWallet && memberLoading ? (
         /* ── loading skeleton (CSR) ─────────────────────────── */
         <div className="space-y-6 px-5 py-4">
           <div className="flex items-center gap-4">
@@ -203,8 +322,8 @@ export default function V2ProfilePage() {
             <Avatar
               size="lg"
               image={
-                member?.avatar ? (
-                  <RemoteImage src={member.avatar} alt={member.name ?? "profile"} sizes="96px" className="object-cover" />
+                avatarSrc !== "/images/thuiLogo.png" ? (
+                  <RemoteImage src={avatarSrc} alt={displayName} sizes="96px" className="object-cover" />
                 ) : (
                   <RemoteImage src="/images/thuiLogo.png" alt="Jaothui" sizes="96px" className="object-contain p-2" />
                 )
@@ -212,12 +331,14 @@ export default function V2ProfilePage() {
             />
             <div className="min-w-0 flex-1">
               <h2 className="truncate text-xl font-bold text-foreground">
-                {member?.name || "NFT Holder"}
+                {displayName}
               </h2>
-              <p className="truncate text-sm text-muted">{member?.email || email || shortWallet(walletAddress)}</p>
+              <p className="truncate text-sm text-muted">{displayEmail}</p>
               <div className="mt-2">
                 {member ? (
                   <Badge variant="champion">{member.farmName ? "เจ้าของฟาร์ม" : "สมาชิก"}</Badge>
+                ) : lineAccount ? (
+                  <Badge variant="verified">LINE Account</Badge>
                 ) : (
                   <Badge variant="for-sale">NFT Holder</Badge>
                 )}
@@ -225,11 +346,7 @@ export default function V2ProfilePage() {
             </div>
           </section>
 
-          <WalletCard
-            connected
-            provider="Bitkub NEXT"
-            address={<CopyAddress address={walletAddress} />}
-          />
+          <LinkedWalletPanel walletAddress={profileWallet ?? walletAddress} />
 
           {member && (
             <section>
