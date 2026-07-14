@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import {
   FiChevronRight,
@@ -49,6 +49,8 @@ type LineAccount = {
     email: string | null;
   } | null;
 };
+
+type LinkStatus = "idle" | "linking" | "linked" | "error";
 
 function shortWallet(w?: string) {
   if (!w || w.length < 12) return w ?? "";
@@ -132,31 +134,70 @@ function LineLoginButton() {
 }
 
 function LinkedWalletPanel({
-  walletAddress,
+  linkedWalletAddress,
+  transientWalletAddress,
+  linkStatus,
+  linkError,
+  onRetry,
 }: {
-  walletAddress?: string | null;
+  linkedWalletAddress?: string | null;
+  transientWalletAddress?: string | null;
+  linkStatus: LinkStatus;
+  linkError?: string | null;
+  onRetry: () => void;
 }) {
-  if (walletAddress) {
+  if (linkedWalletAddress) {
     return (
       <WalletCard
         connected
         provider="Bitkub NEXT"
-        address={<CopyAddress address={walletAddress} />}
+        address={<CopyAddress address={linkedWalletAddress} />}
       />
     );
   }
+
+  const hasTransientWallet = Boolean(transientWalletAddress);
+  const isLinking = linkStatus === "linking";
+  const isError = linkStatus === "error";
 
   return (
     <section className="rounded-card border border-border-soft bg-surface p-4">
       <div className="flex items-center justify-between">
         <p className="font-semibold text-accent">Wallet Status</p>
-        <Badge variant="for-sale">Disconnected</Badge>
+        {isLinking ? (
+          <Badge variant="breeding" dot>
+            Linking
+          </Badge>
+        ) : isError ? (
+          <Badge variant="for-sale">Retry</Badge>
+        ) : (
+          <Badge variant="for-sale">Disconnected</Badge>
+        )}
       </div>
       <p className="mt-3 text-sm text-muted">
-        ผูก Bitkub NEXT เพื่อดูข้อมูลกระบือ ใบรับรอง และสิทธิ์ที่อ้างอิงจาก wallet
+        {isError
+          ? linkError ?? "ไม่สามารถผูก Bitkub NEXT กับบัญชี LINE นี้ได้"
+          : hasTransientWallet
+            ? "พบ Bitkub NEXT แล้ว กำลังผูก wallet นี้กับบัญชี LINE ของคุณ"
+            : "ผูก Bitkub NEXT เพื่อดูข้อมูลกระบือ ใบรับรอง และสิทธิ์ที่อ้างอิงจาก wallet"}
       </p>
+      {hasTransientWallet && (
+        <p className="mt-2 text-sm text-muted">
+          Wallet ที่ตรวจพบ: <CopyAddress address={transientWalletAddress!} />
+        </p>
+      )}
       <div className="mt-4">
-        <ConnectButton />
+        {isError ? (
+          <Button variant="gold-outline" block onClick={onRetry}>
+            ลองผูกอีกครั้ง
+          </Button>
+        ) : hasTransientWallet ? (
+          <Button variant="gold-fill" block loading={isLinking} disabled>
+            กำลังผูก Bitkub NEXT
+          </Button>
+        ) : (
+          <ConnectButton />
+        )}
       </div>
     </section>
   );
@@ -204,46 +245,99 @@ function SettingsList({ onLogout }: { onLogout: () => void }) {
 
 export default function V2ProfilePage() {
   const router = useRouter();
-  const { isConnected, walletAddress, email, disconnect } = useBitkubNext();
-  const [wallet, setWallet] = useState<string>();
+  const { isConnected, walletAddress, disconnect } = useBitkubNext();
   const [lineAccount, setLineAccount] = useState<LineAccount | null>(null);
   const [lineLoading, setLineLoading] = useState(true);
+  const [linkStatus, setLinkStatus] = useState<LinkStatus>("idle");
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const linkAttemptKeyRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (!isConnected) setWallet(undefined);
-    else if (walletAddress) setWallet(walletAddress);
-  }, [isConnected, walletAddress]);
+  const loadLineSession = useCallback(async () => {
+    setLineLoading(true);
+    try {
+      const response = await fetch("/api/auth/line/me", {
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        setLineAccount(null);
+        return null;
+      }
+      const payload = await response.json();
+      const account = payload.success ? payload.account : null;
+      setLineAccount(account);
+      return account as LineAccount | null;
+    } catch {
+      setLineAccount(null);
+      return null;
+    } finally {
+      setLineLoading(false);
+    }
+  }, []);
 
-  useEffect(() => {
-    let alive = true;
-    const loadLineSession = async () => {
+  const linkBitkubWallet = useCallback(
+    async (attemptKey: string) => {
+      setLinkStatus("linking");
+      setLinkError(null);
       try {
-        const response = await fetch("/api/auth/line/me", {
+        const response = await fetch("/api/auth/line/link-bitkub-next", {
+          method: "POST",
           credentials: "same-origin",
           cache: "no-store",
         });
-        if (!alive) return;
-        if (!response.ok) {
-          setLineAccount(null);
+        const payload = await response.json().catch(() => null);
+        if (!response.ok || !payload?.success) {
+          setLinkStatus("error");
+          setLinkError(
+            payload?.message ??
+              (response.status === 409
+                ? "Wallet นี้ถูกผูกกับบัญชีอื่นแล้ว"
+                : "ไม่สามารถผูก Bitkub NEXT ได้")
+          );
           return;
         }
-        const payload = await response.json();
-        setLineAccount(payload.success ? payload.account : null);
+        setLineAccount(payload.account);
+        setLinkStatus("linked");
+        await loadLineSession();
       } catch {
-        if (alive) setLineAccount(null);
+        setLinkStatus("error");
+        setLinkError("ไม่สามารถเชื่อมต่อระบบผูก Bitkub NEXT ได้");
       } finally {
-        if (alive) setLineLoading(false);
+        linkAttemptKeyRef.current = attemptKey;
       }
-    };
+    },
+    [loadLineSession]
+  );
 
+  useEffect(() => {
     loadLineSession();
-    return () => {
-      alive = false;
-    };
-  }, []);
+  }, [loadLineSession]);
 
-  const profileWallet = lineAccount?.linkedWallet?.walletAddress ?? wallet;
-  const isProfileConnected = Boolean(lineAccount || isConnected);
+  useEffect(() => {
+    if (
+      !lineAccount ||
+      lineAccount.linkedWallet ||
+      !isConnected ||
+      !walletAddress ||
+      linkStatus === "linking"
+    ) {
+      return;
+    }
+
+    const attemptKey = `${lineAccount.accountId}:${walletAddress}`;
+    if (linkAttemptKeyRef.current === attemptKey) return;
+
+    linkBitkubWallet(attemptKey);
+  }, [isConnected, lineAccount, linkBitkubWallet, linkStatus, walletAddress]);
+
+  const retryLink = useCallback(() => {
+    if (!lineAccount || !walletAddress) return;
+    const attemptKey = `${lineAccount.accountId}:${walletAddress}`;
+    linkAttemptKeyRef.current = null;
+    linkBitkubWallet(attemptKey);
+  }, [lineAccount, linkBitkubWallet, walletAddress]);
+
+  const profileWallet = lineAccount?.linkedWallet?.walletAddress;
 
   const { data: member, isLoading: memberLoading } = trpc.user.kGetMember.useQuery(
     { wallet: profileWallet! },
@@ -264,8 +358,8 @@ export default function V2ProfilePage() {
   const displayEmail =
     member?.email ||
     lineAccount?.email ||
-    email ||
-    shortWallet(profileWallet ?? walletAddress);
+    shortWallet(profileWallet) ||
+    "LINE Account";
   const avatarSrc = member?.avatar || lineAccount?.avatarUrl || "/images/thuiLogo.png";
 
   return (
@@ -275,7 +369,7 @@ export default function V2ProfilePage() {
       </div>
 
       {/* ── State B: not connected ───────────────────────────── */}
-      {lineLoading && !isConnected ? (
+      {lineLoading ? (
         <div className="space-y-6 px-5 py-4">
           <div className="flex items-center gap-4">
             <div className="h-24 w-24 shrink-0 animate-pulse rounded-pill bg-surface-raised" />
@@ -287,7 +381,7 @@ export default function V2ProfilePage() {
           </div>
           <div className="h-28 animate-pulse rounded-card bg-surface-raised" />
         </div>
-      ) : !isProfileConnected ? (
+      ) : !lineAccount ? (
         <div className="flex flex-col items-center px-5 py-10 text-center">
           <Avatar
             size="xl"
@@ -346,7 +440,13 @@ export default function V2ProfilePage() {
             </div>
           </section>
 
-          <LinkedWalletPanel walletAddress={profileWallet ?? walletAddress} />
+          <LinkedWalletPanel
+            linkedWalletAddress={profileWallet}
+            transientWalletAddress={isConnected ? walletAddress : null}
+            linkStatus={linkStatus}
+            linkError={linkError}
+            onRetry={retryLink}
+          />
 
           {member && (
             <section>
