@@ -19,6 +19,9 @@ import { PrivilegeProvider } from "../contexts/privilegeContext";
 import { useRouter } from "next/router";
 
 const queryClient = new QueryClient();
+type PublicPageComponent = AppProps["Component"] & {
+  publicPage?: boolean;
+};
 
 const { chains, provider } = configureChains(
   [bitkub_mainnet],
@@ -41,6 +44,7 @@ const wagmiClient = createClient({
 });
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
+  const PageComponent = Component as PublicPageComponent;
   const router = useRouter();
   const [showChild, setShowChild] = useState(false);
   useEffect(() => {
@@ -58,6 +62,10 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     router.events.on("routeChangeError", handleComplete);
   }, [router]);
 
+  if (PageComponent.publicPage) {
+    return <PageComponent {...pageProps} />;
+  }
+
   if (!showChild) {
     return <div className="loading loading-spinner"></div>;
   }
@@ -73,7 +81,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
               <MenuProvider>
                 <NewAssetProvider>
                   <PrivilegeProvider>
-                    <Component {...pageProps} />
+                    <PageComponent {...pageProps} />
                   </PrivilegeProvider>
                 </NewAssetProvider>
               </MenuProvider>
