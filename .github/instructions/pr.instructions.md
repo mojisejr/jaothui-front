@@ -4,7 +4,7 @@ applyTo: '**'
 
 # pr
 
-Pull Request Creation - Create Pull Request from feature branch to staging.
+Pull Request Creation - Create Pull Request from feature branch to main.
 
 ## Usage
 
@@ -31,23 +31,21 @@ Pull Request Creation - Create Pull Request from feature branch to staging.
 2. **Validate Environment**:
    - Ensure clean git working directory
    - Verify we're on a feature branch
-   - Check branch follows naming: `feature/task-{issue}-{description}`
+   - Check branch follows naming: `feature/{description}` or `feature/task-{issue}-{description}`
    - Confirm branch is pushed to remote
-   - Verify staging branch exists
+   - Verify main branch exists
 
 3. **Extract Issue Information**:
-   - Parse issue number from branch name
-   - Validate issue exists and is a task
-   - Get issue title and description
+   - Parse issue number from branch name when the branch uses `feature/task-{issue}-{description}`
+   - Validate issue exists and is a task when an issue number is present
+   - Get issue title and description when available
 
 ### Pre-PR Validations (100% Required)
 
 ```bash
-cargo build --release           # Build validation
-cargo clippy --all-targets --all-features  # Lint validation
-cargo fmt -- --check           # Format validation
-cargo check                    # Type check validation
-cargo test                     # Test validation (if applicable)
+npm run build                  # Build validation
+npm run lint                   # Lint validation
+npm test                       # Test validation (if applicable)
 ```
 
 ### PR Creation
@@ -68,7 +66,7 @@ cargo test                     # Test validation (if applicable)
    ```bash
    gh pr create \
      --title "{title}" \
-     --base staging \
+     --base main \
      --head "{feature-branch}" \
      --body "{body}" \
      --label "auto-pr"
@@ -81,7 +79,7 @@ cargo test                     # Test validation (if applicable)
 
 This PR implements: **{task description}**
 
-- Resolves #{issue-number}: {task title}
+- Resolves #{issue-number}: {task title, when applicable}
 - Created from feature branch: `{branch-name}`
 
 ## Changes
@@ -93,10 +91,9 @@ This PR implements: **{task description}**
 
 ## Validation
 
-- ✅ Build validation: 100% PASS (`cargo build --release`)
-- ✅ Clippy validation: 100% PASS (`cargo clippy`)
-- ✅ Format validation: 100% PASS (`cargo fmt`)
-- ✅ Type check validation: 100% PASS (`cargo check`)
+- ✅ Build validation: 100% PASS (`npm run build`)
+- ✅ Lint validation: 100% PASS (`npm run lint`)
+- ✅ Tests: PASS where applicable
 
 ## Test Plan
 
@@ -121,35 +118,37 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - **Branch not pushed**: Instructions to push branch first
 - **Validation failures**: Stop and report specific failures
 - **Issue not found**: Validate issue exists before PR creation
-- **Staging branch missing**: Error with available branches
+- **Main branch missing**: Error with available branches
 
 ## Integration
 
 - **Before**: Use `/impl [issue-number]` to complete implementation
 - **After**: Wait for team review and approval
-- **Target**: Always creates PR to `staging` branch (never `main`)
-- **Context**: PR resolves specific GitHub issue
+- **Target**: Always creates PR to `main`
+- **Context**: PR resolves a specific GitHub issue when one exists; issue-less operational PRs are allowed when explicitly requested by the operator
 
 ## Branch Naming Requirements
 
-Feature branches must follow pattern:
+Feature branches should follow one of these patterns:
 ```
+feature/{short-description}
 feature/task-{issue-number}-{description}
 ```
 
 Examples:
+- `feature/app-store-policy-pages`
 - `feature/task-123-user-authentication`
 - `feature/task-456-payment-webhook`
 - `feature/task-789-database-migration`
 
 ## Important Notes
 
-- **ALWAYS** creates PR to staging branch (never to main)
+- **ALWAYS** creates PR to `main`
 - **NEVER** merge PRs yourself - wait for team approval
 - **100% validation** required before PR creation
 - Feature branch must be pushed to remote
 - Working directory must be clean
-- PR must resolve a specific task issue
+- PR should resolve a specific task issue when applicable; operator-approved issue-less PRs are allowed
 
 ## Files
 
