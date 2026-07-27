@@ -27,6 +27,7 @@ const lineOnlyProfile = await accountProfile.getMobileAccountProfile(lineOnlySes
 assert.equal(lineOnlyProfile.identity.sessionVersion, 2);
 assert.equal(lineOnlyProfile.identity.provider, "line");
 assert.equal(lineOnlyProfile.identity.accountId, "account_line_only");
+assert.equal(lineOnlyProfile.identity.providerUserId, "line-only-user");
 assert.equal(lineOnlyProfile.identity.linkedWallet, null);
 assert.equal(lineOnlyProfile.member, null);
 assert.deepEqual(lineOnlyProfile.ownedBuffalos, []);
@@ -84,6 +85,82 @@ assert.equal(lineLinkedProfile.member.statusLabel, "เจ้าของฟา�
 assert.equal(lineLinkedProfile.counts.ownedBuffalos, 1);
 assert.equal(lineLinkedProfile.ownedBuffalos[0].microchip, "MC-7");
 
+const appleOnlyToken = session.createMobileAccountSession({
+  accountId: "account_apple_only",
+  primaryProvider: "apple",
+  providerUserId: "apple-sub-only",
+  email: "apple@example.test",
+});
+const appleOnlySession = session.verifyMobileSessionToken(appleOnlyToken.token);
+const appleOnlyProfile = await accountProfile.getMobileAccountProfile(appleOnlySession, {
+  getAccountProfile: async () => ({
+    account: {
+      id: "account_apple_only",
+      identities: [],
+      walletLinks: [],
+    },
+    linkedWallet: null,
+  }),
+  getMemberData: async () => {
+    throw new Error("Apple-only profile must not query legacy wallet member data");
+  },
+});
+
+assert.equal(appleOnlyProfile.identity.sessionVersion, 2);
+assert.equal(appleOnlyProfile.identity.provider, "apple");
+assert.equal(appleOnlyProfile.identity.accountId, "account_apple_only");
+assert.equal(appleOnlyProfile.identity.providerUserId, "apple-sub-only");
+assert.equal(appleOnlyProfile.identity.linkedWallet, null);
+assert.equal(appleOnlyProfile.member, null);
+assert.equal(appleOnlyProfile.counts.ownedBuffalos, 0);
+
+const appleLinkedSameAccountToken = session.createMobileAccountSession({
+  accountId: "account_linked",
+  primaryProvider: "apple",
+  providerUserId: "apple-sub-linked",
+});
+const appleLinkedSameAccountSession = session.verifyMobileSessionToken(
+  appleLinkedSameAccountToken.token
+);
+let appleLookupWallet = null;
+const appleLinkedSameAccountProfile = await accountProfile.getMobileAccountProfile(
+  appleLinkedSameAccountSession,
+  {
+    getAccountProfile: async () => ({
+      account: {
+        id: "account_linked",
+        identities: [],
+        walletLinks: [],
+      },
+      linkedWallet: {
+        walletAddress: "0xlinkedwallet",
+        provider: "bitkub-next",
+        email: "wallet@example.test",
+      },
+    }),
+    getMemberData: async (walletAddress) => {
+      appleLookupWallet = walletAddress;
+      return {
+        id: 12,
+        name: "Linked Member",
+        avatar: null,
+        email: null,
+        farmName: "Linked Farm",
+        role: "USER",
+        Certificate: [],
+      };
+    },
+  }
+);
+
+assert.equal(appleLookupWallet, "0xlinkedwallet");
+assert.equal(appleLinkedSameAccountProfile.identity.provider, "apple");
+assert.equal(
+  appleLinkedSameAccountProfile.identity.linkedWallet.walletAddress,
+  lineLinkedProfile.identity.linkedWallet.walletAddress
+);
+assert.equal(appleLinkedSameAccountProfile.member.email, "wallet@example.test");
+
 const bitkubToken = session.createMobileSession({
   walletAddress: "0xbitkubwallet",
   email: "holder@example.test",
@@ -106,4 +183,3 @@ assert.equal(bitkubProfile.member, null);
 assert.equal(bitkubProfile.counts.ownedBuffalos, 0);
 
 console.log("Mobile account profile contract smoke passed");
-

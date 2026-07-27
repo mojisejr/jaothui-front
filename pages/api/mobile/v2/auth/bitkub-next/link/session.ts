@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import {
-  createMobileLineAccountSession,
-  requireMobileLineAccountSession,
+  createMobileAccountSession,
+  requireMobileAccountSession,
 } from "../../../../../../../server/mobile/auth-session";
 import {
-  createRefreshedLineSessionInput,
+  createRefreshedAccountSessionInput,
   toMobileWalletLinkErrorCode,
 } from "../../../../../../../server/mobile/bitkub-next-link";
 import {
@@ -20,9 +20,11 @@ type MobileWalletLinkedSession = {
   expiresAt: number;
   identity: {
     sessionVersion: 2;
-    provider: "line";
+    provider: "line" | "apple";
     accountId: string;
-    lineUserId: string;
+    providerUserId: string;
+    lineUserId?: string;
+    appleUserId?: string;
     email: string | null;
     displayName: string | null;
     avatarUrl: string | null;
@@ -50,25 +52,31 @@ export default function handler(
   }
 
   try {
-    const currentSession = requireMobileLineAccountSession(req);
+    const currentSession = requireMobileAccountSession(req);
     if (!currentSession) {
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Missing bearer token");
     }
 
-    const refreshedInput = createRefreshedLineSessionInput({
+    const refreshedInput = createRefreshedAccountSessionInput({
       session: currentSession,
       handoff,
     });
-    const session = createMobileLineAccountSession(refreshedInput);
+    const session = createMobileAccountSession(refreshedInput);
 
     return sendMobileOk(req, res, {
       sessionToken: session.token,
       expiresAt: session.expiresAt,
       identity: {
         sessionVersion: 2,
-        provider: "line",
+        provider: refreshedInput.primaryProvider,
         accountId: refreshedInput.accountId,
-        lineUserId: refreshedInput.lineUserId,
+        providerUserId: refreshedInput.providerUserId,
+        ...(refreshedInput.primaryProvider === "line"
+          ? { lineUserId: refreshedInput.providerUserId }
+          : {}),
+        ...(refreshedInput.primaryProvider === "apple"
+          ? { appleUserId: refreshedInput.providerUserId }
+          : {}),
         email: refreshedInput.email,
         displayName: refreshedInput.displayName,
         avatarUrl: refreshedInput.avatarUrl,

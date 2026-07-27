@@ -16,6 +16,7 @@ type MobileLineSession = {
     sessionVersion: 2;
     provider: "line";
     accountId: string;
+    providerUserId: string;
     lineUserId: string;
     email: string | null;
     displayName: string | null;
@@ -61,6 +62,7 @@ export default function handler(
         sessionVersion: 2,
         provider: "line",
         accountId: verifiedHandoff.accountId,
+        providerUserId: verifiedHandoff.lineUserId,
         lineUserId: verifiedHandoff.lineUserId,
         email: verifiedHandoff.email,
         displayName: verifiedHandoff.displayName,

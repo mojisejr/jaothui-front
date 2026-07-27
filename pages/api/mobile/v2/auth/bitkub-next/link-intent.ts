@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { requireMobileLineAccountSession } from "../../../../../../server/mobile/auth-session";
+import { requireMobileAccountSession } from "../../../../../../server/mobile/auth-session";
 import { buildMobileBitkubNextLinkAuthorizeUrl } from "../../../../../../server/mobile/bitkub-next-link";
 import {
   MobileResponse,
@@ -21,7 +21,7 @@ export default function handler(
   if (!requireMethod(req, res, "POST")) return;
 
   try {
-    const session = requireMobileLineAccountSession(req);
+    const session = requireMobileAccountSession(req);
     if (!session) {
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Missing bearer token");
     }
@@ -45,7 +45,7 @@ export default function handler(
         res,
         401,
         "UNAUTHORIZED",
-        "A LINE account session is required to link Bitkub NEXT"
+        "A JAOTHUI account session is required to link Bitkub NEXT"
       );
     }
 

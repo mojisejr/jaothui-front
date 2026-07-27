@@ -22,13 +22,16 @@ const lineSession = auth.verifyMobileSessionToken(lineSessionToken.token);
 assert.equal(auth.requireMobileLineAccountSession({
   headers: { authorization: `Bearer ${lineSessionToken.token}` },
 }).accountId, "account_link_owner");
+assert.equal(auth.requireMobileAccountSession({
+  headers: { authorization: `Bearer ${lineSessionToken.token}` },
+}).accountId, "account_link_owner");
 
 const legacyBitkubToken = auth.createMobileSession({
   walletAddress: "0xlegacy",
 });
 assert.throws(
   () =>
-    auth.requireMobileLineAccountSession({
+    auth.requireMobileAccountSession({
       headers: { authorization: `Bearer ${legacyBitkubToken.token}` },
     }),
   /Invalid mobile session token/
@@ -68,12 +71,37 @@ assert.ok(parsedDeepLink.searchParams.get("handoff"));
 assert.ok(!deepLink.includes("access_token"));
 assert.ok(!deepLink.includes("refresh_token"));
 
-const refreshedInput = link.createRefreshedLineSessionInput({
+const refreshedInput = link.createRefreshedAccountSessionInput({
   session: lineSession,
   handoff,
 });
 assert.equal(refreshedInput.accountId, "account_link_owner");
+assert.equal(refreshedInput.primaryProvider, "line");
+assert.equal(refreshedInput.providerUserId, "line-user-1");
 assert.deepEqual(refreshedInput.linkedWallet, {
+  walletAddress: "0xlinked",
+  provider: "bitkub-next",
+  email: "wallet@example.test",
+});
+
+const appleSessionToken = auth.createMobileAccountSession({
+  accountId: "account_link_owner",
+  primaryProvider: "apple",
+  providerUserId: "apple-sub-1",
+  email: "apple@example.test",
+});
+const appleSession = auth.verifyMobileSessionToken(appleSessionToken.token);
+assert.equal(auth.requireMobileAccountSession({
+  headers: { authorization: `Bearer ${appleSessionToken.token}` },
+}).accountId, "account_link_owner");
+const refreshedAppleInput = link.createRefreshedAccountSessionInput({
+  session: appleSession,
+  handoff,
+});
+assert.equal(refreshedAppleInput.accountId, "account_link_owner");
+assert.equal(refreshedAppleInput.primaryProvider, "apple");
+assert.equal(refreshedAppleInput.providerUserId, "apple-sub-1");
+assert.deepEqual(refreshedAppleInput.linkedWallet, {
   walletAddress: "0xlinked",
   provider: "bitkub-next",
   email: "wallet@example.test",
@@ -85,7 +113,7 @@ const mismatchedHandoff = bitkub.createMobileWalletLinkHandoff({
 });
 assert.throws(
   () =>
-    link.createRefreshedLineSessionInput({
+    link.createRefreshedAccountSessionInput({
       session: lineSession,
       handoff: mismatchedHandoff,
     }),
