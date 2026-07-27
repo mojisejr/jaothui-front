@@ -1,6 +1,7 @@
 import type {
+  MobileAccountProvider,
   MobileBitkubNextSessionPayload,
-  MobileLineAccountSessionPayload,
+  MobileAccountSessionPayload,
   MobileSessionPayload,
 } from "./auth-session";
 import { toMobileBuffaloCard } from "./view-models";
@@ -22,9 +23,11 @@ export type MobileAccountIdentity =
     }
   | {
       sessionVersion: 2;
-      provider: "line";
+      provider: MobileAccountProvider;
       accountId: string;
-      lineUserId: string;
+      providerUserId: string;
+      lineUserId?: string;
+      appleUserId?: string;
       email: string | null;
       displayName: string | null;
       avatarUrl: string | null;
@@ -125,9 +128,11 @@ export function toMobileAccountIdentity(
 
   return {
     sessionVersion: 2,
-    provider: "line",
+    provider: session.primaryProvider,
     accountId: session.accountId,
-    lineUserId: session.lineUserId,
+    providerUserId: session.providerUserId,
+    ...(session.primaryProvider === "line" ? { lineUserId: session.providerUserId } : {}),
+    ...(session.primaryProvider === "apple" ? { appleUserId: session.providerUserId } : {}),
     email: session.email,
     displayName: session.displayName,
     avatarUrl: session.avatarUrl,

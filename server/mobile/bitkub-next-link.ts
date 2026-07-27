@@ -8,7 +8,7 @@ import {
   linkWalletToAccount,
   WalletLinkConflictError,
 } from "../services/account.service";
-import type { MobileLineAccountSessionPayload } from "./auth-session";
+import type { MobileAccountSessionPayload } from "./auth-session";
 import {
   appendWalletLinkHandoffToMobileReturnTo,
   createMobileWalletLinkHandoff,
@@ -80,24 +80,27 @@ export async function createMobileBitkubNextLinkDeepLink(input: {
   return appendWalletLinkHandoffToMobileReturnTo(verifiedState.returnTo, handoff);
 }
 
-export function createRefreshedLineSessionInput(input: {
-  session: MobileLineAccountSessionPayload;
+export function createRefreshedAccountSessionInput(input: {
+  session: MobileAccountSessionPayload;
   handoff: string;
 }) {
   const verifiedHandoff = verifyMobileWalletLinkHandoff(input.handoff);
   if (verifiedHandoff.accountId !== input.session.accountId) {
-    throw new Error("Mobile wallet link handoff does not match LINE account");
+    throw new Error("Mobile wallet link handoff does not match JAOTHUI account");
   }
 
   return {
     accountId: input.session.accountId,
-    lineUserId: input.session.lineUserId,
+    primaryProvider: input.session.primaryProvider,
+    providerUserId: input.session.providerUserId,
     email: input.session.email,
     displayName: input.session.displayName,
     avatarUrl: input.session.avatarUrl,
     linkedWallet: verifiedHandoff.linkedWallet,
   };
 }
+
+export const createRefreshedLineSessionInput = createRefreshedAccountSessionInput;
 
 export function toMobileWalletLinkErrorCode(error: unknown) {
   if (error instanceof WalletLinkConflictError) {

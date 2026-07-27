@@ -16,27 +16,43 @@ export type MobileBitkubNextSessionPayload = {
   exp?: number;
 };
 
-export type MobileLineAccountSessionPayload = {
+export type MobileAccountProvider = "line" | "apple";
+
+type MobileLinkedWalletPayload = {
+  walletAddress: string;
+  provider: "bitkub-next";
+  email: string | null;
+};
+
+export type MobileAccountSessionPayload = {
   typ: typeof SESSION_TOKEN_TYPE;
   sessionVersion: 2;
   accountId: string;
-  primaryProvider: "line";
-  lineUserId: string;
+  primaryProvider: MobileAccountProvider;
+  providerUserId: string;
+  lineUserId?: string;
+  appleUserId?: string;
   email: string | null;
   displayName: string | null;
   avatarUrl: string | null;
-  linkedWallet: {
-    walletAddress: string;
-    provider: "bitkub-next";
-    email: string | null;
-  } | null;
+  linkedWallet: MobileLinkedWalletPayload | null;
   iat?: number;
   exp?: number;
 };
 
+export type MobileLineAccountSessionPayload = MobileAccountSessionPayload & {
+  primaryProvider: "line";
+  lineUserId: string;
+};
+
+export type MobileAppleAccountSessionPayload = MobileAccountSessionPayload & {
+  primaryProvider: "apple";
+  appleUserId: string;
+};
+
 export type MobileSessionPayload =
   | MobileBitkubNextSessionPayload
-  | MobileLineAccountSessionPayload;
+  | MobileAccountSessionPayload;
 
 function getMobileSessionSecret() {
   const secret =
@@ -87,25 +103,50 @@ export function createMobileLineAccountSession(input: {
   email?: string | null;
   displayName?: string | null;
   avatarUrl?: string | null;
-  linkedWallet?: MobileLineAccountSessionPayload["linkedWallet"];
+  linkedWallet?: MobileAccountSessionPayload["linkedWallet"];
+}) {
+  return createMobileAccountSession({
+    accountId: input.accountId,
+    primaryProvider: "line",
+    providerUserId: input.lineUserId,
+    email: input.email,
+    displayName: input.displayName,
+    avatarUrl: input.avatarUrl,
+    linkedWallet: input.linkedWallet,
+  });
+}
+
+export function createMobileAccountSession(input: {
+  accountId: string;
+  primaryProvider: MobileAccountProvider;
+  providerUserId: string;
+  email?: string | null;
+  displayName?: string | null;
+  avatarUrl?: string | null;
+  linkedWallet?: MobileAccountSessionPayload["linkedWallet"];
 }) {
   const accountId = input.accountId.trim();
-  const lineUserId = input.lineUserId.trim();
+  const providerUserId = input.providerUserId.trim();
   if (!accountId) {
     throw new Error("accountId is required");
   }
-  if (!lineUserId) {
-    throw new Error("lineUserId is required");
+  if (input.primaryProvider !== "line" && input.primaryProvider !== "apple") {
+    throw new Error("Unsupported mobile account provider");
+  }
+  if (!providerUserId) {
+    throw new Error("providerUserId is required");
   }
 
   const nowSeconds = Math.floor(Date.now() / 1000);
   const expiresAt = nowSeconds + SESSION_TTL_SECONDS;
-  const payload: Omit<MobileLineAccountSessionPayload, "iat" | "exp"> = {
+  const payload: Omit<MobileAccountSessionPayload, "iat" | "exp"> = {
     typ: SESSION_TOKEN_TYPE,
     sessionVersion: 2,
     accountId,
-    primaryProvider: "line",
-    lineUserId,
+    primaryProvider: input.primaryProvider,
+    providerUserId,
+    ...(input.primaryProvider === "line" ? { lineUserId: providerUserId } : {}),
+    ...(input.primaryProvider === "apple" ? { appleUserId: providerUserId } : {}),
     email: input.email ?? null,
     displayName: input.displayName ?? null,
     avatarUrl: input.avatarUrl ?? null,
@@ -162,14 +203,24 @@ function verifyBitkubNextPayload(decoded: Record<string, any>) {
   } satisfies MobileBitkubNextSessionPayload;
 }
 
-function verifyLineAccountPayload(decoded: Record<string, any>) {
+function verifyAccountPayload(decoded: Record<string, any>) {
+  const primaryProvider = decoded.primaryProvider;
+  const providerUserId =
+    typeof decoded.providerUserId === "string" && decoded.providerUserId.trim()
+      ? decoded.providerUserId
+      : primaryProvider === "line" && typeof decoded.lineUserId === "string"
+        ? decoded.lineUserId
+        : primaryProvider === "apple" && typeof decoded.appleUserId === "string"
+          ? decoded.appleUserId
+          : null;
+
   if (
     decoded.sessionVersion !== 2 ||
-    decoded.primaryProvider !== "line" ||
+    (primaryProvider !== "line" && primaryProvider !== "apple") ||
     typeof decoded.accountId !== "string" ||
     !decoded.accountId.trim() ||
-    typeof decoded.lineUserId !== "string" ||
-    !decoded.lineUserId.trim()
+    typeof providerUserId !== "string" ||
+    !providerUserId.trim()
   ) {
     throw new Error("Invalid mobile session token");
   }
@@ -186,12 +237,14 @@ function verifyLineAccountPayload(decoded: Record<string, any>) {
     }
   }
 
-  return {
+  const payload = {
     typ: decoded.typ,
     sessionVersion: 2,
     accountId: decoded.accountId,
-    primaryProvider: decoded.primaryProvider,
-    lineUserId: decoded.lineUserId,
+    primaryProvider,
+    providerUserId,
+    ...(primaryProvider === "line" ? { lineUserId: providerUserId } : {}),
+    ...(primaryProvider === "apple" ? { appleUserId: providerUserId } : {}),
     email: nullableString(decoded.email),
     displayName: nullableString(decoded.displayName),
     avatarUrl: nullableString(decoded.avatarUrl),
@@ -205,7 +258,9 @@ function verifyLineAccountPayload(decoded: Record<string, any>) {
         : null,
     iat: decoded.iat,
     exp: decoded.exp,
-  } satisfies MobileLineAccountSessionPayload;
+  } satisfies MobileAccountSessionPayload;
+
+  return payload;
 }
 
 export function verifyMobileSessionToken(token: string): MobileSessionPayload {
@@ -223,7 +278,7 @@ export function verifyMobileSessionToken(token: string): MobileSessionPayload {
   }
 
   if ((decoded as Record<string, any>).sessionVersion === 2) {
-    return verifyLineAccountPayload(decoded as Record<string, any>);
+    return verifyAccountPayload(decoded as Record<string, any>);
   }
 
   return verifyBitkubNextPayload(decoded as Record<string, any>);
@@ -255,9 +310,18 @@ export function requireMobileBitkubNextSession(req: NextApiRequest) {
 }
 
 export function requireMobileLineAccountSession(req: NextApiRequest) {
+  const session = requireMobileAccountSession(req);
+  if (!session) return null;
+  if (session.primaryProvider !== "line") {
+    throw new Error("Invalid mobile session token");
+  }
+  return session as MobileLineAccountSessionPayload;
+}
+
+export function requireMobileAccountSession(req: NextApiRequest) {
   const session = requireMobileSession(req);
   if (!session) return null;
-  if (!("primaryProvider" in session) || session.primaryProvider !== "line") {
+  if (!("primaryProvider" in session)) {
     throw new Error("Invalid mobile session token");
   }
   return session;

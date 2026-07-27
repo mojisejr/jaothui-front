@@ -11,6 +11,53 @@ class InMemoryAccountClient {
   walletLinkSeq = 0;
 
   accountIdentity = {
+    findUnique: async ({ where, include }) => {
+      const identityKey = this.identityKey(
+        where.provider_providerUserId.provider,
+        where.provider_providerUserId.providerUserId
+      );
+      const identity = this.identities.get(identityKey) ?? null;
+      if (!identity) return null;
+      return {
+        ...identity,
+        ...(include?.account ? { account: this.hydrateAccount(identity.accountId) } : {}),
+      };
+    },
+    create: async ({ data, include }) => {
+      const identityKey = this.identityKey(data.provider, data.providerUserId);
+      if (this.identities.has(identityKey)) {
+        throw new Error("Unique constraint failed on provider/providerUserId");
+      }
+      const identity = {
+        id: `identity_${++this.identitySeq}`,
+        accountId: data.accountId,
+        provider: data.provider,
+        providerUserId: data.providerUserId,
+        email: data.email,
+        displayName: data.displayName,
+        avatarUrl: data.avatarUrl,
+      };
+      this.identities.set(identityKey, identity);
+      return {
+        ...identity,
+        ...(include?.account ? { account: this.hydrateAccount(identity.accountId) } : {}),
+      };
+    },
+    update: async ({ where, data, include }) => {
+      const identityKey = this.identityKey(
+        where.provider_providerUserId.provider,
+        where.provider_providerUserId.providerUserId
+      );
+      const identity = this.identities.get(identityKey);
+      if (!identity) throw new Error("Identity not found");
+      identity.email = data.email;
+      identity.displayName = data.displayName;
+      identity.avatarUrl = data.avatarUrl;
+      return {
+        ...identity,
+        ...(include?.account ? { account: this.hydrateAccount(identity.accountId) } : {}),
+      };
+    },
     upsert: async ({ where, create, update }) => {
       const identityKey = this.identityKey(
         where.provider_providerUserId.provider,
@@ -142,6 +189,69 @@ assert.equal(repeatedAccount.id, firstAccount.id);
 assert.equal(repeatedAccount.email, "first-updated@example.test");
 assert.equal(client.accounts.size, 1);
 
+const appleAccount = await accountService.findOrCreateAccountIdentity(
+  {
+    provider: "apple",
+    providerUserId: "apple-sub-1",
+    email: "apple@example.test",
+    displayName: "Apple Holder",
+  },
+  client
+);
+
+assert.equal(appleAccount.id, "account_2");
+assert.equal(appleAccount.identities[0].provider, "apple");
+assert.equal(appleAccount.identities[0].providerUserId, "apple-sub-1");
+
+const repeatedAppleAccount = await accountService.findOrCreateAccountIdentity(
+  {
+    provider: "apple",
+    providerUserId: "apple-sub-1",
+    email: null,
+    displayName: "Apple Holder Updated",
+  },
+  client
+);
+
+assert.equal(repeatedAppleAccount.id, appleAccount.id);
+assert.equal(client.accounts.size, 2);
+
+const attachedAppleAccount = await accountService.attachIdentityToAccount(
+  firstAccount.id,
+  {
+    provider: "apple",
+    providerUserId: "apple-sub-linked-to-line",
+    email: "linked-apple@example.test",
+    displayName: "Linked Apple",
+  },
+  client
+);
+
+assert.equal(attachedAppleAccount.id, firstAccount.id);
+assert.ok(
+  attachedAppleAccount.identities.some(
+    (identity) =>
+      identity.provider === "apple" &&
+      identity.providerUserId === "apple-sub-linked-to-line"
+  )
+);
+
+await assert.rejects(
+  () =>
+    accountService.attachIdentityToAccount(
+      firstAccount.id,
+      {
+        provider: "apple",
+        providerUserId: "apple-sub-1",
+      },
+      client
+    ),
+  (error) =>
+    error instanceof accountService.AccountIdentityConflictError &&
+    error.code === "ACCOUNT_IDENTITY_ALREADY_LINKED" &&
+    error.accountId === appleAccount.id
+);
+
 const linkedWallet = await accountService.linkWalletToAccount(
   firstAccount.id,
   "  0xABCDEF1234  ",
@@ -195,4 +305,3 @@ await assert.rejects(
 assert.throws(() => accountService.normalizeWalletAddress("   "), /walletAddress/);
 
 console.log("Account service contract smoke passed");
-

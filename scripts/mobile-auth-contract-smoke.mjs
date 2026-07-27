@@ -41,6 +41,7 @@ const verifiedLineOnlySession = session.verifyMobileSessionToken(lineOnlySession
 assert.equal(verifiedLineOnlySession.sessionVersion, 2);
 assert.equal(verifiedLineOnlySession.primaryProvider, "line");
 assert.equal(verifiedLineOnlySession.accountId, "account_1");
+assert.equal(verifiedLineOnlySession.providerUserId, "line-user-1");
 assert.equal(verifiedLineOnlySession.lineUserId, "line-user-1");
 assert.equal(verifiedLineOnlySession.email, "line@example.test");
 assert.equal(verifiedLineOnlySession.displayName, "Line Holder");
@@ -75,6 +76,40 @@ assert.deepEqual(verifiedLineLinkedWalletSession.linkedWallet, {
   email: "wallet@example.test",
 });
 
+const appleSession = session.createMobileAccountSession({
+  accountId: "account_apple",
+  primaryProvider: "apple",
+  providerUserId: "apple-sub-1",
+  email: "apple@example.test",
+  displayName: "Apple Holder",
+});
+const verifiedAppleSession = session.verifyMobileSessionToken(appleSession.token);
+assert.equal(verifiedAppleSession.sessionVersion, 2);
+assert.equal(verifiedAppleSession.primaryProvider, "apple");
+assert.equal(verifiedAppleSession.accountId, "account_apple");
+assert.equal(verifiedAppleSession.providerUserId, "apple-sub-1");
+assert.equal(verifiedAppleSession.appleUserId, "apple-sub-1");
+assert.equal(verifiedAppleSession.email, "apple@example.test");
+assert.equal(verifiedAppleSession.displayName, "Apple Holder");
+assert.equal(verifiedAppleSession.linkedWallet, null);
+assert.equal(
+  session.requireMobileAccountSession({
+    headers: {
+      authorization: `Bearer ${appleSession.token}`,
+    },
+  }).accountId,
+  "account_apple"
+);
+assert.throws(
+  () =>
+    session.requireMobileLineAccountSession({
+      headers: {
+        authorization: `Bearer ${appleSession.token}`,
+      },
+    }),
+  /Invalid mobile session token/
+);
+
 assert.throws(
   () => session.verifyMobileSessionToken("invalid-token"),
   /jwt malformed|invalid/i
@@ -90,6 +125,15 @@ assert.throws(
       lineUserId: "line-user-3",
     }),
   /accountId/
+);
+assert.throws(
+  () =>
+    session.createMobileAccountSession({
+      accountId: "account_apple",
+      primaryProvider: "apple",
+      providerUserId: "",
+    }),
+  /providerUserId/
 );
 assert.throws(
   () =>
