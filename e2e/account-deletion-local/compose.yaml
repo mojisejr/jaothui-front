@@ -1,0 +1,25 @@
+name: jaothui-account-deletion-e2e
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jaothui-account-deletion-e2e-postgres
+    environment:
+      POSTGRES_DB: jaothui_local_e2e
+      POSTGRES_USER: jaothui_e2e
+      # This database is bound to loopback only and contains synthetic fixtures.
+      # Keeping it passwordless avoids creating a test secret that could be reused.
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - jaothui_account_deletion_e2e_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jaothui_e2e -d jaothui_local_e2e"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  jaothui_account_deletion_e2e_postgres_data:
+    name: jaothui-account-deletion-e2e-postgres-data

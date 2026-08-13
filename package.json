@@ -20,6 +20,10 @@
     "test:mobile-wallet-link-contract": "bun scripts/mobile-wallet-link-contract-smoke.mjs",
     "test:line-web-auth-contract": "bun scripts/line-web-auth-contract-smoke.mjs",
     "test:line-wallet-link-contract": "bun scripts/line-wallet-link-contract-smoke.mjs",
+    "e2e:local:preflight": "bun scripts/local-e2e-preflight.mjs",
+    "e2e:local:migrate": "bun scripts/local-e2e-migrate.mjs",
+    "e2e:local:seed": "bun scripts/local-e2e-seed.mjs",
+    "test:local-e2e-contract": "bun scripts/local-e2e-contract-smoke.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {
