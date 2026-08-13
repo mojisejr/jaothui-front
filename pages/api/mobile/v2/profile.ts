@@ -1,6 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { requireMobileSession } from "../../../../server/mobile/auth-session";
+import {
+  isInactiveMobileAccountError,
+  requireActiveMobileAccountSession,
+} from "../../../../server/mobile/account-guard";
 import { getMobileAccountProfile } from "../../../../server/mobile/account-profile";
 import {
   MobileResponse,
@@ -21,9 +25,12 @@ export default async function handler(
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Missing bearer token");
     }
 
+    await requireActiveMobileAccountSession(session);
+
     return sendMobileOk(req, res, await getMobileAccountProfile(session));
   } catch (error) {
     if (
+      isInactiveMobileAccountError(error) ||
       error instanceof Error &&
       /session|jwt|token|expired|signature/i.test(error.message)
     ) {
@@ -34,4 +41,3 @@ export default async function handler(
     return sendMobileError(req, res, 500, "INTERNAL_ERROR", "Unable to load profile");
   }
 }
-

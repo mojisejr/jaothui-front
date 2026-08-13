@@ -41,13 +41,14 @@ const accountClient = {
     upsert: async () => ({
       account: {
         id: "account_line_mobile",
+        status: "ACTIVE",
         identities: [],
         walletLinks: [],
       },
     }),
   },
   account: {
-    findUnique: async () => null,
+    findUnique: async () => ({ id: "account_line_mobile", status: "ACTIVE" }),
   },
   walletLink: {
     findFirst: async () => null,

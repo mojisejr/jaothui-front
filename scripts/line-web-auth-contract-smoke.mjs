@@ -197,6 +197,7 @@ const fakeAccountClient = {
       return {
         account: {
           id: "account_from_line",
+          status: "ACTIVE",
           identities: [],
           walletLinks: [],
         },
@@ -204,7 +205,7 @@ const fakeAccountClient = {
     },
   },
   account: {
-    findUnique: async () => null,
+    findUnique: async () => ({ id: "account_from_line", status: "ACTIVE" }),
   },
   walletLink: {
     findFirst: async ({ where }) => {

@@ -162,8 +162,10 @@ export async function getMobileAccountProfile(
   }
 
   const accountProfile = await dependencies.getAccountProfile(session.accountId);
-  const linkedWallet =
-    toLinkedWalletIdentity(accountProfile?.linkedWallet) ?? session.linkedWallet;
+  // A v2 JWT may contain a historical wallet snapshot. Only the current
+  // database association is authoritative, otherwise a deleted Account could
+  // still expose its former wallet until the JWT expires.
+  const linkedWallet = toLinkedWalletIdentity(accountProfile?.linkedWallet);
 
   if (!linkedWallet) {
     return {

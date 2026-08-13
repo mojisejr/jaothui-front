@@ -1,6 +1,7 @@
 import { getUserData } from "../../helpers/getUserData";
 import {
   linkWalletToAccount,
+  AccountNotActiveError,
   WalletLinkConflictError,
   type AccountServiceClient,
 } from "../services/account.service";
@@ -90,6 +91,17 @@ export function toWalletLinkErrorResponse(error: unknown) {
   }
 
   if (error instanceof LineWebAccountMissingError) {
+    return {
+      status: 401,
+      body: {
+        success: false as const,
+        code: error.code,
+        message: "Invalid LINE session",
+      },
+    };
+  }
+
+  if (error instanceof AccountNotActiveError) {
     return {
       status: 401,
       body: {

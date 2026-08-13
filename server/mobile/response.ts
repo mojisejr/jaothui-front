@@ -41,7 +41,7 @@ export function setMobileNoStoreHeaders(res: NextApiResponse) {
 export function setMobileCorsHeaders(res: NextApiResponse) {
   setMobileNoStoreHeaders(res);
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Accept, Authorization, Cache-Control, Content-Type, X-Request-Id"

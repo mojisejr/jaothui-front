@@ -5,6 +5,10 @@ import {
   requireMobileAccountSession,
 } from "../../../../../../server/mobile/auth-session";
 import {
+  isInactiveMobileAccountError,
+  requireActiveMobileAccountSession,
+} from "../../../../../../server/mobile/account-guard";
+import {
   createAppleAccountSessionIdentity,
   toMobileAppleAuthErrorCode,
 } from "../../../../../../server/mobile/apple-auth";
@@ -54,6 +58,9 @@ export default async function handler(
     const currentSession = req.headers.authorization
       ? requireMobileAccountSession(req)
       : null;
+    if (currentSession) {
+      await requireActiveMobileAccountSession(currentSession);
+    }
     const appleIdentity = await createAppleAccountSessionIdentity({
       identityToken,
       email: getBodyString(req.body?.email) ?? null,
@@ -90,6 +97,7 @@ export default async function handler(
   } catch (error) {
     const code = toMobileAppleAuthErrorCode(error);
     if (
+      isInactiveMobileAccountError(error) ||
       code === "INVALID_APPLE_IDENTITY_TOKEN" ||
       (error instanceof Error &&
         /session|jwt|token|expired|signature/i.test(error.message))
