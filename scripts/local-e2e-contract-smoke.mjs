@@ -51,10 +51,14 @@ assert.throws(() => assertSyntheticFixture({ ...fixture, walletLinks: [] }));
 
 const seedLauncher = readFileSync(new URL("./local-e2e-seed.mjs", import.meta.url), "utf8");
 const seedWorker = readFileSync(new URL("./local-e2e-seed-worker.mjs", import.meta.url), "utf8");
+const migrateLauncher = readFileSync(new URL("./local-e2e-migrate.mjs", import.meta.url), "utf8");
 assert.match(seedLauncher, /createLocalE2eChildEnvironment/);
+assert.match(seedLauncher, /createIsolatedLocalE2eWorkspace/);
 assert.match(seedLauncher, /local-e2e-seed-worker\.mjs/);
 assert.doesNotMatch(seedLauncher, /PrismaClient/);
 assert.match(seedWorker, /PrismaClient/);
 assert.match(seedWorker, /process\.env\.DATABASE_URL !== databaseUrl/);
+assert.match(migrateLauncher, /createIsolatedLocalE2eWorkspace/);
+assert.match(migrateLauncher, /migrate", "deploy/);
 
 console.log("Local E2E contract smoke passed");

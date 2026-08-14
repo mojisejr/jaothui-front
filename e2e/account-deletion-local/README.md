@@ -44,6 +44,29 @@ synthetic `ACTIVE` Account with one LINE identity and one Bitkub NEXT wallet
 link. It prints labels and row counts only; it never prints a connection URL,
 token, e-mail address, or provider subject.
 
+## Isolated local API
+
+The device-facing API is deliberately started from an operating-system temporary
+copy of this repository. The copy excludes every `.env*` file, `.next`, `.git`,
+and `node_modules`; it uses a symlink to the reviewed dependency tree and only
+an allow-listed environment. This prevents Next from discovering the project's
+remote `.env` or `.env.local` files.
+
+Run the normal hard gates before starting the API, then launch it in a separate
+terminal. The API binds to `0.0.0.0:3100` so an operator device on the same LAN
+can reach it; PostgreSQL remains loopback-only.
+
+```sh
+E2E_DB_URL='postgresql://jaothui_e2e@127.0.0.1:55432/jaothui_local_e2e?schema=public'
+JAOTHUI_E2E_DATABASE_URL="$E2E_DB_URL" bun run e2e:local:api
+```
+
+The launcher generates an ephemeral session-signing secret in memory. It does
+not print the secret, database URL, or API URL. Its redacted runtime log and
+non-secret PID/host/port record live under `e2e/account-deletion-local/runtime/`
+and are ignored by Git. Stop only the PID recorded there when the E2E lane is
+finished; do not stop unrelated processes.
+
 ## Reset only after evidence is preserved
 
 This is the only permitted cleanup target. Verify the exact compose project,

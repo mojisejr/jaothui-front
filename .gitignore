@@ -40,3 +40,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+.env*
+e2e/account-deletion-local/runtime/

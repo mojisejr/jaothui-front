@@ -23,7 +23,10 @@
     "e2e:local:preflight": "bun scripts/local-e2e-preflight.mjs",
     "e2e:local:migrate": "bun scripts/local-e2e-migrate.mjs",
     "e2e:local:seed": "bun scripts/local-e2e-seed.mjs",
+    "e2e:local:api": "bun scripts/local-e2e-api.mjs",
+    "e2e:local:api:probe": "bun scripts/local-e2e-api-probe.mjs",
     "test:local-e2e-contract": "bun scripts/local-e2e-contract-smoke.mjs",
+    "test:local-e2e-api-contract": "bun scripts/local-e2e-api-contract-smoke.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

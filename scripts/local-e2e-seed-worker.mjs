@@ -59,7 +59,11 @@ try {
     include: { identities: true, walletLinks: true },
   });
 
-  assertSyntheticFixture(account);
+  assertSyntheticFixture({
+    account,
+    identities: account.identities,
+    walletLinks: account.walletLinks,
+  });
   console.log(
     `Local E2E fixture seeded: label=${LOCAL_E2E_FIXTURE.label} identities=${account.identities.length} walletLinks=${account.walletLinks.length} ${localE2eDatabaseSummary(databaseUrl)}`
   );
