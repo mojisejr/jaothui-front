@@ -6,7 +6,9 @@ import {
 import { getUserData } from "../../helpers/getUserData";
 import {
   linkWalletToAccount,
+  requireActiveAccount,
   WalletLinkConflictError,
+  type AccountServiceClient,
 } from "../services/account.service";
 import type { MobileAccountSessionPayload } from "./auth-session";
 import {
@@ -45,8 +47,12 @@ function getBitkubNextLinkAuthorizeUrl(state: string) {
 export async function createMobileBitkubNextLinkDeepLink(input: {
   code: string;
   state: string;
+  accountClient?: AccountServiceClient;
 }) {
   const verifiedState = verifyMobileWalletLinkState(input.state);
+  // State is short lived but can outlive an account deletion. Refuse before
+  // exchanging/linking so an in-flight callback can never recreate a link.
+  await requireActiveAccount(verifiedState.accountId, input.accountClient);
   const tokens = await exchangeAuthorizationCode(
     getBitkubNextClientId(),
     getBitkubNextRedirectUrl(),
@@ -68,7 +74,8 @@ export async function createMobileBitkubNextLinkDeepLink(input: {
     {
       email: typeof userData.email === "string" ? userData.email : null,
       verifiedAt: new Date(),
-    }
+    },
+    input.accountClient
   );
 
   const handoff = createMobileWalletLinkHandoff({

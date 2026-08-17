@@ -1,6 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { requireMobileAccountSession } from "../../../../../../server/mobile/auth-session";
+import {
+  isInactiveMobileAccountError,
+  requireActiveMobileAccountSession,
+} from "../../../../../../server/mobile/account-guard";
 import { buildMobileBitkubNextLinkAuthorizeUrl } from "../../../../../../server/mobile/bitkub-next-link";
 import {
   MobileResponse,
@@ -14,7 +18,7 @@ type MobileWalletLinkIntent = {
   returnTo: "jaothui://oauth/callback";
 };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<MobileResponse<MobileWalletLinkIntent>>
 ) {
@@ -25,6 +29,8 @@ export default function handler(
     if (!session) {
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Missing bearer token");
     }
+
+    await requireActiveMobileAccountSession(session);
 
     const intent = buildMobileBitkubNextLinkAuthorizeUrl({
       accountId: session.accountId,
@@ -37,6 +43,7 @@ export default function handler(
     });
   } catch (error) {
     if (
+      isInactiveMobileAccountError(error) ||
       error instanceof Error &&
       /session|jwt|token|expired|signature/i.test(error.message)
     ) {

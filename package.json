@@ -12,6 +12,7 @@
     "test:news-events-image": "node scripts/news-event-image-ratio-contract-check.mjs",
     "test:news-admin-contract": "bun scripts/news-admin-contract-smoke.mjs",
     "test:account-service-contract": "bun scripts/account-service-contract-smoke.mjs",
+    "test:account-deletion-contract": "bun scripts/account-deletion-contract-smoke.mjs",
     "test:mobile-auth-contract": "bun scripts/mobile-auth-contract-smoke.mjs",
     "test:mobile-apple-auth-contract": "bun scripts/mobile-apple-auth-contract-smoke.mjs",
     "test:mobile-account-profile-contract": "bun scripts/mobile-account-profile-contract-smoke.mjs",
@@ -19,6 +20,13 @@
     "test:mobile-wallet-link-contract": "bun scripts/mobile-wallet-link-contract-smoke.mjs",
     "test:line-web-auth-contract": "bun scripts/line-web-auth-contract-smoke.mjs",
     "test:line-wallet-link-contract": "bun scripts/line-wallet-link-contract-smoke.mjs",
+    "e2e:local:preflight": "bun scripts/local-e2e-preflight.mjs",
+    "e2e:local:migrate": "bun scripts/local-e2e-migrate.mjs",
+    "e2e:local:seed": "bun scripts/local-e2e-seed.mjs",
+    "e2e:local:api": "bun scripts/local-e2e-api.mjs",
+    "e2e:local:api:probe": "bun scripts/local-e2e-api-probe.mjs",
+    "test:local-e2e-contract": "bun scripts/local-e2e-contract-smoke.mjs",
+    "test:local-e2e-api-contract": "bun scripts/local-e2e-api-contract-smoke.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

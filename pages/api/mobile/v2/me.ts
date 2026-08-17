@@ -5,6 +5,10 @@ import {
   type MobileSessionPayload,
 } from "../../../../server/mobile/auth-session";
 import {
+  isInactiveMobileAccountError,
+  requireActiveMobileAccountSession,
+} from "../../../../server/mobile/account-guard";
+import {
   toMobileAccountIdentity,
   type MobileAccountIdentity,
 } from "../../../../server/mobile/account-profile";
@@ -23,7 +27,7 @@ function getLinkedWalletFromSession(session: MobileSessionPayload) {
   return "linkedWallet" in session ? session.linkedWallet : undefined;
 }
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<MobileResponse<MobileV2Me>>
 ) {
@@ -35,11 +39,15 @@ export default function handler(
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Missing bearer token");
     }
 
+    await requireActiveMobileAccountSession(session);
+
     return sendMobileOk(req, res, {
       identity: toMobileAccountIdentity(session, getLinkedWalletFromSession(session)),
     });
-  } catch {
+  } catch (error) {
+    if (isInactiveMobileAccountError(error)) {
+      return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
+    }
     return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
   }
 }
-

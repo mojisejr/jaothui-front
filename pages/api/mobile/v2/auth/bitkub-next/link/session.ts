@@ -5,6 +5,10 @@ import {
   requireMobileAccountSession,
 } from "../../../../../../../server/mobile/auth-session";
 import {
+  isInactiveMobileAccountError,
+  requireActiveMobileAccountSession,
+} from "../../../../../../../server/mobile/account-guard";
+import {
   createRefreshedAccountSessionInput,
   toMobileWalletLinkErrorCode,
 } from "../../../../../../../server/mobile/bitkub-next-link";
@@ -40,7 +44,7 @@ function getBodyString(value: unknown) {
   return typeof value === "string" ? value : undefined;
 }
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<MobileResponse<MobileWalletLinkedSession>>
 ) {
@@ -56,6 +60,8 @@ export default function handler(
     if (!currentSession) {
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Missing bearer token");
     }
+
+    await requireActiveMobileAccountSession(currentSession);
 
     const refreshedInput = createRefreshedAccountSessionInput({
       session: currentSession,
@@ -86,6 +92,7 @@ export default function handler(
   } catch (error) {
     const code = toMobileWalletLinkErrorCode(error);
     if (
+      isInactiveMobileAccountError(error) ||
       code === "INVALID_WALLET_LINK_HANDOFF" ||
       (error instanceof Error &&
         /session|jwt|token|expired|signature/i.test(error.message))

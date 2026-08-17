@@ -43,6 +43,27 @@ export type AccountServiceClient = {
   };
 };
 
+type AccountDeletionTransactionClient = {
+  account: {
+    findUnique: (args: any) => Promise<any>;
+    update: (args: any) => Promise<any>;
+  };
+  accountIdentity: {
+    deleteMany: (args: any) => Promise<{ count: number }>;
+  };
+  walletLink: {
+    deleteMany: (args: any) => Promise<{ count: number }>;
+  };
+};
+
+export type AccountDeletionClient = {
+  $transaction: <T>(
+    operation: (transaction: AccountDeletionTransactionClient) => Promise<T>
+  ) => Promise<T>;
+};
+
+export const ACCOUNT_DELETION_POLICY_VERSION = "2026-08-13";
+
 export class AccountIdentityConflictError extends Error {
   readonly code = "ACCOUNT_IDENTITY_ALREADY_LINKED";
   readonly accountId: string;
@@ -71,6 +92,15 @@ export class WalletLinkConflictError extends Error {
   }
 }
 
+export class AccountNotActiveError extends Error {
+  readonly code = "ACCOUNT_NOT_ACTIVE";
+
+  constructor() {
+    super("JAOTHUI account is not active");
+    this.name = "AccountNotActiveError";
+  }
+}
+
 const normalizeOptionalString = (value: string | null | undefined) =>
   value ?? null;
 
@@ -95,6 +125,25 @@ export const normalizeWalletAddress = (walletAddress: string) => {
     throw new Error("walletAddress is required");
   }
   return normalized;
+};
+
+export const requireActiveAccount = async (
+  accountId: string,
+  client: Pick<AccountServiceClient, "account"> = prisma
+) => {
+  const normalizedAccountId = accountId.trim();
+  if (!normalizedAccountId) {
+    throw new AccountNotActiveError();
+  }
+
+  const account = await client.account.findUnique({
+    where: { id: normalizedAccountId },
+  });
+  if (!account || account.status !== "ACTIVE") {
+    throw new AccountNotActiveError();
+  }
+
+  return account;
 };
 
 export const findOrCreateAccountIdentity = async (
@@ -185,8 +234,8 @@ export const attachIdentityToAccount = async (
   const account = await client.account.findUnique({
     where: { id: normalizedAccountId },
   });
-  if (!account) {
-    throw new Error("Account not found");
+  if (!account || account.status !== "ACTIVE") {
+    throw new AccountNotActiveError();
   }
 
   const existingIdentity = client.accountIdentity.findUnique
@@ -275,6 +324,7 @@ export const getLinkedWallet = async (
   accountId: string,
   client: AccountServiceClient = prisma
 ) => {
+  await requireActiveAccount(accountId, client);
   return client.walletLink.findFirst({
     where: {
       accountId,
@@ -292,6 +342,7 @@ export const linkWalletToAccount = async (
   metadata: WalletLinkInput = {},
   client: AccountServiceClient = prisma
 ) => {
+  await requireActiveAccount(accountId, client);
   const normalizedWalletAddress = normalizeWalletAddress(walletAddress);
   const existing = await client.walletLink.findUnique({
     where: {
@@ -341,8 +392,78 @@ export const getAccountProfile = async (
     return null;
   }
 
+  if (account.status !== "ACTIVE") {
+    return null;
+  }
+
   return {
     account,
     linkedWallet: account.walletLinks[0] ?? null,
   };
 };
+
+export type AccountDeletionReceipt = {
+  deletedAt: Date;
+  deletionPolicyVersion: string;
+  removedIdentityCount: number;
+  removedWalletLinkCount: number;
+};
+
+/**
+ * Permanently removes JAOTHUI login and wallet associations while retaining a
+ * minimal anonymised Account audit row. This intentionally does not touch the
+ * legacy User/registry graph.
+ */
+export async function softDeleteAccount(
+  accountId: string,
+  client: AccountDeletionClient = prisma,
+  options: { now?: () => Date; policyVersion?: string } = {}
+): Promise<AccountDeletionReceipt> {
+  const normalizedAccountId = accountId.trim();
+  if (!normalizedAccountId) {
+    throw new AccountNotActiveError();
+  }
+
+  const deletedAt = options.now?.() ?? new Date();
+  const deletionPolicyVersion =
+    options.policyVersion ?? ACCOUNT_DELETION_POLICY_VERSION;
+
+  return client.$transaction(async (transaction) => {
+    const account = await transaction.account.findUnique({
+      where: { id: normalizedAccountId },
+    });
+    if (!account || account.status !== "ACTIVE") {
+      throw new AccountNotActiveError();
+    }
+
+    const removedWalletLinks = await transaction.walletLink.deleteMany({
+      where: { accountId: normalizedAccountId },
+    });
+    const removedIdentities = await transaction.accountIdentity.deleteMany({
+      where: { accountId: normalizedAccountId },
+    });
+    const deletedAccount = await transaction.account.update({
+      where: { id: normalizedAccountId },
+      data: {
+        status: "DELETED",
+        deletedAt,
+        deletionPolicyVersion,
+        email: null,
+        displayName: null,
+        avatarUrl: null,
+      },
+      select: {
+        deletedAt: true,
+        deletionPolicyVersion: true,
+      },
+    });
+
+    return {
+      deletedAt: deletedAccount.deletedAt ?? deletedAt,
+      deletionPolicyVersion:
+        deletedAccount.deletionPolicyVersion ?? deletionPolicyVersion,
+      removedIdentityCount: removedIdentities.count,
+      removedWalletLinkCount: removedWalletLinks.count,
+    };
+  });
+}
