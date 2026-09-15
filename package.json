@@ -18,6 +18,8 @@
     "test:mobile-account-profile-contract": "bun scripts/mobile-account-profile-contract-smoke.mjs",
     "test:mobile-line-auth-contract": "bun scripts/mobile-line-auth-contract-smoke.mjs",
     "test:mobile-wallet-link-contract": "bun scripts/mobile-wallet-link-contract-smoke.mjs",
+    "test:reviewer-sandbox-contract": "bun scripts/reviewer-sandbox-contract-smoke.mjs",
+    "e2e:local:reviewer-sandbox": "bun scripts/reviewer-sandbox-local-e2e.mjs",
     "test:line-web-auth-contract": "bun scripts/line-web-auth-contract-smoke.mjs",
     "test:line-wallet-link-contract": "bun scripts/line-wallet-link-contract-smoke.mjs",
     "e2e:local:preflight": "bun scripts/local-e2e-preflight.mjs",

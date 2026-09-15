@@ -1,5 +1,5 @@
-import type { MobileAccountSessionPayload, MobileSessionPayload } from "./auth-session";
-import { requireActiveAccount, AccountNotActiveError } from "../services/account.service";
+import type { MobileAccountSessionPayload, MobileReviewerAccountSessionPayload, MobileSessionPayload } from "./auth-session";
+import { requireActiveAccount, requireActiveReviewerSandboxAccount, AccountNotActiveError, ReviewerSandboxAccountError } from "../services/account.service";
 import { prisma } from "../prisma";
 
 function isAccountSession(
@@ -25,6 +25,18 @@ export async function requireActiveMobileAccountSession(
   return session;
 }
 
+export async function requireActiveMobileReviewerSandboxSession(
+  session: MobileReviewerAccountSessionPayload,
+  client: Pick<typeof prisma, "account"> = prisma
+) {
+  await requireActiveReviewerSandboxAccount(session.accountId, client);
+  return session;
+}
+
 export function isInactiveMobileAccountError(error: unknown) {
   return error instanceof AccountNotActiveError;
+}
+
+export function isInvalidReviewerSandboxAccountError(error: unknown) {
+  return error instanceof ReviewerSandboxAccountError;
 }

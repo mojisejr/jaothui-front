@@ -2,11 +2,16 @@ import { prisma } from "../prisma";
 
 const LINE_PROVIDER = "line";
 const APPLE_PROVIDER = "apple";
+const REVIEWER_PROVIDER = "reviewer";
 const BITKUB_NEXT_PROVIDER = "bitkub-next";
 const LINKED_STATUS = "LINKED";
+export const REVIEWER_SANDBOX_ROLE = "REVIEWER_SANDBOX";
 
 type NullableString = string | null;
-export type AccountIdentityProvider = typeof LINE_PROVIDER | typeof APPLE_PROVIDER;
+export type AccountIdentityProvider =
+  | typeof LINE_PROVIDER
+  | typeof APPLE_PROVIDER
+  | typeof REVIEWER_PROVIDER;
 
 export type LineAccountInput = {
   providerUserId: string;
@@ -17,6 +22,7 @@ export type LineAccountInput = {
 
 export type AccountIdentityInput = LineAccountInput & {
   provider: AccountIdentityProvider;
+  accountRole?: typeof REVIEWER_SANDBOX_ROLE;
 };
 
 export type WalletLinkInput = {
@@ -101,11 +107,24 @@ export class AccountNotActiveError extends Error {
   }
 }
 
+export class ReviewerSandboxAccountError extends Error {
+  readonly code = "REVIEWER_SANDBOX_ACCOUNT_REQUIRED";
+
+  constructor() {
+    super("Reviewer sandbox account is required");
+    this.name = "ReviewerSandboxAccountError";
+  }
+}
+
 const normalizeOptionalString = (value: string | null | undefined) =>
   value ?? null;
 
 const normalizeProvider = (provider: AccountIdentityProvider) => {
-  if (provider !== LINE_PROVIDER && provider !== APPLE_PROVIDER) {
+  if (
+    provider !== LINE_PROVIDER &&
+    provider !== APPLE_PROVIDER &&
+    provider !== REVIEWER_PROVIDER
+  ) {
     throw new Error("Unsupported account identity provider");
   }
   return provider;
@@ -146,6 +165,17 @@ export const requireActiveAccount = async (
   return account;
 };
 
+export const requireActiveReviewerSandboxAccount = async (
+  accountId: string,
+  client: Pick<AccountServiceClient, "account"> = prisma
+) => {
+  const account = await requireActiveAccount(accountId, client);
+  if (account.role !== REVIEWER_SANDBOX_ROLE) {
+    throw new ReviewerSandboxAccountError();
+  }
+  return account;
+};
+
 export const findOrCreateAccountIdentity = async (
   input: AccountIdentityInput,
   client: AccountServiceClient = prisma
@@ -155,6 +185,7 @@ export const findOrCreateAccountIdentity = async (
   const email = normalizeOptionalString(input.email);
   const displayName = normalizeOptionalString(input.displayName);
   const avatarUrl = normalizeOptionalString(input.avatarUrl);
+  const accountRole = input.accountRole;
 
   const identity = await client.accountIdentity.upsert({
     where: {
@@ -174,6 +205,7 @@ export const findOrCreateAccountIdentity = async (
           email,
           displayName,
           avatarUrl,
+          ...(accountRole ? { role: accountRole } : {}),
         },
       },
     },
@@ -199,7 +231,32 @@ export const findOrCreateAccountIdentity = async (
     },
   });
 
+  if (accountRole && identity.account.role !== accountRole) {
+    throw new Error("Reviewer sandbox identity is not isolated");
+  }
+
   return identity.account;
+};
+
+/**
+ * Creates or reuses the single isolated reviewer identity. Account deletion
+ * removes the identity, so a later call creates a fresh sandbox account.
+ */
+export const findOrCreateReviewerSandboxAccount = async (
+  input: { providerUserId: string; displayName?: NullableString },
+  client: AccountServiceClient = prisma
+) => {
+  return findOrCreateAccountIdentity(
+    {
+      provider: REVIEWER_PROVIDER,
+      providerUserId: input.providerUserId,
+      displayName: input.displayName ?? "JAOTHUI Reviewer Sandbox",
+      email: null,
+      avatarUrl: null,
+      accountRole: REVIEWER_SANDBOX_ROLE,
+    },
+    client
+  );
 };
 
 export const findOrCreateLineAccount = async (
