@@ -10,7 +10,7 @@ import {
   WalletLinkConflictError,
   type AccountServiceClient,
 } from "../services/account.service";
-import type { MobileAccountSessionPayload } from "./auth-session";
+import type { MobileCustomerAccountSessionPayload } from "./auth-session";
 import {
   appendWalletLinkHandoffToMobileReturnTo,
   createMobileWalletLinkHandoff,
@@ -88,7 +88,7 @@ export async function createMobileBitkubNextLinkDeepLink(input: {
 }
 
 export function createRefreshedAccountSessionInput(input: {
-  session: MobileAccountSessionPayload;
+  session: MobileCustomerAccountSessionPayload;
   handoff: string;
 }) {
   const verifiedHandoff = verifyMobileWalletLinkHandoff(input.handoff);

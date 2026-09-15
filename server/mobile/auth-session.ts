@@ -16,7 +16,7 @@ export type MobileBitkubNextSessionPayload = {
   exp?: number;
 };
 
-export type MobileAccountProvider = "line" | "apple";
+export type MobileAccountProvider = "line" | "apple" | "reviewer";
 
 type MobileLinkedWalletPayload = {
   walletAddress: string;
@@ -49,6 +49,14 @@ export type MobileAppleAccountSessionPayload = MobileAccountSessionPayload & {
   primaryProvider: "apple";
   appleUserId: string;
 };
+
+export type MobileReviewerAccountSessionPayload = MobileAccountSessionPayload & {
+  primaryProvider: "reviewer";
+};
+
+export type MobileCustomerAccountSessionPayload =
+  | MobileLineAccountSessionPayload
+  | MobileAppleAccountSessionPayload;
 
 export type MobileSessionPayload =
   | MobileBitkubNextSessionPayload
@@ -130,7 +138,11 @@ export function createMobileAccountSession(input: {
   if (!accountId) {
     throw new Error("accountId is required");
   }
-  if (input.primaryProvider !== "line" && input.primaryProvider !== "apple") {
+  if (
+    input.primaryProvider !== "line" &&
+    input.primaryProvider !== "apple" &&
+    input.primaryProvider !== "reviewer"
+  ) {
     throw new Error("Unsupported mobile account provider");
   }
   if (!providerUserId) {
@@ -150,7 +162,9 @@ export function createMobileAccountSession(input: {
     email: input.email ?? null,
     displayName: input.displayName ?? null,
     avatarUrl: input.avatarUrl ?? null,
-    linkedWallet: input.linkedWallet ?? null,
+    // A reviewer session is deliberately non-financial. Its wallet state is
+    // supplied by the reviewer-only fixture API, never by an account wallet.
+    linkedWallet: input.primaryProvider === "reviewer" ? null : input.linkedWallet ?? null,
   };
 
   const token = jwt.sign(
@@ -170,6 +184,20 @@ export function createMobileAccountSession(input: {
     token,
     expiresAt,
   };
+}
+
+export function createMobileReviewerAccountSession(input: {
+  accountId: string;
+  providerUserId: string;
+  displayName?: string | null;
+}) {
+  return createMobileAccountSession({
+    accountId: input.accountId,
+    primaryProvider: "reviewer",
+    providerUserId: input.providerUserId,
+    displayName: input.displayName ?? "JAOTHUI Reviewer Sandbox",
+    linkedWallet: null,
+  });
 }
 
 function nullableString(value: unknown) {
@@ -216,7 +244,9 @@ function verifyAccountPayload(decoded: Record<string, any>) {
 
   if (
     decoded.sessionVersion !== 2 ||
-    (primaryProvider !== "line" && primaryProvider !== "apple") ||
+    (primaryProvider !== "line" &&
+      primaryProvider !== "apple" &&
+      primaryProvider !== "reviewer") ||
     typeof decoded.accountId !== "string" ||
     !decoded.accountId.trim() ||
     typeof providerUserId !== "string" ||
@@ -226,6 +256,9 @@ function verifyAccountPayload(decoded: Record<string, any>) {
   }
 
   const linkedWallet = decoded.linkedWallet;
+  if (primaryProvider === "reviewer" && linkedWallet !== null && linkedWallet !== undefined) {
+    throw new Error("Invalid mobile session token");
+  }
   if (linkedWallet !== null && linkedWallet !== undefined) {
     if (
       typeof linkedWallet !== "object" ||
@@ -316,6 +349,25 @@ export function requireMobileLineAccountSession(req: NextApiRequest) {
     throw new Error("Invalid mobile session token");
   }
   return session as MobileLineAccountSessionPayload;
+}
+
+export function requireMobileReviewerAccountSession(req: NextApiRequest) {
+  const session = requireMobileAccountSession(req);
+  if (!session) return null;
+  if (session.primaryProvider !== "reviewer") {
+    throw new Error("Invalid mobile session token");
+  }
+  return session as MobileReviewerAccountSessionPayload;
+}
+
+/** Customer-only flows such as Bitkub linking must never accept reviewer JWTs. */
+export function requireMobileCustomerAccountSession(req: NextApiRequest) {
+  const session = requireMobileAccountSession(req);
+  if (!session) return null;
+  if (session.primaryProvider !== "line" && session.primaryProvider !== "apple") {
+    throw new Error("Invalid mobile session token");
+  }
+  return session as MobileCustomerAccountSessionPayload;
 }
 
 export function requireMobileAccountSession(req: NextApiRequest) {

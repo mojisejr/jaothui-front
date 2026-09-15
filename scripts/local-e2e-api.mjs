@@ -67,16 +67,25 @@ function copyRepositoryWithoutEnvironmentFiles(repositoryRoot, workspaceDirector
   }
 }
 
+function findAvailableNodeModules(repositoryRoot) {
+  let candidateRoot = repositoryRoot;
+  while (true) {
+    const candidate = join(candidateRoot, "node_modules");
+    if (existsSync(candidate) && lstatSync(candidate).isDirectory()) return candidate;
+    const parent = dirname(candidateRoot);
+    if (parent === candidateRoot) break;
+    candidateRoot = parent;
+  }
+  throw new Error("Local E2E API requires an available node_modules directory");
+}
+
 export async function createIsolatedLocalE2eWorkspace(repositoryRoot = resolve(scriptDirectory, "..")) {
   const workspaceDirectory = await mkdtemp(join(tmpdir(), "jaothui-account-deletion-e2e-api-"));
   try {
     copyRepositoryWithoutEnvironmentFiles(repositoryRoot, workspaceDirectory);
     assertNoEnvironmentFiles(workspaceDirectory);
 
-    const originalNodeModules = join(repositoryRoot, "node_modules");
-    if (!lstatSync(originalNodeModules).isDirectory()) {
-      throw new Error("Local E2E API requires the reviewed node_modules directory");
-    }
+    const originalNodeModules = findAvailableNodeModules(repositoryRoot);
     symlinkSync(originalNodeModules, join(workspaceDirectory, "node_modules"));
     return workspaceDirectory;
   } catch (error) {

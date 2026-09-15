@@ -161,6 +161,18 @@ export async function getMobileAccountProfile(
     };
   }
 
+  // Reviewer sessions are intentionally isolated from every legacy member and
+  // wallet upstream. Their wallet appearance is provided only by the reviewer
+  // fixture endpoint and cannot expose customer data through this profile API.
+  if (session.primaryProvider === "reviewer") {
+    return {
+      identity: toMobileAccountIdentity(session, null),
+      member: null,
+      ownedBuffalos: [],
+      counts: { ownedBuffalos: 0 },
+    };
+  }
+
   const accountProfile = await dependencies.getAccountProfile(session.accountId);
   // A v2 JWT may contain a historical wallet snapshot. Only the current
   // database association is authoritative, otherwise a deleted Account could

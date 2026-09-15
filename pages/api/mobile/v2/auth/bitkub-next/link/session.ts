@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import {
   createMobileAccountSession,
-  requireMobileAccountSession,
+  requireMobileCustomerAccountSession,
 } from "../../../../../../../server/mobile/auth-session";
 import {
   isInactiveMobileAccountError,
@@ -56,7 +56,7 @@ export default async function handler(
   }
 
   try {
-    const currentSession = requireMobileAccountSession(req);
+    const currentSession = requireMobileCustomerAccountSession(req);
     if (!currentSession) {
       return sendMobileError(req, res, 401, "UNAUTHORIZED", "Missing bearer token");
     }
