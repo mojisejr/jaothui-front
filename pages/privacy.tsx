@@ -161,6 +161,17 @@ const PrivacyPage: PublicNextPage = () => {
                 </li>
               ))}
             </ul>
+            <p className="mt-4 leading-7 text-muted">
+              To start an account and data deletion request without reinstalling the
+              app, visit the{" "}
+              <Link
+                href="/delete-account"
+                className="font-semibold text-accent underline"
+              >
+                account deletion page
+              </Link>
+              .
+            </p>
           </section>
 
           <section className="rounded-[24px] border border-border-soft bg-surface p-5 tabletS:p-7">
