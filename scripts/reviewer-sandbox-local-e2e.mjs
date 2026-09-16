@@ -154,6 +154,12 @@ try {
   const deletedAccount = await prisma.account.findUnique({ where: { id: firstAccountId } });
   assert.equal(deletedAccount?.status, "DELETED");
 
+  // A stateless JWT issued before deletion must not retain account access.
+  result = await request("/api/mobile/v2/me", {
+    method: "GET", headers: { authorization: `Bearer ${firstToken}` },
+  });
+  assert.equal(result.response.status, 401);
+
   result = await request("/api/mobile/v2/auth/reviewer-session", {
     method: "POST", body: JSON.stringify({ username: reviewerUsername, password: reviewerPassword }),
   });
