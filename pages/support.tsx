@@ -21,6 +21,10 @@ const supportTopics = [
     body: "Bitkub NEXT wallet linking is optional and is used to connect a JAOTHUI account to wallet-based member or certificate records. Do not send private keys or seed phrases to support.",
   },
   {
+    title: "Account deletion",
+    body: "You can request deletion from the public account deletion page without reinstalling the app. Support verifies account ownership before processing a request.",
+  },
+  {
     title: "Buffalo and certificate data",
     body: "For corrections to buffalo, farm, certificate, or pedigree information, include the microchip number or certificate reference so JAOTHUI can locate the record.",
   },
@@ -121,6 +125,17 @@ const SupportPage: PublicNextPage = () => {
               </Link>
               .
             </p>
+            <p className="mt-3 leading-7 text-muted">
+              To start an account deletion request without reinstalling the app,
+              visit the{" "}
+              <Link
+                href="/delete-account"
+                className="font-semibold text-accent underline"
+              >
+                account deletion page
+              </Link>
+              .
+            </p>
           </section>
 
           <nav className="flex flex-col gap-3 tabletS:flex-row">
@@ -130,6 +145,12 @@ const SupportPage: PublicNextPage = () => {
             >
               Email support
             </a>
+            <Link
+              href="/delete-account"
+              className="rounded-card border border-accent bg-transparent px-5 py-3 text-center font-semibold text-accent transition-colors hover:bg-accent hover:text-background"
+            >
+              Request account deletion
+            </Link>
             <Link
               href="/"
               className="rounded-card border border-accent bg-transparent px-5 py-3 text-center font-semibold text-accent transition-colors hover:bg-accent hover:text-background"
