@@ -12,10 +12,12 @@ export interface StatCardProps {
   icon?: ReactNode;
   /** optional suffix under the value (e.g. "ราย", "ตัว") */
   unit?: ReactNode;
+  /** Stable authoritative metric for assistive reading, never frame-by-frame. */
+  accessibleValue?: string;
   className?: string;
 }
 
-export function StatCard({ value, label, icon, unit, className }: StatCardProps) {
+export function StatCard({ value, label, icon, unit, accessibleValue, className }: StatCardProps) {
   return (
     <div
       className={cn(
@@ -25,8 +27,11 @@ export function StatCard({ value, label, icon, unit, className }: StatCardProps)
     >
       {icon && <div className="text-accent">{icon}</div>}
       <p className="text-2xl font-bold text-accent">
-        {value}
-        {unit && <span className="ml-1 text-sm font-medium text-muted">{unit}</span>}
+        {accessibleValue && <span className="sr-only">{accessibleValue}</span>}
+        <span aria-hidden={accessibleValue ? true : undefined}>
+          {value}
+          {unit && <span className="ml-1 text-sm font-medium text-muted">{unit}</span>}
+        </span>
       </p>
       <p className="text-sm font-normal text-muted">{label}</p>
     </div>

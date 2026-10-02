@@ -5,7 +5,8 @@ import {
   getMetadataByMicrochip,
 } from "../services/metadata.service";
 import { gerRewardByMicrochip, getRewardById } from "../services/reward.service";
-import { FEATURED_MICROCHIPS, MOBILE_HOME_STATS } from "./constants";
+import { FEATURED_MICROCHIPS } from "./constants";
+import { getHomeStats } from "../services/home-stats.service";
 import {
   normalizeMetadataFilter,
   toMobileBuffaloCard,
@@ -19,14 +20,15 @@ export async function getMobileFeaturedBuffalos() {
 }
 
 export async function getMobileHome() {
+  const [stats, featured] = await Promise.all([getHomeStats(), getMobileFeaturedBuffalos()]);
   return {
     hero: {
       title: "JAOTHUI",
       subtitle: "Thai Buffalo Platform",
       primaryAction: { label: "ค้นหาควาย", href: "/v2/buffalo" },
     },
-    stats: MOBILE_HOME_STATS,
-    featured: await getMobileFeaturedBuffalos(),
+    stats,
+    featured,
   };
 }
 
