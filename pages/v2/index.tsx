@@ -3,19 +3,19 @@ import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { BsGem } from "react-icons/bs";
-import { FiUsers, FiDatabase, FiActivity, FiShield } from "react-icons/fi";
 import type { NewsEventHomeItem } from "../../interfaces/NewsEvent";
 import { getHomeNewsEvents } from "../../server/services/news-event.service";
+import { getHomeStats, type HomeStat } from "../../server/services/home-stats.service";
 import { trpc } from "../../utils/trpc";
 import {
   V2Layout,
   Button,
-  StatCard,
   BuffaloCard,
   RemoteImage,
   NewsEventRail,
   formatThaiBirthdate,
 } from "../../components/v2";
+import { HomeStatsGrid } from "../../components/v2/HomeStatsGrid";
 
 /** Featured buffalo — same real microchips the legacy Home rail uses (metadata.getBatch). */
 const FEATURED_MICROCHIPS = [
@@ -25,14 +25,6 @@ const FEATURED_MICROCHIPS = [
   "900115003414178",
   "900115003414472",
   "764040226600008",
-];
-
-/* MOCK: aggregate network counts do not exist in data yet — placeholder figures. */
-const STATS = [
-  { icon: <FiUsers />, value: "1,180+", unit: "ราย", label: "เกษตรกรในเครือข่าย" },
-  { icon: <FiDatabase />, value: "1,680+", unit: "ตัว", label: "กระบือในฐานข้อมูล" },
-  { icon: <FiActivity />, value: "30+", unit: "รายการ", label: "กิจกรรมร่วม" },
-  { icon: <FiShield />, value: "980+", unit: "ตัว", label: "กระบือยืนยันแล้ว" },
 ];
 
 /** manual fade-up (reliable stagger via incremental delay) */
@@ -185,14 +177,16 @@ function Featured() {
 
 interface V2HomePageProps {
   newsEvents: NewsEventHomeItem[];
+  stats: HomeStat[];
 }
 
 export const getStaticProps: GetStaticProps<V2HomePageProps> = async () => {
-  const newsEvents = await getHomeNewsEvents();
+  const [newsEvents, stats] = await Promise.all([getHomeNewsEvents(), getHomeStats()]);
 
   return {
     props: {
       newsEvents,
+      stats,
     },
     revalidate: 60,
   };
@@ -200,16 +194,13 @@ export const getStaticProps: GetStaticProps<V2HomePageProps> = async () => {
 
 export default function V2HomePage({
   newsEvents,
+  stats,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <V2Layout activeTab="home">
       <Hero />
 
-      <section className="mx-auto grid w-full max-w-5xl grid-cols-2 gap-3 px-5 py-6 tabletS:grid-cols-4 tabletS:gap-4">
-        {STATS.map((s) => (
-          <StatCard key={s.label} icon={s.icon} value={s.value} unit={s.unit} label={s.label} />
-        ))}
-      </section>
+      <HomeStatsGrid stats={stats} />
 
       <Featured />
 
