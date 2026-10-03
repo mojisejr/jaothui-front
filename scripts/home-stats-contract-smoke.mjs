@@ -28,7 +28,7 @@ const certificates = [{ microchip: "a", isActive: false }, { microchip: "a", isA
 const statements = [];
 const db = {
   $transaction: async (callback, options) => {
-    assert.deepEqual(options, { maxWait: 1500, timeout: 6500 });
+    assert.deepEqual(options, { maxWait: 5000, timeout: 6500 });
     return callback({
       $executeRaw: async (query) => { statements.push(query.join("")); },
       user: { count: async (...args) => { assert.equal(args.length, 0); return users.length; } },
@@ -48,6 +48,31 @@ assert.equal(await stats.countRegistryMetric("buffalos", db), 3);
 assert.equal(await stats.countRegistryMetric("verified", db), 1);
 assert(statements.includes("SET TRANSACTION READ ONLY"));
 assert(statements.includes("SET LOCAL statement_timeout = '5000ms'"));
+
+// Regression: a one-connection pool held for 2s must not reject these short
+// reads at the former 1.5s acquisition budget. Virtual elapsed time keeps the
+// test deterministic while exercising the actual transaction options.
+let queuedWaitMs = 2000;
+const contendedDb = {
+  $transaction: async (callback, options) => {
+    const acquisitionMs = queuedWaitMs;
+    queuedWaitMs += 250;
+    if (acquisitionMs > options.maxWait) throw new Error("transaction_start_timeout");
+    assert(options.maxWait <= stats.HOME_STATS_ACQUIRE_TIMEOUT_MS);
+    assert.equal(options.timeout, stats.HOME_STATS_TRANSACTION_TIMEOUT_MS);
+    return db.$transaction(callback, options);
+  },
+};
+assert.deepEqual(await Promise.all([
+  stats.countRegistryMetric("farmers", contendedDb),
+  stats.countRegistryMetric("buffalos", contendedDb),
+  stats.countRegistryMetric("verified", contendedDb),
+]), [2, 3, 1]);
+assert.equal(stats.HOME_STATS_ACQUIRE_TIMEOUT_MS, 5000);
+assert.equal(stats.HOME_STATS_TRANSACTION_TIMEOUT_MS, 6500);
+assert.equal(stats.HOME_STATS_TIMEOUT_MS, 5000);
+assert.equal(stats.HOME_STATS_RESPONSE_TIMEOUT_MS, 8000);
+assert(stats.HOME_STATS_ACQUIRE_TIMEOUT_MS + stats.HOME_STATS_TRANSACTION_TIMEOUT_MS > stats.HOME_STATS_RESPONSE_TIMEOUT_MS);
 
 let clock = Date.parse("2026-10-03T00:00:00Z");
 const calls = { farmers: 0, buffalos: 0, events: 0, verified: 0 };
@@ -82,6 +107,16 @@ assert(refreshed.filter((s) => s.id !== "events").every((s) => s.availability ==
 assert(!JSON.stringify(refreshed).includes("private"));
 const timed = stats.createHomeStatsService({ ...load, events: () => new Promise(() => {}) }, { timeoutMs: 5 });
 assert.equal((await timed()).find((s) => s.id === "events").count, null);
+// A response timeout settles availability without cancelling/accepting a late
+// underlying result; the cached unavailable snapshot remains truthful.
+let resolveLate;
+const lateService = stats.createHomeStatsService({ ...load, verified: () => new Promise((resolve) => { resolveLate = resolve; }) }, { timeoutMs: 5 });
+const beforeLate = await lateService();
+assert.equal(beforeLate.find((s) => s.id === "verified").count, null);
+resolveLate(999);
+await Promise.resolve();
+assert.strictEqual(await lateService(), beforeLate);
+assert.equal(beforeLate.find((s) => s.id === "verified").observedAt, null);
 
 const web = readFileSync(new URL("../pages/v2/index.tsx", import.meta.url), "utf8");
 const mobile = readFileSync(new URL("../server/mobile/public-journey.ts", import.meta.url), "utf8");

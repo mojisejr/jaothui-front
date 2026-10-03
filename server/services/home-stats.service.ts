@@ -2,6 +2,9 @@ import { prisma } from "../prisma";
 
 export const HOME_STATS_CACHE_MS = 60_000;
 export const HOME_STATS_TIMEOUT_MS = 5_000;
+export const HOME_STATS_ACQUIRE_TIMEOUT_MS = 5_000;
+export const HOME_STATS_TRANSACTION_TIMEOUT_MS = 6_500;
+export const HOME_STATS_RESPONSE_TIMEOUT_MS = 8_000;
 // Reviewed 2026-10-03 against JAOTHUI Event's public published source.
 export const HOME_STATS_TEST_EVENT_IDS = ["a54fca84-3c46-4156-a0ac-3c2fc61f37c2"];
 
@@ -80,7 +83,9 @@ export async function countRegistryMetric(
   db: Pick<typeof prisma, "$transaction"> = prisma
 ) {
   // Independent transactions preserve the other metrics on a source failure.
-  // Both the database statement and connection/transaction wait are bounded.
+  // Allow bounded contention on existing small pools without changing their
+  // size. The response race below is not query cancellation: acquisition and
+  // transaction execution can together outlive that response deadline.
   return db.$transaction(async (tx) => {
     await tx.$executeRaw`SET TRANSACTION READ ONLY`;
     await tx.$executeRaw`SET LOCAL statement_timeout = '5000ms'`;
@@ -91,7 +96,10 @@ export async function countRegistryMetric(
       WHERE EXISTS (SELECT 1 FROM "Certificate" c WHERE c.microchip = p.microchip)
     `;
     return normalizeHomeStatCount(rows[0]?.count);
-  }, { maxWait: 1_500, timeout: 6_500 });
+  }, {
+    maxWait: HOME_STATS_ACQUIRE_TIMEOUT_MS,
+    timeout: HOME_STATS_TRANSACTION_TIMEOUT_MS,
+  });
 }
 
 type CountLoaders = Record<HomeStatId, () => Promise<unknown>>;
@@ -103,7 +111,7 @@ export function createHomeStatsService(
 ) {
   const now = options.now ?? Date.now;
   const cacheMs = options.cacheMs ?? HOME_STATS_CACHE_MS;
-  const timeoutMs = options.timeoutMs ?? 8_000;
+  const timeoutMs = options.timeoutMs ?? HOME_STATS_RESPONSE_TIMEOUT_MS;
   let cached: { stats: HomeStat[]; expiresAt: number } | undefined;
   let inFlight: Promise<HomeStat[]> | undefined;
 

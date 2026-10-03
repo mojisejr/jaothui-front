@@ -32,9 +32,15 @@ fallbacks. Do not expose source connection errors or personal records.
 
 Each server process caches a snapshot for 60 seconds and deduplicates in-flight
 loads. There is no unbounded stale-on-error fallback. Registry statements use
-independent read-only transactions with 5s statement timeout, 1.5s max connection
-wait and 6.5s transaction bound; Sanity fetch aborts at 5s. A final per-metric
-8s bound degrades honestly without discarding other metrics. `/v2` also uses
+independent read-only transactions with 5s statement timeout, 5s max connection
+acquisition wait and 6.5s transaction execution bound; Sanity fetch aborts at 5s.
+The acquisition allowance tolerates brief contention on the existing single-
+connection Prisma pool without increasing its size or changing environment
+configuration. A final per-metric 8s response race degrades honestly without
+discarding other metrics, but does not cancel an underlying Prisma transaction:
+that work may continue after the response race until its own bounded acquisition
+and transaction deadlines (up to approximately 11.5s combined, plus cleanup).
+Late results cannot overwrite the returned/cached unavailable snapshot. `/v2` also uses
 60s ISR, so visible web freshness can lag the service cache by another ISR cycle;
 on-demand/serverless instances may each populate their own cache. Mobile auth
 and no-store response headers are unchanged.
