@@ -96,7 +96,7 @@ function DiscoverySkeletonGrid() {
           key={index}
           className="w-full max-w-[320px] overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur animate-pulse"
         >
-          <div className="mb-4 aspect-[4/3] w-full rounded-2xl bg-white/10" />
+          <div className="mb-4 aspect-[3/2] w-full rounded-photo bg-white/10" />
           <div className="space-y-3">
             <div className="h-5 w-2/3 rounded-full bg-white/10" />
             <div className="h-4 w-1/2 rounded-full bg-white/10" />
@@ -646,7 +646,7 @@ const CertMainPage: NextPage = () => {
                     href={`/cert/${item.microchip}`}
                     className="flex flex-shrink-0 flex-col items-center gap-1"
                   >
-                    <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-white/10 bg-surface-raised">
+                    <div className="relative h-14 w-14 overflow-hidden rounded-photo border border-photo-hairline bg-surface">
                       <BuffaloPhoto
                         src={item.image}
                         alt={item.name}

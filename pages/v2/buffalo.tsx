@@ -141,7 +141,7 @@ export default function V2BuffaloPage() {
                 onClick={() => openBuffalo(r)}
                 className="flex w-16 shrink-0 flex-col items-center gap-1"
               >
-                <span className="relative h-16 w-16 overflow-hidden rounded-card border border-border-soft bg-surface-raised">
+                <span className="relative h-16 w-16 overflow-hidden rounded-photo border border-photo-hairline bg-surface">
                   <BuffaloPhoto src={r.image} alt={r.name} sizes="64px" />
                 </span>
                 <span className="w-full truncate text-center text-[11px] text-muted">{r.name}</span>
@@ -157,9 +157,9 @@ export default function V2BuffaloPage() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="flex animate-pulse flex-col overflow-hidden rounded-card border border-border-soft bg-surface"
+                className="flex animate-pulse flex-col overflow-hidden rounded-photo border border-photo-hairline bg-surface"
               >
-                <div className="aspect-[4/3] w-full bg-surface-raised" />
+                <div className="aspect-[3/2] w-full bg-surface" />
                 <div className="space-y-2 p-3">
                   <div className="h-4 w-2/3 rounded bg-surface-raised" />
                   <div className="h-3 w-1/2 rounded bg-surface-raised" />

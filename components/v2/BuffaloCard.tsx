@@ -38,11 +38,11 @@ export function BuffaloCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "group flex flex-col overflow-hidden rounded-card border border-border-soft bg-surface text-left shadow-gold transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring active:scale-[0.99]",
+        "group flex flex-col overflow-hidden rounded-photo border border-photo-hairline bg-surface text-left transition-[transform,border-color] hover:border-border-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring active:scale-[0.99]",
         className
       )}
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-raised">
+      <div className="relative aspect-[3/2] w-full overflow-hidden bg-surface">
         {image}
       </div>
       <div className="flex flex-col gap-1 p-3">
@@ -59,7 +59,7 @@ export function BuffaloCard({
           {chip}
         </p>
         {birthdate && <p className="text-xs text-muted">วันเกิด : {birthdate}</p>}
-        <span className="mt-1 self-start rounded-pill border border-border-soft bg-surface-raised px-2.5 py-1 text-[11px] font-semibold text-accent">
+        <span className="mt-1 self-start text-[11px] font-semibold text-accent">
           {formatBuffaloAge(ageMonths)}
         </span>
       </div>

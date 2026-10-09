@@ -49,10 +49,12 @@ module.exports = {
         info: { DEFAULT: "var(--info)", soft: "var(--info-soft)" },
         danger: { DEFAULT: "var(--danger)", soft: "var(--danger-soft)" },
         "border-soft": "var(--border-soft)",
+        "photo-hairline": "var(--photo-hairline)",
         "overlay-badge": "var(--overlay-badge)",
       },
       borderRadius: {
         card: "var(--ref-radius-card)",
+        photo: "var(--ref-radius-photo)",
         pill: "var(--ref-radius-pill)",
       },
       boxShadow: {

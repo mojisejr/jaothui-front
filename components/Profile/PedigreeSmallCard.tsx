@@ -41,7 +41,7 @@ const PedigreeSmallCard = ({ data }: PedigreeCardProps) => {
           className="w-full rounded-xl shadow-xl"
         >
           <div className="p-4">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-xl bg-surface-raised">
+            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-t-photo bg-surface">
               <BuffaloPhoto src={data?.image} alt={data?.name || "กระบือ"} sizes="176px" fallback="/images/thuiLogo.png" />
             </div>
             <div className="w-full rounded-br-xl rounded-bl-xl shadow p-3 flex justify-between items-center bg-thuidark">

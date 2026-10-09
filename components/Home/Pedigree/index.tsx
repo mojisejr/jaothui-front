@@ -74,7 +74,7 @@ const Pedigree = () => {
                       href={`/cert/${item.microchip}`}
                       className="flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
                     >
-                      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-surface-raised">
+                      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-photo bg-surface">
                         <BuffaloPhoto
                           src={item.image}
                           alt={item.name}
@@ -115,8 +115,8 @@ const Pedigree = () => {
                           href={`/cert/${item.microchip}`}
                           className="group flex h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
                         >
-                          <div className="flex w-[168px] shrink-0 items-center justify-center bg-surface-raised p-4">
-                            <div className="relative aspect-[4/3] w-full">
+                          <div className="flex w-[168px] shrink-0 items-center justify-center bg-surface p-4">
+                            <div className="relative aspect-[3/2] w-full">
                               <BuffaloPhoto src={item.image} alt={item.name} sizes="136px" fallback="/images/thuiLogo.png" />
                             </div>
                           </div>

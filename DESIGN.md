@@ -110,11 +110,17 @@ for legacy screens and are **not** consumed by v2. Note the intentional gold shi
 
 ### Buffalo identity photographs — full-frame contract
 - Use `BuffaloPhoto` for every active buffalo identity renderer, including recent thumbnails,
-  public/member cards, detail and legacy Home/discovery/profile. Keep card/detail frames at 4:3;
+  public/member cards, detail and legacy Home/discovery/profile. Keep card/detail frames at 3:2;
   thumbnails retain their fixed square geometry. No per-image dimension requests or variable-height grids.
-- Centered `object-contain` preserves the entire rectangular source without stretching. An 8px
-  inset protects source corners from the surrounding 16px card radius; larger outer radii need
-  additional frame padding. Use `bg-surface-raised` for honest letterboxing, not invented pixels.
+- Centered `object-contain` preserves the entire rectangular source without stretching. A 4px
+  inset protects source corners from a maximum 12px photo clip (`rounded-photo`); larger outer
+  legacy radii retain additional frame padding. Use card-matched `bg-surface` for honest, quiet
+  letterboxing, not invented pixels. This is the approved quiet-gallery refinement of the first fix.
+- Identity cards/detail use `border-photo-hairline` (8% gold), no default `shadow-gold`, and
+  unboxed age captions. Gold remains for metadata, focus/active state and actions. Do not weaken
+  global card, news, navigation or status tokens; photo radius/hairline are scoped semantic roles.
+- Loading card image areas also reserve 3:2. The photo's smaller surround is not permission to
+  crop matching-ratio, portrait or square source corners.
 - Age/index/voting labels belong outside the photograph. Never zoom a buffalo image on hover;
   safe whole-card feedback may remain. Recent identity thumbnails use rounded rectangles, not circles.
 - Preserve source URLs/files, optimized Next Image responsive `sizes`, lazy loading and existing

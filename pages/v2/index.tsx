@@ -114,9 +114,9 @@ function FeaturedSkeleton() {
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
-          className="flex animate-pulse flex-col overflow-hidden rounded-card border border-border-soft bg-surface"
+          className="flex animate-pulse flex-col overflow-hidden rounded-photo border border-photo-hairline bg-surface"
         >
-          <div className="aspect-[4/3] w-full bg-surface-raised" />
+          <div className="aspect-[3/2] w-full bg-surface" />
           <div className="space-y-2 p-3">
             <div className="h-4 w-2/3 rounded bg-surface-raised" />
             <div className="h-3 w-1/2 rounded bg-surface-raised" />

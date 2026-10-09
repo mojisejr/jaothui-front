@@ -6,7 +6,7 @@ export type BuffaloPhotoProps = Pick<
 >;
 
 /** Identity photos show the entire source, unlike decorative covers and avatars.
- * The 8px inset keeps source corners clear of the surrounding card's 16px radius.
+ * The 4px inset clears a 12px rounded photo clip, even for edge-filled sources.
  * Parent owns the fixed geometry/background; callers cannot add crop or zoom.
  */
 export function BuffaloPhoto(props: BuffaloPhotoProps) {
@@ -14,7 +14,7 @@ export function BuffaloPhoto(props: BuffaloPhotoProps) {
     <RemoteImage
       key={props.src || "missing"}
       {...props}
-      className="object-contain object-center p-2"
+      className="object-contain object-center p-1"
     />
   );
 }

@@ -119,14 +119,14 @@ export default function BuffaloDetailV2({ tokenId, certNft, rewards, vote, event
 
         <div className="labtop:grid labtop:grid-cols-[minmax(0,360px)_1fr] labtop:items-start labtop:gap-8">
           {/* image */}
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-card border border-border-soft bg-surface-raised shadow-gold">
+          <div className="relative aspect-[3/2] w-full overflow-hidden rounded-photo border border-photo-hairline bg-surface">
             <BuffaloPhoto src={certNft.imageUri} alt={certNft?.name || "buffalo"} sizes="(max-width: 895px) 100vw, (max-width: 1439px) 856px, 360px" priority />
           </div>
 
           {/* name + share + info */}
           <div className="mt-5 space-y-5 labtop:mt-0">
             <div>
-              <span className="mb-2 inline-block rounded-pill border border-border-soft bg-surface-raised px-2.5 py-1 text-[11px] font-semibold text-accent">
+              <span className="mb-2 inline-block text-xs font-semibold text-accent">
                 {formatBuffaloAge(certNft.calculatedAge)}
               </span>
               <h1
