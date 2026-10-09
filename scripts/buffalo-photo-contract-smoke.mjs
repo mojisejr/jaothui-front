@@ -62,7 +62,7 @@ assert(cardMarkup.indexOf("71 เดือน") > cardMarkup.indexOf("7640402263
 const config = (await import("../tailwind.config.js")).default;
 const css = (await postcss([tailwindcss({
   ...config, plugins: [],
-  content: [{ raw: 'object-contain object-center p-1 aspect-[3/2] rounded-photo border-photo-hairline', extension: "html" }],
+  content: [{ raw: 'object-contain object-center p-1 aspect-[3/2] rounded-photo border-photo-hairline focus-visible:ring-focus-ring', extension: "html" }],
 })]).process("@tailwind utilities;", { from: undefined })).css;
 assert.match(css, /object-fit:\s*contain/);
 assert.match(css, /object-position:\s*center/);
@@ -70,6 +70,7 @@ assert.match(css, /padding:\s*0\.25rem/);
 assert.match(css, /aspect-ratio:\s*3\s*\/\s*2/);
 assert.match(css, /border-radius:\s*var\(--ref-radius-photo\)/);
 assert.match(css, /border-color:\s*var\(--photo-hairline\)/);
+assert.match(css, /--tw-ring-color:\s*var\(--focus-ring\)/);
 assert.match(read("styles/globals.css"), /--ref-radius-photo: 0\.75rem/);
 assert.match(read("styles/globals.css"), /--photo-hairline: rgba\(214, 177, 95, 0\.08\)/);
 

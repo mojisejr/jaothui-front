@@ -50,6 +50,7 @@ module.exports = {
         danger: { DEFAULT: "var(--danger)", soft: "var(--danger-soft)" },
         "border-soft": "var(--border-soft)",
         "photo-hairline": "var(--photo-hairline)",
+        "focus-ring": "var(--focus-ring)",
         "overlay-badge": "var(--overlay-badge)",
       },
       borderRadius: {
