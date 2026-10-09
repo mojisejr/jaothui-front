@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { trpc } from "../../../utils/trpc";
+import { BuffaloPhoto } from "../../v2/BuffaloPhoto";
 
 const pedigreeBatch = [
   "764040226300035",
@@ -73,11 +74,12 @@ const Pedigree = () => {
                       href={`/cert/${item.microchip}`}
                       className="flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
                     >
-                      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-base-200">
-                        <img
-                          className="h-full w-full object-cover"
-                          src={item.image ? item.image : "/images/thuiLogo.png"}
+                      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-surface-raised">
+                        <BuffaloPhoto
+                          src={item.image}
                           alt={item.name}
+                          sizes="80px"
+                          fallback="/images/thuiLogo.png"
                         />
                       </div>
                       <div className="min-w-0 flex-1 text-left text-thuidark">
@@ -102,8 +104,6 @@ const Pedigree = () => {
             <div className="hidden tabletS:block">
               <div className="mx-auto w-full max-w-[1400px] px-[22px] py-2">
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-16 bg-gradient-to-r from-thuiwhite via-thuiwhite/90 to-transparent tabletM:block" />
-                  <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-l from-thuiwhite via-thuiwhite/95 to-transparent tabletM:block" />
                   <div
                     ref={desktopRailRef}
                     className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16"
@@ -115,24 +115,16 @@ const Pedigree = () => {
                           href={`/cert/${item.microchip}`}
                           className="group flex h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
                         >
-                          <div className="relative flex w-[168px] shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br from-[#fff7df] via-[#fffdf4] to-thuiwhite p-4">
-                            <img
-                              className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
-                              src={item.image ? item.image : "/images/thuiLogo.png"}
-                              alt={item.name}
-                            />
-                            <div className="absolute left-4 top-4 rounded-full bg-thuiwhite/95 px-3 py-1 text-xs font-bold text-thuidark shadow-sm">
-                              #{index + 1}
-                            </div>
-                            <div className="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-thuigray backdrop-blur-sm">
-                              Pedigree
+                          <div className="flex w-[168px] shrink-0 items-center justify-center bg-surface-raised p-4">
+                            <div className="relative aspect-[4/3] w-full">
+                              <BuffaloPhoto src={item.image} alt={item.name} sizes="136px" fallback="/images/thuiLogo.png" />
                             </div>
                           </div>
 
                           <div className="flex flex-1 flex-col justify-between p-6 text-left text-thuidark">
                             <div className="min-w-0">
                               <div className="text-xs font-bold uppercase tracking-[0.24em] text-thuigray/70">
-                                Thai Buffalo
+                                Thai Buffalo · #{index + 1}
                               </div>
                               <div className="mt-2 line-clamp-2 text-2xl font-bold leading-tight">
                                 {item.name}
@@ -185,8 +177,6 @@ const Pedigree = () => {
             <div className="hidden tabletS:block">
               <div className="mx-auto w-full max-w-[1400px] px-[22px] py-2">
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-16 bg-gradient-to-r from-thuiwhite via-thuiwhite/90 to-transparent tabletM:block" />
-                  <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-l from-thuiwhite via-thuiwhite/95 to-transparent tabletM:block" />
                   <div className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16">
                   {Array.from({ length: 4 }).map((_, index) => (
                     <div

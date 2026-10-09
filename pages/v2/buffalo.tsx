@@ -10,7 +10,7 @@ import {
   DEFAULT_FILTER,
   BuffaloCard,
   Pagination,
-  RemoteImage,
+  BuffaloPhoto,
   formatThaiBirthdate,
   type BuffaloFilter,
 } from "../../components/v2";
@@ -141,8 +141,8 @@ export default function V2BuffaloPage() {
                 onClick={() => openBuffalo(r)}
                 className="flex w-16 shrink-0 flex-col items-center gap-1"
               >
-                <span className="relative h-16 w-16 overflow-hidden rounded-pill border border-border-soft bg-surface-raised">
-                  <RemoteImage src={r.image} alt={r.name} sizes="64px" className="object-cover" />
+                <span className="relative h-16 w-16 overflow-hidden rounded-card border border-border-soft bg-surface-raised">
+                  <BuffaloPhoto src={r.image} alt={r.name} sizes="64px" />
                 </span>
                 <span className="w-full truncate text-center text-[11px] text-muted">{r.name}</span>
               </button>
@@ -177,7 +177,7 @@ export default function V2BuffaloPage() {
                   chip={item.microchip}
                   birthdate={formatThaiBirthdate(item.birthdate)}
                   ageMonths={item.calculatedAge}
-                  image={<RemoteImage src={item.image} alt={item.name} className="object-cover" />}
+                  image={<BuffaloPhoto src={item.image} alt={item.name} sizes="(max-width: 767px) 50vw, (max-width: 1439px) 33vw, 250px" />}
                   onClick={() => openBuffalo(item)}
                 />
               ))}

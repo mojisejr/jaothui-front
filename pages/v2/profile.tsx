@@ -23,6 +23,7 @@ import {
   Badge,
   Button,
   BuffaloCard,
+  BuffaloPhoto,
   RemoteImage,
   formatThaiBirthdate,
 } from "../../components/v2";
@@ -476,7 +477,7 @@ export default function V2ProfilePage() {
                       chip={cert.microchip}
                       birthdate={formatThaiBirthdate(cert.birthdate)}
                       ageMonths={calculateBuffaloAge(cert.birthdate)}
-                      image={<RemoteImage src={cert.image} alt={cert.name} className="object-cover" />}
+                      image={<BuffaloPhoto src={cert.image} alt={cert.name} sizes="(max-width: 767px) 50vw, 330px" />}
                       onClick={() => router.push(`/cert/${cert.microchip}`)}
                     />
                   ))}

@@ -4,7 +4,7 @@ import { formatBuffaloAge } from "./formatAge";
 
 /**
  * BuffaloCard — a pedigree card re-skinned from the real `/cert` PedigreeCard.
- * Overlay badge shows the REAL age (human-readable months), not an invented status.
+ * Body badge shows the REAL age (human-readable months), never over the photograph.
  * Body = name · microchip · birthdate. Presentational only; the page wires real data
  * (metadata.getBatch / getAll → real Supabase image) and the click target.
  */
@@ -14,7 +14,7 @@ export interface BuffaloCardProps {
   chip: ReactNode;
   /** Thai birthdate string (already formatted) */
   birthdate?: ReactNode;
-  /** real age in months (calculatedAge) → rendered as the overlay badge */
+  /** real age in months (calculatedAge) → rendered in the information area */
   ageMonths?: number | null;
   verified?: boolean;
   /** image node (next/image or img) so the primitive stays framework-agnostic */
@@ -44,10 +44,6 @@ export function BuffaloCard({
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-raised">
         {image}
-        {/* real age badge — bottom-right over the image (near the legs) */}
-        <span className="absolute bottom-3 right-3 rounded-pill border border-border-soft bg-overlay-badge px-2.5 py-1 text-[11px] font-semibold text-accent backdrop-blur-sm">
-          {formatBuffaloAge(ageMonths)}
-        </span>
       </div>
       <div className="flex flex-col gap-1 p-3">
         <div className="flex items-center gap-1.5">
@@ -63,6 +59,9 @@ export function BuffaloCard({
           {chip}
         </p>
         {birthdate && <p className="text-xs text-muted">วันเกิด : {birthdate}</p>}
+        <span className="mt-1 self-start rounded-pill border border-border-soft bg-surface-raised px-2.5 py-1 text-[11px] font-semibold text-accent">
+          {formatBuffaloAge(ageMonths)}
+        </span>
       </div>
     </button>
   );

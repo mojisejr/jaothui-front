@@ -5,6 +5,7 @@ import Loading from "../Shared/Indicators/Loading";
 import { motion } from "framer-motion";
 import { parseThaiDate } from "../../helpers/parseThaiDate";
 import { useState } from "react";
+import { BuffaloPhoto } from "../v2/BuffaloPhoto";
 
 interface PedigreeCardProps {
   data: IMetadata;
@@ -40,11 +41,9 @@ const PedigreeSmallCard = ({ data }: PedigreeCardProps) => {
           className="w-full rounded-xl shadow-xl"
         >
           <div className="p-4">
-            <img
-              className="w-full rounded-tr-xl rounded-tl-xl"
-              src={data ? data.image : "images/thuiLogo.png"}
-              alt="image"
-            />
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-xl bg-surface-raised">
+              <BuffaloPhoto src={data?.image} alt={data?.name || "กระบือ"} sizes="176px" fallback="/images/thuiLogo.png" />
+            </div>
             <div className="w-full rounded-br-xl rounded-bl-xl shadow p-3 flex justify-between items-center bg-thuidark">
               <div>
                 <div className="text-primary">

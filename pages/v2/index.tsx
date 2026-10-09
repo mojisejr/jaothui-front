@@ -11,7 +11,7 @@ import {
   V2Layout,
   Button,
   BuffaloCard,
-  RemoteImage,
+  BuffaloPhoto,
   NewsEventRail,
   formatThaiBirthdate,
 } from "../../components/v2";
@@ -156,10 +156,10 @@ function Featured() {
               birthdate={formatThaiBirthdate(item.birthdate)}
               ageMonths={item.calculatedAge}
               image={
-                <RemoteImage
+                <BuffaloPhoto
                   src={item.image}
                   alt={item.name}
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 767px) 50vw, 250px"
                 />
               }
               onClick={() => router.push(`/cert/${item.microchip}`)}
