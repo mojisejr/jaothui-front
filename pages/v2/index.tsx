@@ -11,7 +11,7 @@ import {
   V2Layout,
   Button,
   BuffaloCard,
-  RemoteImage,
+  BuffaloPhoto,
   NewsEventRail,
   formatThaiBirthdate,
 } from "../../components/v2";
@@ -114,9 +114,9 @@ function FeaturedSkeleton() {
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
-          className="flex animate-pulse flex-col overflow-hidden rounded-card border border-border-soft bg-surface"
+          className="flex animate-pulse flex-col overflow-hidden rounded-photo border border-photo-hairline bg-surface"
         >
-          <div className="aspect-[4/3] w-full bg-surface-raised" />
+          <div className="aspect-[3/2] w-full bg-surface" />
           <div className="space-y-2 p-3">
             <div className="h-4 w-2/3 rounded bg-surface-raised" />
             <div className="h-3 w-1/2 rounded bg-surface-raised" />
@@ -156,10 +156,10 @@ function Featured() {
               birthdate={formatThaiBirthdate(item.birthdate)}
               ageMonths={item.calculatedAge}
               image={
-                <RemoteImage
+                <BuffaloPhoto
                   src={item.image}
                   alt={item.name}
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 767px) 50vw, 250px"
                 />
               }
               onClick={() => router.push(`/cert/${item.microchip}`)}

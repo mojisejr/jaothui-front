@@ -17,7 +17,7 @@ import {
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import Link from "next/link";
-import Image from "next/image";
+import { BuffaloPhoto } from "../../components/v2/BuffaloPhoto";
 
 type AgeOperator = ">" | "<" | ">=" | "<=" | "=";
 type SortBy = "latest" | "oldest" | "youngest";
@@ -96,7 +96,7 @@ function DiscoverySkeletonGrid() {
           key={index}
           className="w-full max-w-[320px] overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur animate-pulse"
         >
-          <div className="mb-4 h-52 rounded-2xl bg-white/10" />
+          <div className="mb-4 aspect-[3/2] w-full rounded-photo bg-white/10" />
           <div className="space-y-3">
             <div className="h-5 w-2/3 rounded-full bg-white/10" />
             <div className="h-4 w-1/2 rounded-full bg-white/10" />
@@ -646,13 +646,12 @@ const CertMainPage: NextPage = () => {
                     href={`/cert/${item.microchip}`}
                     className="flex flex-shrink-0 flex-col items-center gap-1"
                   >
-                    <div className="relative h-14 w-14 overflow-hidden rounded-full border border-white/10">
-                      <Image
-                        src={item.image || "images/thuiLogo.png"}
+                    <div className="relative h-14 w-14 overflow-hidden rounded-photo border border-photo-hairline bg-surface">
+                      <BuffaloPhoto
+                        src={item.image}
                         alt={item.name}
-                        fill
                         sizes="56px"
-                        className="object-cover"
+                        fallback="/images/thuiLogo.png"
                       />
                     </div>
                     <div className="max-w-[72px] truncate text-center text-xs">

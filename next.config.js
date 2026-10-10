@@ -1,5 +1,22 @@
 const homeVersion = process.env.JAOTHUI_HOME_VERSION?.toLowerCase();
 const shouldRouteHomeToV2 = homeVersion !== "v1";
+const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const sanityDataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+
+// News covers come from this configured Sanity project/dataset only. Keep the
+// optimizer closed to other CDN tenants, file assets and non-HTTPS endpoints.
+if (sanityProjectId && !/^[a-z0-9]+$/.test(sanityProjectId)) {
+  throw new Error("Invalid NEXT_PUBLIC_SANITY_PROJECT_ID for image allowlist");
+}
+if (sanityDataset && !/^[a-z0-9_-]+$/.test(sanityDataset)) {
+  throw new Error("Invalid NEXT_PUBLIC_SANITY_DATASET for image allowlist");
+}
+const sanityImagePatterns = sanityProjectId && sanityDataset ? [{
+  protocol: "https",
+  hostname: "cdn.sanity.io",
+  port: "",
+  pathname: `/images/${sanityProjectId}/${sanityDataset}/*`,
+}] : [];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -36,6 +53,7 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
+      ...sanityImagePatterns,
       {
         protocol: "https",
         hostname: "wtnqjxerhmdnqszkhbvs.supabase.co",

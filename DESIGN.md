@@ -31,6 +31,9 @@ primitives:
   - name: BuffaloCard
     file: components/v2/BuffaloCard.tsx
     variants: [champion, breeding, verified, for-sale]
+  - name: BuffaloPhoto
+    file: components/v2/BuffaloPhoto.tsx
+    variants: [full-frame]
   - name: WalletCard
     file: components/v2/WalletCard.tsx
     variants: [connected, disconnected]
@@ -105,6 +108,27 @@ for legacy screens and are **not** consumed by v2. Note the intentional gold shi
 - **States**: focus uses `--focus-ring` (gold); disabled drops to `--muted`; loading uses skeletons
   (CSR runtime — see §8).
 
+### Buffalo identity photographs — full-frame contract
+- Use `BuffaloPhoto` for every active buffalo identity renderer, including recent thumbnails,
+  public/member cards, detail and legacy Home/discovery/profile. Keep card/detail frames at 3:2;
+  thumbnails retain their fixed square geometry. No per-image dimension requests or variable-height grids.
+- Centered `object-contain` preserves the entire rectangular source without stretching. A 4px
+  inset protects source corners from a maximum 12px photo clip (`rounded-photo`); larger outer
+  legacy radii retain additional frame padding. Use card-matched `bg-surface` for honest, quiet
+  letterboxing, not invented pixels. This is the approved quiet-gallery refinement of the first fix.
+- Identity cards/detail use `border-photo-hairline` (8% gold), no default `shadow-gold`, and
+  unboxed age captions. Gold remains for metadata, focus/active state and actions. Do not weaken
+  global card, news, navigation or status tokens; photo radius/hairline are scoped semantic roles.
+- Loading card image areas also reserve 3:2. The photo's smaller surround is not permission to
+  crop matching-ratio, portrait or square source corners.
+- Age/index/voting labels belong outside the photograph. Never zoom a buffalo image on hover;
+  safe whole-card feedback may remain. Recent identity thumbnails use rounded rectangles, not circles.
+- Preserve source URLs/files, optimized Next Image responsive `sizes`, lazy loading and existing
+  missing/error fallback. A source-cropped photo cannot be repaired by presentation.
+- This narrowly scoped image-policy correction also applies to active legacy buffalo surfaces;
+  it does not restyle their surrounding UI or daisyUI theme. Editorial news, decorative hero,
+  avatar/logo and certificate documents retain their separate image policies.
+
 ## 5. Layout Principles
 Mobile-first. Fixed bottom navigation (4 tabs), content padded `pb-24` to clear it. 2-column grids
 for stats and buffalo cards. Hero uses a large rounded-bottom panel (`rounded-b-[32px]`) over an
@@ -175,6 +199,7 @@ Touch targets ≥ 44px. Bottom nav (`z-40`) respects safe-area; modals/overlays 
 | V2Button | components/v2/Button.tsx | gold-fill, gold-gradient, gold-outline |
 | StatCard | components/v2/StatCard.tsx | default |
 | BuffaloCard | components/v2/BuffaloCard.tsx | champion, breeding, verified, for-sale |
+| BuffaloPhoto | components/v2/BuffaloPhoto.tsx | full-frame (contain, safe inset, no crop/zoom) |
 | WalletCard | components/v2/WalletCard.tsx | connected, disconnected |
 | BottomNav | components/v2/BottomNav.tsx | home, buffalo, profile, wallet |
 | FilterChip | components/v2/FilterChip.tsx | active, inactive |

@@ -6,6 +6,7 @@ export { Button, buttonVariants, type V2ButtonProps } from "./Button";
 export { Badge, badgeVariants, type BadgeProps } from "./Badge";
 export { StatCard, type StatCardProps } from "./StatCard";
 export { BuffaloCard, type BuffaloCardProps } from "./BuffaloCard";
+export { BuffaloPhoto, type BuffaloPhotoProps } from "./BuffaloPhoto";
 export { Pagination, type PaginationProps } from "./Pagination";
 export { RemoteImage, type RemoteImageProps } from "./RemoteImage";
 export { WalletCard, type WalletCardProps } from "./WalletCard";

@@ -23,6 +23,7 @@
   --ref-paper-100: #f5f5f5;
   --ref-paper-400: #a3a3a3;
   --ref-radius-card: 1rem;
+  --ref-radius-photo: 0.75rem;
   --ref-radius-pill: 9999px;
   --ref-shadow-gold: 0 14px 36px rgba(214, 177, 95, 0.18);
   /* gradients (premium accents) */
@@ -42,6 +43,7 @@
   --info: var(--ref-blue-500);
   --danger: #dc2626;
   --border-soft: rgba(214, 177, 95, 0.14);
+  --photo-hairline: rgba(214, 177, 95, 0.08);
   --focus-ring: var(--ref-gold-500);
 
   /* Soft tint fills (badges/chips) — precomputed so no Tailwind opacity-modifier
