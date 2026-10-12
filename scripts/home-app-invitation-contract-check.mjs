@@ -1,6 +1,26 @@
 import assert from "node:assert/strict";
 import { shareDownload } from "../utils/share-download.ts";
 import { DOWNLOAD_URL } from "../utils/download-routing.ts";
+import { canShowHomeInvitation, HOME_INVITATION_INTERVAL_MS, HOME_INVITATION_KEY, isHomeInvitationDue, rememberHomeInvitation } from "../utils/home-app-invitation.ts";
+
+const now = 1800000000000;
+assert.equal(isHomeInvitationDue(null, now), true);
+for (const invalid of ["", "garbage", "-5", "NaN", "Infinity", "0", "2.5", "9007199254740992"]) assert.equal(isHomeInvitationDue(invalid, now), true);
+assert.equal(isHomeInvitationDue(String(now), now), false);
+assert.equal(isHomeInvitationDue(String(now - HOME_INVITATION_INTERVAL_MS + 1), now), false);
+assert.equal(isHomeInvitationDue(String(now - HOME_INVITATION_INTERVAL_MS), now), true);
+assert.equal(isHomeInvitationDue(String(now + 1000), now), false, "clock rollback stays quiet");
+const data = new Map();
+const storage = { getItem: (key) => data.get(key) ?? null, setItem: (key, value) => data.set(key, value) };
+assert.equal(canShowHomeInvitation(storage, now), true);
+assert.equal(rememberHomeInvitation(storage, now), true);
+assert.equal(data.get(HOME_INVITATION_KEY), String(now));
+assert.equal(canShowHomeInvitation(storage, now + 1000), false);
+assert.equal(canShowHomeInvitation(storage, now + HOME_INVITATION_INTERVAL_MS), true);
+assert.equal(canShowHomeInvitation({ getItem: () => { throw new Error("private storage"); } }, now), false);
+assert.equal(rememberHomeInvitation({ ...storage, setItem: () => { throw new Error("quota"); } }, now), false);
+assert.equal(rememberHomeInvitation({ getItem: () => null, setItem: () => {} }, now), false);
+console.log("HOME_APP_COOLDOWN_OK: exact rolling 24h boundary, invalid/future timestamps, read/write failures");
 
 let copies = 0;
 const copy = async (url) => { assert.equal(url, DOWNLOAD_URL); copies++; };

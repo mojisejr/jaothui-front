@@ -5,9 +5,9 @@ import { AppDownloadActions } from "./AppDownloadActions";
 
 export function HomeAppDownload() {
   return (
-    <section aria-labelledby="home-download-title" className="px-5 py-6">
+    <section aria-labelledby="home-download-title" className="mx-auto w-full max-w-5xl px-5 py-6">
       <div className="relative overflow-hidden rounded-card border border-border-soft bg-surface p-5 mobileM:p-6">
-        <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-gradient-hero-glow" />
+        <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-accent-soft blur-3xl" />
         <div className="relative flex items-start gap-4">
           <Image src="/images/thuiLogo.png" alt="" width={44} height={44} className="mt-1 h-11 w-11 shrink-0 object-contain" />
           <div>
@@ -20,7 +20,7 @@ export function HomeAppDownload() {
           <AppDownloadActions />
           <div className="hidden text-center tabletS:block">
             <div className="inline-flex rounded-photo bg-white p-2">
-              <QRCodeSVG value={DOWNLOAD_URL} size={96} level="M" title="สแกนเพื่อดาวน์โหลด JAOTHUI MOBILE" />
+              <QRCodeSVG value={DOWNLOAD_URL} size={96} level="M" role="img" aria-label="สแกนเพื่อดาวน์โหลด JAOTHUI MOBILE" />
             </div>
             <p className="mt-2 text-xs leading-5 text-muted">สแกนเพื่อดาวน์โหลด</p>
           </div>

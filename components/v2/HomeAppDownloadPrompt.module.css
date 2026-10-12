@@ -1,0 +1,30 @@
+.dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  color: var(--foreground);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--ref-radius-card);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+.dialog::backdrop {
+  background: var(--overlay-badge);
+  backdrop-filter: blur(4px);
+}
+.dialog[open] { animation: invitation-enter 180ms ease-out; }
+.hero { height: clamp(100px, 22dvh, 180px); }
+.actions { position: sticky; bottom: 0; background: var(--surface); }
+@keyframes invitation-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog[open] { animation: none; }
+}
+@media (max-height: 480px) {
+  .hero { display: none; }
+}
