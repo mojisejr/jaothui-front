@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test:download": "bun scripts/download-page-contract-check.mjs",
+    "test:home-app-invitation": "bun scripts/home-app-invitation-contract-check.mjs",
     "test:home-version-toggle": "node scripts/home-version-toggle-contract-check.mjs",
     "test:home-stats-contract": "bun scripts/home-stats-contract-smoke.mjs",
     "test:home-countup": "bun scripts/home-countup-smoke.mjs",
