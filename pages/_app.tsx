@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import Head from "next/head";
 import { useState, useEffect } from "react";
 import type { AppProps } from "next/app";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -43,7 +44,7 @@ const wagmiClient = createClient({
   provider,
 });
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
+const AppContent = ({ Component, pageProps }: AppProps) => {
   const PageComponent = Component as PublicPageComponent;
   const router = useRouter();
   const [showChild, setShowChild] = useState(false);
@@ -92,5 +93,19 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     );
   }
 };
+
+// Page-level next/head overrides these defaults without duplicate social titles.
+const MyApp = (props: AppProps) => (
+  <>
+    <Head>
+      <title>Jaothui NFT Official</title>
+      <meta
+        name="description"
+        content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+      />
+    </Head>
+    <AppContent {...props} />
+  </>
+);
 
 export default trpc.withTRPC(MyApp);

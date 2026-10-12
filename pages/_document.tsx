@@ -3,13 +3,8 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html lang={this.props.__NEXT_DATA__.page === "/download" ? "th" : undefined}>
         <Head>
-          <title>Jaothui NFT Official</title>
-          <meta
-            name="description"
-            content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
-          />
           <link rel="shortcut icon" href="/favicon.ico" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link

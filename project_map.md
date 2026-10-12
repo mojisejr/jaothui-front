@@ -12,6 +12,7 @@ The digital home and verification hub for JAOTHUI NFT. It serves as the bridge b
 - 📍 `pages/`: ระบบ Routing หลัก (Next.js Pages)
   - `/cert/` - หน้าข้อมูลใบพันธุ์ประวัติ (Pedigree/Certificate detail)
   - `/privacy`, `/support` - public unauthenticated policy/support routes used by JAOTHUI Mobile App Store submission
+  - `/download` - public SSR download landing; fixed JAOTHUI Store links, desktop/manual QR fallback, client-only device handoff and static social-preview metadata. `DownloadPage.publicPage=true` bypasses the wallet/auth render gate. Routing: `utils/download-routing.ts`; proof: `npm run test:download` with optional `DOWNLOAD_CHECK_BASE_URL` for actual HTML/asset checks. Shared URL stays `https://www.jaothui.com/download`; no mobile build or DB change. `JAOTHUI_HOME_VERSION=v2` + redeploy reopens existing v2 root; v1 rollback remains available.
   - `/profile/`, `/store/`, `/jaothui-studio/` - เส้นทางหลักอื่นๆ ของ Platform
 - 🎨 `components/`: หัวใจของ UI (เป้าหมายหลักสำหรับ **Redesign UI**)
   - มีการแบ่งแยกย่อยตาม Feature: `Cert`, `Profile`, `Store`, `Home`, `Shared` ฯลฯ
