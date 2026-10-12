@@ -39,6 +39,9 @@ const source = readFileSync(new URL("../pages/download.tsx", import.meta.url), "
 assert(source.includes("DownloadPage.publicPage = true"));
 assert(/<QRCodeSVG\b[^>]*value=\{DOWNLOAD_URL\}/.test(source));
 assert(source.includes("window.location.replace(url)"));
+// Both homepage controls must target v2 directly, including client-side navigation.
+assert(/<Link\b[^>]*href="\/v2"[^>]*aria-label="JAOTHUI หน้าหลัก"/.test(source), "download logo returns to v2");
+assert(/<Link\b[^>]*href="\/v2"[^>]*>\s*<FiArrowLeft\b[^>]*\/>\s*กลับเว็บไซต์/.test(source), "back-to-website returns to v2");
 const png = readFileSync(new URL("../public/images/jaothui-download-og-v1.png", import.meta.url));
 assert.equal(png.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
 assert.equal(png.readUInt32BE(16), 1200);
@@ -61,6 +64,8 @@ if (process.env.DOWNLOAD_CHECK_BASE_URL) {
     assert(html.includes(`href="${STORE_URLS.android.replaceAll("&", "&amp;")}"`));
     assert(html.includes(`rel="canonical" href="${DOWNLOAD_URL}"`));
     assert(html.includes("<svg"), "QR renders without JavaScript");
+    assert(/<a\b(?=[^>]*href="\/v2")(?=[^>]*aria-label="JAOTHUI หน้าหลัก")[^>]*>/.test(html), "rendered logo targets v2");
+    assert(/<a\b[^>]*href="\/v2"[^>]*>\s*<svg\b[\s\S]*?<\/svg>\s*กลับเว็บไซต์<\/a>/.test(html), "rendered back-to-website targets v2");
   }
   const image = await fetch(`${base}/images/jaothui-download-og-v1.png`);
   assert.equal(image.status, 200);

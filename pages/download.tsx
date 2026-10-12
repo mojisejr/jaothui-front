@@ -54,11 +54,11 @@ const DownloadPage: PublicNextPage = () => {
       <V2Layout hideNav className="max-w-6xl">
         <div className="px-5 py-6 mobileM:px-8 tabletS:px-10 tabletS:py-10">
           <header className="flex flex-wrap items-center justify-between gap-4">
-            <Link href="/" aria-label="JAOTHUI หน้าหลัก" className="inline-flex min-h-[44px] items-center gap-3 rounded-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
+            <Link href="/v2" aria-label="JAOTHUI หน้าหลัก" className="inline-flex min-h-[44px] items-center gap-3 rounded-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
               <Image src="/images/thuiLogo.png" alt="" width={44} height={40} className="h-10 w-11 object-contain" />
               <span className="text-lg font-bold tracking-wider text-accent">JAOTHUI</span>
             </Link>
-            <Link href="/" className="inline-flex min-h-[44px] items-center gap-2 rounded-card px-2 text-sm font-medium text-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
+            <Link href="/v2" className="inline-flex min-h-[44px] items-center gap-2 rounded-card px-2 text-sm font-medium text-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
               <FiArrowLeft aria-hidden /> กลับเว็บไซต์
             </Link>
           </header>
