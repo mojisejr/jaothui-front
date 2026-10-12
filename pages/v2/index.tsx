@@ -16,6 +16,8 @@ import {
   formatThaiBirthdate,
 } from "../../components/v2";
 import { HomeStatsGrid } from "../../components/v2/HomeStatsGrid";
+import { HomeAppDownload } from "../../components/v2/HomeAppDownload";
+import { HomeAppDownloadPrompt } from "../../components/v2/HomeAppDownloadPrompt";
 
 /** Featured buffalo — same real microchips the legacy Home rail uses (metadata.getBatch). */
 const FEATURED_MICROCHIPS = [
@@ -198,9 +200,12 @@ export default function V2HomePage({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <V2Layout activeTab="home">
+      <HomeAppDownloadPrompt />
       <Hero />
 
       <HomeStatsGrid stats={stats} />
+
+      <HomeAppDownload />
 
       <Featured />
 
