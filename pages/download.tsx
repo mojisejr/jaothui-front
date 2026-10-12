@@ -93,7 +93,7 @@ const DownloadPage: PublicNextPage = () => {
 
           <section aria-labelledby="scan-heading" className="mt-8 flex flex-col items-center gap-5 text-center tabletS:flex-row tabletS:justify-center tabletS:text-left">
             <div className="rounded-photo bg-white p-3">
-              <QRCodeSVG data-testid="download-qr" value={DOWNLOAD_URL} size={120} level="M" includeMargin title="สแกนเพื่อดาวน์โหลด JAOTHUI MOBILE" />
+              <QRCodeSVG data-testid="download-qr" value={DOWNLOAD_URL} size={120} level="M" includeMargin role="img" aria-label="สแกนเพื่อดาวน์โหลด JAOTHUI MOBILE" />
             </div>
             <div>
               <h2 id="scan-heading" className="text-lg font-semibold">สแกนด้วยโทรศัพท์เพื่อดาวน์โหลด</h2>
