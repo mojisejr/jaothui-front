@@ -39,7 +39,7 @@ export function formatHomeStatCount(count: number): string {
 }
 
 export const HOME_EVENT_COUNT_QUERY =
-  'count(*[_type == "event" && !(_id in path("drafts.**")) && !(_id in $excludedIds)])';
+  'count(*[_type == "event" && coalesce(competitionState, "published") != "draft" && !(_id in path("drafts.**")) && !(_id in $excludedIds)])';
 
 export function getHomeEventSourceConfig(env: NodeJS.ProcessEnv = process.env) {
   const projectId = env.JAOTHUI_EVENT_SANITY_PROJECT_ID ?? "q38mtihr";
