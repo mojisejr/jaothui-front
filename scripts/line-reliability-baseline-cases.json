@@ -1,0 +1,19 @@
+{
+  "scope": "Test-only real profile/me handlers with synthetic JWTs and an in-memory Prisma seam; not database integration or provider proof",
+  "cases": [
+    { "id": "line-only-active", "kind": "active", "desired": 200, "baseline": { "profile": 200, "me": 200 } },
+    { "id": "missing-bearer", "kind": "missing", "desired": 401, "baseline": { "profile": 401, "me": 401 } },
+    { "id": "malformed-jwt", "kind": "malformed", "desired": 401, "baseline": { "profile": 401, "me": 401 } },
+    { "id": "expired-jwt", "kind": "expired", "desired": 401, "baseline": { "profile": 401, "me": 401 } },
+    { "id": "invalid-signature", "kind": "signature", "desired": 401, "baseline": { "profile": 401, "me": 401 } },
+    { "id": "inactive-account", "kind": "inactive", "desired": 401, "baseline": { "profile": 401, "me": 401 } },
+    { "id": "missing-account", "kind": "absent", "desired": 401, "baseline": { "profile": 401, "me": 401 } },
+    { "id": "capacity-at-account-guard", "kind": "capacity", "desired": 503, "baseline": { "profile": 401, "me": 401 } },
+    { "id": "unavailable-at-account-guard", "kind": "unavailable", "desired": 503, "baseline": { "profile": 500, "me": 401 } },
+    { "id": "pool-timeout-at-account-guard", "kind": "timeout", "desired": 503, "baseline": { "profile": 500, "me": 401 } },
+    { "id": "unknown-at-account-guard", "kind": "unknown", "desired": 500, "baseline": { "profile": 500, "me": 401 } },
+    { "id": "missing-signing-config", "kind": "config", "desired": 500, "baseline": { "profile": 401, "me": 401 } },
+    { "id": "capacity-at-profile-read", "kind": "capacity", "failAt": 2, "routes": ["profile"], "desired": 503, "baseline": { "profile": 401 } },
+    { "id": "unavailable-at-profile-read", "kind": "unavailable", "failAt": 2, "routes": ["profile"], "desired": 503, "baseline": { "profile": 500 } }
+  ]
+}
