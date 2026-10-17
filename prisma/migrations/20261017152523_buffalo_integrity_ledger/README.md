@@ -20,8 +20,9 @@ released by the coordinator without deleting the retained journal.
 
 All five tables enable RLS. `PUBLIC`, `anon` and `authenticated` receive no schema,
 table, sequence or function access. Trigger functions use invoker security. The
-server currently uses the privileged database owner connection; a separate future
-runtime role needs explicitly reviewed grants and policies before activation.
+isolated rehearsal uses the privileged migration-owner connection. Verify the
+production runtime role before activation; a separate role needs explicitly
+reviewed grants and policies.
 No signed bytes or operation payloads should be exposed through the Data API.
 
 Rehearse with the pinned Prisma 5 CLI against a disposable PostgreSQL 15.1 database:
