@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import net from "node:net";
 import http from "node:http";
@@ -6,8 +7,8 @@ import https from "node:https";
 import { mock } from "bun:test";
 import jwt from "jsonwebtoken";
 
-// Deliberately RED until Slice 2. The separate baseline mode pins the exact
-// known defects; it is never a declaration that the desired contract passes.
+// Slice 1 was RED; Slice 2 must pass strict desired mode. The historical
+// baseline mode pins the old defects and must fail once the fix is present.
 const flags = process.argv.slice(2);
 assert.ok(flags.every((arg) => arg === "--expect-known-failures"), "Unsupported flag");
 const baselineMode = flags.includes("--expect-known-failures");
@@ -56,8 +57,9 @@ const account = new Proxy({
     reads += 1;
     assert.equal(where.id, activeAccount.id, "Only synthetic account may be queried");
     if (failures[scenario.kind] && reads === (scenario.failAt ?? 1)) throw failures[scenario.kind]();
-    if (scenario.kind === "absent") return null;
-    return { ...activeAccount, status: scenario.kind === "inactive" ? "DELETED" : "ACTIVE" };
+    if (scenario.kind === "absent" || scenario.kind === "profile-absent" && reads === 2) return null;
+    const inactive = scenario.kind === "inactive" || scenario.kind === "profile-deleted" && reads === 2;
+    return { ...activeAccount, status: inactive ? "DELETED" : "ACTIVE" };
   },
 }, { get: (target, property) => target[property] ?? denyIO });
 const fakePrisma = new Proxy({ account }, { get: (target, property) => target[property] ?? denyIO });
@@ -75,10 +77,14 @@ const validPayload = jwt.decode(validToken);
 const expiredToken = jwt.sign({ ...validPayload, exp: 1 }, secret, { algorithm: "HS256" });
 const invalidSignature = jwt.sign(validPayload, "different-synthetic-signing-secret", { algorithm: "HS256" });
 const originalConsoleError = console.error;
+const originalConsoleWarn = console.warn;
+const originalConsoleInfo = console.info;
 let capturedErrors = 0;
 // Route handlers currently log the injected errors. Count them without printing
 // stacks, raw tokens, config, or any inherited environment data.
 console.error = () => { capturedErrors += 1; };
+console.warn = () => { capturedErrors += 1; };
+console.info = () => {};
 const results = [];
 try {
   for (const testCase of manifest.cases) {
@@ -91,7 +97,7 @@ try {
           : testCase.kind === "signature" ? invalidSignature : validToken;
       const request = {
         method: "GET",
-        headers: { "x-request-id": `synthetic-${route}-${testCase.id}`, ...(testCase.kind === "missing" ? {} : { authorization: `Bearer ${token}` }) },
+        headers: { "x-request-id": randomUUID(), ...(testCase.kind === "missing" ? {} : { authorization: `Bearer ${token}` }) },
       };
       const response = {
         statusCode: 200,
@@ -128,6 +134,8 @@ try {
   }
 } finally {
   console.error = originalConsoleError;
+  console.warn = originalConsoleWarn;
+  console.info = originalConsoleInfo;
   process.env.JAOTHUI_MOBILE_AUTH_SECRET = secret;
 }
 assert.equal(forbiddenOperations, 0, "No network, real DB, or unexpected database method permitted");

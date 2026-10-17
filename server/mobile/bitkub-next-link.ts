@@ -4,6 +4,7 @@ import {
 } from "@bitkub-blockchain/react-bitkubnext-oauth2";
 
 import { getUserData } from "../../helpers/getUserData";
+import { InvalidAuthError } from "../auth/errors";
 import {
   linkWalletToAccount,
   requireActiveAccount,
@@ -93,7 +94,7 @@ export function createRefreshedAccountSessionInput(input: {
 }) {
   const verifiedHandoff = verifyMobileWalletLinkHandoff(input.handoff);
   if (verifiedHandoff.accountId !== input.session.accountId) {
-    throw new Error("Mobile wallet link handoff does not match JAOTHUI account");
+    throw new InvalidAuthError("Mobile wallet link handoff does not match JAOTHUI account");
   }
 
   return {
@@ -113,7 +114,7 @@ export function toMobileWalletLinkErrorCode(error: unknown) {
   if (error instanceof WalletLinkConflictError) {
     return "WALLET_ALREADY_LINKED";
   }
-  if (error instanceof Error && /handoff|account/i.test(error.message)) {
+  if (error instanceof InvalidAuthError) {
     return "INVALID_WALLET_LINK_HANDOFF";
   }
   return "MOBILE_WALLET_LINK_FAILED";

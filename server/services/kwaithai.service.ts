@@ -4,8 +4,9 @@ import { prisma } from "../prisma";
 import { getAvatarUrl } from "../supabase";
 import { getAllMetadata } from "./metadata.service";
 import { getTokenOfOwnerAll } from "./nft-pedigree.service";
+import { classifyAuthFailure } from "../auth/diagnostics";
 
-export const getMemberData = async (wallet: string) => {
+export const getMemberData = async (wallet: string, options: { throwOnError?: boolean } = {}) => {
   try {
     //GET USER DATA
     const user = await prisma.user.findUnique({
@@ -76,7 +77,8 @@ export const getMemberData = async (wallet: string) => {
     return user == null ? null : (output as Member | null);
     // return undefined;
   } catch (error) {
-    console.log(error);
+    if (options.throwOnError) throw error;
+    console.warn("Member data lookup failed", { category: classifyAuthFailure(error).category });
     return null;
   }
 };

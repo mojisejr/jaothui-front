@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../../../server/mobile/auth-failure";
 
 import {
   createMobileAccountSession,
   requireMobileAccountSession,
 } from "../../../../../../server/mobile/auth-session";
 import {
-  isInactiveMobileAccountError,
   requireActiveMobileAccountSession,
 } from "../../../../../../server/mobile/account-guard";
 import {
@@ -95,30 +95,11 @@ export default async function handler(
       },
     });
   } catch (error) {
-    const code = toMobileAppleAuthErrorCode(error);
-    if (
-      isInactiveMobileAccountError(error) ||
-      code === "INVALID_APPLE_IDENTITY_TOKEN" ||
-      (error instanceof Error &&
-        /session|jwt|token|expired|signature/i.test(error.message))
-    ) {
-      return sendMobileError(
-        req,
-        res,
-        401,
-        "UNAUTHORIZED",
-        "Invalid or expired Apple identity token"
-      );
+    if (toMobileAppleAuthErrorCode(error) === "ACCOUNT_IDENTITY_ALREADY_LINKED") {
+      return sendMobileError(req, res, 409, "CONFLICT", "This Apple account is already linked to another JAOTHUI account");
     }
-
-    return sendMobileError(
-      req,
-      res,
-      code === "ACCOUNT_IDENTITY_ALREADY_LINKED" ? 409 : 500,
-      code === "ACCOUNT_IDENTITY_ALREADY_LINKED" ? "CONFLICT" : "INTERNAL_ERROR",
-      code === "ACCOUNT_IDENTITY_ALREADY_LINKED"
-        ? "This Apple account is already linked to another JAOTHUI account"
-        : "Unable to create Apple account session"
-    );
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_apple", stage: "session_redeem", failureMessage: "Unable to create Apple account session",
+    });
   }
 }

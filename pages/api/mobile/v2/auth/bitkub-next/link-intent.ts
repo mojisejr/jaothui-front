@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../../../server/mobile/auth-failure";
 
 import { requireMobileCustomerAccountSession } from "../../../../../../server/mobile/auth-session";
 import {
-  isInactiveMobileAccountError,
   requireActiveMobileAccountSession,
 } from "../../../../../../server/mobile/account-guard";
 import { buildMobileBitkubNextLinkAuthorizeUrl } from "../../../../../../server/mobile/bitkub-next-link";
@@ -42,27 +42,8 @@ export default async function handler(
       returnTo: "jaothui://oauth/callback",
     });
   } catch (error) {
-    if (
-      isInactiveMobileAccountError(error) ||
-      error instanceof Error &&
-      /session|jwt|token|expired|signature/i.test(error.message)
-    ) {
-      return sendMobileError(
-        req,
-        res,
-        401,
-        "UNAUTHORIZED",
-        "A JAOTHUI account session is required to link Bitkub NEXT"
-      );
-    }
-
-    console.error("Mobile Bitkub NEXT link intent error:", error);
-    return sendMobileError(
-      req,
-      res,
-      500,
-      "INTERNAL_ERROR",
-      "Unable to start Bitkub NEXT wallet link"
-    );
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_wallet", stage: "wallet_link", failureMessage: "Unable to start Bitkub NEXT wallet link",
+    });
   }
 }

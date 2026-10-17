@@ -1,4 +1,5 @@
 import { getUserData } from "../../helpers/getUserData";
+import { classifyAuthFailure } from "./diagnostics";
 import {
   linkWalletToAccount,
   AccountNotActiveError,
@@ -112,11 +113,12 @@ export function toWalletLinkErrorResponse(error: unknown) {
     };
   }
 
+  const failure = classifyAuthFailure(error);
   return {
-    status: 500,
+    status: failure.status === 503 ? 503 : 500,
     body: {
       success: false as const,
-      code: "WALLET_LINK_FAILED",
+      code: failure.status === 503 ? "SERVICE_UNAVAILABLE" : "WALLET_LINK_FAILED",
       message: "Unable to link Bitkub NEXT wallet",
     },
   };

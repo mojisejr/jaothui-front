@@ -183,7 +183,9 @@ await assert.rejects(
 const root = path.resolve(import.meta.dirname, "..");
 const appleAuthSource = readFileSync(path.join(root, "server/mobile/apple-auth.ts"), "utf8");
 assert.ok(appleAuthSource.includes("https://appleid.apple.com/auth/keys"));
-assert.ok(appleAuthSource.includes("jwt.verify"));
+assert.ok(appleAuthSource.includes("verifyAuthJwt(identityToken"));
+const verifierSource = readFileSync(path.join(root, "server/auth/errors.ts"), "utf8");
+assert.ok(verifierSource.includes("jwt.verify(token, secret"));
 assert.ok(appleAuthSource.includes("payload.sub"));
 assert.ok(!appleAuthSource.includes("auto-merge"));
 

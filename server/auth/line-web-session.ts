@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { AuthConfigurationError, InvalidAuthError, verifyAuthJwt } from "./errors";
 import { getCookie, setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { GetServerSidePropsContext } from "next";
@@ -40,7 +41,7 @@ function getLineWebSessionSecret() {
     process.env.private_procedure_secret;
 
   if (!secret) {
-    throw new Error("Missing JAOTHUI web auth signing secret");
+    throw new AuthConfigurationError("Missing JAOTHUI web auth signing secret");
   }
 
   return secret;
@@ -101,7 +102,7 @@ export function createLineWebSession(input: {
 }
 
 export function verifyLineWebSessionToken(token: string): LineWebSessionPayload {
-  const decoded = jwt.verify(token, getLineWebSessionSecret(), {
+  const decoded = verifyAuthJwt(token, getLineWebSessionSecret(), {
     algorithms: ["HS256"],
     audience: SESSION_AUDIENCE,
     issuer: TOKEN_ISSUER,
@@ -117,7 +118,7 @@ export function verifyLineWebSessionToken(token: string): LineWebSessionPayload 
     typeof decoded.lineUserId !== "string" ||
     !decoded.lineUserId.trim()
   ) {
-    throw new Error("Invalid LINE web session token");
+    throw new InvalidAuthError("Invalid LINE web session token");
   }
 
   const linkedWallet = decoded.linkedWallet;
@@ -128,7 +129,7 @@ export function verifyLineWebSessionToken(token: string): LineWebSessionPayload 
       typeof linkedWallet.walletAddress !== "string" ||
       !linkedWallet.walletAddress.trim()
     ) {
-      throw new Error("Invalid LINE web session token");
+      throw new InvalidAuthError("Invalid LINE web session token");
     }
   }
 

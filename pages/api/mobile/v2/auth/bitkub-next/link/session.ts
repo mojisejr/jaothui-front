@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../../../../server/mobile/auth-failure";
 
 import {
   createMobileAccountSession,
   requireMobileCustomerAccountSession,
 } from "../../../../../../../server/mobile/auth-session";
 import {
-  isInactiveMobileAccountError,
   requireActiveMobileAccountSession,
 } from "../../../../../../../server/mobile/account-guard";
 import {
@@ -90,31 +90,11 @@ export default async function handler(
       },
     });
   } catch (error) {
-    const code = toMobileWalletLinkErrorCode(error);
-    if (
-      isInactiveMobileAccountError(error) ||
-      code === "INVALID_WALLET_LINK_HANDOFF" ||
-      (error instanceof Error &&
-        /session|jwt|token|expired|signature/i.test(error.message))
-    ) {
-      return sendMobileError(
-        req,
-        res,
-        401,
-        "UNAUTHORIZED",
-        "Invalid or expired wallet link handoff"
-      );
+    if (toMobileWalletLinkErrorCode(error) === "WALLET_ALREADY_LINKED") {
+      return sendMobileError(req, res, 409, "CONFLICT", "This Bitkub NEXT wallet is already linked to another account");
     }
-
-    console.error("Mobile Bitkub NEXT link session error:", error);
-    return sendMobileError(
-      req,
-      res,
-      code === "WALLET_ALREADY_LINKED" ? 409 : 500,
-      code === "WALLET_ALREADY_LINKED" ? "CONFLICT" : "INTERNAL_ERROR",
-      code === "WALLET_ALREADY_LINKED"
-        ? "This Bitkub NEXT wallet is already linked to another account"
-        : "Unable to complete Bitkub NEXT wallet link"
-    );
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_wallet", stage: "wallet_link", failureMessage: "Unable to complete Bitkub NEXT wallet link",
+    });
   }
 }

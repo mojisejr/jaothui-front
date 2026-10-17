@@ -21,6 +21,13 @@ const sanityImagePatterns = sanityProjectId && sanityDataset ? [{
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    // Prisma5 uses sslcert for a root CA. Explicit tracing keeps
+    // this public CA available in serverless bundles; it contains no private key.
+    outputFileTracingIncludes: {
+      "/*": ["./prisma/certs/supabase-prod-ca-2021.crt"],
+    },
+  },
   // Home launch switch:
   // - default or JAOTHUI_HOME_VERSION=v2: land visitors on the v2 dark-gold home
   // - JAOTHUI_HOME_VERSION=v1: keep the legacy pages/index.tsx home at /

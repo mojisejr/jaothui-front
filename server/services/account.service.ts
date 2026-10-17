@@ -176,6 +176,17 @@ export const requireActiveReviewerSandboxAccount = async (
   return account;
 };
 
+function isAccountIdentityUniqueRace(error: unknown) {
+  if (!error || typeof error !== "object") return false;
+  const value = error as { code?: unknown; meta?: { target?: unknown; modelName?: unknown } };
+  if (value.code !== "P2002" || !value.meta || typeof value.meta !== "object") return false;
+  if (value.meta.modelName !== undefined && value.meta.modelName !== "AccountIdentity") return false;
+  const target = value.meta.target;
+  return target === "AccountIdentity_provider_providerUserId_key" ||
+    Array.isArray(target) && target.length === 2 &&
+    target.includes("provider") && target.includes("providerUserId");
+}
+
 export const findOrCreateAccountIdentity = async (
   input: AccountIdentityInput,
   client: AccountServiceClient = prisma
@@ -187,7 +198,7 @@ export const findOrCreateAccountIdentity = async (
   const avatarUrl = normalizeOptionalString(input.avatarUrl);
   const accountRole = input.accountRole;
 
-  const identity = await client.accountIdentity.upsert({
+  const upsertIdentity = () => client.accountIdentity.upsert({
     where: {
       provider_providerUserId: {
         provider,
@@ -230,6 +241,17 @@ export const findOrCreateAccountIdentity = async (
       },
     },
   });
+
+  let identity;
+  try {
+    identity = await upsertIdentity();
+  } catch (error) {
+    if (!isAccountIdentityUniqueRace(error)) throw error;
+    // Nested upsert creation can race with another first login for this exact
+    // identity. Prisma rolls back the losing operation; retry this DB upsert
+    // once to read/update the winner. Never repeat the OAuth code exchange.
+    identity = await upsertIdentity();
+  }
 
   if (accountRole && identity.account.role !== accountRole) {
     throw new Error("Reviewer sandbox identity is not isolated");

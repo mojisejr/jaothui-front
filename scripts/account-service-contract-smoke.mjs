@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { Prisma } from "@prisma/client";
 
 const accountService = await import("../server/services/account.service.ts");
 
@@ -304,4 +305,66 @@ await assert.rejects(
 
 assert.throws(() => accountService.normalizeWalletAddress("   "), /walletAddress/);
 
-console.log("Account service contract smoke passed");
+function uniqueFailure(target, modelName = "AccountIdentity") {
+  return new Prisma.PrismaClientKnownRequestError("Synthetic unique race", {
+    code: "P2002", clientVersion: "5.14.0", meta: { target, modelName },
+  });
+}
+
+// Retry only the exact compound identity key. The winner already exists when
+// the first attempt reports a race; no fallback account/identity is created.
+let retryCases = 0;
+for (const target of [["provider", "providerUserId"], "AccountIdentity_provider_providerUserId_key"]) {
+  const racing = new InMemoryAccountClient();
+  const subject = `synthetic-race-${retryCases}`;
+  const winner = await accountService.findOrCreateLineAccount({ providerUserId: subject }, racing);
+  const realUpsert = racing.accountIdentity.upsert;
+  let attempts = 0;
+  racing.accountIdentity.upsert = async (args) => {
+    attempts += 1;
+    assert.deepEqual(args.where.provider_providerUserId, { provider: "line", providerUserId: subject });
+    if (attempts === 1) throw uniqueFailure(target);
+    return realUpsert(args);
+  };
+  const result = await accountService.findOrCreateLineAccount({ providerUserId: subject, displayName: "Updated winner" }, racing);
+  assert.equal(attempts, 2);
+  assert.equal(result.id, winner.id);
+  assert.equal(result.displayName, "Updated winner");
+  assert.equal(racing.accounts.size, 1);
+  assert.equal(racing.identities.size, 1);
+  assert.equal(racing.walletLinks.size, 0);
+  retryCases += 1;
+}
+
+for (const [failure, expectedAttempts] of [
+  [uniqueFailure(["provider", "providerUserId"]), 2],
+  [uniqueFailure(["walletAddress"], "WalletLink"), 1],
+  [uniqueFailure(["provider", "providerUserId"], "OtherModel"), 1],
+  [uniqueFailure(["provider", "providerUserId", "accountId"]), 1],
+  [uniqueFailure("Unrelated_provider_providerUserId_key"), 1],
+  [new Prisma.PrismaClientKnownRequestError("Synthetic connection failure", { code: "P1001", clientVersion: "5.14.0" }), 1],
+  [new Error("Unknown synthetic upsert failure"), 1],
+]) {
+  const failing = new InMemoryAccountClient();
+  let attempts = 0;
+  failing.accountIdentity.upsert = async () => { attempts += 1; throw failure; };
+  await assert.rejects(() => accountService.findOrCreateLineAccount({ providerUserId: "synthetic-failing" }, failing), (error) => error === failure);
+  assert.equal(attempts, expectedAttempts);
+  assert.equal(failing.accounts.size, 0);
+  assert.equal(failing.identities.size, 0);
+  retryCases += 1;
+}
+
+// Retrying the unique-key race must not bypass the reviewer role boundary.
+const roleMismatch = new InMemoryAccountClient();
+let roleAttempts = 0;
+roleMismatch.accountIdentity.upsert = async () => {
+  roleAttempts += 1;
+  if (roleAttempts === 1) throw uniqueFailure(["provider", "providerUserId"]);
+  return { account: { id: "synthetic-wrong-role", role: "USER" } };
+};
+await assert.rejects(() => accountService.findOrCreateReviewerSandboxAccount({ providerUserId: "synthetic-reviewer" }, roleMismatch), /Reviewer sandbox identity is not isolated/);
+assert.equal(roleAttempts, 2);
+retryCases += 1;
+
+console.log(`Account service contract smoke passed; ${retryCases} bounded identity-race scenarios`);

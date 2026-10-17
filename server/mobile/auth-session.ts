@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { AuthConfigurationError, InvalidAuthError, verifyAuthJwt } from "../auth/errors";
 import type { NextApiRequest } from "next";
 
 const SESSION_TOKEN_TYPE = "jaothui-mobile-session";
@@ -67,7 +68,7 @@ function getMobileSessionSecret() {
     process.env.JAOTHUI_MOBILE_AUTH_SECRET || process.env.private_procedure_secret;
 
   if (!secret) {
-    throw new Error("Missing JAOTHUI mobile session signing secret");
+    throw new AuthConfigurationError("Missing JAOTHUI mobile session signing secret");
   }
 
   return secret;
@@ -209,7 +210,7 @@ function verifyBitkubNextPayload(decoded: Record<string, any>) {
     decoded.sessionVersion !== undefined &&
     decoded.sessionVersion !== 1
   ) {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
 
   if (
@@ -217,7 +218,7 @@ function verifyBitkubNextPayload(decoded: Record<string, any>) {
     typeof decoded.walletAddress !== "string" ||
     !decoded.walletAddress.trim()
   ) {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
 
   return {
@@ -252,12 +253,12 @@ function verifyAccountPayload(decoded: Record<string, any>) {
     typeof providerUserId !== "string" ||
     !providerUserId.trim()
   ) {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
 
   const linkedWallet = decoded.linkedWallet;
   if (primaryProvider === "reviewer" && linkedWallet !== null && linkedWallet !== undefined) {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
   if (linkedWallet !== null && linkedWallet !== undefined) {
     if (
@@ -266,7 +267,7 @@ function verifyAccountPayload(decoded: Record<string, any>) {
       typeof linkedWallet.walletAddress !== "string" ||
       !linkedWallet.walletAddress.trim()
     ) {
-      throw new Error("Invalid mobile session token");
+      throw new InvalidAuthError("Invalid mobile session token");
     }
   }
 
@@ -297,7 +298,7 @@ function verifyAccountPayload(decoded: Record<string, any>) {
 }
 
 export function verifyMobileSessionToken(token: string): MobileSessionPayload {
-  const decoded = jwt.verify(token, getMobileSessionSecret(), {
+  const decoded = verifyAuthJwt(token, getMobileSessionSecret(), {
     algorithms: ["HS256"],
     audience: SESSION_AUDIENCE,
     issuer: TOKEN_ISSUER,
@@ -307,7 +308,7 @@ export function verifyMobileSessionToken(token: string): MobileSessionPayload {
     typeof decoded !== "object" ||
     decoded.typ !== SESSION_TOKEN_TYPE
   ) {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
 
   if ((decoded as Record<string, any>).sessionVersion === 2) {
@@ -337,7 +338,7 @@ export function requireMobileBitkubNextSession(req: NextApiRequest) {
   const session = requireMobileSession(req);
   if (!session) return null;
   if (!("provider" in session) || session.provider !== "bitkub-next") {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
   return session;
 }
@@ -346,7 +347,7 @@ export function requireMobileLineAccountSession(req: NextApiRequest) {
   const session = requireMobileAccountSession(req);
   if (!session) return null;
   if (session.primaryProvider !== "line") {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
   return session as MobileLineAccountSessionPayload;
 }
@@ -355,7 +356,7 @@ export function requireMobileReviewerAccountSession(req: NextApiRequest) {
   const session = requireMobileAccountSession(req);
   if (!session) return null;
   if (session.primaryProvider !== "reviewer") {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
   return session as MobileReviewerAccountSessionPayload;
 }
@@ -365,7 +366,7 @@ export function requireMobileCustomerAccountSession(req: NextApiRequest) {
   const session = requireMobileAccountSession(req);
   if (!session) return null;
   if (session.primaryProvider !== "line" && session.primaryProvider !== "apple") {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
   return session as MobileCustomerAccountSessionPayload;
 }
@@ -374,7 +375,7 @@ export function requireMobileAccountSession(req: NextApiRequest) {
   const session = requireMobileSession(req);
   if (!session) return null;
   if (!("primaryProvider" in session)) {
-    throw new Error("Invalid mobile session token");
+    throw new InvalidAuthError("Invalid mobile session token");
   }
   return session;
 }

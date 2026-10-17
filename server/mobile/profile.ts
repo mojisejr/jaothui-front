@@ -3,7 +3,7 @@ import { toMobileBuffaloCard } from "./view-models";
 import { getMemberData } from "../services/kwaithai.service";
 
 export async function getMobileProfile(session: MobileBitkubNextSessionPayload) {
-  const member = await getMemberData(session.walletAddress);
+  const member = await getMemberData(session.walletAddress, { throwOnError: true });
   const ownedBuffalos = member?.Certificate?.map(toMobileBuffaloCard) ?? [];
 
   return {

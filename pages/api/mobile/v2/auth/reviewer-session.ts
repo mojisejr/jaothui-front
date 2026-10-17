@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../../server/mobile/auth-failure";
 
 import { createMobileReviewerAccountSession } from "../../../../../server/mobile/auth-session";
 import { findOrCreateReviewerSandboxAccount } from "../../../../../server/services/account.service";
@@ -59,7 +60,9 @@ export default async function handler(
         providerUserId: REVIEWER_SANDBOX_PROVIDER_USER_ID,
       },
     });
-  } catch {
-    return sendMobileError(req, res, 500, "INTERNAL_ERROR", "Reviewer access is unavailable");
+  } catch (error) {
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_reviewer", stage: "reviewer_session", failureMessage: "Reviewer access is unavailable",
+    });
   }
 }

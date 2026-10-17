@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../../../server/mobile/auth-failure";
 
 import { createMobileSession } from "../../../../../../server/mobile/auth-session";
 import {
@@ -50,13 +51,9 @@ export default function handler(
         provider: "bitkub-next",
       },
     });
-  } catch {
-    return sendMobileError(
-      req,
-      res,
-      401,
-      "UNAUTHORIZED",
-      "Invalid or expired handoff token"
-    );
+  } catch (error) {
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_legacy", stage: "session_redeem", failureMessage: "Unable to create account session",
+    });
   }
 }

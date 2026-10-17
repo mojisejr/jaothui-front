@@ -55,9 +55,13 @@ assert.throws(
   () => line.verifyWebLineOAuthState("invalid-token"),
   /Invalid LINE OAuth state/
 );
+// Always change the signature. A fixed replacement "0" was occasionally the
+// existing final character, so the old test randomly presented a valid token.
+const tamperedState = `${createdState.state.slice(0, -1)}${createdState.state.endsWith("0") ? "1" : "0"}`;
+assert.notEqual(tamperedState, createdState.state);
 assert.throws(
   () =>
-    line.verifyWebLineOAuthState(`${createdState.state.slice(0, -1)}0`, {
+    line.verifyWebLineOAuthState(tamperedState, {
       nowSeconds: 1001,
     }),
   /Invalid LINE OAuth state/

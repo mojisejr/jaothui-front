@@ -14,6 +14,8 @@
     { "id": "unknown-at-account-guard", "kind": "unknown", "desired": 500, "baseline": { "profile": 500, "me": 401 } },
     { "id": "missing-signing-config", "kind": "config", "desired": 500, "baseline": { "profile": 401, "me": 401 } },
     { "id": "capacity-at-profile-read", "kind": "capacity", "failAt": 2, "routes": ["profile"], "desired": 503, "baseline": { "profile": 401 } },
-    { "id": "unavailable-at-profile-read", "kind": "unavailable", "failAt": 2, "routes": ["profile"], "desired": 503, "baseline": { "profile": 500 } }
+    { "id": "unavailable-at-profile-read", "kind": "unavailable", "failAt": 2, "routes": ["profile"], "desired": 503, "baseline": { "profile": 500 } },
+    { "id": "account-disappears-at-profile-read", "kind": "profile-absent", "failAt": 2, "routes": ["profile"], "desired": 401, "baseline": { "profile": 200 } },
+    { "id": "account-deactivated-at-profile-read", "kind": "profile-deleted", "failAt": 2, "routes": ["profile"], "desired": 401, "baseline": { "profile": 200 } }
   ]
 }

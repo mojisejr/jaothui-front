@@ -1,5 +1,6 @@
 import { randomBytes } from "crypto";
 import jwt from "jsonwebtoken";
+import { AuthConfigurationError, InvalidAuthError, verifyAuthJwt } from "../auth/errors";
 import { getOAuth2AuthorizeURL } from "@bitkub-blockchain/react-bitkubnext-oauth2";
 
 const STATE_TOKEN_TYPE = "jaothui-mobile-oauth-state";
@@ -62,7 +63,7 @@ function getSigningSecret() {
     process.env.JAOTHUI_MOBILE_AUTH_SECRET || process.env.private_procedure_secret;
 
   if (!secret) {
-    throw new Error("Missing JAOTHUI mobile auth signing secret");
+    throw new AuthConfigurationError("Missing JAOTHUI mobile auth signing secret");
   }
 
   return secret;
@@ -75,7 +76,7 @@ export function getBitkubNextClientId() {
       : process.env.NEXT_PUBLIC_client_id_dev;
 
   if (!clientId) {
-    throw new Error("Missing Bitkub NEXT client id");
+    throw new AuthConfigurationError("Missing Bitkub NEXT client id");
   }
 
   return clientId;
@@ -88,14 +89,16 @@ export function getBitkubNextRedirectUrl() {
       : process.env.NEXT_PUBLIC_redirect_dev;
 
   if (!redirectUrl) {
-    throw new Error("Missing Bitkub NEXT redirect URL");
+    throw new AuthConfigurationError("Missing Bitkub NEXT redirect URL");
   }
 
   return redirectUrl;
 }
 
 export function normalizeMobileReturnTo(returnTo: string) {
-  const parsed = new URL(returnTo);
+  let parsed: URL;
+  try { parsed = new URL(returnTo); }
+  catch { throw new InvalidAuthError("Unsupported mobile OAuth return target"); }
 
   if (
     parsed.protocol !== "jaothui:" ||
@@ -104,7 +107,7 @@ export function normalizeMobileReturnTo(returnTo: string) {
     parsed.search ||
     parsed.hash
   ) {
-    throw new Error("Unsupported mobile OAuth return target");
+    throw new InvalidAuthError("Unsupported mobile OAuth return target");
   }
 
   return "jaothui://oauth/callback";
@@ -153,7 +156,7 @@ export function createMobileWalletLinkState(input: {
 }
 
 export function verifyMobileOAuthState(state: string): MobileOAuthStatePayload {
-  const decoded = jwt.verify(state, getSigningSecret(), {
+  const decoded = verifyAuthJwt(state, getSigningSecret(), {
     algorithms: ["HS256"],
     audience: STATE_AUDIENCE,
     issuer: TOKEN_ISSUER,
@@ -166,7 +169,7 @@ export function verifyMobileOAuthState(state: string): MobileOAuthStatePayload {
     typeof decoded.returnTo !== "string" ||
     typeof decoded.nonce !== "string"
   ) {
-    throw new Error("Invalid mobile OAuth state");
+    throw new InvalidAuthError("Invalid mobile OAuth state");
   }
 
   return {
@@ -182,7 +185,7 @@ export function verifyMobileOAuthState(state: string): MobileOAuthStatePayload {
 export function verifyMobileWalletLinkState(
   state: string
 ): MobileWalletLinkStatePayload {
-  const decoded = jwt.verify(state, getSigningSecret(), {
+  const decoded = verifyAuthJwt(state, getSigningSecret(), {
     algorithms: ["HS256"],
     audience: STATE_AUDIENCE,
     issuer: TOKEN_ISSUER,
@@ -197,7 +200,7 @@ export function verifyMobileWalletLinkState(
     typeof decoded.accountId !== "string" ||
     typeof decoded.nonce !== "string"
   ) {
-    throw new Error("Invalid mobile wallet link state");
+    throw new InvalidAuthError("Invalid mobile wallet link state");
   }
 
   return {
@@ -270,7 +273,7 @@ export function createMobileWalletLinkHandoff(input: {
 export function verifyMobileOAuthHandoff(
   handoff: string
 ): MobileOAuthHandoffPayload {
-  const decoded = jwt.verify(handoff, getSigningSecret(), {
+  const decoded = verifyAuthJwt(handoff, getSigningSecret(), {
     algorithms: ["HS256"],
     audience: HANDOFF_AUDIENCE,
     issuer: TOKEN_ISSUER,
@@ -283,7 +286,7 @@ export function verifyMobileOAuthHandoff(
     typeof decoded.walletAddress !== "string" ||
     typeof decoded.nonce !== "string"
   ) {
-    throw new Error("Invalid mobile OAuth handoff");
+    throw new InvalidAuthError("Invalid mobile OAuth handoff");
   }
 
   return {
@@ -300,7 +303,7 @@ export function verifyMobileOAuthHandoff(
 export function verifyMobileWalletLinkHandoff(
   handoff: string
 ): MobileWalletLinkHandoffPayload {
-  const decoded = jwt.verify(handoff, getSigningSecret(), {
+  const decoded = verifyAuthJwt(handoff, getSigningSecret(), {
     algorithms: ["HS256"],
     audience: HANDOFF_AUDIENCE,
     issuer: TOKEN_ISSUER,
@@ -316,7 +319,7 @@ export function verifyMobileWalletLinkHandoff(
     decoded.linkedWallet === null ||
     typeof decoded.nonce !== "string"
   ) {
-    throw new Error("Invalid mobile wallet link handoff");
+    throw new InvalidAuthError("Invalid mobile wallet link handoff");
   }
 
   const linkedWallet = decoded.linkedWallet as Record<string, unknown>;
@@ -325,7 +328,7 @@ export function verifyMobileWalletLinkHandoff(
     typeof linkedWallet.walletAddress !== "string" ||
     !linkedWallet.walletAddress.trim()
   ) {
-    throw new Error("Invalid mobile wallet link handoff");
+    throw new InvalidAuthError("Invalid mobile wallet link handoff");
   }
 
   return {

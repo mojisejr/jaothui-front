@@ -3,6 +3,12 @@
 Test preparation only. No production behavior, schema, environment, or mobile
 binary changes belong to this slice. Parent mission: `#jaothui-line-login-reliability`.
 
+> Historical Slice 1 guide. Slice 2 changes application error handling; use
+> [Slice 2 verification](slice2-verification.md) and the
+> [controlled cutover runbook](production-cutover.md) for the current branch.
+> `test:line-reliability` must now be green. Historical `:baseline` mode is
+> expected to reject the fixed code; do not run it as a passing CI gate.
+
 ## Deterministic reproduction
 
 ```sh

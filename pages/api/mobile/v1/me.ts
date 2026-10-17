@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../server/mobile/auth-failure";
 
 import { requireMobileBitkubNextSession } from "../../../../server/mobile/auth-session";
 import {
@@ -31,7 +32,9 @@ export default function handler(
       email: session.email,
       provider: session.provider,
     });
-  } catch {
-    return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
+  } catch (error) {
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_legacy", stage: "profile_read", failureMessage: "Unable to load account",
+    });
   }
 }

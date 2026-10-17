@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCookie } from "cookies-next";
+import { classifyAuthFailure, logAuthStage } from "../../../../server/auth/diagnostics";
+import { getAuthRequestId } from "../../../../server/auth/request-id";
 
 import { getLineWebSessionFromRequest } from "../../../../server/auth/line-web-session";
 import {
@@ -33,10 +35,12 @@ export default async function handler(
   let session;
   try {
     session = getLineWebSessionFromRequest({ req, res });
-  } catch {
+  } catch (error) {
+    const failure = classifyAuthFailure(error);
+    logAuthStage({ requestId: getAuthRequestId(req), flow: "web_line", stage: "wallet_link", outcome: "failed", error });
     return res
-      .status(401)
-      .json({ success: false, code: "LINE_SESSION_INVALID", message: "Invalid LINE session" });
+      .status(failure.status)
+      .json({ success: false, code: failure.status === 401 ? "LINE_SESSION_INVALID" : "LINE_SESSION_UNAVAILABLE", message: failure.status === 401 ? "Invalid LINE session" : "Unable to verify LINE session. Please try again." });
   }
 
   if (!session) {

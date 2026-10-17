@@ -1,4 +1,5 @@
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
+import { AuthConfigurationError, AuthServiceUnavailableError, InvalidAuthError } from "./errors";
 
 const LINE_AUTHORIZE_URL = "https://access.line.me/oauth2/v2.1/authorize";
 const LINE_TOKEN_URL = "https://api.line.me/oauth2/v2.1/token";
@@ -59,7 +60,7 @@ function getSigningSecret(env: Env = process.env) {
   const secret = env.JAOTHUI_MOBILE_AUTH_SECRET || env.private_procedure_secret;
 
   if (!secret) {
-    throw new Error("Missing JAOTHUI auth signing secret");
+    throw new AuthConfigurationError("Missing JAOTHUI auth signing secret");
   }
 
   return secret;
@@ -68,7 +69,7 @@ function getSigningSecret(env: Env = process.env) {
 function getRequiredEnv(name: keyof Env, env: Env) {
   const value = env[name]?.trim();
   if (!value) {
-    throw new Error(`Missing ${name}`);
+    throw new AuthConfigurationError(`Missing ${name}`);
   }
   return value;
 }
@@ -81,7 +82,7 @@ function normalizeLineScope(scope: string | undefined) {
     .join(" ");
 
   if (!normalized.includes("openid") || !normalized.includes("profile")) {
-    throw new Error("LINE login scope must include openid and profile");
+    throw new AuthConfigurationError("LINE login scope must include openid and profile");
   }
 
   return normalized;
@@ -99,16 +100,16 @@ export function getLineWebAuthConfig(env: Env = process.env): LineWebAuthConfig 
 export function normalizeWebLineReturnTo(returnTo: string | undefined) {
   const candidate = returnTo?.trim() || DEFAULT_RETURN_TO;
   if (!candidate.startsWith("/") || candidate.startsWith("//")) {
-    throw new Error("Unsupported LINE login return target");
+    throw new InvalidAuthError("Unsupported LINE login return target");
   }
 
   const parsed = new URL(candidate, "https://www.jaothui.com");
   if (parsed.origin !== "https://www.jaothui.com" || parsed.hash) {
-    throw new Error("Unsupported LINE login return target");
+    throw new InvalidAuthError("Unsupported LINE login return target");
   }
 
   if (!parsed.pathname.startsWith("/v2")) {
-    throw new Error("Unsupported LINE login return target");
+    throw new InvalidAuthError("Unsupported LINE login return target");
   }
 
   return `${parsed.pathname}${parsed.search}`;
@@ -132,7 +133,7 @@ function decodeStatePayload(
     state.length <= STATE_SIGNATURE_HEX_LENGTH ||
     !/^[a-f0-9]+$/i.test(state)
   ) {
-    throw new Error("Invalid LINE OAuth state");
+    throw new InvalidAuthError("Invalid LINE OAuth state");
   }
 
   const payloadHex = state.slice(0, -STATE_SIGNATURE_HEX_LENGTH);
@@ -145,14 +146,14 @@ function decodeStatePayload(
     signature.length !== expectedSignature.length ||
     !timingSafeEqual(signature, expectedSignature)
   ) {
-    throw new Error("Invalid LINE OAuth state");
+    throw new InvalidAuthError("Invalid LINE OAuth state");
   }
 
   let decoded: unknown;
   try {
     decoded = JSON.parse(Buffer.from(payloadHex, "hex").toString("utf8"));
   } catch {
-    throw new Error("Invalid LINE OAuth state");
+    throw new InvalidAuthError("Invalid LINE OAuth state");
   }
 
   if (
@@ -165,12 +166,12 @@ function decodeStatePayload(
     typeof (decoded as Record<string, unknown>).iat !== "number" ||
     typeof (decoded as Record<string, unknown>).exp !== "number"
   ) {
-    throw new Error("Invalid LINE OAuth state");
+    throw new InvalidAuthError("Invalid LINE OAuth state");
   }
 
   const payload = decoded as WebLineOAuthStatePayload;
   if (payload.exp < nowSeconds) {
-    throw new Error("Expired LINE OAuth state");
+    throw new InvalidAuthError("Expired LINE OAuth state");
   }
 
   return {
@@ -226,6 +227,15 @@ export function buildLineWebAuthorizeUrl(input: {
   return url.toString();
 }
 
+async function fetchLineResponse(fetcher: FetchLike, url: string, init: RequestInit) {
+  try {
+    return await fetcher(url, init);
+  } catch {
+    // A failed HTTP transport says nothing about the user's credentials.
+    throw new AuthServiceUnavailableError("LINE request unavailable");
+  }
+}
+
 async function readJsonResponse(response: Response) {
   try {
     return await response.json();
@@ -241,7 +251,7 @@ export async function exchangeLineAuthorizationCode(input: {
 }) {
   const code = input.code.trim();
   if (!code) {
-    throw new Error("Missing LINE authorization code");
+    throw new InvalidAuthError("Missing LINE authorization code");
   }
 
   const config = input.config ?? getLineWebAuthConfig();
@@ -254,7 +264,7 @@ export async function exchangeLineAuthorizationCode(input: {
     client_secret: config.channelSecret,
   });
 
-  const response = await fetcher(LINE_TOKEN_URL, {
+  const response = await fetchLineResponse(fetcher, LINE_TOKEN_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -264,7 +274,12 @@ export async function exchangeLineAuthorizationCode(input: {
   const json = await readJsonResponse(response);
 
   if (!response.ok) {
-    throw new Error(`LINE token exchange failed (${response.status})`);
+    if (json && typeof json === "object" && (json as Record<string, unknown>).error === "invalid_client") {
+      throw new AuthConfigurationError("LINE client configuration is invalid");
+    }
+    throw response.status === 429 || response.status >= 500
+      ? new AuthServiceUnavailableError("LINE token service unavailable")
+      : new InvalidAuthError(`LINE token exchange failed (${response.status})`);
   }
 
   if (
@@ -273,7 +288,7 @@ export async function exchangeLineAuthorizationCode(input: {
     typeof (json as Record<string, unknown>).access_token !== "string" ||
     typeof (json as Record<string, unknown>).id_token !== "string"
   ) {
-    throw new Error("LINE token exchange returned an invalid payload");
+    throw new AuthServiceUnavailableError("LINE token exchange returned an invalid payload");
   }
 
   return {
@@ -302,7 +317,7 @@ export async function verifyLineIdToken(input: {
 }) {
   const idToken = input.idToken.trim();
   if (!idToken) {
-    throw new Error("Missing LINE ID token");
+    throw new InvalidAuthError("Missing LINE ID token");
   }
 
   const config = input.config ?? getLineWebAuthConfig();
@@ -313,7 +328,7 @@ export async function verifyLineIdToken(input: {
     nonce: input.nonce,
   });
 
-  const response = await fetcher(LINE_ID_TOKEN_VERIFY_URL, {
+  const response = await fetchLineResponse(fetcher, LINE_ID_TOKEN_VERIFY_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -323,7 +338,9 @@ export async function verifyLineIdToken(input: {
   const json = await readJsonResponse(response);
 
   if (!response.ok) {
-    throw new Error(`LINE ID token verification failed (${response.status})`);
+    throw response.status === 429 || response.status >= 500
+      ? new AuthServiceUnavailableError("LINE verification service unavailable")
+      : new InvalidAuthError(`LINE ID token verification failed (${response.status})`);
   }
 
   if (
@@ -331,12 +348,12 @@ export async function verifyLineIdToken(input: {
     typeof json !== "object" ||
     typeof (json as Record<string, unknown>).sub !== "string"
   ) {
-    throw new Error("LINE ID token verification returned an invalid payload");
+    throw new AuthServiceUnavailableError("LINE ID token verification returned an invalid payload");
   }
 
   const record = json as Record<string, unknown>;
   if (typeof record.nonce === "string" && record.nonce !== input.nonce) {
-    throw new Error("LINE ID token nonce mismatch");
+    throw new InvalidAuthError("LINE ID token nonce mismatch");
   }
 
   return {
@@ -375,22 +392,8 @@ export async function completeLineWebCallbackContract(input: {
 }
 
 export function classifyLineWebAuthError(error: unknown) {
-  if (!(error instanceof Error)) {
-    return "unknown_error";
-  }
-
-  const message = error.message.toLowerCase();
-  if (message.includes("missing jaothui_line")) return "missing_line_env";
-  if (message.includes("state")) return "invalid_state";
-  if (message.includes("authorization code")) return "missing_authorization_code";
-  if (message.includes("token exchange")) return "line_token_exchange_failed";
-  if (message.includes("id token")) return "line_id_token_verify_failed";
-  if (message.includes("timeout") || message.includes("timed out")) {
-    return "external_request_timeout";
-  }
-  if (message.includes("network") || message.includes("fetch")) {
-    return "external_request_failed";
-  }
-
+  if (error instanceof AuthConfigurationError) return "missing_line_env";
+  if (error instanceof InvalidAuthError) return "invalid_auth";
+  if (error instanceof AuthServiceUnavailableError) return "external_request_failed";
   return "unexpected_error";
 }

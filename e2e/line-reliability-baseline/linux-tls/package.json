@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "5.14.0",
+    "prisma": "5.14.0"
+  }
+}

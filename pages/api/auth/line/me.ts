@@ -1,4 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { classifyAuthFailure, logAuthStage } from "../../../../server/auth/diagnostics";
+import { getAuthRequestId } from "../../../../server/auth/request-id";
 
 import { getLineWebSessionFromRequest } from "../../../../server/auth/line-web-session";
 import {
@@ -42,9 +44,11 @@ export default async function handler(
       success: true,
       account,
     });
-  } catch {
+  } catch (error) {
+    const failure = classifyAuthFailure(error);
+    logAuthStage({ requestId: getAuthRequestId(req), flow: "web_line", stage: "profile_read", outcome: "failed", error });
     return res
-      .status(401)
-      .json({ success: false, message: "Invalid LINE session" });
+      .status(failure.status)
+      .json({ success: false, message: failure.status === 401 ? "Invalid LINE session" : "Unable to load LINE account. Please try again." });
   }
 }
