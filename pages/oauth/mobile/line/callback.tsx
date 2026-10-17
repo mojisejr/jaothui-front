@@ -4,19 +4,22 @@ import Image from "next/image";
 import { Spinner } from "../../../../components/v2";
 import { buildMobileNativeCallbackErrorUrl, getSingleQueryValue, redirectNoStore } from "../../../../server/mobile/bitkub-next-routing";
 import { completeMobileLineCallback } from "../../../../server/mobile/line-auth";
+import { classifyAuthFailure, logAuthStage } from "../../../../server/auth/diagnostics";
+import { getAuthRequestId } from "../../../../server/auth/request-id";
 
 type MobileLineCallbackProps = {
   error?: string;
 };
 
 export const getServerSideProps: GetServerSideProps<MobileLineCallbackProps> =
-  async ({ query, res }) => {
+  async ({ query, req, res }) => {
+    const requestId = getAuthRequestId(req);
     const code = getSingleQueryValue(query.code);
     const state = getSingleQueryValue(query.state);
     const providerError = getSingleQueryValue(query.error);
 
     if (providerError) {
-      redirectNoStore(res, buildMobileNativeCallbackErrorUrl(providerError));
+      redirectNoStore(res, buildMobileNativeCallbackErrorUrl(providerError === "access_denied" ? "access_denied" : "mobile_line_auth_failed"));
       return { props: {} };
     }
 
@@ -30,14 +33,12 @@ export const getServerSideProps: GetServerSideProps<MobileLineCallbackProps> =
     }
 
     try {
-      const callback = await completeMobileLineCallback({ code, state });
+      const callback = await completeMobileLineCallback({ code, state, requestId });
       redirectNoStore(res, callback.deepLink);
     } catch (error) {
-      console.error(
-        "Mobile LINE callback redirect failed:",
-        error instanceof Error ? error.message : "unknown error"
-      );
-      redirectNoStore(res, buildMobileNativeCallbackErrorUrl("mobile_line_auth_failed"));
+      logAuthStage({ requestId, flow: "mobile_line", stage: "callback", outcome: "failed", error });
+      const errorCode = classifyAuthFailure(error).status === 503 ? "mobile_line_service_unavailable" : "mobile_line_auth_failed";
+      redirectNoStore(res, buildMobileNativeCallbackErrorUrl(errorCode));
     }
 
     return { props: {} };

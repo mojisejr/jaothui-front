@@ -2,6 +2,8 @@ import type { GetServerSideProps } from "next";
 import Image from "next/image";
 
 import { Spinner } from "../../../components/v2";
+import { classifyAuthFailure, logAuthStage } from "../../../server/auth/diagnostics";
+import { getAuthRequestId } from "../../../server/auth/request-id";
 import { createMobileBitkubNextDeepLink } from "../../../server/mobile/bitkub-next-handoff";
 import { createMobileBitkubNextLinkDeepLink } from "../../../server/mobile/bitkub-next-link";
 import {
@@ -17,7 +19,7 @@ type MobileCallbackProps = {
 };
 
 export const getServerSideProps: GetServerSideProps<MobileCallbackProps> =
-  async ({ query, res }) => {
+  async ({ query, req, res }) => {
     const code = getSingleQueryValue(query.code);
     const state = getSingleQueryValue(query.state);
 
@@ -39,11 +41,8 @@ export const getServerSideProps: GetServerSideProps<MobileCallbackProps> =
           : await createMobileBitkubNextDeepLink({ code, state })
       );
     } catch (error) {
-      console.error(
-        "Mobile Bitkub NEXT callback redirect failed:",
-        error instanceof Error ? error.message : "unknown error"
-      );
-      redirectNoStore(res, buildMobileNativeCallbackErrorUrl("mobile_auth_failed"));
+      logAuthStage({ requestId: getAuthRequestId(req), flow: "mobile_wallet", stage: "callback", outcome: "failed", error });
+      redirectNoStore(res, buildMobileNativeCallbackErrorUrl(classifyAuthFailure(error).status === 503 ? "mobile_service_unavailable" : "mobile_auth_failed"));
     }
 
     return { props: {} };

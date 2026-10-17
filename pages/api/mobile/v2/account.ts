@@ -1,13 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../server/mobile/auth-failure";
 
 import { requireMobileAccountSession } from "../../../../server/mobile/auth-session";
 import {
-  isInactiveMobileAccountError,
   requireActiveMobileAccountSession,
 } from "../../../../server/mobile/account-guard";
 import {
   softDeleteAccount,
-  AccountNotActiveError,
 } from "../../../../server/services/account.service";
 import {
   MobileResponse,
@@ -45,15 +44,8 @@ export default async function handler(
       manualAppleRevocationRequired: session.primaryProvider === "apple",
     });
   } catch (error) {
-    if (
-      isInactiveMobileAccountError(error) ||
-      error instanceof AccountNotActiveError ||
-      (error instanceof Error && /session|jwt|token|expired|signature/i.test(error.message))
-    ) {
-      return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
-    }
-
-    console.error("Mobile account deletion error:", error);
-    return sendMobileError(req, res, 500, "INTERNAL_ERROR", "Unable to delete account");
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_account", stage: "account_delete", failureMessage: "Unable to delete account",
+    });
   }
 }

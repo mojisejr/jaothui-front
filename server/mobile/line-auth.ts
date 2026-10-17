@@ -1,5 +1,8 @@
 import { randomBytes } from "crypto";
 import jwt from "jsonwebtoken";
+import { AuthConfigurationError, InvalidAuthError, verifyAuthJwt } from "../auth/errors";
+import { runAuthStage } from "../auth/diagnostics";
+import { safeAuthRequestId } from "../auth/request-id";
 
 import {
   buildLineWebAuthorizeUrl,
@@ -56,7 +59,7 @@ export type MobileLineOAuthHandoffPayload = {
 function getSigningSecret(env: Env = process.env) {
   const secret = env.JAOTHUI_MOBILE_AUTH_SECRET || env.private_procedure_secret;
   if (!secret) {
-    throw new Error("Missing JAOTHUI mobile auth signing secret");
+    throw new AuthConfigurationError("Missing JAOTHUI mobile auth signing secret");
   }
   return secret;
 }
@@ -64,7 +67,7 @@ function getSigningSecret(env: Env = process.env) {
 function getRequiredEnv(name: keyof Env, env: Env) {
   const value = env[name]?.trim();
   if (!value) {
-    throw new Error(`Missing ${name}`);
+    throw new AuthConfigurationError(`Missing ${name}`);
   }
   return value;
 }
@@ -77,7 +80,7 @@ function normalizeLineScope(scope: string | undefined) {
     .join(" ");
 
   if (!normalized.includes("openid") || !normalized.includes("profile")) {
-    throw new Error("LINE login scope must include openid and profile");
+    throw new AuthConfigurationError("LINE login scope must include openid and profile");
   }
 
   return normalized;
@@ -93,7 +96,9 @@ export function getLineMobileAuthConfig(env: Env = process.env): LineWebAuthConf
 }
 
 export function normalizeMobileLineReturnTo(returnTo: string) {
-  const parsed = new URL(returnTo);
+  let parsed: URL;
+  try { parsed = new URL(returnTo); }
+  catch { throw new InvalidAuthError("Unsupported mobile LINE return target"); }
 
   if (
     parsed.protocol !== "jaothui:" ||
@@ -102,7 +107,7 @@ export function normalizeMobileLineReturnTo(returnTo: string) {
     parsed.search ||
     parsed.hash
   ) {
-    throw new Error("Unsupported mobile LINE return target");
+    throw new InvalidAuthError("Unsupported mobile LINE return target");
   }
 
   return MOBILE_NATIVE_CALLBACK_URL;
@@ -131,7 +136,7 @@ export function verifyMobileLineOAuthState(
   state: string,
   options: { env?: Env } = {}
 ): MobileLineOAuthStatePayload {
-  const decoded = jwt.verify(state, getSigningSecret(options.env), {
+  const decoded = verifyAuthJwt(state, getSigningSecret(options.env), {
     algorithms: ["HS256"],
     audience: STATE_AUDIENCE,
     issuer: TOKEN_ISSUER,
@@ -144,7 +149,7 @@ export function verifyMobileLineOAuthState(
     typeof decoded.returnTo !== "string" ||
     typeof decoded.nonce !== "string"
   ) {
-    throw new Error("Invalid mobile LINE OAuth state");
+    throw new InvalidAuthError("Invalid mobile LINE OAuth state");
   }
 
   return {
@@ -209,7 +214,7 @@ export function verifyMobileLineOAuthHandoff(
   handoff: string,
   options: { env?: Env } = {}
 ): MobileLineOAuthHandoffPayload {
-  const decoded = jwt.verify(handoff, getSigningSecret(options.env), {
+  const decoded = verifyAuthJwt(handoff, getSigningSecret(options.env), {
     algorithms: ["HS256"],
     audience: HANDOFF_AUDIENCE,
     issuer: TOKEN_ISSUER,
@@ -220,10 +225,12 @@ export function verifyMobileLineOAuthHandoff(
     decoded.typ !== HANDOFF_TOKEN_TYPE ||
     decoded.flow !== MOBILE_LINE_FLOW ||
     typeof decoded.accountId !== "string" ||
+    !decoded.accountId.trim() ||
     typeof decoded.lineUserId !== "string" ||
+    !decoded.lineUserId.trim() ||
     typeof decoded.nonce !== "string"
   ) {
-    throw new Error("Invalid mobile LINE OAuth handoff");
+    throw new InvalidAuthError("Invalid mobile LINE OAuth handoff");
   }
 
   return {
@@ -255,21 +262,23 @@ export async function completeMobileLineCallback(input: {
   env?: Env;
   fetcher?: FetchLike;
   accountClient?: AccountServiceClient;
+  requestId?: string;
 }) {
-  const state = verifyMobileLineOAuthState(input.state, { env: input.env });
-  const config = input.config ?? getLineMobileAuthConfig(input.env);
-  const tokens = await exchangeLineAuthorizationCode({
+  const requestId = safeAuthRequestId(input.requestId);
+  const state = await runAuthStage(requestId, "mobile_line", "state_verify", () => verifyMobileLineOAuthState(input.state, { env: input.env }));
+  const config = await runAuthStage(requestId, "mobile_line", "configuration", () => input.config ?? getLineMobileAuthConfig(input.env));
+  const tokens = await runAuthStage(requestId, "mobile_line", "code_exchange", () => exchangeLineAuthorizationCode({
     code: input.code,
     config,
     fetcher: input.fetcher,
-  });
-  const profile: LineVerifiedProfile = await verifyLineIdToken({
+  }));
+  const profile: LineVerifiedProfile = await runAuthStage(requestId, "mobile_line", "identity_verify", () => verifyLineIdToken({
     idToken: tokens.idToken,
     nonce: state.nonce,
     config,
     fetcher: input.fetcher,
-  });
-  const account = await findOrCreateLineAccount(
+  }));
+  const account = await runAuthStage(requestId, "mobile_line", "account_upsert", () => findOrCreateLineAccount(
     {
       providerUserId: profile.providerUserId,
       email: profile.email,
@@ -277,9 +286,9 @@ export async function completeMobileLineCallback(input: {
       avatarUrl: profile.avatarUrl,
     },
     input.accountClient
-  );
-  const linkedWallet = await getLinkedWallet(account.id, input.accountClient);
-  const handoff = createMobileLineOAuthHandoff(
+  ));
+  const linkedWallet = await runAuthStage(requestId, "mobile_line", "wallet_lookup", () => getLinkedWallet(account.id, input.accountClient));
+  const handoff = await runAuthStage(requestId, "mobile_line", "handoff_create", () => createMobileLineOAuthHandoff(
     {
       accountId: account.id,
       lineUserId: profile.providerUserId,
@@ -289,7 +298,7 @@ export async function completeMobileLineCallback(input: {
       linkedWallet: mapLinkedWallet(linkedWallet),
     },
     { env: input.env }
-  );
+  ));
 
   return {
     state,

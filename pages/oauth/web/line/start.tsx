@@ -1,5 +1,7 @@
 import type { GetServerSideProps } from "next";
 import Image from "next/image";
+import { classifyAuthFailure, logAuthStage } from "../../../../server/auth/diagnostics";
+import { getAuthRequestId } from "../../../../server/auth/request-id";
 
 import {
   buildLineWebAuthorizeUrl,
@@ -18,6 +20,7 @@ function getSingleQueryValue(value: string | string[] | undefined) {
 
 export const getServerSideProps: GetServerSideProps<LineWebStartProps> = async ({
   query,
+  req,
   res,
 }) => {
   try {
@@ -34,11 +37,12 @@ export const getServerSideProps: GetServerSideProps<LineWebStartProps> = async (
       },
     };
   } catch (error) {
-    res.statusCode = 400;
+    const failure = classifyAuthFailure(error);
+    logAuthStage({ requestId: getAuthRequestId(req), flow: "web_line", stage: "configuration", outcome: "failed", error });
+    res.statusCode = failure.status === 401 ? 400 : failure.status;
     return {
       props: {
-        error:
-          error instanceof Error ? error.message : "Unable to start LINE login",
+        error: "Unable to start LINE login. Please try again.",
       },
     };
   }

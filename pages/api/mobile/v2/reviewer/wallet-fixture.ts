@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../../server/mobile/auth-failure";
 
 import { requireMobileReviewerAccountSession } from "../../../../../server/mobile/auth-session";
 import { requireActiveMobileReviewerSandboxSession } from "../../../../../server/mobile/account-guard";
@@ -21,7 +22,9 @@ export default async function handler(
       return sendMobileError(req, res, 400, "BAD_REQUEST", "Missing fixture state");
     }
     return sendMobileOk(req, res, createReviewerWalletFixture(req.body.linked));
-  } catch {
-    return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
+  } catch (error) {
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_reviewer", stage: "wallet_link", failureMessage: "Reviewer access is unavailable",
+    });
   }
 }

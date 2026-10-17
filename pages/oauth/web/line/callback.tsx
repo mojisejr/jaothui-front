@@ -2,7 +2,8 @@ import type { GetServerSideProps } from "next";
 import Image from "next/image";
 
 import { Spinner } from "../../../../components/v2";
-import { classifyLineWebAuthError } from "../../../../server/auth/line-web-auth";
+import { classifyAuthFailure, logAuthStage } from "../../../../server/auth/diagnostics";
+import { getAuthRequestId } from "../../../../server/auth/request-id";
 import { completeLineWebLogin } from "../../../../server/auth/line-web-login";
 import { setLineWebSessionCookie } from "../../../../server/auth/line-web-session";
 
@@ -44,11 +45,7 @@ export const getServerSideProps: GetServerSideProps<LineWebCallbackProps> =
     try {
       const result = await completeLineWebLogin({ code, state });
       setLineWebSessionCookie({ req, res }, result.session.token);
-      console.info("LINE web callback completed", {
-        hasDisplayName: Boolean(result.profile.displayName),
-        hasEmail: Boolean(result.profile.email),
-        hasLinkedWallet: Boolean(result.session.payload.linkedWallet),
-      });
+      logAuthStage({ requestId: getAuthRequestId(req), flow: "web_line", stage: "callback", outcome: "completed" });
 
       return {
         redirect: {
@@ -57,9 +54,9 @@ export const getServerSideProps: GetServerSideProps<LineWebCallbackProps> =
         },
       };
     } catch (error) {
-      const errorClass = classifyLineWebAuthError(error);
-      console.warn("LINE web callback contract failed", { errorClass });
-      res.statusCode = 400;
+      const failure = classifyAuthFailure(error);
+      logAuthStage({ requestId: getAuthRequestId(req), flow: "web_line", stage: "callback", outcome: "failed", error });
+      res.statusCode = failure.status === 401 ? 400 : failure.status;
       return {
         props: {
           error: "Unable to complete LINE login",

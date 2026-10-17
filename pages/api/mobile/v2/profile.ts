@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../server/mobile/auth-failure";
 
 import { requireMobileSession } from "../../../../server/mobile/auth-session";
 import {
-  isInactiveMobileAccountError,
   requireActiveMobileAccountSession,
 } from "../../../../server/mobile/account-guard";
 import { getMobileAccountProfile } from "../../../../server/mobile/account-profile";
@@ -29,15 +29,8 @@ export default async function handler(
 
     return sendMobileOk(req, res, await getMobileAccountProfile(session));
   } catch (error) {
-    if (
-      isInactiveMobileAccountError(error) ||
-      error instanceof Error &&
-      /session|jwt|token|expired|signature/i.test(error.message)
-    ) {
-      return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
-    }
-
-    console.error("Mobile v2 profile error:", error);
-    return sendMobileError(req, res, 500, "INTERNAL_ERROR", "Unable to load profile");
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_account", stage: "profile_read", failureMessage: "Unable to load profile",
+    });
   }
 }

@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../server/mobile/auth-failure";
 
 import { requireMobileBitkubNextSession } from "../../../../server/mobile/auth-session";
 import { getMobileProfile } from "../../../../server/mobile/profile";
@@ -23,14 +24,8 @@ export default async function handler(
 
     return sendMobileOk(req, res, await getMobileProfile(session));
   } catch (error) {
-    if (
-      error instanceof Error &&
-      /session|jwt|token|expired|signature/i.test(error.message)
-    ) {
-      return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
-    }
-
-    console.error("Mobile profile error:", error);
-    return sendMobileError(req, res, 500, "INTERNAL_ERROR", "Unable to load profile");
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_legacy", stage: "profile_read", failureMessage: "Unable to load profile",
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { getAuthRequestId } from "../auth/request-id";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export type MobileErrorCode =
@@ -8,6 +8,7 @@ export type MobileErrorCode =
   | "CONFLICT"
   | "NOT_FOUND"
   | "CERTIFICATE_UNAVAILABLE"
+  | "SERVICE_UNAVAILABLE"
   | "INTERNAL_ERROR";
 
 export type MobileOk<T> = {
@@ -49,9 +50,7 @@ export function setMobileCorsHeaders(res: NextApiResponse) {
 }
 
 export function getRequestId(req: NextApiRequest): string | undefined {
-  const raw = req.headers["x-request-id"];
-  if (Array.isArray(raw)) return raw[0];
-  return raw ?? randomUUID();
+  return getAuthRequestId(req);
 }
 
 export function sendMobileOk<T>(

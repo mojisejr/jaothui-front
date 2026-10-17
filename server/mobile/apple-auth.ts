@@ -1,5 +1,6 @@
 import { createPublicKey } from "crypto";
 import jwt from "jsonwebtoken";
+import { AuthServiceUnavailableError, InvalidAuthError, verifyAuthJwt } from "../auth/errors";
 
 import {
   attachIdentityToAccount,
@@ -63,19 +64,29 @@ async function fetchAppleKeys(): Promise<AppleJwk[]> {
     return cachedAppleKeys.keys;
   }
 
-  const response = await fetch(APPLE_JWKS_URL, {
-    headers: {
-      Accept: "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Unable to fetch Apple public keys");
+  let response: Response;
+  try {
+    response = await fetch(APPLE_JWKS_URL, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+  } catch {
+    throw new AuthServiceUnavailableError("Unable to fetch Apple public keys");
   }
 
-  const payload = (await response.json()) as AppleJwks;
-  if (!Array.isArray(payload.keys)) {
-    throw new Error("Invalid Apple public keys response");
+  if (!response.ok) {
+    throw new AuthServiceUnavailableError("Unable to fetch Apple public keys");
+  }
+
+  let payload: AppleJwks;
+  try {
+    payload = (await response.json()) as AppleJwks;
+  } catch {
+    throw new AuthServiceUnavailableError("Invalid Apple public keys response");
+  }
+  if (!payload || !Array.isArray(payload.keys)) {
+    throw new AuthServiceUnavailableError("Invalid Apple public keys response");
   }
 
   cachedAppleKeys = {
@@ -110,23 +121,23 @@ export async function verifyAppleIdentityToken(
 
   const kid = decoded?.header?.kid;
   if (typeof kid !== "string" || !kid.trim()) {
-    throw new Error("Invalid Apple identity token header");
+    throw new InvalidAuthError("Invalid Apple identity token header");
   }
 
   const keys = await fetchAppleKeys();
   const key = keys.find((candidate) => candidate.kid === kid);
   if (!key) {
-    throw new Error("Apple public key not found");
+    throw new InvalidAuthError("Apple public key not found");
   }
 
-  const payload = jwt.verify(identityToken, toPublicKeyPem(key), {
+  const payload = verifyAuthJwt(identityToken, toPublicKeyPem(key), {
     algorithms: ["RS256"],
     issuer: APPLE_ISSUER,
     audience: getAppleAudience(),
   }) as jwt.JwtPayload;
 
   if (typeof payload.sub !== "string" || !payload.sub.trim()) {
-    throw new Error("Apple identity token is missing subject");
+    throw new InvalidAuthError("Apple identity token is missing subject");
   }
 
   return {
@@ -193,7 +204,7 @@ export function toMobileAppleAuthErrorCode(error: unknown) {
   if (error instanceof AccountIdentityConflictError) {
     return "ACCOUNT_IDENTITY_ALREADY_LINKED";
   }
-  if (error instanceof Error && /token|apple|jwt|issuer|audience|subject|key/i.test(error.message)) {
+  if (error instanceof InvalidAuthError) {
     return "INVALID_APPLE_IDENTITY_TOKEN";
   }
   return "APPLE_AUTH_FAILED";

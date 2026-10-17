@@ -1,5 +1,7 @@
 import type { GetServerSideProps } from "next";
 import Image from "next/image";
+import { classifyAuthFailure, logAuthStage } from "../../../server/auth/diagnostics";
+import { getAuthRequestId } from "../../../server/auth/request-id";
 
 import {
   buildBitkubNextAuthorizeUrl,
@@ -18,6 +20,7 @@ function getSingleQueryValue(value: string | string[] | undefined) {
 
 export const getServerSideProps: GetServerSideProps<MobileStartProps> = async ({
   query,
+  req,
   res,
 }) => {
   const requestedReturnTo =
@@ -34,13 +37,12 @@ export const getServerSideProps: GetServerSideProps<MobileStartProps> = async ({
       },
     };
   } catch (error) {
-    res.statusCode = 400;
+    const failure = classifyAuthFailure(error);
+    logAuthStage({ requestId: getAuthRequestId(req), flow: "mobile_legacy", stage: "configuration", outcome: "failed", error });
+    res.statusCode = failure.status === 401 ? 400 : failure.status;
     return {
       props: {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Unable to start mobile authentication",
+        error: "Unable to start mobile authentication. Please try again.",
       },
     };
   }

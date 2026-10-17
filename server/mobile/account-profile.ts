@@ -5,7 +5,7 @@ import type {
   MobileSessionPayload,
 } from "./auth-session";
 import { toMobileBuffaloCard } from "./view-models";
-import { getAccountProfile } from "../services/account.service";
+import { AccountNotActiveError, getAccountProfile } from "../services/account.service";
 import { getMemberData } from "../services/kwaithai.service";
 
 type LinkedWalletIdentity = {
@@ -60,7 +60,7 @@ type AccountProfileDependencies = {
 
 const defaultDependencies: AccountProfileDependencies = {
   getAccountProfile,
-  getMemberData,
+  getMemberData: (wallet) => getMemberData(wallet, { throwOnError: true }),
 };
 
 function isBitkubNextSession(
@@ -174,10 +174,15 @@ export async function getMobileAccountProfile(
   }
 
   const accountProfile = await dependencies.getAccountProfile(session.accountId);
+  // The account may be removed/deactivated after the route's first guard.
+  // A missing current account is not a valid LINE-only account with no wallet.
+  if (!accountProfile) {
+    throw new AccountNotActiveError();
+  }
   // A v2 JWT may contain a historical wallet snapshot. Only the current
   // database association is authoritative, otherwise a deleted Account could
   // still expose its former wallet until the JWT expires.
-  const linkedWallet = toLinkedWalletIdentity(accountProfile?.linkedWallet);
+  const linkedWallet = toLinkedWalletIdentity(accountProfile.linkedWallet);
 
   if (!linkedWallet) {
     return {

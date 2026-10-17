@@ -1,5 +1,7 @@
 import type { GetServerSideProps } from "next";
 import Image from "next/image";
+import { classifyAuthFailure, logAuthStage } from "../../../../server/auth/diagnostics";
+import { getAuthRequestId } from "../../../../server/auth/request-id";
 
 import {
   buildMobileLineAuthorizeUrl,
@@ -18,7 +20,7 @@ function getSingleQueryValue(value: string | string[] | undefined) {
 }
 
 export const getServerSideProps: GetServerSideProps<MobileLineStartProps> =
-  async ({ query, res }) => {
+  async ({ query, req, res }) => {
     const requestedReturnTo =
       getSingleQueryValue(query.returnTo) ?? "jaothui://oauth/callback";
 
@@ -37,13 +39,12 @@ export const getServerSideProps: GetServerSideProps<MobileLineStartProps> =
         },
       };
     } catch (error) {
-      res.statusCode = 400;
+      const failure = classifyAuthFailure(error);
+      logAuthStage({ requestId: getAuthRequestId(req), flow: "mobile_line", stage: "configuration", outcome: "failed", error });
+      res.statusCode = failure.status === 401 ? 400 : failure.status;
       return {
         props: {
-          error:
-            error instanceof Error
-              ? error.message
-              : "Unable to start mobile LINE authentication",
+          error: "Unable to start mobile LINE authentication. Please try again.",
         },
       };
     }

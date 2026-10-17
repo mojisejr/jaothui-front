@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../server/mobile/auth-failure";
 
 import {
   requireMobileSession,
   type MobileSessionPayload,
 } from "../../../../server/mobile/auth-session";
 import {
-  isInactiveMobileAccountError,
   requireActiveMobileAccountSession,
 } from "../../../../server/mobile/account-guard";
 import {
@@ -45,9 +45,8 @@ export default async function handler(
       identity: toMobileAccountIdentity(session, getLinkedWalletFromSession(session)),
     });
   } catch (error) {
-    if (isInactiveMobileAccountError(error)) {
-      return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
-    }
-    return sendMobileError(req, res, 401, "UNAUTHORIZED", "Invalid or expired session");
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_account", stage: "profile_read", failureMessage: "Unable to load account",
+    });
   }
 }

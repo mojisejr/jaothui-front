@@ -185,14 +185,16 @@ await assert.rejects(
 );
 
 let memberLookups = 0;
-const staleProfile = await profile.getMobileAccountProfile(accountSession, {
-  getAccountProfile: async () => null,
-  getMemberData: async () => {
-    memberLookups++;
-    return null;
-  },
-});
-assert.equal(staleProfile.identity.linkedWallet, null);
+await assert.rejects(
+  () => profile.getMobileAccountProfile(accountSession, {
+    getAccountProfile: async () => null,
+    getMemberData: async () => {
+      memberLookups++;
+      return null;
+    },
+  }),
+  (error) => error instanceof accounts.AccountNotActiveError
+);
 assert.equal(memberLookups, 0);
 
 const freshAccount = await accounts.findOrCreateLineAccount(

@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { sendMobileAuthFailure } from "../../../../../../server/mobile/auth-failure";
 
 import { createMobileLineAccountSession } from "../../../../../../server/mobile/auth-session";
 import {
@@ -70,13 +71,9 @@ export default function handler(
         linkedWallet: verifiedHandoff.linkedWallet,
       },
     });
-  } catch {
-    return sendMobileError(
-      req,
-      res,
-      401,
-      "UNAUTHORIZED",
-      "Invalid or expired handoff token"
-    );
+  } catch (error) {
+    return sendMobileAuthFailure(req, res, error, {
+      flow: "mobile_line", stage: "session_redeem", failureMessage: "Unable to create LINE account session",
+    });
   }
 }
