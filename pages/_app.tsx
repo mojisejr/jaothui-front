@@ -12,6 +12,7 @@ import { MenuProvider } from "../contexts/menuContext";
 import { BitkubNextProvider } from "../contexts/bitkubNextContext";
 import { NewAssetProvider } from "../contexts/newAssetContext";
 import { trpc } from "../utils/trpc";
+import { PhotoRefreshLifecycle } from "../components/v2/PhotoRefresh";
 
 import { QueryClient } from "@tanstack/react-query";
 
@@ -105,6 +106,7 @@ const MyApp = (props: AppProps) => (
       />
     </Head>
     <AppContent {...props} />
+    <PhotoRefreshLifecycle />
   </>
 );
 

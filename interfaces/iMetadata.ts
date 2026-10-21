@@ -1,4 +1,6 @@
 export interface IMetadata {
+  photoTokenId?: string;
+  photoSourceKey?: string;
   tokenId?: number;
   name: string;
   origin: string;

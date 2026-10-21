@@ -140,7 +140,8 @@ assert.throws(() => assertConsumers("pages/v2/buffalo.tsx", read("pages/v2/buffa
 assert.match(read("pages/v2/index.tsx"), /object-cover object-right/, "decorative hero policy is untouched");
 assert.match(read("pages/v2/profile.tsx"), /src=\{avatarSrc\}[^\n]+object-cover/, "avatar policy is untouched");
 assert.match(read("components/v2/NewsEventCard.tsx"), /object-cover/, "editorial covers are not identity photos");
-assert.match(read("components/v2/BuffaloPhoto.tsx"), /key=\{props.src/, "a changed photo resets prior failed-image state");
+assert.match(read("components/v2/BuffaloPhoto.tsx"), /key=\{photo.identityKey/, "identity changes reset prior animal; source changes keep same-identity good frame");
+assert.match(read("components/v2/BuffaloPhoto.tsx"), /generation\.current !== currentGeneration/, "stale candidate callbacks are ignored");
 assert.doesNotMatch(read("components/Home/Pedigree/index.tsx"), /pointer-events-none absolute inset-y-0/, "legacy rail edge scrims must not shade the actual source photo");
 assert.match(read("components/Shared/Card/PedigreeCard.tsx"), /relative w-full max-w-\[320px\]/, "fill images need stable explicit legacy card width");
 assert.doesNotMatch(read("components/Shared/Card/PedigreeCard.tsx"), /w-84/, "undefined width utility must not depend on source intrinsic size");

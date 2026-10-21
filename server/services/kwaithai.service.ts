@@ -5,6 +5,7 @@ import { getAvatarUrl } from "../supabase";
 import { getAllMetadata } from "./metadata.service";
 import { getTokenOfOwnerAll } from "./nft-pedigree.service";
 import { classifyAuthFailure } from "../auth/diagnostics";
+import { publishedPhotoFields } from "../photos/source-contract";
 
 export const getMemberData = async (wallet: string, options: { throwOnError?: boolean } = {}) => {
   try {
@@ -31,7 +32,9 @@ export const getMemberData = async (wallet: string, options: { throwOnError?: bo
         name: m.name,
         origin: m.origin ?? "N/A",
         color: m.color,
-        image: `${m.image!}.jpg`,
+        image: publishedPhotoFields(m).imageUrl,
+        photoTokenId: m.tokenId.toString(),
+        photoSourceKey: publishedPhotoFields(m).photoSourceKey,
         detail: m.detail,
         sex: m.sex,
         birthdate: m.birthday.getTime(),
