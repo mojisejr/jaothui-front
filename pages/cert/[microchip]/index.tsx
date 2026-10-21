@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { PHOTO_METADATA_QUERY_POLICY } from "../../../utils/photo-contract";
 import Head from "next/head";
 import { InferGetServerSidePropsType } from "next";
 import { trpc } from "../../../utils/trpc";
@@ -13,7 +14,7 @@ const CertDetail = ({
   const { microchip, e, vote } = router.query;
   const { data: metadata } = trpc.metadata.getByMicrochip.useQuery({
     microchip: microchip! as string,
-  }) as any;
+  }, PHOTO_METADATA_QUERY_POLICY) as any;
 
   const { data: rewards } = trpc.metadata.getRewardByMicrochip.useQuery(
     microchip as string

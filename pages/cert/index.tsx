@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import { PHOTO_METADATA_QUERY_POLICY } from "../../utils/photo-contract";
 
 import Layout from "../../components/Layouts";
 import PedigreeCard from "../../components/Shared/Card/PedigreeCard";
@@ -18,6 +19,7 @@ import { useRouter } from "next/router";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import Link from "next/link";
 import { BuffaloPhoto } from "../../components/v2/BuffaloPhoto";
+import { PhotoRefreshButton } from "../../components/v2/PhotoRefresh";
 
 type AgeOperator = ">" | "<" | ">=" | "<=" | "=";
 type SortBy = "latest" | "oldest" | "youngest";
@@ -32,6 +34,7 @@ interface FilterParams {
 }
 
 interface RecentlyViewedItem {
+  photoTokenId?: string;
   microchip: string;
   name: string;
   image?: string;
@@ -186,6 +189,7 @@ const CertMainPage: NextPage = () => {
     queryInput,
     {
       keepPreviousData: true,
+      ...PHOTO_METADATA_QUERY_POLICY,
     }
   );
   const [currentData, setCurrentData] = useState<IMetadata[]>([]);
@@ -257,6 +261,7 @@ const CertMainPage: NextPage = () => {
       microchip: metadata.microchip,
       name: metadata.name,
       image: metadata.image,
+      photoTokenId: metadata.photoTokenId,
       timestamp: Date.now(),
     };
 
@@ -636,6 +641,7 @@ const CertMainPage: NextPage = () => {
             </div>
           ) : null}
 
+          <PhotoRefreshButton />
           {recentlyViewed.length > 0 ? (
             <div className="mb-3 mt-4 px-[22px]">
               <div className="mb-2 text-sm font-semibold">Recently Viewed</div>
@@ -649,6 +655,7 @@ const CertMainPage: NextPage = () => {
                     <div className="relative h-14 w-14 overflow-hidden rounded-photo border border-photo-hairline bg-surface">
                       <BuffaloPhoto
                         src={item.image}
+                        photoTokenId={item.photoTokenId} microchip={item.microchip} stale
                         alt={item.name}
                         sizes="56px"
                         fallback="/images/thuiLogo.png"

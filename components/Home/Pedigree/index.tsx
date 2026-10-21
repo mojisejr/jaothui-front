@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { trpc } from "../../../utils/trpc";
 import { BuffaloPhoto } from "../../v2/BuffaloPhoto";
+import { PHOTO_METADATA_QUERY_POLICY } from "../../../utils/photo-contract";
 
 const pedigreeBatch = [
   "764040226300035",
@@ -16,7 +17,7 @@ const pedigreeBatch = [
 
 const Pedigree = () => {
   const desktopRailRef = useRef<HTMLDivElement>(null);
-  const { data, isLoading } = trpc.metadata.getBatch.useQuery(pedigreeBatch);
+  const { data, isLoading } = trpc.metadata.getBatch.useQuery(pedigreeBatch, PHOTO_METADATA_QUERY_POLICY);
 
   const scrollDesktopRail = (direction: "left" | "right") => {
     if (!desktopRailRef.current) {
@@ -77,6 +78,7 @@ const Pedigree = () => {
                       <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-photo bg-surface">
                         <BuffaloPhoto
                           src={item.image}
+                          photoTokenId={item.photoTokenId} microchip={item.microchip}
                           alt={item.name}
                           sizes="80px"
                           fallback="/images/thuiLogo.png"
@@ -117,7 +119,7 @@ const Pedigree = () => {
                         >
                           <div className="flex w-[168px] shrink-0 items-center justify-center bg-surface p-4">
                             <div className="relative aspect-[3/2] w-full">
-                              <BuffaloPhoto src={item.image} alt={item.name} sizes="136px" fallback="/images/thuiLogo.png" />
+                              <BuffaloPhoto src={item.image} photoTokenId={item.photoTokenId} microchip={item.microchip} alt={item.name} sizes="136px" fallback="/images/thuiLogo.png" />
                             </div>
                           </div>
 

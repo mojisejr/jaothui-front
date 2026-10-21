@@ -64,7 +64,7 @@ const PedigreeCard = ({
         >
           <div className="p-4">
             <div className="relative aspect-[3/2] w-full overflow-hidden rounded-photo bg-surface">
-              <BuffaloPhoto src={data?.image} alt={data?.name || "กระบือ"} sizes="(max-width: 767px) 100vw, 360px" fallback="/images/thuiLogo.png" />
+              <BuffaloPhoto src={data?.image} photoTokenId={data?.photoTokenId} microchip={data?.microchip} alt={data?.name || "กระบือ"} sizes="(max-width: 767px) 100vw, 360px" fallback="/images/thuiLogo.png" />
             </div>
             <div className="w-full rounded-xl shadow p-3 flex justify-between items-center">
               <div>

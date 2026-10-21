@@ -96,24 +96,24 @@ check("duplicate token rows, duplicate groups and mismatched rows are unavailabl
   assert.throws(() => resolvePhotoGroups(["71"], Array(41).fill(group)));
   assert.throws(() => resolvePhotoGroups(["71"], [{ ...group, tokenId: "72" }]));
 });
-check("baseline reader defect remains visible: current batch/search/member double jpg", () => {
+check("all current batch/search/member outputs share published resolver", () => {
   const metadata = read("server/services/metadata.service.ts"), member = read("server/services/kwaithai.service.ts");
-  assert(metadata.includes('image: `${d.image}.jpg`'));
-  assert(member.includes('image: `${m.image!}.jpg`'));
-  // Execute the actual baseline expression, not a claim that integration is fixed.
-  const expression = metadata.match(/image: (`\$\{d\.image\}\.jpg`)/)[1];
-  const old = new Function("d", `return ${expression}`)(fixtures.created);
-  assert.match(old, /source\.jpg\.jpg$/);
-  assert.notEqual(old, resolvePublishedPhoto(fixtures.created).imageUrl);
+  assert(!metadata.includes('image: `${d.image}.jpg`'));
+  assert(!member.includes('image: `${m.image!}.jpg`'));
+  assert.match(metadata, /image: publishedPhotoFields\(d\)\.imageUrl/g);
+  assert.match(member, /image: publishedPhotoFields\(m\)\.imageUrl/);
+  assert.equal(resolvePublishedPhoto(fixtures.created).imageUrl, fixtures.created.image);
 });
-check("baseline list/detail ignore committed immutable pointer", () => {
-  assert(read("server/services/metadata.service.ts").includes('getImageUrl(`${m.tokenId.toString()}.jpg`)'));
-  assert(read("server/services/metadata.service.ts").includes('getImageUrl(`${pedigree.tokenId.toString()}.jpg`)'));
-  assert.notEqual(`${base}buffalo/${fixtures.created.tokenId}.jpg`, fixtures.created.image);
+check("list/detail use committed pointer with additive exact string identity", () => {
+  const text = read("server/services/metadata.service.ts").replace(/^\s*\/\/.*$/gm, "");
+  assert(!text.includes('getImageUrl(`${m.tokenId.toString()}.jpg`)'));
+  assert(!text.includes('getImageUrl(`${pedigree.tokenId.toString()}.jpg`)'));
+  assert.match(text, /imageUri: publishedPhotoFields\(pedigree\)\.imageUrl/);
+  assert.match(text, /photoTokenId: pedigree\.tokenId\.toString\(\)/);
 });
-check("contract remains unwired and cannot read ledger, network or clock", () => {
+check("pure contract is wired without ledger, network or clock dependencies", () => {
   const module = read("server/photos/source-contract.ts");
   assert.doesNotMatch(module, /Date\.now|Math\.random|fetch\(|prisma|supabase-js/);
-  for (const file of ["server/services/metadata.service.ts", "server/services/kwaithai.service.ts"]) assert(!read(file).includes("source-contract"));
+  for (const file of ["server/services/metadata.service.ts", "server/services/kwaithai.service.ts"]) assert(read(file).includes("source-contract"));
 });
-console.log(`PHOTO_SOURCE_CONTRACT_OK ${passed} cases; known reader defects characterized, NOT fixed or deployed`);
+console.log(`PHOTO_SOURCE_CONTRACT_OK ${passed} cases; shared published source integration`);

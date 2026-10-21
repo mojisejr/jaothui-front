@@ -1,8 +1,8 @@
-# Published buffalo photo source — Phase 1 contract
+# Published buffalo photo source — Phase 2 reader contract
 
-Status: pure resolver and deterministic characterization only, deliberately **unwired**.
-No API, UI, native cache/lifecycle or Production behavior changes in this phase.
-Run `npm run test:photo-source-contract` (locked Bun toolchain; no network/DB required).
+Status: wired into Web and existing metadata/member responses; no uploader, native
+lifecycle, schema or Production deployment changes. Run `test:photo-source-contract`,
+`test:photo-consumers`, `test:photo-freshness` and the guarded `test:photo-query-local`.
 
 ## Source and writer provenance
 
@@ -48,24 +48,43 @@ and the exact raw committed updatedAt string. This is a bootstrap display finger
 Unchanged reads are stable. Out-of-band same-key overwrites without a changed
 published pointer/marker are outside the freshness guarantee.
 
-## Identity / future bounded read
+## Identity / bounded read
 
 Positive decimal token IDs stay strings, bounded to PostgreSQL signed BigInt.
 Validate a maximum of 40 input identities before dedup, never coerce to JS Number.
-Pedigree.tokenId is NOT unique (microchip is the row identity). The future endpoint
-must return at most 40 aggregates and count **all** rows for each requested token,
+Pedigree.tokenId is NOT unique (microchip is the row identity). The endpoint
+returns at most 40 aggregates and counts **all** rows for each requested token,
 without arbitrary findFirst or limiting a row set before duplicate detection.
 Only one-row groups with matching identity resolve; duplicates/mismatches are
-unavailable and future clients retain their same-identity last-good image.
-Pure group evaluation is bounded, but is not a query implementation/proof. Phase 2
-must implement and test one bounded selected-column grouped DB read using the
-existing Prisma client/pool, transport limits and timeout/cache controls.
+unavailable and clients retain their same-identity last-good image.
+`POST /api/mobile/v1/buffalos/photos` accepts exactly one selector: `tokenIds` or
+`microchips`. The latter recovers historical recently-viewed entries without token
+IDs, using the already-public unique microchip primary key. Both modes validate
+1–40 raw string values before dedup; request size is capped at 2KB. The response is
+`{ok:true,data:{photos:[...]}}` with exact decimal token strings and no ownership data.
+Only one selected-column data query runs inside a read-only transaction using the
+existing Prisma pool; statement timeout is 2500ms, transaction 3000ms, acquisition
+1000ms. An instance-local 5s/64-key cache, in-flight dedup, four active batch limit
+and 20 new batches/second are safety budgets, not distributed rate-limit/load proof.
+HTTP responses retain existing no-store/CORS policy; bad input=400, busy/failure=503.
 
-## Known defects intentionally not hidden
+## Web convergence and compatibility
 
-Current list/detail ignore image pointers and synthesize token.jpg. Current
-batch/search/member append `.jpg` unconditionally, producing `source.jpg.jpg` for
-the new writer. The smoke suite explicitly characterizes those baseline defects.
-Phase 2 must wire this contract and replace those assertions with integration
-expectations. Phase 3 must implement Mobile triggers; native proof and release
-remain separate. No HTTP200/parser test proves cache replacement or decoded pixels.
+List/detail/batch/search/member now share the resolver, preserve existing image
+string fields and add exact `photoTokenId`/`photoSourceKey`. Old mobile clients keep
+their existing fetch behavior; new native lifecycle handling still belongs to Phase3.
+Visible Web photos register by microchip when known, avoiding duplicate-token state
+collisions. Focus/visibility/route/online returns check after a minimum 30s age;
+manual refresh bypasses age with 2s tap cooldown and failure backoff. No idle timer,
+whole-screen invalidation, Storage HEAD requests, stats refresh or certificate render.
+Photo-bearing metadata queries opt out of automatic focus/reconnect refetch so the
+photo-only lifecycle does not simultaneously issue heavy business queries.
+Same-identity image candidates are bounded to four and swap only after load; a
+different identity resets fallback. Request generations reject late pre-navigation
+responses; same URL never causes a new replacement decode solely for a refresh.
+The map is capped at 128 identities and eight recent source versions per identity.
+Initial failures can retry after a successful photo check. Offline/API/candidate
+failure retains same-identity last good pixels. Recently viewed history is preserved.
+Idle pages do not update without a trigger; unsupported out-of-band same-key
+overwrites remain outside the guarantee. Browser proof is isolated fixture evidence,
+not hosted writer canary acceptance, native QA or Store release proof.

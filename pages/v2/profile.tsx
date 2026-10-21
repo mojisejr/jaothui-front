@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import { PhotoRefreshButton } from "../../components/v2/PhotoRefresh";
+import { PHOTO_METADATA_QUERY_POLICY } from "../../utils/photo-contract";
 import {
   FiChevronRight,
   FiCopy,
@@ -342,7 +344,7 @@ export default function V2ProfilePage() {
 
   const { data: member, isLoading: memberLoading } = trpc.user.kGetMember.useQuery(
     { wallet: profileWallet! },
-    { enabled: !!profileWallet }
+    { enabled: !!profileWallet, ...PHOTO_METADATA_QUERY_POLICY }
   );
 
   const logout = async () => {
@@ -456,6 +458,7 @@ export default function V2ProfilePage() {
                   ควายของฉัน{" "}
                   <span className="text-sm font-normal text-muted">({certificates.length})</span>
                 </h3>
+                <PhotoRefreshButton />
                 {certificates.length > 0 && (
                   <button
                     type="button"
@@ -477,7 +480,7 @@ export default function V2ProfilePage() {
                       chip={cert.microchip}
                       birthdate={formatThaiBirthdate(cert.birthdate)}
                       ageMonths={calculateBuffaloAge(cert.birthdate)}
-                      image={<BuffaloPhoto src={cert.image} alt={cert.name} sizes="(max-width: 767px) 50vw, 330px" />}
+                      image={<BuffaloPhoto src={cert.image} photoTokenId={cert.photoTokenId} microchip={cert.microchip} alt={cert.name} sizes="(max-width: 767px) 50vw, 330px" />}
                       onClick={() => router.push(`/cert/${cert.microchip}`)}
                     />
                   ))}

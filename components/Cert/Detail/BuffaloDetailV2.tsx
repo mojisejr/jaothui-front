@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PhotoRefreshButton } from "../../v2/PhotoRefresh";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
@@ -116,11 +117,12 @@ export default function BuffaloDetailV2({ tokenId, certNft, rewards, vote, event
         >
           <FiArrowLeft className="h-4 w-4" /> กลับ
         </button>
+        <PhotoRefreshButton />
 
         <div className="labtop:grid labtop:grid-cols-[minmax(0,360px)_1fr] labtop:items-start labtop:gap-8">
           {/* image */}
           <div className="relative aspect-[3/2] w-full overflow-hidden rounded-photo border border-photo-hairline bg-surface">
-            <BuffaloPhoto src={certNft.imageUri} alt={certNft?.name || "buffalo"} sizes="(max-width: 895px) 100vw, (max-width: 1439px) 856px, 360px" priority />
+            <BuffaloPhoto src={certNft.imageUri} photoTokenId={certNft.photoTokenId} microchip={certNft.certify?.microchip} alt={certNft?.name || "buffalo"} sizes="(max-width: 895px) 100vw, (max-width: 1439px) 856px, 360px" priority />
           </div>
 
           {/* name + share + info */}

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PHOTO_METADATA_QUERY_POLICY } from "../../utils/photo-contract";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
@@ -18,6 +19,7 @@ import {
 import { HomeStatsGrid } from "../../components/v2/HomeStatsGrid";
 import { HomeAppDownload } from "../../components/v2/HomeAppDownload";
 import { HomeAppDownloadPrompt } from "../../components/v2/HomeAppDownloadPrompt";
+import { PhotoRefreshButton } from "../../components/v2/PhotoRefresh";
 
 /** Featured buffalo — same real microchips the legacy Home rail uses (metadata.getBatch). */
 const FEATURED_MICROCHIPS = [
@@ -131,12 +133,13 @@ function FeaturedSkeleton() {
 
 function Featured() {
   const router = useRouter();
-  const { data, isLoading } = trpc.metadata.getBatch.useQuery(FEATURED_MICROCHIPS);
+  const { data, isLoading } = trpc.metadata.getBatch.useQuery(FEATURED_MICROCHIPS, PHOTO_METADATA_QUERY_POLICY);
 
   return (
     <section className="mx-auto w-full max-w-5xl px-5 py-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-semibold text-foreground">กระบือแนะนำ</h2>
+        <PhotoRefreshButton />
         <button
           type="button"
           onClick={() => router.push("/v2/buffalo")}
@@ -160,6 +163,7 @@ function Featured() {
               image={
                 <BuffaloPhoto
                   src={item.image}
+                  photoTokenId={item.photoTokenId} microchip={item.microchip}
                   alt={item.name}
                   sizes="(max-width: 767px) 50vw, 250px"
                 />

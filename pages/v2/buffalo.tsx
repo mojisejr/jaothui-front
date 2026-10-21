@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { FiSliders } from "react-icons/fi";
 import { trpc } from "../../utils/trpc";
+import { PhotoRefreshButton } from "../../components/v2/PhotoRefresh";
+import { PHOTO_METADATA_QUERY_POLICY } from "../../utils/photo-contract";
 import {
   V2Layout,
   SearchInput,
@@ -18,6 +20,7 @@ import {
 const RECENT_KEY = "jaothui-cert-recently-viewed";
 
 interface RecentItem {
+  photoTokenId?: string;
   microchip: string;
   name: string;
   image?: string;
@@ -65,7 +68,7 @@ export default function V2BuffaloPage() {
 
   const { data, isLoading, isFetching } = trpc.metadata.getAll.useQuery(
     { page, filter: { ...filter, search } },
-    { keepPreviousData: true }
+    { keepPreviousData: true, ...PHOTO_METADATA_QUERY_POLICY }
   );
 
   const chips = useMemo(() => activeChips(filter), [filter]);
@@ -80,10 +83,10 @@ export default function V2BuffaloPage() {
     else patchFilter({ [key]: DEFAULT_FILTER[key as keyof BuffaloFilter] } as Partial<BuffaloFilter>);
   };
 
-  const openBuffalo = (item: { microchip: string; name: string; image?: string }) => {
+  const openBuffalo = (item: { microchip: string; name: string; image?: string; photoTokenId?: string }) => {
     try {
       const next: RecentItem[] = [
-        { microchip: item.microchip, name: item.name, image: item.image, timestamp: Date.now() },
+        { microchip: item.microchip, name: item.name, image: item.image, photoTokenId: item.photoTokenId, timestamp: Date.now() },
         ...recent.filter((r) => r.microchip !== item.microchip),
       ].slice(0, 8);
       localStorage.setItem(RECENT_KEY, JSON.stringify(next));
@@ -98,6 +101,7 @@ export default function V2BuffaloPage() {
       <div className="mx-auto w-full max-w-5xl px-5 pb-2 pt-6">
         <div className="mb-4 flex items-center justify-between">
           <h1 className="text-xl font-bold text-foreground">NFT เพชรดีกรี</h1>
+          <PhotoRefreshButton />
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -142,7 +146,7 @@ export default function V2BuffaloPage() {
                 className="flex w-16 shrink-0 flex-col items-center gap-1"
               >
                 <span className="relative h-16 w-16 overflow-hidden rounded-photo border border-photo-hairline bg-surface">
-                  <BuffaloPhoto src={r.image} alt={r.name} sizes="64px" />
+                  <BuffaloPhoto src={r.image} photoTokenId={r.photoTokenId} microchip={r.microchip} stale alt={r.name} sizes="64px" />
                 </span>
                 <span className="w-full truncate text-center text-[11px] text-muted">{r.name}</span>
               </button>
@@ -177,7 +181,7 @@ export default function V2BuffaloPage() {
                   chip={item.microchip}
                   birthdate={formatThaiBirthdate(item.birthdate)}
                   ageMonths={item.calculatedAge}
-                  image={<BuffaloPhoto src={item.image} alt={item.name} sizes="(max-width: 767px) 50vw, (max-width: 1439px) 33vw, 250px" />}
+                  image={<BuffaloPhoto src={item.image} photoTokenId={item.photoTokenId} microchip={item.microchip} alt={item.name} sizes="(max-width: 767px) 50vw, (max-width: 1439px) 33vw, 250px" />}
                   onClick={() => openBuffalo(item)}
                 />
               ))}

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-// Phase 1: pure, deliberately UNWIRED. No DB, Storage, draft ledger or clock access.
+// Pure published-row contract. No DB, Storage, draft ledger or clock access.
 export const PHOTO_ORIGIN = "https://wtnqjxerhmdnqszkhbvs.supabase.co";
 export const PHOTO_PUBLIC_PREFIX = "/storage/v1/object/public/slipstorage/";
 export const MAX_PHOTO_IDENTITIES = 40;
@@ -20,6 +20,12 @@ export interface PhotoSource {
   sourceKey: string;
   kind: "immutable-pointer" | "legacy-bootstrap";
   status: "ready" | "fallback";
+}
+
+/** Additive string identity preserves old numeric response fields without rounding. */
+export function publishedPhotoFields(row: { tokenId: bigint; image: string | null; updatedAt: string }) {
+  const source = resolvePublishedPhoto({ ...row, tokenId: row.tokenId.toString() });
+  return { photoTokenId: row.tokenId.toString(), photoSourceKey: source?.sourceKey, imageUrl: source?.imageUrl ?? "" };
 }
 
 export function isPhotoTokenId(value: unknown): value is string {
