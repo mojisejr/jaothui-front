@@ -70,13 +70,14 @@ const Pedigree = () => {
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-[22px] py-2 tabletS:hidden">
               {data
                 ? data.map((item, index) => (
-                    <Link
+                    <div
                       key={item.microchip}
-                      href={`/cert/${item.microchip}`}
-                      className="flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
+                      className="relative flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
                     >
-                      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-photo bg-surface">
+                      <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-2xl focus-visible:ring-2 focus-visible:ring-focus-ring" />
+                      <div className="w-20 flex-shrink-0">
                         <BuffaloPhoto
+                          thumbnail
                           src={item.image}
                           photoTokenId={item.photoTokenId} microchip={item.microchip}
                           alt={item.name}
@@ -98,7 +99,7 @@ const Pedigree = () => {
                       <div className="text-right text-xs font-bold text-thuigray">
                         #{index + 1}
                       </div>
-                    </Link>
+                    </div>
                   ))
                 : "ไม่มีข้อมูล"}
             </div>
@@ -112,13 +113,13 @@ const Pedigree = () => {
                   >
                   {data
                     ? data.map((item, index) => (
-                        <Link
+                        <div
                           key={item.microchip}
-                          href={`/cert/${item.microchip}`}
-                          className="group flex h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
+                          className="group relative flex h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
                         >
+                          <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-[30px] focus-visible:ring-2 focus-visible:ring-focus-ring" />
                           <div className="flex w-[168px] shrink-0 items-center justify-center bg-surface p-4">
-                            <div className="relative aspect-[3/2] w-full">
+                            <div className="w-full">
                               <BuffaloPhoto src={item.image} photoTokenId={item.photoTokenId} microchip={item.microchip} alt={item.name} sizes="136px" fallback="/images/thuiLogo.png" />
                             </div>
                           </div>
@@ -149,7 +150,7 @@ const Pedigree = () => {
                               </span>
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       ))
                     : <div className="rounded-2xl border border-dashed border-base-300 bg-thuiwhite px-6 py-10 text-thuigray">ไม่มีข้อมูล</div>}
                   </div>

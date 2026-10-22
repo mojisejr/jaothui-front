@@ -647,13 +647,14 @@ const CertMainPage: NextPage = () => {
               <div className="mb-2 text-sm font-semibold">Recently Viewed</div>
               <div className="flex gap-3 overflow-x-auto pb-2">
                 {recentlyViewed.map((item) => (
-                  <Link
+                  <div
                     key={item.microchip}
-                    href={`/cert/${item.microchip}`}
-                    className="flex flex-shrink-0 flex-col items-center gap-1"
+                    className="relative flex w-14 flex-shrink-0 flex-col items-center gap-1"
                   >
-                    <div className="relative h-14 w-14 overflow-hidden rounded-photo border border-photo-hairline bg-surface">
+                    <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-photo focus-visible:ring-2 focus-visible:ring-focus-ring" />
+                    <div className="w-14">
                       <BuffaloPhoto
+                        thumbnail
                         src={item.image}
                         photoTokenId={item.photoTokenId} microchip={item.microchip} stale
                         alt={item.name}
@@ -664,7 +665,7 @@ const CertMainPage: NextPage = () => {
                     <div className="max-w-[72px] truncate text-center text-xs">
                       {item.name}
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>

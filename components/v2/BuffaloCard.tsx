@@ -34,15 +34,15 @@ export function BuffaloCard({
   className,
 }: BuffaloCardProps) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <div
       className={cn(
-        "group flex flex-col overflow-hidden rounded-photo border border-photo-hairline bg-surface text-left transition-[transform,border-color] hover:border-border-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring active:scale-[0.99]",
+        "group relative flex flex-col overflow-hidden rounded-photo border border-photo-hairline bg-surface text-left transition-[transform,border-color] hover:border-border-soft focus-within:ring-2 focus-within:ring-focus-ring active:scale-[0.99]",
         className
       )}
     >
-      <div className="relative aspect-[3/2] w-full overflow-hidden bg-surface">
+      {onClick && <button type="button" onClick={onClick} aria-label={`ดูรายละเอียด ${typeof name === "string" ? name : chip}`}
+        className="absolute inset-0 z-10 rounded-photo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" />}
+      <div className="w-full bg-surface">
         {image}
       </div>
       <div className="flex flex-col gap-1 p-3">
@@ -63,6 +63,6 @@ export function BuffaloCard({
           {formatBuffaloAge(ageMonths)}
         </span>
       </div>
-    </button>
+    </div>
   );
 }

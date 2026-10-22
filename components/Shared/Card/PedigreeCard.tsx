@@ -53,6 +53,7 @@ const PedigreeCard = ({
           y: -3,
         }}
       >
+        <div className="relative block w-full rounded-xl shadow-xl">
         <Link
           onClick={() => {
             setExit(true);
@@ -60,10 +61,11 @@ const PedigreeCard = ({
           }}
           // href={`/cert/${data ? data.microchip : null}?i=${data.tokenId}`}
           href={`/cert/${data ? data.microchip : null}${isConnected && vote && eventId != undefined ? `?e=${eventId}&vote=true` : ""}`}
-          className="relative block w-full rounded-xl shadow-xl"
-        >
+          aria-label={`ดูรายละเอียด ${data.name}`}
+          className="absolute inset-0 z-10 rounded-xl focus-visible:ring-2 focus-visible:ring-focus-ring"
+        />
           <div className="p-4">
-            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-photo bg-surface">
+            <div className="w-full bg-surface">
               <BuffaloPhoto src={data?.image} photoTokenId={data?.photoTokenId} microchip={data?.microchip} alt={data?.name || "กระบือ"} sizes="(max-width: 767px) 100vw, 360px" fallback="/images/thuiLogo.png" />
             </div>
             <div className="w-full rounded-xl shadow p-3 flex justify-between items-center">
@@ -112,7 +114,7 @@ const PedigreeCard = ({
               </div>
             </div>
           </div>
-        </Link>
+        </div>
       </motion.div>
     </div>
   );

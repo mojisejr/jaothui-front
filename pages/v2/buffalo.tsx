@@ -139,17 +139,14 @@ export default function V2BuffaloPage() {
           <h2 className="mb-2 text-sm font-semibold text-muted">ดูล่าสุด</h2>
           <div className="flex gap-3 overflow-x-auto pb-1">
             {recent.map((r) => (
-              <button
+              <div
                 key={r.microchip}
-                type="button"
-                onClick={() => openBuffalo(r)}
-                className="flex w-16 shrink-0 flex-col items-center gap-1"
+                className="relative flex w-16 shrink-0 flex-col items-center gap-1"
               >
-                <span className="relative h-16 w-16 overflow-hidden rounded-photo border border-photo-hairline bg-surface">
-                  <BuffaloPhoto src={r.image} photoTokenId={r.photoTokenId} microchip={r.microchip} stale alt={r.name} sizes="64px" />
-                </span>
+                <button type="button" onClick={() => openBuffalo(r)} aria-label={`ดูรายละเอียด ${r.name}`} className="absolute inset-0 z-10 rounded-photo focus-visible:ring-2 focus-visible:ring-focus-ring" />
+                <BuffaloPhoto src={r.image} photoTokenId={r.photoTokenId} microchip={r.microchip} stale thumbnail alt={r.name} sizes="64px" />
                 <span className="w-full truncate text-center text-[11px] text-muted">{r.name}</span>
-              </button>
+              </div>
             ))}
           </div>
         </section>

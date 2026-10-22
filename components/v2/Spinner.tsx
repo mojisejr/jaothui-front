@@ -24,8 +24,11 @@ export interface SpinnerProps extends VariantProps<typeof spinnerVariants> {
   className?: string;
   /** accessible label; defaults to "กำลังโหลด" */
   label?: string;
+  /** Decorative progress next to an existing label; no repeated live announcement. */
+  decorative?: boolean;
 }
 
-export function Spinner({ size, className, label = "กำลังโหลด" }: SpinnerProps) {
-  return <span role="status" aria-label={label} className={cn(spinnerVariants({ size }), className)} />;
+export function Spinner({ size, className, label = "กำลังโหลด", decorative = false }: SpinnerProps) {
+  return <span role={decorative ? undefined : "status"} aria-hidden={decorative || undefined}
+    aria-label={decorative ? undefined : label} className={cn(spinnerVariants({ size }), className)} />;
 }
