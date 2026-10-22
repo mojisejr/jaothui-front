@@ -35,13 +35,13 @@ const PedigreeSmallCard = ({ data }: PedigreeCardProps) => {
           y: -3,
         }}
       >
-        <Link
-          onClick={() => setExit(true)}
-          href={`/cert/${data ? data.microchip : null}?i=${data.tokenId}`}
-          className="w-full rounded-xl shadow-xl"
+        <div
+          className="relative w-full rounded-xl shadow-xl"
         >
+          <Link onClick={() => setExit(true)} href={`/cert/${data ? data.microchip : null}?i=${data.tokenId}`}
+            aria-label={`ดูรายละเอียด ${data.name}`} className="absolute inset-0 z-10 rounded-xl focus-visible:ring-2 focus-visible:ring-focus-ring" />
           <div className="p-4">
-            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-t-photo bg-surface">
+            <div className="w-full bg-surface">
               <BuffaloPhoto src={data?.image} photoTokenId={data?.photoTokenId} microchip={data?.microchip} alt={data?.name || "กระบือ"} sizes="176px" fallback="/images/thuiLogo.png" />
             </div>
             <div className="w-full rounded-br-xl rounded-bl-xl shadow p-3 flex justify-between items-center bg-thuidark">
@@ -77,7 +77,7 @@ const PedigreeSmallCard = ({ data }: PedigreeCardProps) => {
               </div> */}
             </div>
           </div>
-        </Link>
+        </div>
       </motion.div>
     </div>
   );

@@ -121,7 +121,7 @@ export default function BuffaloDetailV2({ tokenId, certNft, rewards, vote, event
 
         <div className="labtop:grid labtop:grid-cols-[minmax(0,360px)_1fr] labtop:items-start labtop:gap-8">
           {/* image */}
-          <div className="relative aspect-[3/2] w-full overflow-hidden rounded-photo border border-photo-hairline bg-surface">
+          <div className="w-full rounded-photo border border-photo-hairline bg-surface">
             <BuffaloPhoto src={certNft.imageUri} photoTokenId={certNft.photoTokenId} microchip={certNft.certify?.microchip} alt={certNft?.name || "buffalo"} sizes="(max-width: 895px) 100vw, (max-width: 1439px) 856px, 360px" priority />
           </div>
 

@@ -79,6 +79,6 @@ assert.equal(res.statusCode,400); assert.match(res.headers["Cache-Control"],/no-
 const methods=response(); await handler({method:"GET",headers:{}},methods); assert.equal(methods.statusCode,405);
 for(const path of ["pages/v2/index.tsx","pages/v2/buffalo.tsx","pages/v2/profile.tsx","components/Cert/Detail/BuffaloDetailV2.tsx","pages/cert/index.tsx"]) assert.match(read(path),/PhotoRefreshButton/);
 assert.doesNotMatch(read("utils/photo-coordinator.ts"),/setInterval|invalidateQueries|certificate|homeStats/);
-assert.match(read("components/v2/BuffaloPhoto.tsx"),/setGood\(candidate\)/);
-assert.match(read("components/v2/BuffaloPhoto.tsx"),/generation\.current !== currentGeneration/);
+assert.match(read("components/v2/usePhotoPresentation.ts"),/setGood\(work.url\)/);
+assert.match(read("components/v2/usePhotoPresentation.ts"),/generation\.current !== work.generation/);
 console.log("PHOTO_FRESHNESS_OK selectors, initial age, manual/focus dedup, hidden/offline, failures, ambiguity, identity, short cache, caps, grouped SQL, actual API errors, candidate bound");

@@ -20,6 +20,7 @@ const photo = (src, sizes = "250px") => render(React.createElement(BuffaloPhoto,
 }));
 
 function assertPhoto(markup) {
+  markup = markup.match(/<img[^>]+>/)?.[0] || "";
   assert.match(markup, /class="object-contain object-center p-1"/);
   assert.doesNotMatch(markup, /object-cover|scale-|rounded-/);
   assert.match(markup, /data-nimg="fill"/);
@@ -46,13 +47,17 @@ const cardMarkup = render(React.createElement(BuffaloCard, {
 function assertGallery(markup) {
   assert.match(markup, /aspect-\[3\/2\]/, "fixed gallery geometry survives loading");
   assert.match(markup, /rounded-photo border border-photo-hairline bg-surface/);
-  assert.doesNotMatch(markup, /shadow-gold|bg-surface-raised|rounded-pill/, "no heavy surround/glow/boxed age");
+  assert.doesNotMatch(markup, /shadow-gold|bg-surface-raised/, "no heavy surround/glow");
+  const age = markup.match(/<span\b[^>]*>71 เดือน<\/span>/)?.[0];
+  assert(age, "age stays an independent metadata caption");
+  assert.doesNotMatch(age, /rounded-|border|bg-/, "no boxed age; loading spinner may be round");
 }
 assertGallery(cardMarkup);
 assert.throws(() => assertGallery(cardMarkup.replace("aspect-[3/2]", "aspect-[4/3]")), "old frame mutant must fail");
 assert.throws(() => assertGallery(cardMarkup.replace("rounded-photo", "rounded-card")), "unsafe clip mutant must fail");
 assert.throws(() => assertGallery(cardMarkup.replace("bg-surface", "bg-surface-raised")), "contrasting surround mutant must fail");
 assert.throws(() => assertGallery(cardMarkup.replace("text-left", "text-left shadow-gold")), "heavy glow mutant must fail");
+assert.throws(() => assertGallery(cardMarkup.replace('class="mt-1 self-start', 'class="rounded-pill mt-1 self-start')), "boxed age mutant must fail");
 assert.match(cardMarkup, /71 เดือน/);
 assert.doesNotMatch(cardMarkup, /absolute bottom-|backdrop-blur/, "no age overlay can conceal source bounds");
 assert(cardMarkup.indexOf("71 เดือน") > cardMarkup.indexOf("764040226300035"), "age is in the information body");
@@ -121,6 +126,11 @@ function assertConsumers(path, text) {
         photos++;
         assert.doesNotMatch(attrs, /className|style|unoptimized/, `${path}: caller cannot override identity fit/optimization`);
         assert.match(attrs, /sizes=/, `${path}: responsive source size is explicit`);
+        for (let parent = node.parent; parent; parent = parent.parent) {
+          if (ts.isJsxElement(parent)) {
+            assert(!["button", "a", "Link"].includes(parent.openingElement.tagName.getText(ast)), `${path}: retry must not be nested in a card button/link`);
+          }
+        }
       }
       if (["RemoteImage", "Image", "img"].includes(tag)) {
         assert.doesNotMatch(attrs, /(?:item|cert|certNft|r|data)\??\.(?:image|imageUri)/, `${path}: identity photo bypassed primitive`);
@@ -137,11 +147,12 @@ for (const path of ["pages/v2/index.tsx", "pages/v2/buffalo.tsx", "components/Ce
   assert.doesNotMatch(read(path), /aspect-\[4\/3\]/, `${path}: loaded/loading photos share gallery geometry`);
 }
 assert.throws(() => assertConsumers("pages/v2/buffalo.tsx", read("pages/v2/buffalo.tsx").replaceAll("BuffaloPhoto", "RemoteImage")), "caller-bypass mutant must fail");
+assert.throws(() => assertConsumers("nested.tsx", '<button><BuffaloPhoto src="/x.jpg" alt="x" sizes="56px" /></button>'), "nested interactive ancestor mutant must fail");
 assert.match(read("pages/v2/index.tsx"), /object-cover object-right/, "decorative hero policy is untouched");
 assert.match(read("pages/v2/profile.tsx"), /src=\{avatarSrc\}[^\n]+object-cover/, "avatar policy is untouched");
 assert.match(read("components/v2/NewsEventCard.tsx"), /object-cover/, "editorial covers are not identity photos");
 assert.match(read("components/v2/BuffaloPhoto.tsx"), /key=\{photo.identityKey/, "identity changes reset prior animal; source changes keep same-identity good frame");
-assert.match(read("components/v2/BuffaloPhoto.tsx"), /generation\.current !== currentGeneration/, "stale candidate callbacks are ignored");
+assert.match(read("components/v2/usePhotoPresentation.ts"), /generation\.current !== work.generation/, "stale candidate callbacks are ignored; mounted tests prove outcomes");
 assert.doesNotMatch(read("components/Home/Pedigree/index.tsx"), /pointer-events-none absolute inset-y-0/, "legacy rail edge scrims must not shade the actual source photo");
 assert.match(read("components/Shared/Card/PedigreeCard.tsx"), /relative w-full max-w-\[320px\]/, "fill images need stable explicit legacy card width");
 assert.doesNotMatch(read("components/Shared/Card/PedigreeCard.tsx"), /w-84/, "undefined width utility must not depend on source intrinsic size");
