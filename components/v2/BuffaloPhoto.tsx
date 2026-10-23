@@ -7,6 +7,7 @@ import { cn } from "./cn";
 import { Spinner } from "./Spinner";
 import { useCallback, useContext, useEffect, useRef } from "react";
 import { PhotoFeedback, PhotoFeedbackReport } from "./BuffaloPhotoFeedback";
+import { observeResponsivePhoto } from "../../utils/observe-responsive-photo";
 
 export type BuffaloPhotoProps = Pick<RemoteImageProps, "src" | "alt" | "sizes" | "priority" | "fallback"> &
   PhotoIdentity & { stale?: boolean; thumbnail?: boolean };
@@ -25,6 +26,16 @@ export function BuffaloPhoto(props: BuffaloPhotoProps) {
 function PhotoFrame({ src, alt, sizes = "(max-width: 768px) 50vw, 400px", priority,
   fallback = "/images/logo.png", thumbnail, visible, attempt }: BuffaloPhotoProps & { visible: boolean; attempt: number }) {
   const photo = usePhotoPresentation(src, attempt, visible);
+  const frameRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!photo.good || !visible) return;
+    const img = frameRef.current?.querySelector<HTMLImageElement>("img:not([aria-hidden])");
+    if (!img) return;
+    return observeResponsivePhoto(img, () => photo.settlePrimary(photo.good, photo.imageKey, photo.initial, false));
+    // The mounted node/source key scopes this callback. The presentation hook's
+    // current refs reject a superseded source even before effect cleanup.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photo.good, photo.imageKey, visible]);
   const request = photo.request;
   const busy = request.status === "loading" || request.status === "queued";
   const failed = request.status === "failed";
@@ -35,7 +46,7 @@ function PhotoFrame({ src, alt, sizes = "(max-width: 768px) 50vw, 400px", priori
   const hasGood = Boolean(photo.good);
   useEffect(() => { report?.({ busy, failed, hasGood, alt, retry }); }, [report, busy, failed, hasGood, alt, retry]);
   return <>
-    <div className={cn("relative w-full overflow-hidden rounded-photo bg-surface", thumbnail ? "aspect-square" : "aspect-[3/2]")}
+    <div ref={frameRef} className={cn("relative w-full overflow-hidden rounded-photo bg-surface", thumbnail ? "aspect-square" : "aspect-[3/2]")}
       aria-busy={busy} data-photo-request={request.status} data-photo-visible={visible ? "true" : "false"}
       data-photo-state={photo.good ? (busy ? "updating" : failed ? "update-failed" : "ready") : request.status}>
       <Image key={photo.imageKey} src={photo.good || photo.initial.url || fallback}
