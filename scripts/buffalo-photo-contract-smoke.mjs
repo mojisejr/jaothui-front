@@ -57,7 +57,7 @@ assert.throws(() => assertGallery(cardMarkup.replace("aspect-[3/2]", "aspect-[4/
 assert.throws(() => assertGallery(cardMarkup.replace("rounded-photo", "rounded-card")), "unsafe clip mutant must fail");
 assert.throws(() => assertGallery(cardMarkup.replace("bg-surface", "bg-surface-raised")), "contrasting surround mutant must fail");
 assert.throws(() => assertGallery(cardMarkup.replace("text-left", "text-left shadow-gold")), "heavy glow mutant must fail");
-assert.throws(() => assertGallery(cardMarkup.replace('class="mt-1 self-start', 'class="rounded-pill mt-1 self-start')), "boxed age mutant must fail");
+assert.throws(() => assertGallery(cardMarkup.replace('class="self-center text-', 'class="rounded-pill self-center text-')), "boxed age mutant must fail");
 assert.match(cardMarkup, /71 เดือน/);
 assert.doesNotMatch(cardMarkup, /absolute bottom-|backdrop-blur/, "no age overlay can conceal source bounds");
 assert(cardMarkup.indexOf("71 เดือน") > cardMarkup.indexOf("764040226300035"), "age is in the information body");

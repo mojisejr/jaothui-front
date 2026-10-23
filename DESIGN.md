@@ -121,6 +121,15 @@ for legacy screens and are **not** consumed by v2. Note the intentional gold shi
   global card, news, navigation or status tokens; photo radius/hairline are scoped semantic roles.
 - Loading card image areas also reserve 3:2. The photo's smaller surround is not permission to
   crop matching-ratio, portrait or square source corners.
+- Card composition (approved23Oct2026): title starts12px below the photo, nameleft up to2lines,
+  canonical sexright (decorative♂/♀ plus ผู้/เมีย; unknown ไม่ระบุ). Use muted12px labels,
+  no colored pills. Preserve microchip/birthdate then an always-present44px minimum footer
+  integrating age and per-photo feedback; never reserve an empty status band above the title.
+  Retry remains44×44 and sibling to card navigation; errors wrap, never ellipsize/overlay pixels.
+  Within that footer use4px token gaps and cap age's leading area at32%, with14px line-height,
+  reserving the remaining width for readable error text plus the full retry touch target.
+  At phone widths below375px use onecolumn for these cards; keep responsive metadata readable.
+  Standalone detail/recent thumbnails retain the existing beneath-photo status placement.
 - Age/index/voting labels belong outside the photograph. Never zoom a buffalo image on hover;
   safe whole-card feedback may remain. Recent identity thumbnails use rounded rectangles, not circles.
 - Preserve source URLs/files, optimized Next Image responsive `sizes`, lazy loading and existing

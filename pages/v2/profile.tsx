@@ -472,11 +472,12 @@ export default function V2ProfilePage() {
               </div>
 
               {certificates.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3 tabletS:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 mobileS:grid-cols-2 tabletS:grid-cols-3">
                   {certificates.map((cert) => (
                     <BuffaloCard
                       key={cert.microchip}
                       name={cert.name}
+                      sex={cert.sex}
                       chip={cert.microchip}
                       birthdate={formatThaiBirthdate(cert.birthdate)}
                       ageMonths={calculateBuffaloAge(cert.birthdate)}

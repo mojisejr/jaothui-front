@@ -114,7 +114,7 @@ function Hero() {
 
 function FeaturedSkeleton() {
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 gap-3 mobileS:grid-cols-2 tabletS:grid-cols-4">
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
@@ -122,8 +122,9 @@ function FeaturedSkeleton() {
         >
           <div className="aspect-[3/2] w-full bg-surface" />
           <div className="space-y-2 p-3">
-            <div className="h-4 w-2/3 rounded bg-surface-raised" />
+            <div className="flex justify-between gap-2"><div className="h-12 w-2/3 rounded bg-surface-raised" /><div className="h-4 w-8 rounded bg-surface-raised" /></div>
             <div className="h-3 w-1/2 rounded bg-surface-raised" />
+            <div className="h-3 w-2/3 rounded bg-surface-raised" /><div className="h-11 w-full" />
           </div>
         </div>
       ))}
@@ -152,11 +153,12 @@ function Featured() {
       {isLoading ? (
         <FeaturedSkeleton />
       ) : data && data.length > 0 ? (
-        <div className="grid grid-cols-2 gap-3 tabletS:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 mobileS:grid-cols-2 tabletS:grid-cols-4">
           {data.slice(0, 4).map((item) => (
             <BuffaloCard
               key={item.microchip}
               name={item.name}
+              sex={item.sex}
               chip={item.microchip}
               birthdate={formatThaiBirthdate(item.birthdate)}
               ageMonths={item.calculatedAge}
