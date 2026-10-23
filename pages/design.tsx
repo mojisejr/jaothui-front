@@ -168,12 +168,14 @@ export default function DesignShowcase() {
             <div className="grid grid-cols-2 gap-3">
               <BuffaloCard
                 name="เพชรอุดร"
+                sex="male"
                 chip="123456789012345"
                 birthdate="12/05/2566"
                 ageMonths={14}
               />
               <BuffaloCard
                 name="พญาเพชร"
+                sex="female"
                 chip="741852963852741"
                 birthdate="03/06/2567"
                 ageMonths={0}

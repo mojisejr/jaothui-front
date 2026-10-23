@@ -84,6 +84,7 @@ assert.equal(lineLinkedProfile.member.email, "wallet@example.test");
 assert.equal(lineLinkedProfile.member.statusLabel, "เจ้าของฟาร์ม");
 assert.equal(lineLinkedProfile.counts.ownedBuffalos, 1);
 assert.equal(lineLinkedProfile.ownedBuffalos[0].microchip, "MC-7");
+assert.equal(lineLinkedProfile.ownedBuffalos[0].sex, "female");
 
 const appleOnlyToken = session.createMobileAccountSession({
   accountId: "account_apple_only",

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { useRef } from "react";
 import { trpc } from "../../../utils/trpc";
 import { BuffaloPhoto } from "../../v2/BuffaloPhoto";
+import { BuffaloPhotoFeedback, BuffaloPhotoStatus } from "../../v2/BuffaloPhotoFeedback";
+import { BuffaloSex } from "../../v2/BuffaloSex";
 import { PHOTO_METADATA_QUERY_POLICY } from "../../../utils/photo-contract";
 
 const pedigreeBatch = [
@@ -70,8 +72,7 @@ const Pedigree = () => {
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-[22px] py-2 tabletS:hidden">
               {data
                 ? data.map((item, index) => (
-                    <div
-                      key={item.microchip}
+                    <BuffaloPhotoFeedback key={item.microchip}><div
                       className="relative flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
                     >
                       <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-2xl focus-visible:ring-2 focus-visible:ring-focus-ring" />
@@ -86,12 +87,11 @@ const Pedigree = () => {
                         />
                       </div>
                       <div className="min-w-0 flex-1 text-left text-thuidark">
-                        <div className="truncate text-lg font-bold leading-tight">
-                          {item.name}
-                        </div>
+                        <div className="flex min-w-0 items-start justify-between gap-2"><div className="min-w-0 flex-1 line-clamp-2 break-words text-lg font-bold leading-tight">{item.name}</div><BuffaloSex value={item.sex} /></div>
                         <div className="mt-1 truncate text-sm font-bold text-thuigray">
                           Microchip: {item.microchip}
                         </div>
+                        <BuffaloPhotoStatus />
                         {/* <div className="mt-1 line-clamp-1 text-sm font-semibold text-thuigray">
                           สายเลือด: {item.detail ? item.detail : "-"}
                         </div> */}
@@ -99,7 +99,7 @@ const Pedigree = () => {
                       <div className="text-right text-xs font-bold text-thuigray">
                         #{index + 1}
                       </div>
-                    </div>
+                    </div></BuffaloPhotoFeedback>
                   ))
                 : "ไม่มีข้อมูล"}
             </div>
@@ -113,9 +113,8 @@ const Pedigree = () => {
                   >
                   {data
                     ? data.map((item, index) => (
-                        <div
-                          key={item.microchip}
-                          className="group relative flex h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
+                        <BuffaloPhotoFeedback key={item.microchip}><div
+                          className="group relative flex min-h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
                         >
                           <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-[30px] focus-visible:ring-2 focus-visible:ring-focus-ring" />
                           <div className="flex w-[168px] shrink-0 items-center justify-center bg-surface p-4">
@@ -129,9 +128,7 @@ const Pedigree = () => {
                               <div className="text-xs font-bold uppercase tracking-[0.24em] text-thuigray/70">
                                 Thai Buffalo · #{index + 1}
                               </div>
-                              <div className="mt-2 line-clamp-2 text-2xl font-bold leading-tight">
-                                {item.name}
-                              </div>
+                              <div className="mt-2 flex min-w-0 items-start justify-between gap-2"><div className="min-w-0 flex-1 line-clamp-2 break-words text-2xl font-bold leading-tight">{item.name}</div><BuffaloSex value={item.sex} /></div>
                               <div className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-thuigray/70">
                                 Microchip
                               </div>
@@ -140,17 +137,13 @@ const Pedigree = () => {
                               </div>
                             </div>
 
-                            <div className="mt-4 flex items-center justify-between border-t border-base-300/70 pt-4 text-sm font-semibold text-thuigray">
+                            <BuffaloPhotoStatus />
+                            <div className="mt-4 flex items-center justify-between gap-2 border-t border-base-300/70 pt-4 text-sm font-semibold text-thuigray">
                               <span className="text-thuidark/80">เปิดดูใบพันธุ์ประวัติ</span>
-                              <span className="flex items-center gap-2 text-thuiyellow transition group-hover:translate-x-1">
-                                <span className="text-xs uppercase tracking-[0.2em] text-thuigray/70">
-                                  View
-                                </span>
-                                <span className="text-lg leading-none">→</span>
-                              </span>
+                              <span className="flex items-center gap-2 text-thuiyellow transition group-hover:translate-x-1"><span className="text-xs uppercase tracking-[0.2em] text-thuigray/70">View</span><span className="text-lg leading-none">→</span></span>
                             </div>
                           </div>
-                        </div>
+                        </div></BuffaloPhotoFeedback>
                       ))
                     : <div className="rounded-2xl border border-dashed border-base-300 bg-thuiwhite px-6 py-10 text-thuigray">ไม่มีข้อมูล</div>}
                   </div>

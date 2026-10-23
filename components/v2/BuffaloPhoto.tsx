@@ -5,6 +5,8 @@ import { usePhotoPresentation } from "./usePhotoPresentation";
 import type { PhotoIdentity } from "../../utils/photo-coordinator";
 import { cn } from "./cn";
 import { Spinner } from "./Spinner";
+import { useCallback, useContext, useEffect, useRef } from "react";
+import { PhotoFeedback, PhotoFeedbackReport } from "./BuffaloPhotoFeedback";
 
 export type BuffaloPhotoProps = Pick<RemoteImageProps, "src" | "alt" | "sizes" | "priority" | "fallback"> &
   PhotoIdentity & { stale?: boolean; thumbnail?: boolean };
@@ -26,6 +28,12 @@ function PhotoFrame({ src, alt, sizes = "(max-width: 768px) 50vw, 400px", priori
   const request = photo.request;
   const busy = request.status === "loading" || request.status === "queued";
   const failed = request.status === "failed";
+  const report = useContext(PhotoFeedbackReport);
+  const retryRef = useRef(photo.retry);
+  retryRef.current = photo.retry;
+  const retry = useCallback(() => retryRef.current(), []);
+  const hasGood = Boolean(photo.good);
+  useEffect(() => { report?.({ busy, failed, hasGood, alt, retry }); }, [report, busy, failed, hasGood, alt, retry]);
   return <>
     <div className={cn("relative w-full overflow-hidden rounded-photo bg-surface", thumbnail ? "aspect-square" : "aspect-[3/2]")}
       aria-busy={busy} data-photo-request={request.status} data-photo-visible={visible ? "true" : "false"}
@@ -52,13 +60,7 @@ function PhotoFrame({ src, alt, sizes = "(max-width: 768px) 50vw, 400px", priori
         <span>{thumbnail ? (busy ? "" : failed ? "โหลดไม่ได้" : "ไม่มีภาพ") : busy ? "กำลังโหลดภาพ…" : failed ? "โหลดภาพไม่สำเร็จ" : "ยังไม่มีภาพ"}</span>
       </div>}
     </div>
-    <div className="relative flex h-11 min-w-0 items-center justify-center gap-1 text-xs text-muted" data-photo-feedback>
-      {photo.good && busy && <><PhotoSpinner />{!thumbnail && <span>กำลังอัปเดตภาพ…</span>}</>}
-      {photo.good && failed && !thumbnail && <span className="min-w-0 truncate">ยังอัปเดตไม่ได้</span>}
-      {failed && <button type="button" aria-label={`ลองโหลดภาพ${alt}อีกครั้ง`}
-        className="relative z-20 min-h-[44px] min-w-[44px] shrink-0 rounded px-1 font-medium text-accent hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-        onClick={(event) => { event.preventDefault(); event.stopPropagation(); photo.retry(); }}>ลองใหม่</button>}
-    </div>
+    {!report && <PhotoFeedback state={{ busy, failed, hasGood, alt, retry }} thumbnail={thumbnail} />}
   </>;
 }
 

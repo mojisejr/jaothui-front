@@ -231,6 +231,76 @@ await test("thumbnail stays square with external accessible retry", async ({ box
   await render(photo("/thumb.jpg", { thumbnail: true, sizes: "56px" })); assert.match(box.innerHTML, /aspect-square/);
   await event(image(box), "onError"); assert.match(box.textContent, /โหลดไม่ได้/); await retry(box); await event(image(box));
 });
+await test("actual card title pairs sex without a blank feedback band before metadata", async ({ box, render }) => {
+  await render(h(BuffaloCard, { name: "กระบือชื่อยาวสำหรับตรวจสอบการจัดวางภาษาไทย", sex: " FEMALE ", chip: "123", birthdate: "15 เม.ย. 2567", ageMonths: 31, image: photo() }));
+  const frame = box.querySelector("[data-photo-state]"), title = box.querySelector("[data-card-title]"), footer = box.querySelector("[data-card-photo-footer]");
+  assert(title.querySelector("h3").classList.contains("line-clamp-2"));
+  assert.equal(title.querySelector("[data-buffalo-sex]").textContent, "♀เพศ เมีย");
+  assert.equal(title.querySelector('[aria-hidden="true"]').textContent,"♀");
+  assert.equal(box.querySelectorAll("[data-photo-feedback]").length,1);
+  assert(footer.contains(box.querySelector("[data-photo-feedback]")));
+  assert(!frame.parentElement.querySelector("[data-photo-feedback]"));
+  assert(footer.textContent.includes("31 เดือน"));
+  assert(title.compareDocumentPosition(footer) & window.Node.DOCUMENT_POSITION_FOLLOWING);
+  const good=image(box); await event(good); assert.equal(image(box),good);
+});
+await test("actual card sex male and every unknown value remains neutral without inference", async ({ box, render }) => {
+  for (const [sex, copy] of [["male","ผู้"],[null,"ไม่ระบุ"],["unexpected","ไม่ระบุ"],["","ไม่ระบุ"]]) {
+    await render(h(BuffaloCard, { name: "ชื่อที่ไม่บอกเพศ", chip:"123", sex, image:photo() }));
+    assert(box.querySelector("[data-buffalo-sex]").textContent.endsWith(copy));
+    assert(!box.querySelector("[data-buffalo-sex]").textContent.includes("unexpected"));
+  }
+});
+await test("actual card footer keeps geometry and the decoded node through update failure and retry", async ({ box, render }) => {
+  let opened=0;
+  const card=(src)=>h(BuffaloCard, { name:"ทดสอบ", sex:"female", chip:"123", ageMonths:31, onClick:()=>opened++, image:photo(src) });
+  await render(card("/a.jpg")); const footer=box.querySelector("[data-card-photo-footer]");
+  const footerClass=footer.className, title=box.querySelector("h3");
+  await event(image(box)); const good=image(box);
+  await render(card("/b.jpg")); assert.equal(state(box),"updating"); assert.equal(image(box),good);
+  assert.match(footer.textContent,/อัปเดตภาพ/); await event(candidate(box),"onError");
+  assert.equal(state(box),"update-failed"); assert.match(footer.textContent,/อัปเดตไม่ได้/);
+  assert.equal(footer.className,footerClass); assert.equal(box.querySelector("h3"),title); assert.equal(image(box),good);
+  const button=footer.querySelector("button"); assert(button.className.includes("min-h-[44px]")); assert(button.className.includes("min-w-[44px]"));
+  assert(!button.closest("button button,a button")); await retry(box); assert.equal(opened,0); assert.equal(image(box),good);
+  await event(candidate(box)); const replaced=image(box); await render(card("/b.jpg")); assert.equal(image(box),replaced);
+  assert.equal(footer.className,footerClass); assert.equal(box.querySelector("h3"),title);
+  await act(async()=>box.querySelector("button[aria-label^='ดูรายละเอียด']").click()); assert.equal(opened,1);
+});
+await test("card feedback is scoped by animal and cannot display or retry its neighbour", async ({ box, render }) => {
+  await render(h("div",null,["123","456"].map((microchip)=>h(BuffaloCard,{key:microchip,name:microchip,chip:microchip,image:photo(`/${microchip}.jpg`,{microchip})}))));
+  const cards=[...box.querySelectorAll("[data-card-photo-footer]")]; const imgs=[...box.querySelectorAll("img")];
+  await event(imgs[0]); await event(imgs[1],"onError");
+  assert.equal(cards[0].querySelector("button"),null); assert(cards[1].querySelector("button"));
+  await act(async()=>cards[1].querySelector("button").click()); assert.equal(image(box),imgs[0]);
+  assert.equal(box.querySelectorAll("img")[1].getAttribute("src"),"/456.jpg");
+});
+await test("index-reused card resets the feedback scope when its animal changes", async ({ box, render }) => {
+  const card=(chip,src)=>h(BuffaloCard,{key:0,name:chip,chip,image:photo(src,{microchip:chip})});
+  await render(card("123","/a.jpg")); await event(image(box),"onError");
+  assert(box.querySelector("[data-card-photo-footer] button"));
+  const oldRetry=box.querySelector("[data-card-photo-footer] button"), oldLoad=callbacks.get(image(box)).onLoad;
+  await render(card("456","/b.jpg"));
+  assert.equal(oldRetry.isConnected,false); assert.equal(box.querySelector("[data-card-photo-footer] button"),null);
+  assert.equal(state(box),"loading"); assert.equal(image(box).getAttribute("src"),"/b.jpg");
+  await act(async()=>oldLoad()); assert.equal(state(box),"loading");
+  await event(image(box)); const good=image(box); await render(card("456","/b.jpg")); assert.equal(image(box),good);
+});
+await test("long under-one-month and missing age copy stays intact in a bounded footer leading area", async ({ box, render }) => {
+  for (const ageMonths of [null,0]) {
+    await render(h(BuffaloCard,{name:"กระบือทดสอบ",chip:"123",ageMonths,image:photo()}));
+    const leading=box.querySelector("[data-photo-footer-leading]");
+    assert.equal(leading.textContent,"น้อยกว่าหนึ่งเดือน");
+    assert(leading.className.includes("max-w-[32%]")); assert(leading.className.includes("break-words"));
+    assert(!leading.className.match(/truncate|line-clamp|overflow-hidden/));
+    assert(leading.querySelector("span").className.includes("text-[11px]"));
+    const footer=box.querySelector("[data-card-photo-footer]"); assert(footer.className.includes("h-11")); assert(footer.className.includes("gap-1"));
+    await event(image(box)); await render(h(BuffaloCard,{name:"กระบือทดสอบ",chip:"123",ageMonths,image:photo("/b.jpg")}));
+    await event(candidate(box),"onError"); assert.equal(leading.textContent,"น้อยกว่าหนึ่งเดือน");
+    assert(footer.querySelector("button")); assert(footer.className.includes("h-11"));
+    await render(null);
+  }
+});
 assert.equal(fetches, 0, "all bitmap actions are local; no metadata/auth/certificate requests");
 globalThis.setTimeout = realSetTimeout; globalThis.clearTimeout = realClearTimeout;
 dom.window.close(); console.log(`PHOTO_FEEDBACK_MOUNTED_OK ${checks} mounted scenarios; queue, races, timers, retry, unchanged node, identity, StrictMode`);

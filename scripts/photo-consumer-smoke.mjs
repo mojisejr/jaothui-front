@@ -25,6 +25,7 @@ for (const row of rows) {
   const detail=await metadata.getMetadataByMicrochip(row.microchip);
   const results=[list.items,batch,search,member.Certificate].map(items=>items.find(item=>item.microchip===row.microchip));
   for (const item of results) {
+    assert.equal(item.sex,row.sex); assert.equal(toMobileBuffaloCard(item).sex,row.sex);
     assert.equal(item.image,expected.imageUrl); assert.equal(item.photoTokenId,row.tokenId.toString());
     assert.equal(item.photoSourceKey,expected.sourceKey); assert.equal(toMobileBuffaloCard(item).imageUrl,expected.imageUrl);
   }
