@@ -19,6 +19,7 @@
     "test:photo-source-contract": "bun scripts/photo-source-contract-smoke.mjs",
     "test:photo-freshness": "bun scripts/photo-freshness-smoke.mjs",
     "test:photo-feedback": "bun scripts/photo-feedback-mounted.mjs",
+    "test:responsive-photo": "bun scripts/responsive-photo-smoke.mjs",
     "test:buffalo-card": "bun scripts/buffalo-card-smoke.mjs && bun scripts/photo-feedback-mounted.mjs",
     "test:photo-consumers": "bun scripts/photo-consumer-smoke.mjs",
     "test:photo-query-local": "bun scripts/photo-query-local.mjs",
