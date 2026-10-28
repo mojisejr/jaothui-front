@@ -3,6 +3,7 @@ import Image from "next/image";
 
 import { Spinner } from "../../../../components/v2";
 import { buildMobileNativeCallbackErrorUrl, getSingleQueryValue, redirectNoStore } from "../../../../server/mobile/bitkub-next-routing";
+import { completeLineLinkCallback, isMobileLineLinkState, cancelLineLinkCallback } from "../../../../server/mobile/line-link";
 import { completeMobileLineCallback } from "../../../../server/mobile/line-auth";
 import { classifyAuthFailure, logAuthStage } from "../../../../server/auth/diagnostics";
 import { getAuthRequestId } from "../../../../server/auth/request-id";
@@ -19,7 +20,12 @@ export const getServerSideProps: GetServerSideProps<MobileLineCallbackProps> =
     const providerError = getSingleQueryValue(query.error);
 
     if (providerError) {
-      redirectNoStore(res, buildMobileNativeCallbackErrorUrl(providerError === "access_denied" ? "access_denied" : "mobile_line_auth_failed"));
+      const url = new URL(buildMobileNativeCallbackErrorUrl(providerError === "access_denied" ? "access_denied" : "mobile_line_auth_failed"));
+      if (state && isMobileLineLinkState(state)) {
+        url.searchParams.set("purpose", "link");
+        try { await cancelLineLinkCallback(state); } catch {}
+      }
+      redirectNoStore(res, url.toString());
       return { props: {} };
     }
 
@@ -33,12 +39,17 @@ export const getServerSideProps: GetServerSideProps<MobileLineCallbackProps> =
     }
 
     try {
-      const callback = await completeMobileLineCallback({ code, state, requestId });
-      redirectNoStore(res, callback.deepLink);
+      if (isMobileLineLinkState(state)) redirectNoStore(res, await completeLineLinkCallback({ code, state }));
+      else {
+        const callback = await completeMobileLineCallback({ code, state, requestId });
+        redirectNoStore(res, callback.deepLink);
+      }
     } catch (error) {
       logAuthStage({ requestId, flow: "mobile_line", stage: "callback", outcome: "failed", error });
       const errorCode = classifyAuthFailure(error).status === 503 ? "mobile_line_service_unavailable" : "mobile_line_auth_failed";
-      redirectNoStore(res, buildMobileNativeCallbackErrorUrl(errorCode));
+      const url = new URL(buildMobileNativeCallbackErrorUrl(errorCode));
+      if (isMobileLineLinkState(state)) url.searchParams.set("purpose", "link");
+      redirectNoStore(res, url.toString());
     }
 
     return { props: {} };

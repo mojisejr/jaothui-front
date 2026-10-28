@@ -48,7 +48,10 @@
     "e2e:local:api:probe": "bun scripts/local-e2e-api-probe.mjs",
     "test:local-e2e-contract": "bun scripts/local-e2e-contract-smoke.mjs",
     "test:local-e2e-api-contract": "bun scripts/local-e2e-api-contract-smoke.mjs",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test:mobile-events-contract": "bun scripts/mobile-events-contract-smoke.mjs",
+    "test:mobile-line-link-contract": "bun scripts/mobile-line-link-contract-smoke.mjs",
+    "e2e:local:mobile-events": "bun scripts/mobile-events-dev-e2e.mjs"
   },
   "dependencies": {
     "@bitkub-blockchain/react-bitkubnext-oauth2": "^0.0.15",
