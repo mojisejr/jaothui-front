@@ -1,4 +1,5 @@
 -- BFF-only durable one-shot state. Apply to production only in a reviewed rollout.
+BEGIN;
 CREATE TABLE "MobileLineLinkIntent" (
  "id" TEXT NOT NULL PRIMARY KEY,
  "accountId" TEXT NOT NULL,
@@ -17,3 +18,19 @@ CREATE TABLE "MobileLineLinkIntent" (
 );
 CREATE UNIQUE INDEX "MobileLineLinkIntent_handoffHash_key" ON "MobileLineLinkIntent"("handoffHash");
 CREATE INDEX "MobileLineLinkIntent_accountId_expiresAt_idx" ON "MobileLineLinkIntent"("accountId", "expiresAt");
+
+-- Temporary OAuth profile data is server-only, including on Supabase projects
+-- that grant new public tables to Data API roles by default. The BFF connects
+-- as the table owner; no client policy or FORCE ROW LEVEL SECURITY is intended.
+ALTER TABLE "MobileLineLinkIntent" ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE "MobileLineLinkIntent" FROM PUBLIC;
+DO $$
+DECLARE role_name text;
+BEGIN
+ FOREACH role_name IN ARRAY ARRAY['anon', 'authenticated'] LOOP
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = role_name) THEN
+   EXECUTE format('REVOKE ALL ON TABLE "MobileLineLinkIntent" FROM %I', role_name);
+  END IF;
+ END LOOP;
+END $$;
+COMMIT;
