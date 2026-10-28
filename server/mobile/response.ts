@@ -2,6 +2,7 @@ import { getAuthRequestId } from "../auth/request-id";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export type MobileErrorCode =
+  | "AUTH_FLOW_MISMATCH"
   | "LINK_INTENT_INVALID"
   | "UNAUTHENTICATED"
   | "INVALID_SESSION"

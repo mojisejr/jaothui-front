@@ -35,6 +35,10 @@ function verifyState(state: string, env: NodeJS.ProcessEnv): LinkState {
   if (!result || typeof result !== "object" || result.typ !== TYPE || result.purpose !== PURPOSE || typeof result.id !== "string" || typeof result.accountId !== "string" || typeof result.nonce !== "string") throw new InvalidAuthError();
   return result as LinkState;
 }
+/** Used only to correlate an error return; it cannot authorize attachment. */
+export function verifiedLineLinkIntentId(state: string, env: NodeJS.ProcessEnv = process.env) {
+  return verifyState(state, env).id;
+}
 async function activeCustomer(session: MobileAccountSessionPayload | null, db: any) {
   if (!session) throw new EventError(401, "UNAUTHENTICATED", "กรุณาเข้าสู่ระบบ");
   if (session.primaryProvider !== "line" && session.primaryProvider !== "apple") throw new EventError(403, "CUSTOMER_REQUIRED", "ต้องใช้บัญชีสมาชิก");

@@ -28,6 +28,8 @@ Link start/callback/redemption bind purpose, Account, random nonce hash, audienc
 
 Verified profile is temporary: cleared on redeem/cancel/soft-delete; successful receipt retains only a hashed subject. Existing link-start lifecycle prunes at most100 expired auth rows. No daemon or application/customer-data cleanup is added.
 
+Guest event login may pass an opaque `clientFlowId` (`[A-Za-z0-9-]{12,96}`) to `/oauth/mobile/line/start`. The value is carried in signed state/handoff, the native callback URL, and the verified `/api/mobile/v2/auth/line/session` response. A correlated handoff requires that same ID in the session POST body; mismatch returns409 `AUTH_FLOW_MISMATCH` without issuing a session. Native clients compare the persisted current flow before redemption and again before saving. Error callbacks echo correlation only from verified state (guest `clientFlowId`, link `intentId`), so an old cancellation cannot cancel a newer pending flow. This prevents a late old cold callback from being accepted as a newer event login; legacy Profile login without the optional field remains unchanged.
+
 ## Configuration and deployment prerequisite
 
 Explicit server-only variables: JAOTHUI_EVENT_SANITY_PROJECT_ID, JAOTHUI_EVENT_SANITY_DATASET, JAOTHUI_EVENT_SANITY_WRITE_TOKEN. No editorial/NEXT_PUBLIC credential fallback. All curated reads need upstream auth too: [Sanity dotted IDs are private](https://www.sanity.io/docs/content-lake/ids), including source deterministic registration IDs; guest-facing routes still return public DTOs only. Published/draft/version and ownership guards remain mandatory.

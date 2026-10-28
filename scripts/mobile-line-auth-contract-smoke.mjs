@@ -102,4 +102,45 @@ assert.equal(verifiedSession.sessionVersion, 2);
 assert.equal(verifiedSession.primaryProvider, "line");
 assert.equal(verifiedSession.accountId, "account_line_mobile");
 
-console.log("Mobile LINE auth contract smoke passed");
+// A native event login is correlated end-to-end; old Profile logins stay unbound.
+const flowId = "fixture-event-login-flow-0001";
+const flowState = line.createMobileLineOAuthState("jaothui://oauth/callback", { clientFlowId: flowId });
+const verifiedFlowState = line.verifyMobileLineOAuthState(flowState);
+assert.equal(verifiedFlowState.clientFlowId, flowId);
+assert.equal(verifiedState.clientFlowId, undefined);
+for (const invalid of ["", "short", "x".repeat(97), "https://other.test", [flowId], 1, null]) {
+  assert.throws(() => line.normalizeMobileLineClientFlowId(invalid), /flow ID/);
+}
+const flowCallback = await line.completeMobileLineCallback({
+  code: "fixture-flow-code", state: flowState, accountClient,
+  fetcher: async (url) => String(url).includes("/verify")
+    ? Response.json({ sub: "line-user-1", nonce: verifiedFlowState.nonce })
+    : fetcher(url),
+});
+assert.equal(new URL(flowCallback.deepLink).searchParams.get("clientFlowId"), flowId);
+assert.equal(line.verifyMobileLineOAuthHandoff(flowCallback.handoff).clientFlowId, flowId);
+assert.equal(new URL(callback.deepLink).searchParams.has("clientFlowId"), false);
+const jwt = (await import("jsonwebtoken")).default;
+for (const create of [line.createMobileLineOAuthState, line.createMobileLineOAuthHandoff]) {
+  const token = create === line.createMobileLineOAuthState ? flowState : flowCallback.handoff;
+  const invalidToken = jwt.sign({ ...jwt.decode(token), clientFlowId: [flowId] }, process.env.JAOTHUI_MOBILE_AUTH_SECRET);
+  assert.throws(() => (create === line.createMobileLineOAuthState ? line.verifyMobileLineOAuthState : line.verifyMobileLineOAuthHandoff)(invalidToken), /flow ID/);
+}
+const sessionHandler = (await import("../pages/api/mobile/v2/auth/line/session.ts")).default;
+function response() {
+  return { headers: {}, statusCode: 0, setHeader(key, value) { this.headers[key] = value; },
+    status(status) { this.statusCode = status; return this; }, json(body) { this.body = body; return this; }, end() { return this; } };
+}
+for (const [token, requestedId, expected] of [
+  [handoff, undefined, 200], [flowCallback.handoff, flowId, 200],
+  [flowCallback.handoff, undefined, 409], [flowCallback.handoff, "fixture-event-login-other-0002", 409],
+  [handoff, flowId, 409],
+]) {
+  const res = response();
+  sessionHandler({ method: "POST", headers: {}, body: { handoff: token, ...(requestedId ? { clientFlowId: requestedId } : {}) } }, res);
+  assert.equal(res.statusCode, expected);
+  if (expected === 200) assert.equal(res.body.data.clientFlowId, requestedId);
+  else { assert.equal(res.body.error.code, "AUTH_FLOW_MISMATCH"); assert.equal(res.body.data, undefined); }
+}
+
+console.log("Mobile LINE auth contract smoke passed; correlated and legacy start/callback/session lanes verified");
