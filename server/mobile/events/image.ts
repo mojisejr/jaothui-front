@@ -34,3 +34,33 @@ export function applicantImageIdentity(bytes: Buffer) {
   const hash = createHash("sha1").update(bytes).digest("hex");
   return { id: `image-${hash}-${width}x${height}-${extension}`, extension };
 }
+
+/** Native uploads are normalized JPEGs. A deterministic comment gives each
+ * applicant/event independent content-hash storage without changing pixels or
+ * overwriting another asset's owner. The same bytes+owner still deduplicate. */
+export function scopedApplicantImage(bytes: Buffer, owner: string) {
+  const identity = applicantImageIdentity(bytes); // Limit applies to request bytes.
+  if (identity.extension !== "jpg") return { ...identity, bytes };
+  let cursor = 2, insertion = -1;
+  while (cursor + 1 < bytes.length) {
+    const markerStart = cursor;
+    if (bytes[cursor++] !== 0xff) break;
+    while (bytes[cursor] === 0xff) cursor++;
+    const marker = bytes[cursor++];
+    if (marker === 0xda) { insertion = markerStart; break; }
+    if (marker === 0xd9 || marker === 0xd8 || marker === 0) break;
+    if (marker === 1 || (marker >= 0xd0 && marker <= 0xd7)) continue;
+    if (cursor + 2 > bytes.length) break;
+    const length = bytes.readUInt16BE(cursor);
+    if (length < 2 || cursor + length > bytes.length) break;
+    cursor += length;
+  }
+  if (insertion < 0) throw new EventError(415, "UNSUPPORTED_IMAGE", "ไม่สามารถอ่านรูป JPEG นี้ได้ กรุณาเลือกรูปใหม่");
+  const comment = Buffer.from(`jaothui-owner:${createHash("sha256").update(owner).digest("hex")}`, "ascii");
+  const marker = Buffer.from([0xff, 0xfe, 0, 0]);
+  marker.writeUInt16BE(comment.length + 2, 2);
+  // Preserve JFIF/EXIF marker order; insert COM immediately before image scan.
+  const scoped = Buffer.concat([bytes.subarray(0, insertion), marker, comment, bytes.subarray(insertion)]);
+  const hash = createHash("sha1").update(scoped).digest("hex");
+  return { ...identity, bytes: scoped, id: identity.id.replace(/^image-[a-f0-9]+-/, `image-${hash}-`) };
+}

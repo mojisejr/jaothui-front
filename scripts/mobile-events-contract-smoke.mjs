@@ -4,7 +4,7 @@ import { MobileEventService, sourcePayload, registrationIdentity } from "../serv
 import { calculateCompetitionAge, calculateRegistrationAge, getCompetitionPolicy } from "../server/mobile/events/competition-policy.ts";
 import { encodeCompetitionClass, isCompetitionClassEligible } from "../server/mobile/events/competition-classes.ts";
 import { eventConfig } from "../server/mobile/events/config.ts";
-import { applicantImageIdentity } from "../server/mobile/events/image.ts";
+import { applicantImageIdentity, scopedApplicantImage } from "../server/mobile/events/image.ts";
 import { requireEventCustomer } from "../server/mobile/events/guard.ts";
 import { eventHandler, eventFailure, customerSession } from "../server/mobile/events/http.ts";
 import { InvalidAuthError } from "../server/auth/errors.ts";
@@ -16,7 +16,7 @@ const event = { _id: "event", _type: "event", _rev: "r1", title: "งานป�
 const normal = { operationId: "00000000-0000-4000-8000-000000000001", type: "มากกว่า 12 เดือน ถึง 15 เดือน", level: "ประเทศ", name: "synthetic", sex: "male", color: "black", birthdate: "2025-10-16", microchip: "", ownerName: "fixture", ownerTel: "000", fatherName: "f", motherName: "m", farmName: "f", province: "p", buffaloAge: 99,
   agreements: Object.fromEntries([1,2,3,4].map(i=>[`accept${i}`,true])) };
 const assetIds = Array.from({length:5},(_,i)=>`image-${String(i).repeat(40)}-1x1-png`);
-const royal = { ...normal, imageIds: assetIds, address: "test", district: "test", amphoe: "test", zipcode: "00000", agreements: Object.fromEntries(["d1Accept","d2Accept","d3Accept",...Array.from({length:8},(_,i)=>`accept${i+1}`)].map(key=>[key,true])) };
+const royal = { ...normal, imageIds: assetIds, address: "test", district: "test", amphoe: "test", zipcode: "00000", agreements: Object.fromEntries(["d1Accept","d2Accept","d3Accept",...Array.from({length:9},(_,i)=>`accept${i+1}`)].map(key=>[key,true])) };
 let count = 0;
 async function check(label, fn) { await fn(); count++; console.log(`PASS ${label}`); }
 class FakeSanity {
@@ -111,4 +111,13 @@ await check("concurrent different asset owner wins without being overwritten",as
  const bytes=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==","base64"),id=applicantImageIdentity(bytes).id,f=new FakeSanity(true);f.beforeAssetPatch=()=>{Object.assign(f.docs.get(id),{_rev:"concurrent",source:{id:"competition:foreign:owner"}});};await assert.rejects(()=>service(f).upload("event","line",bytes),code("INVALID_ASSET_OWNERSHIP"));assert.equal(f.docs.get(id).source.id,"competition:foreign:owner");
 });
 await check("authenticated read config remains available with writes disabled",()=>{const env={JAOTHUI_MOBILE_EVENTS_ENABLED:"true",JAOTHUI_EVENT_SANITY_PROJECT_ID:"q38mtihr",JAOTHUI_EVENT_SANITY_DATASET:"dev",JAOTHUI_EVENT_SANITY_WRITE_TOKEN:"server-only-read",JAOTHUI_MOBILE_EVENT_WRITES_ENABLED:"false"};assert.equal(eventConfig(env,false).token,"server-only-read");assert.throws(()=>eventConfig(env,true),code("EVENT_WRITE_NOT_CONFIGURED"));});
+await check("Royal source ninth agreement is required and must be positive",()=>{for(const value of [undefined,false]){const agreements={...royal.agreements,accept9:value};assert.throws(()=>sourcePayload("event","line",{...royal,agreements},true),code("INVALID_FIELDS"));}assert.equal(Object.keys(royal.agreements).length,12);});
+await check("same JPEG across events creates independent ownership; retry deduplicates",async()=>{
+ const bytes=Buffer.from("/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAHAA0DASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDBooor504z/9k=","base64"),originalId=applicantImageIdentity(bytes).id,originalHash=createHash("sha256").update(bytes).digest("hex"),f=new FakeSanity(true),s=service(f);
+ f.docs.set("event2",{...event,_id:"event2",eventType:"royal"});const original={_id:originalId,_type:"sanity.imageAsset",_rev:"legacy-asset",source:{id:"competition:legacy:other"}};f.docs.set(originalId,structuredClone(original));
+ const a=await s.upload("event","line",bytes),retry=await s.upload("event","line",bytes),b=await s.upload("event2","line",bytes);
+ assert.equal(a.assetId,retry.assetId);assert.notEqual(a.assetId,b.assetId);assert.notEqual(a.assetId,originalId);assert.equal(f.assetUploads,2);assert.equal(f.docs.get(a.assetId).source.id,"competition:event:line");assert.equal(f.docs.get(b.assetId).source.id,"competition:event2:line");assert.deepEqual(f.docs.get(originalId),original);assert.equal(createHash("sha256").update(bytes).digest("hex"),originalHash);
+ assert.equal(applicantImageIdentity(scopedApplicantImage(bytes,"competition:event:line").bytes).id,a.assetId);
+ const maximum=Buffer.concat([bytes,Buffer.alloc(4*1024*1024-bytes.length)]);assert.ok(scopedApplicantImage(maximum,"competition:event:line").bytes.length>maximum.length);assert.throws(()=>scopedApplicantImage(Buffer.alloc(4*1024*1024+1),"owner"),code("IMAGE_TOO_LARGE"));
+});
 console.log(`Mobile events contract PASS ${count} cases`);

@@ -53,7 +53,7 @@ try{
   receipt.checks.normal={id:normalResult.id,hash:normalIdentity.hash,count:1,fence:1,replay:true};save();
   const images=[];
   for(let i=0;i<5;i++){const bytes=png(),id=applicantImageIdentity(bytes).id;assert.equal(await raw.getDocument(id),undefined,"Synthetic bytes deduplicated with existing asset; refuse");owned.add(id);save();const uploaded=await service.upload(royalEvent,user,bytes);assert.equal(uploaded.assetId,id);images.push(id);assert.equal((await raw.getDocument(id)).source.id,`competition:${royalEvent}:${user}`);}
-  const royal={...normal,operationId:randomUUID(),imageIds:images,address:"Synthetic address",district:"test",amphoe:"test",zipcode:"00000",agreements:Object.fromEntries(["d1Accept","d2Accept","d3Accept",...Array.from({length:8},(_,i)=>`accept${i+1}`)].map(key=>[key,true]))};
+  const royal={...normal,operationId:randomUUID(),imageIds:images,address:"Synthetic address",district:"test",amphoe:"test",zipcode:"00000",agreements:Object.fromEntries(["d1Accept","d2Accept","d3Accept",...Array.from({length:9},(_,i)=>`accept${i+1}`)].map(key=>[key,true]))};
   const royalIdentity=registrationIdentity({eventId:royalEvent,userId:user,operationId:royal.operationId},sourcePayload(royalEvent,user,royal,true));for(const suffix of ["",".images",".approval",".address"])owned.add(royalIdentity.id+suffix);save();
   const royalResult=await service.submit(royalEvent,user,royal),royalReplay=await service.submit(royalEvent,user,royal);assert.equal(royalReplay.replayed,true);
   const graph=await Promise.all(["",".images",".approval",".address"].map(suffix=>raw.getDocument(royalIdentity.id+suffix))),royalEventDoc=await raw.getDocument(royalEvent);

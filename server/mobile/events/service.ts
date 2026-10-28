@@ -6,7 +6,7 @@ import { getCompetitionPolicy, calculateRegistrationAge, competitionDay } from "
 import { getPossibleEvents, getSpecialEvents } from "./class-options";
 import { normalizeClassName } from "./competition-classes";
 import { EventError, invalidFields } from "./errors";
-import { applicantImageIdentity } from "./image";
+import { scopedApplicantImage } from "./image";
 
 export const SOURCE_PIN = "914da59ff9cbf287da8a5fb00276bef59f7604af";
 export const docId = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$/).refine(value => !value.includes(".."));
@@ -26,7 +26,7 @@ const accepts = (keys: string[]) => z.object(Object.fromEntries(keys.map(key => 
 export const normalSubmit = z.object({ ...normalFields, agreements: accepts(["accept1", "accept2", "accept3", "accept4"]) }).strict();
 export const royalSubmit = z.object({ ...normalFields, address: required, district: required, amphoe: required,
   zipcode: required, imageIds: z.array(z.string().regex(/^image-[a-f0-9]+-\d+x\d+-(jpeg|jpg|png|webp)$/)).length(5),
-  agreements: accepts(["d1Accept", "d2Accept", "d3Accept", ...Array.from({ length: 8 }, (_, i) => `accept${i + 1}`)]) }).strict();
+  agreements: accepts(["d1Accept", "d2Accept", "d3Accept", ...Array.from({ length: 9 }, (_, i) => `accept${i + 1}`)]) }).strict();
 export type EventDocument = Record<string, any>;
 
 /** Identical top-level sorted-key serialization and token/image exclusions to the pinned source. */
@@ -201,7 +201,7 @@ export class MobileEventService {
     await this.requireMember(lineId);
     const event = await this.event(eventId);
     if (getCompetitionPolicy(event, this.now()).publicRegistration !== "open") throw new EventError(409, "REGISTRATION_CLOSED", "กิจกรรมนี้ไม่เปิดรับสมัครในขณะนี้");
-    const image = applicantImageIdentity(bytes), owner = `competition:${eventId}:${lineId}`;
+    const owner = `competition:${eventId}:${lineId}`, image = scopedApplicantImage(bytes, owner);
     const existing = await this.client.getDocument<EventDocument>(image.id);
     const owned = (asset: EventDocument) => asset._type === "sanity.imageAsset" && asset.source?.id === owner;
     if (existing) {
@@ -210,7 +210,7 @@ export class MobileEventService {
     }
     // Upload WITHOUT metadata first: a concurrent same-byte upload must never
     // overwrite another owner's source tag through Sanity's asset deduplication.
-    const uploaded = await this.client.assets.upload("image", bytes);
+    const uploaded = await this.client.assets.upload("image", image.bytes);
     if (uploaded._id !== image.id) throw new EventError(503, "EVENTS_UNAVAILABLE", "ไม่สามารถตรวจสอบรูปภาพได้");
     const asset = await this.client.getDocument<EventDocument>(image.id);
     if (!asset) throw new EventError(503, "EVENTS_UNAVAILABLE", "ไม่สามารถตรวจสอบรูปภาพได้");
