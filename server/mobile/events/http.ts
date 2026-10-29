@@ -1,3 +1,4 @@
+import { registrationLookup } from "./lookup";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { requireMobileSession, type MobileAccountSessionPayload } from "../auth-session";
 import { sendMobileOk, sendMobileError, setMobileCorsHeaders, type MobileErrorCode } from "../response";
@@ -25,7 +26,7 @@ export function eventFailure(req: NextApiRequest, res: NextApiResponse, error: u
   const status = upstreamStatus || auth.status === 503 ? 503 : 500;
   return sendMobileError(req, res, status, status === 503 ? "SERVICE_UNAVAILABLE" : "INTERNAL_ERROR", "ระบบยังไม่พร้อมใช้งาน กรุณาลองใหม่ภายหลัง");
 }
-type Operation = "list" | "detail" | "member" | "history" | "registration" | "submit" | "upload";
+type Operation = "lookup" | "list" | "detail" | "member" | "history" | "registration" | "submit" | "upload";
 export function eventHandler(operation: Operation) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     setMobileCorsHeaders(res);
@@ -36,6 +37,7 @@ export function eventHandler(operation: Operation) {
       const value = (key: string) => { const v = req.query[key]; if (v !== undefined && typeof v !== "string") return invalidFields(); return v; };
       const privateRoute = !["list", "detail"].includes(operation);
       const actor = privateRoute ? await requireEventCustomer(customerSession(req)) : null;
+      if (operation === "lookup") return sendMobileOk(req, res, await registrationLookup({ microchip: value("microchip") }));
       const write = req.method === "POST";
       const service = new MobileEventService(createEventClient(write));
       let result: unknown, status = 200;
@@ -44,7 +46,7 @@ export function eventHandler(operation: Operation) {
       else if (operation === "member") {
         if (write) result = await service.enroll(actor!.lineId, req.body);
         else { const member = await service.member(actor!.lineId); result = { member: service.memberSummary(member), capability: { canRegister: !!member, reason: member ? null : "MEMBER_REQUIRED" } }; }
-      } else if (operation === "history") result = await service.history(actor!.lineId, { cursor: value("cursor"), ...(value("limit") ? { limit: Number(value("limit")) } : {}) });
+      } else if (operation === "history") result = await service.history(actor!.lineId, { period: value("period") as "active" | "past" | "all" | undefined, q: value("q"), cursor: value("cursor"), ...(value("limit") ? { limit: Number(value("limit")) } : {}) });
       else if (operation === "registration") result = await service.registration(value("id") ?? "", actor!.lineId);
       else if (operation === "submit") {
         const registered = await service.submit(value("eventId") ?? "", actor!.lineId, req.body);

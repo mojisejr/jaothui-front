@@ -1,3 +1,5 @@
+import { registrationLookup } from "../server/mobile/events/lookup.ts";
+import { notifyRoyal, royalMessageParser } from "../server/mobile/events/notification.ts";
 import assert from "node:assert/strict";
 import { randomUUID, createHash } from "node:crypto";
 import { MobileEventService, sourcePayload, registrationIdentity } from "../server/mobile/events/service.ts";
@@ -35,6 +37,7 @@ class FakeSanity {
     if(query.includes('_type == "event"'))return structuredClone(rows.filter(d=>d._type==="event"));
     if(query.includes('_type in $types'))return structuredClone(rows.filter(d=>args.types.includes(d._type)&&d.event?._ref===args.eventId).map(d=>({_id:d._id})));
     if(query.includes('_type == "user"'))return structuredClone(rows.filter(d=>d._type==="user"&&(d.lineId===args.lineId||d._id===args.lineId)));
+    if(query.startsWith("array::unique"))return [...new Set(rows.filter(d=>d._type==="eventRegister"&&d.user?._ref===args.lineId&&this.docs.get(d.event._ref)?.competitionState!=="draft").map(d=>this.docs.get(d.event._ref)?.title))];
     if(query.includes('_type=="eventRegister"'))return structuredClone(rows.filter(d=>d._type==="eventRegister"&&d.user?._ref===args.lineId&&this.docs.get(d.event._ref)?.competitionState!=="draft").map(d=>({...d,event:this.docs.get(d.event._ref),approval:this.docs.get(d._id+".approval")})).slice(0,args.take));
     if(query.includes('"approval":'))return {approval:this.docs.get(args.id+".approval"),images:[],address:null};
     throw new Error("Unexpected mock query");
@@ -50,7 +53,7 @@ class FakeSanity {
     }};return tx;
   }
 }
-const service = fake => new MobileEventService(fake,()=>now);
+const service = fake => new MobileEventService(fake,()=>now,async()=>{});
 const code = expected => error => error.code===expected;
 await check("0/1/5/6 open events and page total",async()=>{
   for(const n of [0,1,5,6]){const f=new FakeSanity();f.docs.delete("event");for(let i=0;i<n;i++)f.docs.set(`e${i}`,{...event,_id:`e${i}`});const result=await service(f).list({limit:5});assert.equal(result.totalOpen,n);assert.equal(result.items.length,Math.min(n,5));assert.equal(!!result.nextCursor,n>5);}
@@ -119,5 +122,38 @@ await check("same JPEG across events creates independent ownership; retry dedupl
  assert.equal(a.assetId,retry.assetId);assert.notEqual(a.assetId,b.assetId);assert.notEqual(a.assetId,originalId);assert.equal(f.assetUploads,2);assert.equal(f.docs.get(a.assetId).source.id,"competition:event:line");assert.equal(f.docs.get(b.assetId).source.id,"competition:event2:line");assert.deepEqual(f.docs.get(originalId),original);assert.equal(createHash("sha256").update(bytes).digest("hex"),originalHash);
  assert.equal(applicantImageIdentity(scopedApplicantImage(bytes,"competition:event:line").bytes).id,a.assetId);
  const maximum=Buffer.concat([bytes,Buffer.alloc(4*1024*1024-bytes.length)]);assert.ok(scopedApplicantImage(maximum,"competition:event:line").bytes.length>maximum.length);assert.throws(()=>scopedApplicantImage(Buffer.alloc(4*1024*1024+1),"owner"),code("IMAGE_TOO_LARGE"));
+});
+await check("registration lookup accepts source text/short chips, returns epoch seconds and no pedigree extras",async()=>{
+  for(const microchip of ["12","ควายทดสอบ","764040226601197"]){let seen;const dto=await registrationLookup({microchip:` ${microchip} `},async chip=>{seen=chip;return {name:"fixture",sex:"Female",color:"Black",birthdate:1713139200n,certify:{dna:"excluded"}};});assert.equal(seen,microchip);assert.deepEqual(dto,{buffalo:{name:"fixture",sex:"Female",color:"Black",birthday:null,birthdate:1713139200}});}
+  let reads=0;for(const input of [{microchip:" "},{microchip:"x".repeat(301)},{microchip:[]},{microchip:"valid",ownerId:"forged"}])await assert.rejects(()=>registrationLookup(input,async()=>{reads++;}),code("INVALID_FIELDS"));assert.equal(reads,0);
+});
+await check("lookup distinguishes missing chain entry from upstream outage without leaking provider errors",async()=>{
+  await assert.rejects(()=>registrationLookup({microchip:"12"},async()=>{throw Object.assign(new Error("execution reverted"),{name:"ContractFunctionExecutionError"});}),code("BUFFALO_NOT_FOUND"));
+  await assert.rejects(()=>registrationLookup({microchip:"12"},async()=>{throw new Error("RPC offline");}),code("EVENTS_UNAVAILABLE"));
+});
+await check("Royal notification creator only, replay and concurrent retries never notify twice",async()=>{
+  const f=new FakeSanity(true),sent=[],s=new MobileEventService(f,()=>now,async(...args)=>sent.push(args));
+  const results=await Promise.all([s.submit("event","line",royal),s.submit("event","line",royal)]);await s.submit("event","line",royal);
+  assert.equal(sent.length,1);assert.equal(sent[0][0],"line");assert.equal(sent[0][1].docId,results[0].id+".approval");assert.equal(f.commits,1);
+  const normalFake=new FakeSanity();await new MobileEventService(normalFake,()=>now,async()=>sent.push("bad")).submit("event","line",normal);assert.equal(sent.length,1);
+});
+await check("notification failure cannot fail persistence or trigger replay notification",async()=>{
+  const f=new FakeSanity(true);let calls=0;const s=new MobileEventService(f,()=>now,async()=>{calls++;throw new Error("synthetic failure");});
+  const a=await s.submit("event","line",royal);assert.equal(a.replayed,false);assert.equal((await s.submit("event","line",royal)).replayed,true);assert.equal(calls,1);assert.equal(f.commits,1);
+});
+await check("official-account push wire format is source-equivalent using mocked fetch only",async()=>{
+  const data={ownerName:"synthetic",buffaloName:"fixture",microchip:"12",docId:"registration.approval"};let call;
+  await notifyRoyal("synthetic-line",data,async(...args)=>{call=args;return {ok:true};},{oa_token:"synthetic-token"});
+  assert.equal(call[0],"https://api.line.me/v2/bot/message/push");const payload=JSON.parse(call[1].body);assert.equal(payload.to,"synthetic-line");assert.equal(payload.messages[0].text,royalMessageParser(data));assert.match(payload.messages[0].text,/register-status\/registration.approval/);assert.equal(call[1].headers.Authorization,"Bearer synthetic-token");
+  await assert.rejects(()=>notifyRoyal("synthetic",data,async()=>{throw new Error("must not send");},{}),/NOT_CONFIGURED/);
+});
+await check("history scopes query before pagination with bounded literal name filter and Thai day",async()=>{
+  const f=new FakeSanity(),s=service(f);let captured;f.fetch=async(query,args)=>{if(!query.startsWith("array::unique"))captured={query,args};return [];};
+  await s.history("line",{period:"active",q:"งาน*",limit:1});assert.equal(captured.args.period,"active");assert.equal(captured.args.q,"งาน*");assert.equal(captured.args.today,"2026-10-16");assert.equal(captured.args.take,2);assert.ok(captured.query.includes('event->title == $q'));assert.ok(captured.query.indexOf('$period==')<captured.query.indexOf('order('));
+  await s.history("line",{period:"all",q:"ชื่องาน".repeat(30)});assert.equal(captured.args.q,"ชื่องาน".repeat(30));
+  for(const input of [{period:"invalid"},{q:"x".repeat(2001)}])await assert.rejects(()=>s.history("line",input),code("INVALID_FIELDS"));
+});
+await check("lookup actual HTTP private route denies anonymous and reviewer before chain access",async()=>{
+  for(const [token,expected]of [[null,401],[createMobileAccountSession({accountId:"a",primaryProvider:"reviewer",providerUserId:"r"}).token,403]]){const res=response();await eventHandler("lookup")({method:"GET",query:{microchip:"12"},headers:token?{authorization:`Bearer ${token}`}:{},body:{}},res);assert.equal(res.statusCode,expected);}
 });
 console.log(`Mobile events contract PASS ${count} cases`);

@@ -1,3 +1,4 @@
+import { notifyRoyal } from "./notification";
 import { createHash } from "crypto";
 import type { SanityClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
@@ -45,7 +46,7 @@ export function sourcePayload(eventId: string, userId: string, input: unknown, r
 }
 
 export class MobileEventService {
-  constructor(public client: SanityClient, public now: () => Date = () => new Date()) {}
+  constructor(public client: SanityClient, public now: () => Date = () => new Date(), private notify: typeof notifyRoyal = notifyRoyal) {}
   async event(id: string) {
     if (!docId.safeParse(id).success || reservedId(id)) throw new EventError(404, "EVENT_NOT_FOUND", "ไม่พบกิจกรรม");
     const event = await this.client.getDocument<EventDocument>(id);
@@ -127,8 +128,8 @@ export class MobileEventService {
       status: e.eventType !== "royal" ? "registered" : approval?.approvementResult === true ? "approved" : approval?.approvementResult === false ? "rejected" : "pending",
       approvalComment: approval?.comment ?? null, createdAt: row._createdAt };
   }
-  async history(lineId: string, input: { limit?: number; cursor?: string } = {}) {
-    const args = z.object({ limit: z.number().int().min(1).max(20).default(20), cursor: z.string().max(500).optional() }).strict().safeParse(input);
+  async history(lineId: string, input: { limit?: number; cursor?: string; period?: "active" | "past" | "all"; q?: string } = {}) {
+    const args = z.object({ limit: z.number().int().min(1).max(20).default(20), cursor: z.string().max(500).optional(), period: z.enum(["active", "past", "all"]).default("all"), q: z.string().max(2000).default("") }).strict().safeParse(input);
     if (!args.success) return invalidFields();
     let stamp = "9999", id = "~";
     if (args.data.cursor) {
@@ -137,9 +138,11 @@ export class MobileEventService {
         [stamp, id] = pair;
       } catch { return invalidFields(); }
     }
-    const rows = await this.client.fetch<EventDocument[]>('*[_type=="eventRegister" && !(_id in path("drafts.**")) && !(_id in path("versions.**")) && user._ref==$lineId && defined(event->_id) && coalesce(event->competitionState,"published")!="draft" && !(event._ref in path("drafts.**")) && !(event._ref in path("versions.**")) && (_createdAt<$stamp || (_createdAt==$stamp && _id<$id))] | order(_createdAt desc,_id desc)[0...$take]{...,"event":event->,"approval":*[_type=="approvment" && eventRegister._ref==^._id][0]{approvementResult,comment}}', { lineId, stamp, id, take: args.data.limit + 1 });
+    const rows = await this.client.fetch<EventDocument[]>('*[_type=="eventRegister" && !(_id in path("drafts.**")) && !(_id in path("versions.**")) && user._ref==$lineId && defined(event->_id) && coalesce(event->competitionState,"published")!="draft" && !(event._ref in path("drafts.**")) && !(event._ref in path("versions.**")) && ($period=="all" || ($period=="active" && event->endAt >= $today) || ($period=="past" && event->endAt < $today)) && ($q=="" || event->title == $q) && (_createdAt<$stamp || (_createdAt==$stamp && _id<$id))] | order(_createdAt desc,_id desc)[0...$take]{...,"event":event->,"approval":*[_type=="approvment" && eventRegister._ref==^._id][0]{approvementResult,comment}}', { lineId, stamp, id, take: args.data.limit + 1, period: args.data.period, today: new Date(this.now().getTime() + 7 * 3600000).toISOString().slice(0, 10), q: args.data.q });
+    const names = await this.client.fetch<string[]>('array::unique(*[_type=="eventRegister" && !(_id in path("drafts.**")) && !(_id in path("versions.**")) && user._ref==$lineId && defined(event->_id) && coalesce(event->competitionState,"published")!="draft" && !(event._ref in path("drafts.**")) && !(event._ref in path("versions.**"))].event->title)', { lineId });
+    const eventNames = names.filter((name): name is string => typeof name === "string").sort();
     const items = rows.slice(0, args.data.limit), last = items[items.length - 1];
-    return { items: items.map(row => this.registrationSummary(row)), nextCursor: rows.length > items.length && last ? Buffer.from(JSON.stringify([last._createdAt, last._id])).toString("base64url") : null };
+    return { eventNames, items: items.map(row => this.registrationSummary(row)), nextCursor: rows.length > items.length && last ? Buffer.from(JSON.stringify([last._createdAt, last._id])).toString("base64url") : null };
   }
   async registration(id: string, lineId: string) {
     if (!docId.safeParse(id).success || reservedId(id)) throw new EventError(404, "REGISTRATION_NOT_FOUND", "ไม่พบใบสมัคร");
@@ -194,6 +197,11 @@ export class MobileEventService {
       if (found) return { id: found._id, replayed: true };
       if ((error as { statusCode?: number }).statusCode === 409) throw new EventError(409, "EVENT_REVISION_CONFLICT", "ข้อมูลกิจกรรมเปลี่ยนแล้ว กรุณาตรวจสอบใหม่");
       throw error;
+    }
+    // Only the creator of the graph sends; replay and losing concurrent requests return above.
+    if (royal) {
+      try { await this.notify(lineId, { ownerName: payload.ownerName, buffaloName: payload.name, microchip: payload.microchip, docId: `${identity.id}.approval` }); }
+      catch { console.error("Royal registration notification unavailable or failed; registration saved"); }
     }
     return { id: identity.id, replayed: false };
   }
