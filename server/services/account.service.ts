@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { Prisma } from "@prisma/client";
 
 const LINE_PROVIDER = "line";
 const APPLE_PROVIDER = "apple";
@@ -50,6 +51,8 @@ export type AccountServiceClient = {
 };
 
 type AccountDeletionTransactionClient = {
+  $queryRaw?: (query: TemplateStringsArray, ...values: unknown[]) => Promise<unknown>;
+  mobileLineLinkIntent?: { updateMany: (args: any) => Promise<{ count: number }> };
   account: {
     findUnique: (args: any) => Promise<any>;
     update: (args: any) => Promise<any>;
@@ -508,6 +511,8 @@ export async function softDeleteAccount(
     options.policyVersion ?? ACCOUNT_DELETION_POLICY_VERSION;
 
   return client.$transaction(async (transaction) => {
+    // Serialize auth-link callbacks/redemption with deletion before profile redaction.
+    if (transaction.$queryRaw) await transaction.$queryRaw`SELECT "id" FROM "Account" WHERE "id"=${normalizedAccountId} FOR UPDATE`;
     const account = await transaction.account.findUnique({
       where: { id: normalizedAccountId },
     });
@@ -515,6 +520,10 @@ export async function softDeleteAccount(
       throw new AccountNotActiveError();
     }
 
+    if (transaction.mobileLineLinkIntent) await transaction.mobileLineLinkIntent.updateMany({
+      where: { accountId: normalizedAccountId },
+      data: { consumedAt: deletedAt, verifiedProfile: Prisma.DbNull, linkedIdentityHash: null },
+    });
     const removedWalletLinks = await transaction.walletLink.deleteMany({
       where: { accountId: normalizedAccountId },
     });
