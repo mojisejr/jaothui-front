@@ -160,6 +160,7 @@ function Featured() {
               name={item.name}
               sex={item.sex}
               chip={item.microchip}
+              microchip={item.microchip}
               birthdate={formatThaiBirthdate(item.birthdate)}
               ageMonths={item.calculatedAge}
               image={
