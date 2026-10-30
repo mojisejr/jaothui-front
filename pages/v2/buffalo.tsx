@@ -178,6 +178,7 @@ export default function V2BuffaloPage() {
                   name={item.name}
                   sex={item.sex}
                   chip={item.microchip}
+                  microchip={item.microchip}
                   birthdate={formatThaiBirthdate(item.birthdate)}
                   ageMonths={item.calculatedAge}
                   image={<BuffaloPhoto src={item.image} photoTokenId={item.photoTokenId} microchip={item.microchip} alt={item.name} sizes="(max-width: 767px) 50vw, (max-width: 1439px) 33vw, 250px" />}

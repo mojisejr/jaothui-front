@@ -1,3 +1,4 @@
+import { CopyMicrochip } from "../v2/CopyMicrochip";
 import Link from "next/link";
 import { IMetadata } from "../../interfaces/iMetadata";
 import CountryFlag from "../Shared/CountryFlag";
@@ -51,7 +52,7 @@ const PedigreeSmallCard = ({ data }: PedigreeCardProps) => {
               <div className="flex min-w-0 items-start justify-between gap-2"><div className={`min-w-0 flex-1 line-clamp-2 break-words text-xl font-bold ${data?.name.startsWith("คุณ") ? "bg-gradient-to-br from-[#FFE15D] via-[#e59a28] to-[#FFE15D] text-transparent bg-clip-text" : "text-thuiwhite"}`}>{data?.name ?? "loading"}</div><BuffaloSex value={data?.sex} /></div>
               <div className="min-w-0">
                 <div className="text-primary">
-                  {data ? data.microchip : <Loading size="sm" />}
+                  <CopyMicrochip value={data?.microchip} className="relative z-20 text-xs" />
                 </div>
                 <div className="text-sm">
                   {data ? (
