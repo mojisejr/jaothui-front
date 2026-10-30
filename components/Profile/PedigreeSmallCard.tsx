@@ -1,4 +1,4 @@
-import { CopyMicrochip } from "../v2/CopyMicrochip";
+import { CardCopyFooter } from "../v2/CopyMicrochip";
 import Link from "next/link";
 import { IMetadata } from "../../interfaces/iMetadata";
 import CountryFlag from "../Shared/CountryFlag";
@@ -42,6 +42,7 @@ const PedigreeSmallCard = ({ data }: PedigreeCardProps) => {
         <div
           className="relative w-full rounded-xl shadow-xl"
         >
+          <div data-card-navigation className="relative">
           <Link onClick={() => setExit(true)} href={`/cert/${data ? data.microchip : null}?i=${data.tokenId}`}
             aria-label={`ดูรายละเอียด ${data.name}`} className="absolute inset-0 z-10 rounded-xl focus-visible:ring-2 focus-visible:ring-focus-ring" />
           <div className="p-4">
@@ -52,7 +53,7 @@ const PedigreeSmallCard = ({ data }: PedigreeCardProps) => {
               <div className="flex min-w-0 items-start justify-between gap-2"><div className={`min-w-0 flex-1 line-clamp-2 break-words text-xl font-bold ${data?.name.startsWith("คุณ") ? "bg-gradient-to-br from-[#FFE15D] via-[#e59a28] to-[#FFE15D] text-transparent bg-clip-text" : "text-thuiwhite"}`}>{data?.name ?? "loading"}</div><BuffaloSex value={data?.sex} /></div>
               <div className="min-w-0">
                 <div className="text-primary">
-                  <CopyMicrochip value={data?.microchip} className="relative z-20 text-xs" />
+                  <span className="select-text break-all text-xs tabular-nums">{data?.microchip || "N/A"}</span>
                 </div>
                 <div className="text-sm">
                   {data ? (
@@ -65,6 +66,8 @@ const PedigreeSmallCard = ({ data }: PedigreeCardProps) => {
               <BuffaloPhotoStatus leading={<span className="text-[11px] font-semibold text-accent">{formatBuffaloAge(data.calculatedAge)}</span>} />
             </div>
           </div>
+          </div>
+          <CardCopyFooter value={data?.microchip} className="rounded-b-xl bg-thuidark" />
         </div>
       </motion.div>
     </div></BuffaloPhotoFeedback>

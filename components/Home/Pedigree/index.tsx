@@ -1,4 +1,4 @@
-import { CopyMicrochip } from "../../v2/CopyMicrochip";
+import { CardCopyFooter } from "../../v2/CopyMicrochip";
 import Link from "next/link";
 import { useRef } from "react";
 import { trpc } from "../../../utils/trpc";
@@ -74,8 +74,9 @@ const Pedigree = () => {
               {data
                 ? data.map((item, index) => (
                     <BuffaloPhotoFeedback key={item.microchip}><div
-                      className="relative flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
+                      className="overflow-hidden rounded-2xl border border-base-300 bg-thuiwhite shadow-sm transition hover:border-thuiyellow"
                     >
+                      <div data-card-navigation className="relative flex items-center gap-3 p-3">
                       <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-2xl focus-visible:ring-2 focus-visible:ring-focus-ring" />
                       <div className="w-20 flex-shrink-0">
                         <BuffaloPhoto
@@ -90,7 +91,7 @@ const Pedigree = () => {
                       <div className="min-w-0 flex-1 text-left text-thuidark">
                         <div className="flex min-w-0 items-start justify-between gap-2"><div className="min-w-0 flex-1 line-clamp-2 break-words text-lg font-bold leading-tight">{item.name}</div><BuffaloSex value={item.sex} /></div>
                         <div className="mt-1 truncate text-sm font-bold text-thuigray">
-                          <CopyMicrochip value={item.microchip} className="relative z-20" />
+                          <span className="select-text tabular-nums">{item.microchip}</span>
                         </div>
                         <BuffaloPhotoStatus />
                         {/* <div className="mt-1 line-clamp-1 text-sm font-semibold text-thuigray">
@@ -100,6 +101,8 @@ const Pedigree = () => {
                       <div className="text-right text-xs font-bold text-thuigray">
                         #{index + 1}
                       </div>
+                      </div>
+                      <CardCopyFooter value={item.microchip} className="border-base-300" />
                     </div></BuffaloPhotoFeedback>
                   ))
                 : "ไม่มีข้อมูล"}
@@ -115,8 +118,9 @@ const Pedigree = () => {
                   {data
                     ? data.map((item, index) => (
                         <BuffaloPhotoFeedback key={item.microchip}><div
-                          className="group relative flex min-h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
+                          className="group relative flex min-h-[184px] w-[380px] shrink-0 snap-center flex-col overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
                         >
+                          <div data-card-navigation className="relative flex flex-1">
                           <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-[30px] focus-visible:ring-2 focus-visible:ring-focus-ring" />
                           <div className="flex w-[168px] shrink-0 items-center justify-center bg-surface p-4">
                             <div className="w-full">
@@ -134,7 +138,7 @@ const Pedigree = () => {
                                 Microchip
                               </div>
                               <div className="mt-2 inline-flex max-w-full rounded-full bg-base-200/70 px-3 py-1 text-sm font-semibold text-thuigray/90">
-                                <CopyMicrochip value={item.microchip} className="relative z-20" />
+                                <span className="select-text tabular-nums">{item.microchip}</span>
                               </div>
                             </div>
 
@@ -144,6 +148,8 @@ const Pedigree = () => {
                               <span className="flex items-center gap-2 text-thuiyellow transition group-hover:translate-x-1"><span className="text-xs uppercase tracking-[0.2em] text-thuigray/70">View</span><span className="text-lg leading-none">→</span></span>
                             </div>
                           </div>
+                          </div>
+                          <CardCopyFooter value={item.microchip} className="border-base-300" />
                         </div></BuffaloPhotoFeedback>
                       ))
                     : <div className="rounded-2xl border border-dashed border-base-300 bg-thuiwhite px-6 py-10 text-thuigray">ไม่มีข้อมูล</div>}
