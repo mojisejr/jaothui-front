@@ -1,4 +1,4 @@
-import { CopyMicrochip } from "../../v2/CopyMicrochip";
+import { CardCopyFooter } from "../../v2/CopyMicrochip";
 import Link from "next/link";
 import { IMetadata } from "../../../interfaces/iMetadata";
 import CountryFlag from "../CountryFlag";
@@ -58,6 +58,7 @@ const PedigreeCard = ({
         }}
       >
         <div className="relative block w-full rounded-xl shadow-xl">
+          <div data-card-navigation className="relative">
         <Link
           onClick={() => {
             setExit(true);
@@ -78,7 +79,7 @@ const PedigreeCard = ({
               </div>
               <div className="flex min-w-0 items-center justify-between gap-2"><div className="min-w-0">
                 <div className="text-primary">
-                  <CopyMicrochip value={data?.microchip} className="relative z-20 text-xs" />
+                  <span className="select-text break-all text-xs tabular-nums">{data?.microchip || "N/A"}</span>
                 </div>
                 <div className="text-sm">
                   {data ? (
@@ -110,6 +111,8 @@ const PedigreeCard = ({
               </div><BuffaloPhotoStatus leading={<span className="text-base font-semibold leading-5 text-accent">{formatBuffaloAge(data.calculatedAge)}</span>} />
             </div>
           </div>
+          </div>
+          <CardCopyFooter value={data?.microchip} className="border-base-300" />
         </div>
       </motion.div>
     </div></BuffaloPhotoFeedback>

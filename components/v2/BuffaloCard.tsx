@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CopyMicrochip } from "./CopyMicrochip";
+import { CardCopyFooter } from "./CopyMicrochip";
 import { cn } from "./cn";
 import { formatBuffaloAge } from "./formatAge";
 import { BuffaloSex } from "./BuffaloSex";
@@ -41,6 +41,7 @@ export function BuffaloCard({
   onClick,
   className,
 }: BuffaloCardProps) {
+  const copyValue = microchip ?? (typeof chip === "string" ? chip : undefined);
   return (
     <BuffaloPhotoFeedback key={typeof chip === "string" || typeof chip === "number" ? chip : undefined}><div
       className={cn(
@@ -48,6 +49,7 @@ export function BuffaloCard({
         className
       )}
     >
+      <div data-card-navigation className="relative flex flex-1 flex-col">
       {onClick && <button type="button" onClick={onClick} aria-label={`ดูรายละเอียด ${typeof name === "string" ? name : chip}`}
         className="absolute inset-0 z-10 rounded-photo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" />}
       <div className="w-full bg-surface">
@@ -65,14 +67,16 @@ export function BuffaloCard({
           </div><BuffaloSex value={sex} />
         </div>
         {/* microchip: no "CHIP" label so the full number stays on one line */}
-        <div className="min-w-0 text-xs tabular-nums text-muted">
-          {microchip || typeof chip === "string" ? <CopyMicrochip value={microchip ?? (chip as string)} className="relative z-20" /> : chip}
+        <div className="min-w-0 truncate text-xs tabular-nums text-muted">
+          {chip}
         </div>
         {birthdate && <p className="text-xs text-muted">วันเกิด : {birthdate}</p>}
         <BuffaloPhotoStatus leading={<span className="self-center text-[11px] font-semibold text-accent">
           {formatBuffaloAge(ageMonths)}
         </span>} />
       </div>
+      </div>
+      <CardCopyFooter value={copyValue} />
     </div></BuffaloPhotoFeedback>
   );
 }
