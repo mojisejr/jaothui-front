@@ -1,3 +1,4 @@
+import { CopyMicrochip } from "../../v2/CopyMicrochip";
 import Link from "next/link";
 import { IMetadata } from "../../../interfaces/iMetadata";
 import CountryFlag from "../CountryFlag";
@@ -77,7 +78,7 @@ const PedigreeCard = ({
               </div>
               <div className="flex min-w-0 items-center justify-between gap-2"><div className="min-w-0">
                 <div className="text-primary">
-                  {data ? data.microchip : <Loading size="sm" />}
+                  <CopyMicrochip value={data?.microchip} className="relative z-20 text-xs" />
                 </div>
                 <div className="text-sm">
                   {data ? (

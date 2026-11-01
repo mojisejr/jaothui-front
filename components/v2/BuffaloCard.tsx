@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { CopyMicrochip } from "./CopyMicrochip";
 import { cn } from "./cn";
 import { formatBuffaloAge } from "./formatAge";
 import { BuffaloSex } from "./BuffaloSex";
@@ -15,6 +16,8 @@ export interface BuffaloCardProps {
   sex?: string | null;
   /** microchip id */
   chip: ReactNode;
+  /** Unformatted identifier for copying when chip is a formatted React node. */
+  microchip?: string;
   /** Thai birthdate string (already formatted) */
   birthdate?: ReactNode;
   /** real age in months (calculatedAge) → rendered in the information area */
@@ -30,6 +33,7 @@ export function BuffaloCard({
   name,
   sex,
   chip,
+  microchip,
   birthdate,
   ageMonths,
   verified,
@@ -61,9 +65,9 @@ export function BuffaloCard({
           </div><BuffaloSex value={sex} />
         </div>
         {/* microchip: no "CHIP" label so the full number stays on one line */}
-        <p className="overflow-hidden text-ellipsis whitespace-nowrap text-xs tabular-nums text-muted">
-          {chip}
-        </p>
+        <div className="min-w-0 text-xs tabular-nums text-muted">
+          {microchip || typeof chip === "string" ? <CopyMicrochip value={microchip ?? (chip as string)} className="relative z-20" /> : chip}
+        </div>
         {birthdate && <p className="text-xs text-muted">วันเกิด : {birthdate}</p>}
         <BuffaloPhotoStatus leading={<span className="self-center text-[11px] font-semibold text-accent">
           {formatBuffaloAge(ageMonths)}

@@ -1,3 +1,4 @@
+import { CopyMicrochip } from "../../v2/CopyMicrochip";
 import Link from "next/link";
 import { useRef } from "react";
 import { trpc } from "../../../utils/trpc";
@@ -89,7 +90,7 @@ const Pedigree = () => {
                       <div className="min-w-0 flex-1 text-left text-thuidark">
                         <div className="flex min-w-0 items-start justify-between gap-2"><div className="min-w-0 flex-1 line-clamp-2 break-words text-lg font-bold leading-tight">{item.name}</div><BuffaloSex value={item.sex} /></div>
                         <div className="mt-1 truncate text-sm font-bold text-thuigray">
-                          Microchip: {item.microchip}
+                          <CopyMicrochip value={item.microchip} className="relative z-20" />
                         </div>
                         <BuffaloPhotoStatus />
                         {/* <div className="mt-1 line-clamp-1 text-sm font-semibold text-thuigray">
@@ -133,7 +134,7 @@ const Pedigree = () => {
                                 Microchip
                               </div>
                               <div className="mt-2 inline-flex max-w-full rounded-full bg-base-200/70 px-3 py-1 text-sm font-semibold text-thuigray/90">
-                                <span className="truncate">{item.microchip}</span>
+                                <CopyMicrochip value={item.microchip} className="relative z-20" />
                               </div>
                             </div>
 

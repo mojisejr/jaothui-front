@@ -9,6 +9,7 @@ import {
   LineIcon,
   LineShareButton,
 } from "react-share";
+import { CopyMicrochip } from "../../v2/CopyMicrochip";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FiArrowLeft, FiExternalLink, FiCheck, FiCopy } from "react-icons/fi";
 import { IoCalendarNumberOutline } from "react-icons/io5";
@@ -179,7 +180,7 @@ export default function BuffaloDetailV2({ tokenId, certNft, rewards, vote, event
             {/* info card */}
             <div className="overflow-hidden rounded-card border border-border-soft bg-surface [&>*+*]:border-t [&>*+*]:border-border-soft">
               <StatRow icon={<IoCalendarNumberOutline className="h-5 w-5" />} label="อายุ" value={formatBuffaloAge(certNft.calculatedAge)} />
-              <StatRow icon={<BiRfid className="h-5 w-5" />} label="Signature ID" value={mc || "N/A"} />
+              <StatRow icon={<BiRfid className="h-5 w-5" />} label="Signature ID" value={<CopyMicrochip value={mc} />} />
               <StatRow icon={<HiOutlineDocumentText className="h-5 w-5" />} label="วันเกิด" value={`${thai.date} ${thai.thaiMonth2} ${thai.thaiYear}`} />
               <StatRow icon={<BsGenderAmbiguous className="h-5 w-5" />} label="เพศ" value={certNft.sex || "N/A"} />
               <StatRow

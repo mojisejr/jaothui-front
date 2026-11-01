@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { JSDOM } from "jsdom";
 import { readFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -59,7 +60,19 @@ assert.throws(() => assertGallery(cardMarkup.replace("bg-surface", "bg-surface-r
 assert.throws(() => assertGallery(cardMarkup.replace("text-left", "text-left shadow-gold")), "heavy glow mutant must fail");
 assert.throws(() => assertGallery(cardMarkup.replace('class="self-center text-', 'class="rounded-pill self-center text-')), "boxed age mutant must fail");
 assert.match(cardMarkup, /71 เดือน/);
-assert.doesNotMatch(cardMarkup, /absolute bottom-|backdrop-blur/, "no age overlay can conceal source bounds");
+// Restrict the overlay contract to the photo and age. Independent copy feedback
+// may be positioned within the metadata without covering the photograph.
+function assertNoAgeOverlay(html) {
+  const document = new JSDOM(html).window.document;
+  assert.doesNotMatch(document.querySelector("[data-photo-state]").outerHTML, /absolute bottom-|backdrop-blur/);
+  const age = [...document.querySelectorAll("span")].find(node => node.textContent === "71 เดือน");
+  assert(age);
+  for (let node = age; node && node !== document.body; node = node.parentElement) {
+    assert.doesNotMatch(node.className, /absolute.*bottom-|backdrop-blur/, "age stays outside a photo overlay");
+  }
+}
+assertNoAgeOverlay(cardMarkup);
+assert.throws(() => assertNoAgeOverlay(cardMarkup.replace('class="self-center text-', 'class="absolute bottom-0 self-center text-')), "age overlay mutant must fail");
 assert(cardMarkup.indexOf("71 เดือน") > cardMarkup.indexOf("764040226300035"), "age is in the information body");
 
 // Check emitted utilities, not just the presence of class strings. Math below uses

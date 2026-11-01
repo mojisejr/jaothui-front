@@ -479,6 +479,7 @@ export default function V2ProfilePage() {
                       name={cert.name}
                       sex={cert.sex}
                       chip={cert.microchip}
+                      microchip={cert.microchip}
                       birthdate={formatThaiBirthdate(cert.birthdate)}
                       ageMonths={calculateBuffaloAge(cert.birthdate)}
                       image={<BuffaloPhoto src={cert.image} photoTokenId={cert.photoTokenId} microchip={cert.microchip} alt={cert.name} sizes="(max-width: 767px) 50vw, 330px" />}
