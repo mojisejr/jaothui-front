@@ -34,6 +34,7 @@ export type MobileLineOAuthStatePayload = {
   flow: typeof MOBILE_LINE_FLOW;
   returnTo: string;
   nonce: string;
+  clientFlowId?: string;
   iat?: number;
   exp?: number;
 };
@@ -52,6 +53,7 @@ export type MobileLineOAuthHandoffPayload = {
     email: string | null;
   } | null;
   nonce: string;
+  clientFlowId?: string;
   iat?: number;
   exp?: number;
 };
@@ -113,15 +115,25 @@ export function normalizeMobileLineReturnTo(returnTo: string) {
   return MOBILE_NATIVE_CALLBACK_URL;
 }
 
+/** Opaque client correlation only; never an identity or a return URL. */
+export function normalizeMobileLineClientFlowId(value: unknown): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value !== "string" || !/^[a-zA-Z0-9-]{12,96}$/.test(value)) {
+    throw new InvalidAuthError("Invalid mobile LINE client flow ID");
+  }
+  return value;
+}
+
 export function createMobileLineOAuthState(
   returnTo: string,
-  options: { env?: Env } = {}
+  options: { env?: Env; clientFlowId?: string } = {}
 ) {
   const payload: Omit<MobileLineOAuthStatePayload, "iat" | "exp"> = {
     typ: STATE_TOKEN_TYPE,
     flow: MOBILE_LINE_FLOW,
     returnTo: normalizeMobileLineReturnTo(returnTo),
     nonce: randomBytes(16).toString("hex"),
+    ...(options.clientFlowId === undefined ? {} : { clientFlowId: normalizeMobileLineClientFlowId(options.clientFlowId) }),
   };
 
   return jwt.sign(payload, getSigningSecret(options.env), {
@@ -157,6 +169,7 @@ export function verifyMobileLineOAuthState(
     flow: decoded.flow,
     returnTo: normalizeMobileLineReturnTo(decoded.returnTo),
     nonce: decoded.nonce,
+    ...(decoded.clientFlowId === undefined ? {} : { clientFlowId: normalizeMobileLineClientFlowId(decoded.clientFlowId) }),
     iat: decoded.iat,
     exp: decoded.exp,
   };
@@ -200,6 +213,7 @@ export function createMobileLineOAuthHandoff(
     avatarUrl: input.avatarUrl,
     linkedWallet: input.linkedWallet,
     nonce: randomBytes(16).toString("hex"),
+    ...(input.clientFlowId === undefined ? {} : { clientFlowId: normalizeMobileLineClientFlowId(input.clientFlowId) }),
   };
 
   return jwt.sign(payload, getSigningSecret(options.env), {
@@ -243,15 +257,18 @@ export function verifyMobileLineOAuthHandoff(
     avatarUrl: typeof decoded.avatarUrl === "string" ? decoded.avatarUrl : null,
     linkedWallet: mapLinkedWallet(decoded.linkedWallet),
     nonce: decoded.nonce,
+    ...(decoded.clientFlowId === undefined ? {} : { clientFlowId: normalizeMobileLineClientFlowId(decoded.clientFlowId) }),
     iat: decoded.iat,
     exp: decoded.exp,
   };
 }
 
-export function appendLineHandoffToMobileReturnTo(returnTo: string, handoff: string) {
+export function appendLineHandoffToMobileReturnTo(returnTo: string, handoff: string, clientFlowId?: string) {
   const url = new URL(normalizeMobileLineReturnTo(returnTo));
   url.searchParams.set("provider", "line");
   url.searchParams.set("handoff", handoff);
+  const flowId = normalizeMobileLineClientFlowId(clientFlowId);
+  if (flowId) url.searchParams.set("clientFlowId", flowId);
   return url.toString();
 }
 
@@ -296,6 +313,7 @@ export async function completeMobileLineCallback(input: {
       displayName: profile.displayName,
       avatarUrl: profile.avatarUrl,
       linkedWallet: mapLinkedWallet(linkedWallet),
+      ...(state.clientFlowId ? { clientFlowId: state.clientFlowId } : {}),
     },
     { env: input.env }
   ));
@@ -305,6 +323,6 @@ export async function completeMobileLineCallback(input: {
     account,
     profile,
     handoff,
-    deepLink: appendLineHandoffToMobileReturnTo(state.returnTo, handoff),
+    deepLink: appendLineHandoffToMobileReturnTo(state.returnTo, handoff, state.clientFlowId),
   };
 }

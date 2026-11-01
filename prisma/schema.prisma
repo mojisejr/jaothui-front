@@ -18,6 +18,7 @@ model Account {
   deletionPolicyVersion String?
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
+  mobileLineLinkIntents MobileLineLinkIntent[]
   identities            AccountIdentity[]
   walletLinks           WalletLink[]
 }
@@ -212,4 +213,24 @@ model Reward {
   eventDate   DateTime?
   rewardName  String
   Pedigree    Pedigree  @relation(fields: [microchip], references: [microchip])
+}
+
+// Durable, one-shot OAuth linkage; never stores LINE access or ID tokens.
+model MobileLineLinkIntent {
+  id                String    @id
+  accountId         String
+  purpose           String
+  returnIntent      Json
+  stateNonceHash    String
+  expiresAt         DateTime
+  callbackClaimedAt DateTime?
+  handoffHash       String?   @unique
+  verifiedProfile   Json?
+  consumedAt        DateTime?
+  redeemedAt        DateTime?
+  linkedIdentityHash String?
+  createdAt         DateTime  @default(now())
+  account           Account   @relation(fields: [accountId], references: [id])
+
+  @@index([accountId, expiresAt])
 }

@@ -8,9 +8,10 @@ import {
   sendMobileError,
   sendMobileOk,
 } from "../../../../../../server/mobile/response";
-import { verifyMobileLineOAuthHandoff } from "../../../../../../server/mobile/line-auth";
+import { normalizeMobileLineClientFlowId, verifyMobileLineOAuthHandoff } from "../../../../../../server/mobile/line-auth";
 
 type MobileLineSession = {
+  clientFlowId?: string;
   sessionToken: string;
   expiresAt: number;
   identity: {
@@ -47,6 +48,10 @@ export default function handler(
 
   try {
     const verifiedHandoff = verifyMobileLineOAuthHandoff(handoff);
+    const clientFlowId = normalizeMobileLineClientFlowId(req.body?.clientFlowId);
+    if (clientFlowId !== verifiedHandoff.clientFlowId) {
+      return sendMobileError(req, res, 409, "AUTH_FLOW_MISMATCH", "ขั้นตอนเข้าสู่ระบบไม่ตรงกัน กรุณาเริ่มใหม่");
+    }
     const session = createMobileLineAccountSession({
       accountId: verifiedHandoff.accountId,
       lineUserId: verifiedHandoff.lineUserId,
@@ -59,6 +64,7 @@ export default function handler(
     return sendMobileOk(req, res, {
       sessionToken: session.token,
       expiresAt: session.expiresAt,
+      ...(verifiedHandoff.clientFlowId ? { clientFlowId: verifiedHandoff.clientFlowId } : {}),
       identity: {
         sessionVersion: 2,
         provider: "line",

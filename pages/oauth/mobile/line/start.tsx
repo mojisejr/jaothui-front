@@ -7,6 +7,7 @@ import {
   buildMobileLineAuthorizeUrl,
   createMobileLineOAuthState,
   normalizeMobileLineReturnTo,
+  normalizeMobileLineClientFlowId,
   verifyMobileLineOAuthState,
 } from "../../../../server/mobile/line-auth";
 
@@ -26,7 +27,8 @@ export const getServerSideProps: GetServerSideProps<MobileLineStartProps> =
 
     try {
       const returnTo = normalizeMobileLineReturnTo(requestedReturnTo);
-      const state = createMobileLineOAuthState(returnTo);
+      const clientFlowId = normalizeMobileLineClientFlowId(query.clientFlowId);
+      const state = createMobileLineOAuthState(returnTo, { clientFlowId });
       const verifiedState = verifyMobileLineOAuthState(state);
 
       return {
