@@ -47,3 +47,45 @@ The migration atomically enables RLS and revokes table privileges from PUBLIC an
 Deterministic/local integration confidence does not close real native OAuth, picker/scroll, production cross-channel acceptance or release approval. Legacy lint warnings remain outside this feature.
 
 Native JPEG uploads receive a deterministic, non-visual owner/event comment before content-hash storage. This permits the same chosen photo across events without rewriting another asset owner; identical bytes in the same event/applicant still deduplicate, preserving the five-distinct-asset requirement. PNG/WebP retain the existing ownership checks. Request limit remains4MiB before this small server-generated metadata.
+
+## Current Event parity and source-owned QR (#212)
+
+The native BFF reads canonical applicant policy/history/status from Event through
+its applicant-only bridge. Set server-only `JAOTHUI_EVENT_APPLICANT_API_URL` to
+the source origin and `JAOTHUI_COMPETITION_APPLICANT_BRIDGE_KEY` to the dedicated
+matching source key. Never reuse the broad admin key, expose the secret via
+`EXPO_PUBLIC_*`, or copy `CHECKIN_QR_SECRET` into Front/native. The source bridge
+only accepts history/status/pass; native cannot confirm or undo staff arrival.
+
+History/detail responses add registrationPolicyVersion, registrationStatus
+(registered/pending/accepted/rejected/needs_type_review), approvalRequirement,
+checkInVersion/status, checkedInAt, qrAvailable and checkInEligibility. Known
+accepted Royal rows retain legacy status=approved. Unknown event types are null,
+canonical needs_type_review and legacy pending (a safe compatibility placeholder,
+not a new Royal review); they never acquire success/QR capability. Only new
+clients can display the full diagnostic. Normal old approval comments are not
+presented as current decisions. Registration result and event period stay separate.
+
+`POST /api/mobile/v2/event-registrations/[id]/pass` takes no owner/body fields and
+returns `{registration, qrUrl}`. It uses the same active-account/linked-LINE guard
+as private event routes; the source rechecks ownership. Source-issued QR belongs
+to one application/class. A future eligible entry may display QR before the event
+start while staff confirmation remains blocked until the event window. Keep
+tokens out of logs/analytics/caches and external QR image services.
+
+Consolidate this PR with current Front main rather than deploying an old feature
+tree over new web work. The existing LINE-intent migration readiness must be
+verified before release; no new schema migration is introduced here. Source
+bridge must be deployed first; then merge/deploy Front and verify real public
+events JSON200 plus protected member/history/pass JSON401 rather than HTML404.
+Upstream bridge401/missing route/timeout is503 EVENTS_UNAVAILABLE, never an invalid
+customer session. Existing signup persistence stays immutable/retry-safe if its
+post-submit detail read is temporarily unavailable. No EAS native build/Store/OTA
+is authorized by this backend release.
+
+Confirmed submission responses intentionally use an owned durable receipt with
+`statusRefreshPending: true`; canonical policy, QR and arrival fields are absent
+until a source-authoritative history/detail read succeeds. The native receipt
+shows that the application was saved and offers history for current status. A
+history/QR bridge outage therefore cannot turn persisted registration into a
+failed submission or prompt a second registration. Replay retains the same ID.

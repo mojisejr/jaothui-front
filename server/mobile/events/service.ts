@@ -1,3 +1,4 @@
+import { createApplicantBridge, type ApplicantBridgeClient, type SourceApplicant } from "./applicant-bridge";
 import { notifyRoyal } from "./notification";
 import { createHash } from "crypto";
 import type { SanityClient } from "@sanity/client";
@@ -46,7 +47,7 @@ export function sourcePayload(eventId: string, userId: string, input: unknown, r
 }
 
 export class MobileEventService {
-  constructor(public client: SanityClient, public now: () => Date = () => new Date(), private notify: typeof notifyRoyal = notifyRoyal) {}
+  constructor(public client: SanityClient, public now: () => Date = () => new Date(), private notify: typeof notifyRoyal = notifyRoyal, private applicant: ApplicantBridgeClient = createApplicantBridge()) {}
   async event(id: string) {
     if (!docId.safeParse(id).success || reservedId(id)) throw new EventError(404, "EVENT_NOT_FOUND", "ไม่พบกิจกรรม");
     const event = await this.client.getDocument<EventDocument>(id);
@@ -120,38 +121,56 @@ export class MobileEventService {
     await this.member(lineId);
     return member;
   }
-  registrationSummary(row: EventDocument) {
+  registrationSummary(row: SourceApplicant) {
     const e = row.event;
-    const approval = row.approval;
-    return { id: row._id, event: { id: e._id, name: e.title, eventType: e.eventType ?? "normal", startDay: e.startAt, endDay: e.endAt },
+    const status = row.registrationStatus === "accepted" ? "approved" : row.registrationStatus === "needs_type_review" ? "pending" : row.registrationStatus;
+    return { id: row._id, event: { id: e._id, name: e.title, eventType: e.eventType === "normal" || e.eventType === "royal" ? e.eventType : null, startDay: e.startAt || null, endDay: e.endAt || null },
       buffalo: { name: row.name, microchip: row.microchip, sex: row.sex, color: row.color, birthday: row.birthday, age: row.buffaloAge, type: row.type, level: row.level },
-      status: e.eventType !== "royal" ? "registered" : approval?.approvementResult === true ? "approved" : approval?.approvementResult === false ? "rejected" : "pending",
-      approvalComment: approval?.comment ?? null, createdAt: row._createdAt };
+      status, approvalComment: row.approvalRequirement === "required" ? row.comment : null, createdAt: row._createdAt,
+      registrationPolicyVersion: row.registrationPolicyVersion, registrationStatus: row.registrationStatus, approvalRequirement: row.approvalRequirement,
+      checkInVersion: row.checkInVersion, checkInStatus: row.checkInStatus, checkedInAt: row.checkedInAt,
+      qrAvailable: row.qrAvailable, checkInEligibility: row.checkInEligibility };
   }
   async history(lineId: string, input: { limit?: number; cursor?: string; period?: "active" | "past" | "all"; q?: string } = {}) {
     const args = z.object({ limit: z.number().int().min(1).max(20).default(20), cursor: z.string().max(500).optional(), period: z.enum(["active", "past", "all"]).default("all"), q: z.string().max(2000).default("") }).strict().safeParse(input);
     if (!args.success) return invalidFields();
-    let stamp = "9999", id = "~";
-    if (args.data.cursor) {
-      try { const pair = JSON.parse(Buffer.from(args.data.cursor, "base64url").toString());
-        if (!Array.isArray(pair) || pair.length !== 2 || !z.string().datetime().safeParse(pair[0]).success || !docId.safeParse(pair[1]).success) return invalidFields();
-        [stamp, id] = pair;
-      } catch { return invalidFields(); }
-    }
-    const rows = await this.client.fetch<EventDocument[]>('*[_type=="eventRegister" && !(_id in path("drafts.**")) && !(_id in path("versions.**")) && user._ref==$lineId && defined(event->_id) && coalesce(event->competitionState,"published")!="draft" && !(event._ref in path("drafts.**")) && !(event._ref in path("versions.**")) && ($period=="all" || ($period=="active" && event->endAt >= $today) || ($period=="past" && event->endAt < $today)) && ($q=="" || event->title == $q) && (_createdAt<$stamp || (_createdAt==$stamp && _id<$id))] | order(_createdAt desc,_id desc)[0...$take]{...,"event":event->,"approval":*[_type=="approvment" && eventRegister._ref==^._id][0]{approvementResult,comment}}', { lineId, stamp, id, take: args.data.limit + 1, period: args.data.period, today: new Date(this.now().getTime() + 7 * 3600000).toISOString().slice(0, 10), q: args.data.q });
-    const names = await this.client.fetch<string[]>('array::unique(*[_type=="eventRegister" && !(_id in path("drafts.**")) && !(_id in path("versions.**")) && user._ref==$lineId && defined(event->_id) && coalesce(event->competitionState,"published")!="draft" && !(event._ref in path("drafts.**")) && !(event._ref in path("versions.**"))].event->title)', { lineId });
-    const eventNames = names.filter((name): name is string => typeof name === "string").sort();
-    const items = rows.slice(0, args.data.limit), last = items[items.length - 1];
-    return { eventNames, items: items.map(row => this.registrationSummary(row)), nextCursor: rows.length > items.length && last ? Buffer.from(JSON.stringify([last._createdAt, last._id])).toString("base64url") : null };
+    const history = await this.applicant.history(lineId, args.data);
+    return { ...history, items: history.items.map(row => this.registrationSummary(row)) };
+  }
+  private async registrationDetails(application: SourceApplicant, lineId: string) {
+    const id = application._id;
+    const row = await this.client.getDocument<EventDocument>(id);
+    if (!row || row._type !== "eventRegister" || row.user?._ref !== lineId || row.event?._ref !== application.event._id) throw new EventError(404, "REGISTRATION_NOT_FOUND", "ไม่พบใบสมัคร");
+    const supplement = application.event.eventType === "royal" ? await this.client.fetch<{ images: any; address: any }>(' {"images":*[_type=="eventImage" && event._ref==$eventId && eventRegister._ref==$id && user._ref==$lineId][0].imageArray[]{imageTitle,"url":imageAsset.asset->url},"address":*[_type=="eventAddress" && event._ref==$eventId && eventRegister._ref==$id && user._ref==$lineId][0]{address,district,amphoe,province,zipcode}}', { id, lineId, eventId: application.event._id }) : null;
+    return { ...this.registrationSummary(application), ownerName: row.ownerName, ownerTel: row.ownerTel,
+      fatherName: row.fatherName, motherName: row.motherName, farmName: row.farmName, province: row.province,
+      ...(supplement ? { images: supplement.images ?? [], address: supplement.address ?? null } : {}) };
   }
   async registration(id: string, lineId: string) {
     if (!docId.safeParse(id).success || reservedId(id)) throw new EventError(404, "REGISTRATION_NOT_FOUND", "ไม่พบใบสมัคร");
+    return this.registrationDetails(await this.applicant.status(lineId, id), lineId);
+  }
+  /** A persisted signup receipt must not depend on the optional history/QR bridge. */
+  async registrationReceipt(id: string, lineId: string) {
+    if (!docId.safeParse(id).success || reservedId(id)) throw new EventError(404, "REGISTRATION_NOT_FOUND", "ไม่พบใบสมัคร");
     const row = await this.client.getDocument<EventDocument>(id);
     if (!row || row._type !== "eventRegister" || row.user?._ref !== lineId) throw new EventError(404, "REGISTRATION_NOT_FOUND", "ไม่พบใบสมัคร");
-    const event = await this.event(row.event?._ref), supplement = await this.client.fetch<{ approval: any; images: any; address: any }>(' {"approval":*[_type=="approvment" && eventRegister._ref==$id][0]{approvementResult,comment},"images":*[_type=="eventImage" && eventRegister._ref==$id && user._ref==$lineId][0].imageArray[]{imageTitle,"url":imageAsset.asset->url},"address":*[_type=="eventAddress" && eventRegister._ref==$id && user._ref==$lineId][0]{address,district,amphoe,province,zipcode}}', { id, lineId });
-    return { ...this.registrationSummary({ ...row, event, approval: supplement.approval }), ownerName: row.ownerName, ownerTel: row.ownerTel,
-      fatherName: row.fatherName, motherName: row.motherName, farmName: row.farmName, province: row.province,
+    const event = await this.client.getDocument<EventDocument>(row.event?._ref);
+    if (!event || event._type !== "event" || reservedId(event._id) || event.competitionState === "draft") throw new EventError(404, "REGISTRATION_NOT_FOUND", "ไม่พบใบสมัคร");
+    const supplement = await this.client.fetch<{ approval: any; images: any; address: any }>(' {"approval":*[_type=="approvment" && event._ref==$eventId && eventRegister._ref==$id] | order(coalesce(approvementDate,_updatedAt,_createdAt) desc,_id desc)[0]{approvementResult,comment},"images":*[_type=="eventImage" && event._ref==$eventId && eventRegister._ref==$id && user._ref==$lineId][0].imageArray[]{imageTitle,"url":imageAsset.asset->url},"address":*[_type=="eventAddress" && event._ref==$eventId && eventRegister._ref==$id && user._ref==$lineId][0]{address,district,amphoe,province,zipcode}}', { id, lineId, eventId: event._id });
+    const status = event.eventType === "normal" ? "registered" : event.eventType !== "royal" ? "pending"
+      : supplement.approval?.approvementResult === true ? "approved" : supplement.approval?.approvementResult === false ? "rejected" : "pending";
+    return { id, event: { id: event._id, name: event.title ?? "", eventType: event.eventType === "normal" || event.eventType === "royal" ? event.eventType : null,
+      startDay: competitionDay(event.startAt ?? event.eventAt), endDay: competitionDay(event.endAt) },
+      buffalo: { name: row.name, microchip: row.microchip, sex: row.sex ?? row.gender, color: row.color, birthday: row.birthday, age: row.buffaloAge, type: row.type, level: row.level },
+      status, statusRefreshPending: true, approvalComment: null, createdAt: row._createdAt,
+      ownerName: row.ownerName, ownerTel: row.ownerTel, fatherName: row.fatherName, motherName: row.motherName, farmName: row.farmName, province: row.province,
       ...(event.eventType === "royal" ? { images: supplement.images ?? [], address: supplement.address ?? null } : {}) };
+  }
+  async pass(id: string, lineId: string) {
+    if (!docId.safeParse(id).success || reservedId(id)) throw new EventError(404, "REGISTRATION_NOT_FOUND", "ไม่พบใบสมัคร");
+    const pass = await this.applicant.pass(lineId, id);
+    return { registration: await this.registrationDetails(pass.application, lineId), qrUrl: pass.qrUrl };
   }
   async submit(eventId: string, lineId: string, input: unknown) {
     // Freeze the source-shaped request before reading mutable event rules. Replay

@@ -53,7 +53,14 @@ class FakeSanity {
     }};return tx;
   }
 }
-const service = fake => new MobileEventService(fake,()=>now,async()=>{});
+const service = fake => new MobileEventService(fake,()=>now,async()=>{}, {
+  history: async owner => ({ items: [...fake.docs.values()].filter(r=>r._type==="eventRegister" && r.user?._ref===owner).map(r=>{
+    const e=fake.docs.get(r.event._ref),a=fake.docs.get(r._id+".approval");
+    return {_id:r._id,_rev:r._rev??"r",_createdAt:r._createdAt??"",name:r.name,microchip:r.microchip,type:r.type,level:r.level,ownerName:r.ownerName,farmName:r.farmName,birthday:r.birthday,sex:r.sex,color:r.color,buffaloAge:r.buffaloAge,event:{_id:e._id,title:e.title,startAt:e.startAt,endAt:e.endAt,eventType:e.eventType},registrationPolicyVersion:1,registrationStatus:a?.approvementResult===false?"rejected":e.eventType==="royal"?"pending":"registered",approvalRequirement:e.eventType==="royal"?"required":"not_required",approvementResult:a?.approvementResult??null,comment:a?.comment??null,checkInVersion:1,checkInStatus:"not_checked_in",checkedInAt:null,qrAvailable:false,checkInEligibility:{eligible:false,reason:"fixture"}};
+  }),eventNames:[],nextCursor:null }),
+  status: async (owner,id)=>{const r=fake.docs.get(id);if(!r||r.user?._ref!==owner)throw Object.assign(new Error(),{code:"REGISTRATION_NOT_FOUND"});throw new Error("No successful detail fixture expected");},
+  pass: async()=>{throw new Error("No pass fixture expected");}
+});
 const code = expected => error => error.code===expected;
 await check("0/1/5/6 open events and page total",async()=>{
   for(const n of [0,1,5,6]){const f=new FakeSanity();f.docs.delete("event");for(let i=0;i<n;i++)f.docs.set(`e${i}`,{...event,_id:`e${i}`});const result=await service(f).list({limit:5});assert.equal(result.totalOpen,n);assert.equal(result.items.length,Math.min(n,5));assert.equal(!!result.nextCursor,n>5);}
@@ -147,11 +154,19 @@ await check("official-account push wire format is source-equivalent using mocked
   assert.equal(call[0],"https://api.line.me/v2/bot/message/push");const payload=JSON.parse(call[1].body);assert.equal(payload.to,"synthetic-line");assert.equal(payload.messages[0].text,royalMessageParser(data));assert.match(payload.messages[0].text,/register-status\/registration.approval/);assert.equal(call[1].headers.Authorization,"Bearer synthetic-token");
   await assert.rejects(()=>notifyRoyal("synthetic",data,async()=>{throw new Error("must not send");},{}),/NOT_CONFIGURED/);
 });
-await check("history scopes query before pagination with bounded literal name filter and Thai day",async()=>{
-  const f=new FakeSanity(),s=service(f);let captured;f.fetch=async(query,args)=>{if(!query.startsWith("array::unique"))captured={query,args};return [];};
-  await s.history("line",{period:"active",q:"งาน*",limit:1});assert.equal(captured.args.period,"active");assert.equal(captured.args.q,"งาน*");assert.equal(captured.args.today,"2026-10-16");assert.equal(captured.args.take,2);assert.ok(captured.query.includes('event->title == $q'));assert.ok(captured.query.indexOf('$period==')<captured.query.indexOf('order('));
-  await s.history("line",{period:"all",q:"ชื่องาน".repeat(30)});assert.equal(captured.args.q,"ชื่องาน".repeat(30));
+await check("history validates bounded filters before the source bridge",async()=>{
+  const f=new FakeSanity();let captured;const s=new MobileEventService(f,()=>now,async()=>{}, {history:async(owner,input)=>{captured={owner,input};return {items:[],eventNames:[],nextCursor:null};}});
+  await s.history("line",{period:"active",q:"งาน*",limit:1});assert.equal(captured.owner,"line");assert.equal(captured.input.period,"active");assert.equal(captured.input.q,"งาน*");assert.equal(captured.input.limit,1);
+  await s.history("line",{period:"all",q:"ชื่องาน".repeat(30)});assert.equal(captured.input.q,"ชื่องาน".repeat(30));
   for(const input of [{period:"invalid"},{q:"x".repeat(2001)}])await assert.rejects(()=>s.history("line",input),code("INVALID_FIELDS"));
+});
+await check("committed signup receipt survives unavailable history/QR bridge without guessed canonical state",async()=>{
+ const f=new FakeSanity(),s=new MobileEventService(f,()=>now,async()=>{}, {status:async()=>{throw new Error("bridge unavailable");},pass:async()=>{throw new Error("bridge unavailable");},history:async()=>{throw new Error("bridge unavailable");}});
+ const registration=await s.submit("event","line",normal);const receipt=await s.registrationReceipt(registration.id,"line");
+ assert.equal(receipt.id,registration.id);assert.equal(receipt.statusRefreshPending,true);assert.equal(f.commits,1);assert.equal(receipt.ownerName,normal.ownerName);
+ for(const key of ["registrationStatus","approvalRequirement","checkInStatus","checkedInAt","qrAvailable","qrUrl"])assert.equal(Object.hasOwn(receipt,key),false);
+ const replay=await s.submit("event","line",normal);assert.equal(replay.replayed,true);assert.equal(f.commits,1);assert.equal((await s.registrationReceipt(replay.id,"line")).id,receipt.id);
+ await assert.rejects(()=>s.registrationReceipt(receipt.id,"foreign"),code("REGISTRATION_NOT_FOUND"));
 });
 await check("lookup actual HTTP private route denies anonymous and reviewer before chain access",async()=>{
   for(const [token,expected]of [[null,401],[createMobileAccountSession({accountId:"a",primaryProvider:"reviewer",providerUserId:"r"}).token,403]]){const res=response();await eventHandler("lookup")({method:"GET",query:{microchip:"12"},headers:token?{authorization:`Bearer ${token}`}:{},body:{}},res);assert.equal(res.statusCode,expected);}
