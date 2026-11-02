@@ -248,22 +248,25 @@ function SettingsList({ onLogout }: { onLogout: () => void }) {
 
 export default function V2ProfilePage() {
   const router = useRouter();
-  const { isConnected, walletAddress, disconnect } = useBitkubNext();
+  const { isConnected, walletAddress, disconnect, logoutError } = useBitkubNext();
   const [lineAccount, setLineAccount] = useState<LineAccount | null>(null);
   const [lineLoading, setLineLoading] = useState(true);
+  const [lineUnavailable, setLineUnavailable] = useState(false);
   const [linkStatus, setLinkStatus] = useState<LinkStatus>("idle");
   const [linkError, setLinkError] = useState<string | null>(null);
   const linkAttemptKeyRef = useRef<string | null>(null);
 
   const loadLineSession = useCallback(async () => {
     setLineLoading(true);
+    setLineUnavailable(false);
     try {
       const response = await fetch("/api/auth/line/me", {
         credentials: "same-origin",
         cache: "no-store",
       });
       if (!response.ok) {
-        setLineAccount(null);
+        if (response.status === 401) setLineAccount(null);
+        else setLineUnavailable(true);
         return null;
       }
       const payload = await response.json();
@@ -271,7 +274,7 @@ export default function V2ProfilePage() {
       setLineAccount(account);
       return account as LineAccount | null;
     } catch {
-      setLineAccount(null);
+      setLineUnavailable(true);
       return null;
     } finally {
       setLineLoading(false);
@@ -348,13 +351,7 @@ export default function V2ProfilePage() {
   );
 
   const logout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      /* best-effort local logout */
-    }
-    setLineAccount(null);
-    disconnect();
+    if (await disconnect()) setLineAccount(null);
   };
   const certificates = member?.Certificate ?? [];
   const displayName = member?.name || lineAccount?.displayName || "LINE Member";
@@ -384,6 +381,8 @@ export default function V2ProfilePage() {
           </div>
           <div className="h-28 animate-pulse rounded-card bg-surface-raised" />
         </div>
+      ) : lineUnavailable && !lineAccount ? (
+        <div className="space-y-4 px-5 py-10 text-center"><p role="alert">ยังตรวจสอบบัญชีไม่ได้ กรุณาลองอีกครั้ง</p><Button onClick={loadLineSession}>ลองอีกครั้ง</Button></div>
       ) : !lineAccount ? (
         <div className="flex flex-col items-center px-5 py-10 text-center">
           <Avatar
@@ -495,6 +494,7 @@ export default function V2ProfilePage() {
             </section>
           )}
 
+          {logoutError && <p role="alert" className="text-sm text-foreground">{logoutError}</p>}
           <SettingsList onLogout={logout} />
         </div>
       )}

@@ -16,6 +16,7 @@ import {
   NewsEventRail,
   formatThaiBirthdate,
 } from "../../components/v2";
+import { HomeEventZone } from "../../components/v2/HomeEventZone";
 import { HomeStatsGrid } from "../../components/v2/HomeStatsGrid";
 import { HomeAppDownload } from "../../components/v2/HomeAppDownload";
 import { HomeAppDownloadPrompt } from "../../components/v2/HomeAppDownloadPrompt";
@@ -187,6 +188,7 @@ function Featured() {
 interface V2HomePageProps {
   newsEvents: NewsEventHomeItem[];
   stats: HomeStat[];
+  eventsEnabled: boolean;
 }
 
 export const getStaticProps: GetStaticProps<V2HomePageProps> = async () => {
@@ -196,6 +198,7 @@ export const getStaticProps: GetStaticProps<V2HomePageProps> = async () => {
     props: {
       newsEvents,
       stats,
+      eventsEnabled: process.env.JAOTHUI_EVENT_SSO_ENABLED === "true",
     },
     revalidate: 60,
   };
@@ -204,6 +207,7 @@ export const getStaticProps: GetStaticProps<V2HomePageProps> = async () => {
 export default function V2HomePage({
   newsEvents,
   stats,
+  eventsEnabled,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <V2Layout activeTab="home">
@@ -211,6 +215,8 @@ export default function V2HomePage({
       <Hero />
 
       <HomeStatsGrid stats={stats} />
+
+      {eventsEnabled ? <HomeEventZone /> : null}
 
       <HomeAppDownload />
 

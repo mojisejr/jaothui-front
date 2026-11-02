@@ -11,19 +11,22 @@ import { getUserData } from "../helpers/getUserData";
 import { trpc } from "../utils/trpc";
 
 import { useRouter } from "next/router";
+import { logoutAndClear } from "../utils/auth-logout";
 
 type bitkubNextContextType = {
   isConnected: boolean;
   walletAddress: `0x${string}` | "";
   email?: string;
-  disconnect: () => void;
+  disconnect: () => Promise<boolean>;
+  logoutError: string | null;
   loggedIn: () => void;
 };
 
 const bitkubNextContextDefaultValue: bitkubNextContextType = {
   isConnected: false,
   walletAddress: "",
-  disconnect: () => {},
+  disconnect: async () => false,
+  logoutError: null,
   loggedIn: () => {},
 };
 
@@ -37,6 +40,7 @@ type Props = {
 
 export function BitkubNextProvider({ children }: Props) {
   const [isConnected, setIsConnected] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
   const [walletAddress, setWalletAddress] = useState<`0x${string}` | "">(
     "0x00"
   );
@@ -98,20 +102,16 @@ export function BitkubNextProvider({ children }: Props) {
   }
 
   async function disconnect() {
-    try {
-      // Call logout endpoint to clear cookies
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-    
-    // Clear local state
-    setWalletAddress("");
-    setEmail("");
-    setIsConnected(false);
+    setLogoutError(null);
+    const success = await logoutAndClear(() => {
+      setWalletAddress("");
+      setEmail("");
+      setIsConnected(false);
+      localStorage.removeItem("bkc_wallet");
+      localStorage.removeItem("bkc_email");
+    });
+    if (!success) setLogoutError("ยังออกจากระบบไม่สำเร็จ กรุณาลองอีกครั้ง");
+    return success;
   }
 
   const value = {
@@ -120,6 +120,7 @@ export function BitkubNextProvider({ children }: Props) {
     isConnected,
     loggedIn,
     disconnect,
+    logoutError,
   };
 
   return (

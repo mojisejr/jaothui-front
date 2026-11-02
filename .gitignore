@@ -42,3 +42,6 @@ yarn-error.log*
 *.tsbuildinfo
 .env*
 e2e/account-deletion-local/runtime/
+
+# Reviewed blank SSO rollout template only; real environments stay ignored.
+!.env.event-sso.example

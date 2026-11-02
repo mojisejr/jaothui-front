@@ -65,26 +65,21 @@ const Callback: FunctionComponent<PropsWithChildren> = () => {
     // Do not store tokens client-side; send them to server to set HttpOnly cookies
     const userData = await getUserData(newTokens.access_token);
     if (userData.success) {
-      setMessage("Authentication Successful.");
-      // Persist wallet/email for UI convenience
-      localStorage.setItem("bkc_wallet", userData.wallet_address);
-      localStorage.setItem("bkc_email", userData.email);
-      save({
-        wallet: userData.wallet_address as string,
-        email: userData.email as string,
-        name: null,
-        tel: null,
-      });
-      loggedIn();
-      // Server-side cookie issuance: validate access_token, issue session JWT, and set HttpOnly cookies.
-      await fetch("/api/auth/token", {
+      // Local identity changes only after the server durably establishes login.
+      const sessionResponse = await fetch("/api/auth/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          access_token: newTokens.access_token,
-          refresh_token: newTokens.refresh_token,
-        }),
-      });
+        body: JSON.stringify({ access_token: newTokens.access_token, refresh_token: newTokens.refresh_token }),
+      }).catch(() => null);
+      if (!sessionResponse?.ok) {
+        setMessage("ยังเข้าสู่ระบบไม่สำเร็จ กรุณาเริ่มเข้าสู่ระบบอีกครั้ง");
+        return;
+      }
+      setMessage("Authentication Successful.");
+      localStorage.setItem("bkc_wallet", userData.wallet_address);
+      localStorage.setItem("bkc_email", userData.email);
+      save({ wallet: userData.wallet_address as string, email: userData.email as string, name: null, tel: null });
+      loggedIn();
       setMessage("Loading Dashboard...");
       // Return-to override (additive): a page can set `bkc_post_login` before the OAuth
       // redirect to land back on itself (e.g. /v2/profile). Legacy default stays "/profile".
