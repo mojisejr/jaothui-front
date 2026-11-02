@@ -1,4 +1,7 @@
 import type { GetServerSideProps } from "next";
+import { attachStateHint, completeLineAttach } from "../../../../server/auth/event-sso-line-attach";
+import { establishBrowser, EventSsoError, hash, ssoEnabled, ssoFailure } from "../../../../server/auth/event-sso";
+import { getCookie, setCookie } from "cookies-next";
 import Image from "next/image";
 
 import { Spinner } from "../../../../components/v2";
@@ -20,6 +23,7 @@ function getSingleQueryValue(value: string | string[] | undefined) {
 export const getServerSideProps: GetServerSideProps<LineWebCallbackProps> =
   async ({ query, req, res }) => {
     res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Referrer-Policy", "no-referrer");
 
     const providerError = getSingleQueryValue(query.error);
     if (providerError) {
@@ -43,7 +47,18 @@ export const getServerSideProps: GetServerSideProps<LineWebCallbackProps> =
     }
 
     try {
+      if (attachStateHint(state)) {
+        const returnTo = await completeLineAttach({ req, res }, { code, state });
+        return { redirect: { destination: returnTo, permanent: false } };
+      }
+      if (ssoEnabled() && getCookie("jaothui_line_login_state", { req, res }) !== hash(state)) throw new EventSsoError(401, "LOGIN_STATE_MISMATCH");
       const result = await completeLineWebLogin({ code, state });
+      if (ssoEnabled()) {
+        await establishBrowser({ req, res }, { accountId: result.account.id, credentialKind: "line", credentialSubject: result.profile.providerUserId, credentialHash: hash(result.session.token), expiresAt: new Date(result.session.expiresAt * 1000) });
+        setCookie("jaothui_line_login_state", "", { req, res, path: "/", httpOnly: true, maxAge: 0, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
+        // Explicit successful login selects this account. Remove stale wallet auth.
+        for (const name of ["session_token", "access_token", "refresh_token"]) setCookie(name, "", { req, res, path: "/", httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 0 });
+      }
       setLineWebSessionCookie({ req, res }, result.session.token);
       logAuthStage({ requestId: getAuthRequestId(req), flow: "web_line", stage: "callback", outcome: "completed" });
 
@@ -56,10 +71,10 @@ export const getServerSideProps: GetServerSideProps<LineWebCallbackProps> =
     } catch (error) {
       const failure = classifyAuthFailure(error);
       logAuthStage({ requestId: getAuthRequestId(req), flow: "web_line", stage: "callback", outcome: "failed", error });
-      res.statusCode = failure.status === 401 ? 400 : failure.status;
+      res.statusCode = ssoEnabled() && error instanceof EventSsoError ? error.status : attachStateHint(state) ? ssoFailure(error).status : failure.status === 401 ? 400 : failure.status;
       return {
         props: {
-          error: "Unable to complete LINE login",
+          error: attachStateHint(state) && ssoFailure(error).status === 409 ? "LINE นี้เชื่อมกับบัญชีอื่นแล้ว กรุณาตรวจสอบบัญชีเดิม ระบบไม่ได้สลับหรือรวมบัญชีให้" : "Unable to complete LINE login",
         },
       };
     }

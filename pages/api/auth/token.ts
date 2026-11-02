@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import jwt from "jsonwebtoken";
+import { randomBytes } from "crypto";
+import { establishBrowser, sameOrigin, ssoEnabled, ssoFailure, walletLoginPrincipal } from "../../../server/auth/event-sso";
+import { clearLineWebSessionCookie } from "../../../server/auth/line-web-session";
 import { setCookie } from "cookies-next";
 import { getUserData } from "../../../helpers/getUserData";
 
@@ -37,6 +40,7 @@ export default async function handler(
   }
 
   try {
+    if (ssoEnabled()) sameOrigin(req);
     // 1) Validate BitkubNext access token by fetching user data.
     const user = await getUserData(access_token);
     if (!user.success || !user.wallet_address) {
@@ -49,12 +53,18 @@ export default async function handler(
     // 2) Issue our own short-lived session JWT containing only the wallet.
     const payload = { wallet };
     const sessionToken = jwt.sign(payload, process.env.private_procedure_secret as string, {
+      ...(ssoEnabled() ? { jwtid: randomBytes(16).toString("hex") } : {}),
       algorithm: "HS256",
       expiresIn: "1d",
       issuer: "jaothui",
       audience: "jaothui-user",
     });
 
+    if (ssoEnabled()) {
+      const principal = await walletLoginPrincipal(wallet, sessionToken);
+      await establishBrowser({ req, res }, principal);
+      clearLineWebSessionCookie({ req, res });
+    }
     // 3) Set HttpOnly cookies so the browser sends them automatically; JS can't read them.
     setCookie("access_token", access_token, {
       req,
@@ -92,7 +102,7 @@ export default async function handler(
     res.status(200).json({ success: true, message: "Session established" });
   } catch (error) {
     res
-      .status(500)
+      .status(ssoEnabled() ? ssoFailure(error).status : 500)
       .json({ success: false, message: "Internal Server Error" });
   }
 }

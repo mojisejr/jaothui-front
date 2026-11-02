@@ -1,4 +1,6 @@
 import type { GetServerSideProps } from "next";
+import { setCookie } from "cookies-next";
+import { hash, noStore, ssoConfig, ssoEnabled } from "../../../../server/auth/event-sso";
 import Image from "next/image";
 import { classifyAuthFailure, logAuthStage } from "../../../../server/auth/diagnostics";
 import { getAuthRequestId } from "../../../../server/auth/request-id";
@@ -23,9 +25,14 @@ export const getServerSideProps: GetServerSideProps<LineWebStartProps> = async (
   req,
   res,
 }) => {
+  noStore(res);
   try {
     const returnTo = normalizeWebLineReturnTo(getSingleQueryValue(query.returnTo));
     const { state, payload } = createWebLineOAuthState(returnTo);
+    if (ssoEnabled()) {
+      ssoConfig();
+      setCookie("jaothui_line_login_state", hash(state), { req, res, path: "/", httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 600 });
+    }
 
     return {
       redirect: {
