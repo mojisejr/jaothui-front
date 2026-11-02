@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import Head from "next/head";
 import { useState, useEffect } from "react";
 import type { AppProps } from "next/app";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -11,6 +12,7 @@ import { MenuProvider } from "../contexts/menuContext";
 import { BitkubNextProvider } from "../contexts/bitkubNextContext";
 import { NewAssetProvider } from "../contexts/newAssetContext";
 import { trpc } from "../utils/trpc";
+import { PhotoRefreshLifecycle } from "../components/v2/PhotoRefresh";
 
 import { QueryClient } from "@tanstack/react-query";
 
@@ -19,6 +21,9 @@ import { PrivilegeProvider } from "../contexts/privilegeContext";
 import { useRouter } from "next/router";
 
 const queryClient = new QueryClient();
+type PublicPageComponent = AppProps["Component"] & {
+  publicPage?: boolean;
+};
 
 const { chains, provider } = configureChains(
   [bitkub_mainnet],
@@ -40,7 +45,8 @@ const wagmiClient = createClient({
   provider,
 });
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
+const AppContent = ({ Component, pageProps }: AppProps) => {
+  const PageComponent = Component as PublicPageComponent;
   const router = useRouter();
   const [showChild, setShowChild] = useState(false);
   useEffect(() => {
@@ -58,6 +64,10 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     router.events.on("routeChangeError", handleComplete);
   }, [router]);
 
+  if (PageComponent.publicPage) {
+    return <PageComponent {...pageProps} />;
+  }
+
   if (!showChild) {
     return <div className="loading loading-spinner"></div>;
   }
@@ -73,7 +83,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
               <MenuProvider>
                 <NewAssetProvider>
                   <PrivilegeProvider>
-                    <Component {...pageProps} />
+                    <PageComponent {...pageProps} />
                   </PrivilegeProvider>
                 </NewAssetProvider>
               </MenuProvider>
@@ -84,5 +94,20 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     );
   }
 };
+
+// Page-level next/head overrides these defaults without duplicate social titles.
+const MyApp = (props: AppProps) => (
+  <>
+    <Head>
+      <title>Jaothui NFT Official</title>
+      <meta
+        name="description"
+        content="ยกระดับควายไทย ยกระดับการอนุรักษ์ ส่งควายไทย ให้โด่งดังไปสู่ Global กับโปรเจกต์ ‘JAOTHUI NFT’"
+      />
+    </Head>
+    <AppContent {...props} />
+    <PhotoRefreshLifecycle />
+  </>
+);
 
 export default trpc.withTRPC(MyApp);

@@ -1,0 +1,7 @@
+{
+  "provenance": "Synthetic committed public-row projections grounded in Dashboard tree 0d7595c: field-policy intentToDatabase; create/workflow project; edit/workflow rawProjection/project. No copied production records or private ledger.",
+  "legacy": { "tokenId": "71", "image": "https://wtnqjxerhmdnqszkhbvs.supabase.co/storage/v1/object/public/slipstorage/buffalo/71", "updatedAt": "1720000000" },
+  "created": { "tokenId": "9007199254740993", "image": "https://wtnqjxerhmdnqszkhbvs.supabase.co/storage/v1/object/public/slipstorage/operations/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/11111111-1111-4111-8111-111111111111/source.jpg", "updatedAt": "1792486800000" },
+  "pending": { "publishedRowUnchanged": true, "draftImageNotPublicInput": "https://wtnqjxerhmdnqszkhbvs.supabase.co/storage/v1/object/public/slipstorage/operations/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/22222222-2222-4222-8222-222222222222/source.jpg" },
+  "completed": { "tokenId": "9007199254740993", "image": "https://wtnqjxerhmdnqszkhbvs.supabase.co/storage/v1/object/public/slipstorage/operations/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/22222222-2222-4222-8222-222222222222/source.jpg", "updatedAt": "1792486860000" }
+}

@@ -11,6 +11,10 @@ The digital home and verification hub for JAOTHUI NFT. It serves as the bridge b
 ## 2. 🏛️ Key Landmarks (Navigation)
 - 📍 `pages/`: ระบบ Routing หลัก (Next.js Pages)
   - `/cert/` - หน้าข้อมูลใบพันธุ์ประวัติ (Pedigree/Certificate detail)
+  - `/privacy`, `/support` - public unauthenticated policy/support routes used by JAOTHUI Mobile App Store submission
+  - `/download` - public SSR download landing; fixed JAOTHUI Store links, desktop/manual QR fallback, client-only device handoff and static social-preview metadata. `DownloadPage.publicPage=true` bypasses the wallet/auth render gate. Routing: `utils/download-routing.ts`; proof: `npm run test:download` with optional `DOWNLOAD_CHECK_BASE_URL` for actual HTML/asset checks. Shared URL stays `https://www.jaothui.com/download`; no mobile build or DB change. `JAOTHUI_HOME_VERSION=v2` + redeploy reopens existing v2 root; v1 rollback remains available.
+  - Homepage app invitation: `components/v2/HomeAppDownload.tsx` sits under real stats on `/v2`; fixed Store links and desktop QR reuse `/download`. `AppDownloadActions.tsx` / `utils/share-download.ts` provide native share → clipboard → selectable URL, with no copy after cancellation. Proof: `npm run test:home-app-invitation` plus actual browser interactions.
+    - `HomeAppDownloadPrompt.tsx` is mounted only on this homepage. Native dialog, ~2s visible-page delay, X/backdrop/Escape close, focus/scroll cleanup. `utils/home-app-invitation.ts` owns versioned localStorage timestamp, rolling 24h from display; storage unavailable/clock rollback fail quiet. No account/device tracking or DB writes; another browser/private session has a separate cooldown. Formal DESIGN.md machine audit remains unavailable until its existing contract is completed.
   - `/profile/`, `/store/`, `/jaothui-studio/` - เส้นทางหลักอื่นๆ ของ Platform
 - 🎨 `components/`: หัวใจของ UI (เป้าหมายหลักสำหรับ **Redesign UI**)
   - มีการแบ่งแยกย่อยตาม Feature: `Cert`, `Profile`, `Store`, `Home`, `Shared` ฯลฯ
@@ -33,6 +37,27 @@ The digital home and verification hub for JAOTHUI NFT. It serves as the bridge b
 - **Component Fragmentation**: ระหว่างการทำ **UI Redesign** ต้องระมัดระวังโครงสร้างเดิมที่แบ่งไว้ใน `components/` หลายโฟลเดอร์ ควรมีการวาง Design System (Tokens / Tailwind Classes) ให้ชัดเจน
 - **Performance/RPC Latency**: หน้าเว็บอาจโหลดช้าลงถ้าเกิด Fallback กลับไปดึง RPC ข้อมูลจาก Blockchain โดยตรง
 
+## 5. 🖤🟡 v2 Redesign (Dark-Gold-Green) — `#jaothui-redesign-v2`
+Additive dark-gold-green reskin on branch `redesign/v2` (cut from `origin/main`). New surface lives under `components/v2/` (cva primitives + `V2Layout`) and `pages/v2/*`; the live owner-demo flow (`/cert/*` detail, login loading) is **converged in place** onto v2. Legacy daisyUI shell/theme is left intact.
+
+- **Landmarks**: `components/v2/` (primitives: Button, Badge, StatCard, BuffaloCard, WalletCard, BottomNav, FilterDrawer, Avatar, SettingsRow, SearchInput, Spinner, StatRow, RemoteImage, Pagination, V2Layout). Pages: `pages/v2/{index,buffalo,profile}.tsx`. Converged: `pages/cert/[microchip]/{index,certificate,reward}.tsx` → `components/Cert/Detail/BuffaloDetailV2.tsx`. Design contract: `DESIGN.md`.
+- **🔴 Breakpoints (MUST READ)**: `tailwind.config.js` **replaces** Tailwind's default `screens`. Only these exist: `mobileS`(375) `mobileM`(425) `tabletS`(768) `tabletM`(1024) `labtop`(1440, note the spelling) `desktop`(1920) `desktopM`(2330). **`sm:` / `md:` / `lg:` / `xl:` DO NOT EXIST and fail silently** — never use them. Mobile-first; add `tabletS:` / `labtop:` upward. (Also in `DESIGN.md §8`.)
+- **🔴 Modals must `createPortal` to `document.body`** — `V2Layout <main>` is `relative z-10` and traps overlays under the `z-40` nav; portal out + pinned footer (see `components/v2/FilterDrawer.tsx`).
+- **🔴 Never `bun run build` while `bun run dev` runs** — corrupts `.next`. Stop dev first.
+- **Auth**: reuse `useBitkubNext()` + Bitkub OAuth (`ReactBitkubNextOauth2`); do not rebuild. v2 login returns via `localStorage["bkc_post_login"]` read in `pages/oauth/callback.tsx` (default stays `/profile`).
+- **📦 PR convention (updated 2026-07-22)**: operator changed the repo workflow to skip `staging`; feature branches now cut from `main` and PR directly to **`main`**. AI may open the PR when requested; operator merges.
+- **🕓 Deferred TODOs (not in the owner-demo scope)**: reskin `store/*`, `game/*`, `privilege/*`, `myfarm/*`, `order/*`, `mycert`; build a real `/v2/wallet` (nav tab hidden until then); real Dark/Light theme toggle + the 4 disabled profile settings rows; upgrade `@bitkub-blockchain/react-bitkubnext-oauth2` (`^0.0.15`, pre-1.0); optional daisyUI removal (whole-app migration).
+- **Home count authority (2026-10-03)**: `server/services/home-stats.service.ts` supplies both `/v2` ISR props and mobile `/api/mobile/v1/home`: all legacy User, all Pedigree, Pedigree with matching Certificate, and published JAOTHUI Event Sanity events minus the reviewed stable test ID. 60s cache/in-flight dedup; unavailable metrics are `—`/null, not fake0 or marketing placeholders. Source/config/API contract: `HOME_STATS_DATA.md`. News/events rail uses separate editorial `newsEvent` content and is not an event-count authority.
+- **Home-only counter presentation (2026-10-03)**: `components/v2/HomeStatsGrid.tsx` + `homeCountUp.ts`: one-shot offscreen-prepared 1200ms easeOutCubic, child-only updates, final SSR/initial-visible fallback, fixed numeric width/stable accessible final label, live reduced-motion and lifecycle cleanup. `StatCard` showcase remains static. Proof: `npm run test:home-countup`; visual hydration/viewport timing requires web-eye.
+
+## 6. 📱 App Store Support Surface — `#jaothui-mobile-ios-internal-build`
+JAOTHUI Mobile uses `https://www.jaothui.com` as its production API/web authority. App Store Connect submission requires stable public URLs, so policy/support pages live in this repo rather than the Expo app.
+
+- **Routes**: `pages/privacy.tsx` and `pages/support.tsx`.
+- **Requirements**: public, unauthenticated, production URL returns HTTP 200, no LINE/Bitkub/Apple session required.
+- **Privacy scope**: public browsing; optional LINE account profile fields; optional Bitkub NEXT wallet address/email; account/session identifiers; member/farm/certificate/buffalo linkage when a user connects an identity.
+- **App Store Connect values**: Privacy Policy URL `https://www.jaothui.com/privacy`; Support URL `https://www.jaothui.com/support`.
+
 ---
-*Generated by Oracle on: 2026-03-05*
+*Generated by Oracle on: 2026-03-05 · v2 redesign notes appended 2026-07-05 · App Store support notes appended 2026-07-22*
 *Note: Ready for Phase: UI Redesign Blueprinting*

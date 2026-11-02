@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import { PHOTO_METADATA_QUERY_POLICY } from "../../utils/photo-contract";
 
 import Layout from "../../components/Layouts";
 import PedigreeCard from "../../components/Shared/Card/PedigreeCard";
@@ -17,7 +18,8 @@ import {
 import { useRouter } from "next/router";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import Link from "next/link";
-import Image from "next/image";
+import { BuffaloPhoto } from "../../components/v2/BuffaloPhoto";
+import { PhotoRefreshButton } from "../../components/v2/PhotoRefresh";
 
 type AgeOperator = ">" | "<" | ">=" | "<=" | "=";
 type SortBy = "latest" | "oldest" | "youngest";
@@ -32,6 +34,7 @@ interface FilterParams {
 }
 
 interface RecentlyViewedItem {
+  photoTokenId?: string;
   microchip: string;
   name: string;
   image?: string;
@@ -96,7 +99,7 @@ function DiscoverySkeletonGrid() {
           key={index}
           className="w-full max-w-[320px] overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur animate-pulse"
         >
-          <div className="mb-4 h-52 rounded-2xl bg-white/10" />
+          <div className="mb-4 aspect-[3/2] w-full rounded-photo bg-white/10" />
           <div className="space-y-3">
             <div className="h-5 w-2/3 rounded-full bg-white/10" />
             <div className="h-4 w-1/2 rounded-full bg-white/10" />
@@ -186,6 +189,7 @@ const CertMainPage: NextPage = () => {
     queryInput,
     {
       keepPreviousData: true,
+      ...PHOTO_METADATA_QUERY_POLICY,
     }
   );
   const [currentData, setCurrentData] = useState<IMetadata[]>([]);
@@ -257,6 +261,7 @@ const CertMainPage: NextPage = () => {
       microchip: metadata.microchip,
       name: metadata.name,
       image: metadata.image,
+      photoTokenId: metadata.photoTokenId,
       timestamp: Date.now(),
     };
 
@@ -636,29 +641,31 @@ const CertMainPage: NextPage = () => {
             </div>
           ) : null}
 
+          <PhotoRefreshButton />
           {recentlyViewed.length > 0 ? (
             <div className="mb-3 mt-4 px-[22px]">
               <div className="mb-2 text-sm font-semibold">Recently Viewed</div>
               <div className="flex gap-3 overflow-x-auto pb-2">
                 {recentlyViewed.map((item) => (
-                  <Link
+                  <div
                     key={item.microchip}
-                    href={`/cert/${item.microchip}`}
-                    className="flex flex-shrink-0 flex-col items-center gap-1"
+                    className="relative flex w-14 flex-shrink-0 flex-col items-center gap-1"
                   >
-                    <div className="relative h-14 w-14 overflow-hidden rounded-full border border-white/10">
-                      <Image
-                        src={item.image || "images/thuiLogo.png"}
+                    <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-photo focus-visible:ring-2 focus-visible:ring-focus-ring" />
+                    <div className="w-14">
+                      <BuffaloPhoto
+                        thumbnail
+                        src={item.image}
+                        photoTokenId={item.photoTokenId} microchip={item.microchip} stale
                         alt={item.name}
-                        fill
                         sizes="56px"
-                        className="object-cover"
+                        fallback="/images/thuiLogo.png"
                       />
                     </div>
                     <div className="max-w-[72px] truncate text-center text-xs">
                       {item.name}
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>

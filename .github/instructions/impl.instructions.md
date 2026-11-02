@@ -40,10 +40,10 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 
 ### Implementation Steps
 
-1. **Sync Staging Branch**:
+1. **Sync Main Branch**:
    ```bash
-   git checkout staging
-   git pull origin staging
+   git checkout main
+   git pull origin main
    ```
 
 2. **Create Feature Branch**:
@@ -130,7 +130,7 @@ Implementation Workflow - Execute GitHub issue implementation based on current m
 
 ## Notes
 
-- Always works from staging branch as base
+- Always works from `main` branch as base
 - Feature branch naming is strictly enforced
 - 100% validation is mandatory before commits
 - Mode affects who performs implementation steps

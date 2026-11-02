@@ -1,8 +1,7 @@
 import { useRouter } from "next/router";
-import Layout from "../../../components/Layouts";
-import Loading from "../../../components/Shared/Indicators/Loading";
 import { trpc } from "../../../utils/trpc";
 import RewardBox from "../../../components/Reward/RewardBox";
+import { V2Layout, Spinner } from "../../../components/v2";
 
 const RewardPage = () => {
   const router = useRouter();
@@ -13,15 +12,15 @@ const RewardPage = () => {
   );
 
   return (
-    <Layout>
+    <V2Layout activeTab="buffalo">
       {isLoading ? (
-        <div className="min-h-screen flex justify-center">
-          <Loading size="lg" />
+        <div className="flex min-h-[60vh] justify-center pt-16">
+          <Spinner size="lg" />
         </div>
       ) : (
         <RewardBox buffaloName={name as string} reward={reward!} />
       )}
-    </Layout>
+    </V2Layout>
   );
 };
 

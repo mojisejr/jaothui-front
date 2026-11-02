@@ -1,6 +1,11 @@
+import { CopyMicrochip } from "../../v2/CopyMicrochip";
 import Link from "next/link";
 import { useRef } from "react";
 import { trpc } from "../../../utils/trpc";
+import { BuffaloPhoto } from "../../v2/BuffaloPhoto";
+import { BuffaloPhotoFeedback, BuffaloPhotoStatus } from "../../v2/BuffaloPhotoFeedback";
+import { BuffaloSex } from "../../v2/BuffaloSex";
+import { PHOTO_METADATA_QUERY_POLICY } from "../../../utils/photo-contract";
 
 const pedigreeBatch = [
   "764040226300035",
@@ -15,7 +20,7 @@ const pedigreeBatch = [
 
 const Pedigree = () => {
   const desktopRailRef = useRef<HTMLDivElement>(null);
-  const { data, isLoading } = trpc.metadata.getBatch.useQuery(pedigreeBatch);
+  const { data, isLoading } = trpc.metadata.getBatch.useQuery(pedigreeBatch, PHOTO_METADATA_QUERY_POLICY);
 
   const scrollDesktopRail = (direction: "left" | "right") => {
     if (!desktopRailRef.current) {
@@ -68,25 +73,26 @@ const Pedigree = () => {
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-[22px] py-2 tabletS:hidden">
               {data
                 ? data.map((item, index) => (
-                    <Link
-                      key={item.microchip}
-                      href={`/cert/${item.microchip}`}
-                      className="flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
+                    <BuffaloPhotoFeedback key={item.microchip}><div
+                      className="relative flex items-center gap-3 rounded-2xl border border-base-300 bg-thuiwhite p-3 shadow-sm transition hover:border-thuiyellow"
                     >
-                      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-base-200">
-                        <img
-                          className="h-full w-full object-cover"
-                          src={item.image ? item.image : "/images/thuiLogo.png"}
+                      <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-2xl focus-visible:ring-2 focus-visible:ring-focus-ring" />
+                      <div className="w-20 flex-shrink-0">
+                        <BuffaloPhoto
+                          thumbnail
+                          src={item.image}
+                          photoTokenId={item.photoTokenId} microchip={item.microchip}
                           alt={item.name}
+                          sizes="80px"
+                          fallback="/images/thuiLogo.png"
                         />
                       </div>
                       <div className="min-w-0 flex-1 text-left text-thuidark">
-                        <div className="truncate text-lg font-bold leading-tight">
-                          {item.name}
-                        </div>
+                        <div className="flex min-w-0 items-start justify-between gap-2"><div className="min-w-0 flex-1 line-clamp-2 break-words text-lg font-bold leading-tight">{item.name}</div><BuffaloSex value={item.sex} /></div>
                         <div className="mt-1 truncate text-sm font-bold text-thuigray">
-                          Microchip: {item.microchip}
+                          <CopyMicrochip value={item.microchip} className="relative z-20" />
                         </div>
+                        <BuffaloPhotoStatus />
                         {/* <div className="mt-1 line-clamp-1 text-sm font-semibold text-thuigray">
                           สายเลือด: {item.detail ? item.detail : "-"}
                         </div> */}
@@ -94,7 +100,7 @@ const Pedigree = () => {
                       <div className="text-right text-xs font-bold text-thuigray">
                         #{index + 1}
                       </div>
-                    </Link>
+                    </div></BuffaloPhotoFeedback>
                   ))
                 : "ไม่มีข้อมูล"}
             </div>
@@ -102,60 +108,43 @@ const Pedigree = () => {
             <div className="hidden tabletS:block">
               <div className="mx-auto w-full max-w-[1400px] px-[22px] py-2">
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-16 bg-gradient-to-r from-thuiwhite via-thuiwhite/90 to-transparent tabletM:block" />
-                  <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-l from-thuiwhite via-thuiwhite/95 to-transparent tabletM:block" />
                   <div
                     ref={desktopRailRef}
                     className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16"
                   >
                   {data
                     ? data.map((item, index) => (
-                        <Link
-                          key={item.microchip}
-                          href={`/cert/${item.microchip}`}
-                          className="group flex h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
+                        <BuffaloPhotoFeedback key={item.microchip}><div
+                          className="group relative flex min-h-[184px] w-[380px] shrink-0 snap-center overflow-hidden rounded-[30px] border border-base-300 bg-gradient-to-br from-thuiwhite via-thuiwhite to-[#fff8e8] shadow-sm transition duration-300 hover:-translate-y-1 hover:border-thuiyellow hover:shadow-xl"
                         >
-                          <div className="relative flex w-[168px] shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br from-[#fff7df] via-[#fffdf4] to-thuiwhite p-4">
-                            <img
-                              className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
-                              src={item.image ? item.image : "/images/thuiLogo.png"}
-                              alt={item.name}
-                            />
-                            <div className="absolute left-4 top-4 rounded-full bg-thuiwhite/95 px-3 py-1 text-xs font-bold text-thuidark shadow-sm">
-                              #{index + 1}
-                            </div>
-                            <div className="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-thuigray backdrop-blur-sm">
-                              Pedigree
+                          <Link href={`/cert/${item.microchip}`} aria-label={`ดูรายละเอียด ${item.name}`} className="absolute inset-0 z-10 rounded-[30px] focus-visible:ring-2 focus-visible:ring-focus-ring" />
+                          <div className="flex w-[168px] shrink-0 items-center justify-center bg-surface p-4">
+                            <div className="w-full">
+                              <BuffaloPhoto src={item.image} photoTokenId={item.photoTokenId} microchip={item.microchip} alt={item.name} sizes="136px" fallback="/images/thuiLogo.png" />
                             </div>
                           </div>
 
                           <div className="flex flex-1 flex-col justify-between p-6 text-left text-thuidark">
                             <div className="min-w-0">
                               <div className="text-xs font-bold uppercase tracking-[0.24em] text-thuigray/70">
-                                Thai Buffalo
+                                Thai Buffalo · #{index + 1}
                               </div>
-                              <div className="mt-2 line-clamp-2 text-2xl font-bold leading-tight">
-                                {item.name}
-                              </div>
+                              <div className="mt-2 flex min-w-0 items-start justify-between gap-2"><div className="min-w-0 flex-1 line-clamp-2 break-words text-2xl font-bold leading-tight">{item.name}</div><BuffaloSex value={item.sex} /></div>
                               <div className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-thuigray/70">
                                 Microchip
                               </div>
                               <div className="mt-2 inline-flex max-w-full rounded-full bg-base-200/70 px-3 py-1 text-sm font-semibold text-thuigray/90">
-                                <span className="truncate">{item.microchip}</span>
+                                <CopyMicrochip value={item.microchip} className="relative z-20" />
                               </div>
                             </div>
 
-                            <div className="mt-4 flex items-center justify-between border-t border-base-300/70 pt-4 text-sm font-semibold text-thuigray">
+                            <BuffaloPhotoStatus />
+                            <div className="mt-4 flex items-center justify-between gap-2 border-t border-base-300/70 pt-4 text-sm font-semibold text-thuigray">
                               <span className="text-thuidark/80">เปิดดูใบพันธุ์ประวัติ</span>
-                              <span className="flex items-center gap-2 text-thuiyellow transition group-hover:translate-x-1">
-                                <span className="text-xs uppercase tracking-[0.2em] text-thuigray/70">
-                                  View
-                                </span>
-                                <span className="text-lg leading-none">→</span>
-                              </span>
+                              <span className="flex items-center gap-2 text-thuiyellow transition group-hover:translate-x-1"><span className="text-xs uppercase tracking-[0.2em] text-thuigray/70">View</span><span className="text-lg leading-none">→</span></span>
                             </div>
                           </div>
-                        </Link>
+                        </div></BuffaloPhotoFeedback>
                       ))
                     : <div className="rounded-2xl border border-dashed border-base-300 bg-thuiwhite px-6 py-10 text-thuigray">ไม่มีข้อมูล</div>}
                   </div>
@@ -185,8 +174,6 @@ const Pedigree = () => {
             <div className="hidden tabletS:block">
               <div className="mx-auto w-full max-w-[1400px] px-[22px] py-2">
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-16 bg-gradient-to-r from-thuiwhite via-thuiwhite/90 to-transparent tabletM:block" />
-                  <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-20 bg-gradient-to-l from-thuiwhite via-thuiwhite/95 to-transparent tabletM:block" />
                   <div className="scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 tabletS:pr-10 tabletM:pl-4 tabletM:pr-16">
                   {Array.from({ length: 4 }).map((_, index) => (
                     <div

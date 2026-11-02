@@ -1,0 +1,22 @@
+import assert from "node:assert/strict";
+import { X509Certificate } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { resolvePrismaDatabaseUrl, BUNDLED_SUPABASE_CA } from "../server/prisma-url.ts";
+
+assert.equal(resolvePrismaDatabaseUrl(undefined, "/var/task"), undefined);
+const unchanged = ["invalid", "postgresql://synthetic@127.0.0.1:55433/local", "postgres://synthetic@db.invalid:5432/postgres?connection_limit=2", "postgresql://synthetic@db.invalid/postgres?sslcert=/custom/ca.crt"];
+for (const input of unchanged) assert.equal(resolvePrismaDatabaseUrl(input, "/var/task"), input);
+const input = `postgresql://synthetic:encoded%40password@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1&connect_timeout=5&pool_timeout=10&sslmode=require&sslaccept=strict&sslcert=${BUNDLED_SUPABASE_CA}`;
+const before = new URL(input);
+const after = new URL(resolvePrismaDatabaseUrl(input, "/var/task"));
+for (const key of ["protocol", "hostname", "port", "username", "password", "pathname"]) assert.equal(after[key], before[key]);
+for (const [key, value] of before.searchParams) if (key !== "sslcert") assert.equal(after.searchParams.get(key), value);
+assert.equal(after.searchParams.get("sslcert"), `/var/task/prisma/${BUNDLED_SUPABASE_CA}`);
+const cert = new X509Certificate(await readFile(new URL("../prisma/certs/supabase-prod-ca-2021.crt", import.meta.url)));
+assert.equal(cert.fingerprint256, "80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA");
+assert.ok(Date.parse(cert.validTo) > Date.now(), "Bundled public CA expired; revalidate vendor trust anchor");
+const prismaSource = await readFile(new URL("../server/prisma.ts", import.meta.url), "utf8");
+assert.match(prismaSource, /log:\s*\[\]/, "Raw Prisma argument/error logging must remain disabled");
+const config = (await import("../next.config.js")).default;
+assert.ok(config.experimental.outputFileTracingIncludes["/*"].includes("./prisma/certs/supabase-prod-ca-2021.crt"));
+console.log("PASS: explicit CA resolution only, original connection identity/budget/TLS unchanged, pinned public CA, tracing include, raw engine logs disabled; no network.");

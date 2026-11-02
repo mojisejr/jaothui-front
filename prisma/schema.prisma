@@ -7,6 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                    String                 @id @default(cuid())
+  displayName           String?
+  avatarUrl             String?
+  email                 String?
+  role                  String                 @default("USER")
+  status                String                 @default("ACTIVE")
+  deletedAt             DateTime?
+  deletionPolicyVersion String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  mobileLineLinkIntents MobileLineLinkIntent[]
+  browserSessions       WebBrowserSession[]
+  identities            AccountIdentity[]
+  walletLinks           WalletLink[]
+}
+
+model AccountIdentity {
+  id             String   @id @default(cuid())
+  accountId      String
+  provider       String
+  providerUserId String
+  email          String?
+  displayName    String?
+  avatarUrl      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  account        Account  @relation(fields: [accountId], references: [id])
+
+  @@unique([provider, providerUserId])
+  @@index([accountId])
+}
+
+model WalletLink {
+  id            String    @id @default(cuid())
+  accountId     String
+  walletAddress String    @unique
+  provider      String    @default("bitkub-next")
+  email         String?
+  status        String    @default("LINKED")
+  linkedAt      DateTime  @default(now())
+  verifiedAt    DateTime?
+  account       Account   @relation(fields: [accountId], references: [id])
+
+  @@index([accountId])
+}
+
 model User {
   id                  Int                  @id @default(autoincrement())
   avatar              String?
@@ -167,4 +214,87 @@ model Reward {
   eventDate   DateTime?
   rewardName  String
   Pedigree    Pedigree  @relation(fields: [microchip], references: [microchip])
+}
+
+// Durable, one-shot OAuth linkage; never stores LINE access or ID tokens.
+model MobileLineLinkIntent {
+  id                 String    @id
+  accountId          String
+  purpose            String
+  returnIntent       Json
+  stateNonceHash     String
+  expiresAt          DateTime
+  callbackClaimedAt  DateTime?
+  handoffHash        String?   @unique
+  verifiedProfile    Json?
+  consumedAt         DateTime?
+  redeemedAt         DateTime?
+  linkedIdentityHash String?
+  createdAt          DateTime  @default(now())
+  account            Account   @relation(fields: [accountId], references: [id])
+
+  @@index([accountId, expiresAt])
+}
+
+// Server-only browser families and applicant-only Event credentials.
+model WebBrowserSession {
+  id                String                @id
+  accountId         String
+  credentialHash    String
+  credentialKind    String
+  credentialSubject String
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  createdAt         DateTime              @default(now())
+  account           Account               @relation(fields: [accountId], references: [id])
+  grants            WebEventGrant[]
+  sessions          WebEventSession[]
+  attachments       WebLineAttachIntent[]
+
+  @@index([accountId])
+}
+
+model WebEventGrant {
+  id          String            @id
+  browserId   String
+  accountId   String
+  lineId      String
+  stateHash   String
+  challenge   String
+  redirectUri String
+  eventId     String
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  createdAt   DateTime          @default(now())
+  browser     WebBrowserSession @relation(fields: [browserId], references: [id])
+
+  @@index([browserId])
+}
+
+model WebEventSession {
+  id        String            @id
+  browserId String
+  accountId String
+  lineId    String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime          @default(now())
+  browser   WebBrowserSession @relation(fields: [browserId], references: [id])
+
+  @@index([browserId])
+}
+
+model WebLineAttachIntent {
+  id              String            @id
+  browserId       String
+  accountId       String
+  nonce           String
+  returnTo        String
+  expiresAt       DateTime
+  consumedAt      DateTime?
+  verifiedProfile Json?
+  createdAt       DateTime          @default(now())
+  browser         WebBrowserSession @relation(fields: [browserId], references: [id])
+
+  @@index([browserId])
 }

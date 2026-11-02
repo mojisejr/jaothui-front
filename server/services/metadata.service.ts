@@ -1,6 +1,6 @@
 import { isCertificateActivated } from "./certificate.service";
 import { IMetadata } from "../../interfaces/iMetadata";
-import { getImageUrl } from "../supabase";
+import { publishedPhotoFields } from "../photos/source-contract";
 import { prisma } from "../prisma";
 import { calculateBuffaloAge } from "../../utils/age-calculator";
 import type { Prisma } from "@prisma/client";
@@ -51,13 +51,17 @@ function mapPedigreeToMetadata(m: {
   motherId: string | null;
   createdAt: string;
   updatedAt: string;
+  image: string | null;
 }) {
+  const photo = publishedPhotoFields(m);
   return {
     tokenId: +m.tokenId.toString(),
     name: m.name,
     origin: m.origin ?? "thai",
     color: m.color,
-    image: getImageUrl(`${m.tokenId.toString()}.jpg`),
+    image: photo.imageUrl,
+    photoTokenId: photo.photoTokenId,
+    photoSourceKey: photo.photoSourceKey,
     detail: m.detail,
     sex: m.sex,
     birthdate: new Date(m.birthday).getTime(),
@@ -256,7 +260,9 @@ export const getMetadataByMicrochip = async (microchip: string) => {
       name: pedigree.name,
       origin: pedigree.origin ?? "thai",
       color: pedigree.color,
-      imageUri: getImageUrl(`${pedigree.tokenId.toString()}.jpg`),
+      imageUri: publishedPhotoFields(pedigree).imageUrl,
+      photoTokenId: pedigree.tokenId.toString(),
+      photoSourceKey: publishedPhotoFields(pedigree).photoSourceKey,
       detail: pedigree.detail,
       sex: pedigree.sex,
       birthdate: new Date(pedigree.birthday).getTime(),
@@ -298,7 +304,9 @@ export const getMetadataBatch = async (microchips: string[]) => {
 
   const parsed = metadata.map((d) => ({
     ...d,
-    image: `${d.image}.jpg`,
+    image: publishedPhotoFields(d).imageUrl,
+    photoTokenId: d.tokenId.toString(),
+    photoSourceKey: publishedPhotoFields(d).photoSourceKey,
     origin: d.origin ?? "thai",
     birthdate: new Date(d.birthday).getTime(),
     calculatedAge: calculateBuffaloAge(d.birthday.getTime()),
@@ -364,7 +372,9 @@ export const searchByKeyword = async (keyword: string) => {
 
   const parsed = metadata.map((d) => ({
     ...d,
-    image: `${d.image}.jpg`,
+    image: publishedPhotoFields(d).imageUrl,
+    photoTokenId: d.tokenId.toString(),
+    photoSourceKey: publishedPhotoFields(d).photoSourceKey,
     origin: d.origin ?? "thai",
     birthdate: new Date(d.birthday).getTime(),
     calculatedAge: calculateBuffaloAge(d.birthday.getTime()),

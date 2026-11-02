@@ -1,3 +1,4 @@
+import { CopyMicrochip } from "../../v2/CopyMicrochip";
 import Link from "next/link";
 import { IMetadata } from "../../../interfaces/iMetadata";
 import CountryFlag from "../CountryFlag";
@@ -7,6 +8,10 @@ import { parseThaiDate } from "../../../helpers/parseThaiDate";
 import { useState } from "react";
 import { useBitkubNext } from "../../../contexts/bitkubNextContext";
 import { FaHeart } from "react-icons/fa";
+import { BuffaloPhoto } from "../../v2/BuffaloPhoto";
+import { BuffaloPhotoFeedback, BuffaloPhotoStatus } from "../../v2/BuffaloPhotoFeedback";
+import { BuffaloSex } from "../../v2/BuffaloSex";
+import { formatBuffaloAge } from "../../v2/formatAge";
 
 interface PedigreeCardProps {
   data: IMetadata;
@@ -32,7 +37,7 @@ const PedigreeCard = ({
   const thaiDate = parseThaiDate(data?.birthdate!);
 
   return (
-    <div className="relative w-84">
+    <BuffaloPhotoFeedback key={data.microchip}><div className="relative w-full max-w-[320px]">
       {exit ? (
         <div className="absolute top-0 left-0 w-full h-full  z-[10] flex justify-center items-center">
           <div className="p-2 bg-primary rounded-xl bg-opacity-70 flex gap-2 items-center">
@@ -52,6 +57,7 @@ const PedigreeCard = ({
           y: -3,
         }}
       >
+        <div className="relative block w-full rounded-xl shadow-xl">
         <Link
           onClick={() => {
             setExit(true);
@@ -59,37 +65,20 @@ const PedigreeCard = ({
           }}
           // href={`/cert/${data ? data.microchip : null}?i=${data.tokenId}`}
           href={`/cert/${data ? data.microchip : null}${isConnected && vote && eventId != undefined ? `?e=${eventId}&vote=true` : ""}`}
-          className="relative w-full rounded-xl shadow-xl"
-        >
-          {isConnected && vote && eventId != undefined ? (
-            <div className="absolute top-[8%] right-[8%] z-50">
-              <FaHeart
-                className={`${votedMicrochip == data.microchip ? "text-primary" : `${canVote ? "text-[#333]" : "text-[#333] opacity-60"}`}`}
-                size={28}
-              />
-            </div>
-          ) : null}
+          aria-label={`ดูรายละเอียด ${data.name}`}
+          className="absolute inset-0 z-10 rounded-xl focus-visible:ring-2 focus-visible:ring-focus-ring"
+        />
           <div className="p-4">
-            <img
-              className="w-full rounded-xl"
-              src={data ? data.image : "images/thuiLogo.png"}
-              alt="image"
-            />
-            <div className="w-full rounded-xl shadow p-3 flex justify-between items-center">
-              <div>
+            <div className="w-full bg-surface">
+              <BuffaloPhoto src={data?.image} photoTokenId={data?.photoTokenId} microchip={data?.microchip} alt={data?.name || "กระบือ"} sizes="(max-width: 767px) 100vw, 360px" fallback="/images/thuiLogo.png" />
+            </div>
+            <div className="w-full rounded-xl shadow p-3">
+              <div className="flex min-w-0 items-start justify-between gap-2">
+                <div className={`min-w-0 flex-1 line-clamp-2 break-words text-2xl font-bold ${data?.name.startsWith("คุณ") ? "bg-gradient-to-br from-[#FFE15D] via-[#e59a28] to-[#FFE15D] text-transparent bg-clip-text" : "text-secondary"}`}>{data?.name ?? "loading"}</div><BuffaloSex value={data?.sex} />
+              </div>
+              <div className="flex min-w-0 items-center justify-between gap-2"><div className="min-w-0">
                 <div className="text-primary">
-                  {data ? data.microchip : <Loading size="sm" />}
-                </div>
-                <div className="font-bold text-xl">
-                  {data?.name.startsWith("คุณ") ? (
-                    <div className="text-2xl font-bold bg-gradient-to-br from-[#FFE15D] via-[#e59a28] to-[#FFE15D] text-transparent bg-clip-text">
-                      {data?.name ?? "loading"}
-                    </div>
-                  ) : (
-                    <div className="text-2xl font-bold text-secondary">
-                      {data?.name ?? "loading"}
-                    </div>
-                  )}
+                  <CopyMicrochip value={data?.microchip} className="relative z-20 text-xs" />
                 </div>
                 <div className="text-sm">
                   {data ? (
@@ -100,6 +89,13 @@ const PedigreeCard = ({
                 </div>
               </div>
               <div className="flex flex-col items-end gap-1">
+                {isConnected && vote && eventId != undefined ? (
+                  <FaHeart
+                    aria-label={votedMicrochip == data.microchip ? "โหวตแล้ว" : "โหวต"}
+                    className={`${votedMicrochip == data.microchip ? "text-primary" : `${canVote ? "text-[#333]" : "text-[#333] opacity-60"}`}`}
+                    size={28}
+                  />
+                ) : null}
                 {/* 🔢 Index Number Badge */}
                 {index !== undefined && (
                   <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
@@ -110,13 +106,13 @@ const PedigreeCard = ({
                   country={data ? data.origin : "thai"}
                   size="48x36"
                 />
-                <div className="font-semibold">{data.calculatedAge} ด.</div>
               </div>
+              </div><BuffaloPhotoStatus leading={<span className="text-base font-semibold leading-5 text-accent">{formatBuffaloAge(data.calculatedAge)}</span>} />
             </div>
           </div>
-        </Link>
+        </div>
       </motion.div>
-    </div>
+    </div></BuffaloPhotoFeedback>
   );
 };
 

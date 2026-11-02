@@ -1,0 +1,121 @@
+import {
+  exchangeAuthorizationCode,
+  getOAuth2AuthorizeURL,
+} from "@bitkub-blockchain/react-bitkubnext-oauth2";
+
+import { getUserData } from "../../helpers/getUserData";
+import { InvalidAuthError } from "../auth/errors";
+import {
+  linkWalletToAccount,
+  requireActiveAccount,
+  WalletLinkConflictError,
+  type AccountServiceClient,
+} from "../services/account.service";
+import type { MobileCustomerAccountSessionPayload } from "./auth-session";
+import {
+  appendWalletLinkHandoffToMobileReturnTo,
+  createMobileWalletLinkHandoff,
+  createMobileWalletLinkState,
+  getBitkubNextClientId,
+  getBitkubNextRedirectUrl,
+  verifyMobileWalletLinkHandoff,
+  verifyMobileWalletLinkState,
+} from "./bitkub-next-auth";
+
+export function buildMobileBitkubNextLinkAuthorizeUrl(input: {
+  accountId: string;
+  returnTo?: string;
+}) {
+  const state = createMobileWalletLinkState({
+    accountId: input.accountId,
+    returnTo: input.returnTo ?? "jaothui://oauth/callback",
+  });
+
+  return {
+    authUrl: getBitkubNextLinkAuthorizeUrl(state),
+    state,
+  };
+}
+
+function getBitkubNextLinkAuthorizeUrl(state: string) {
+  return getOAuth2AuthorizeURL(
+    getBitkubNextClientId(),
+    getBitkubNextRedirectUrl(),
+    state
+  );
+}
+
+export async function createMobileBitkubNextLinkDeepLink(input: {
+  code: string;
+  state: string;
+  accountClient?: AccountServiceClient;
+}) {
+  const verifiedState = verifyMobileWalletLinkState(input.state);
+  // State is short lived but can outlive an account deletion. Refuse before
+  // exchanging/linking so an in-flight callback can never recreate a link.
+  await requireActiveAccount(verifiedState.accountId, input.accountClient);
+  const tokens = await exchangeAuthorizationCode(
+    getBitkubNextClientId(),
+    getBitkubNextRedirectUrl(),
+    input.code
+  );
+
+  if (!tokens?.access_token) {
+    throw new Error("Unable to exchange authorization code");
+  }
+
+  const userData = await getUserData(tokens.access_token);
+  if (!userData.success || !userData.wallet_address) {
+    throw new Error("Unable to validate Bitkub NEXT user");
+  }
+
+  const linkedWallet = await linkWalletToAccount(
+    verifiedState.accountId,
+    userData.wallet_address,
+    {
+      email: typeof userData.email === "string" ? userData.email : null,
+      verifiedAt: new Date(),
+    },
+    input.accountClient
+  );
+
+  const handoff = createMobileWalletLinkHandoff({
+    accountId: verifiedState.accountId,
+    walletAddress: linkedWallet.walletAddress,
+    email: typeof linkedWallet.email === "string" ? linkedWallet.email : null,
+  });
+
+  return appendWalletLinkHandoffToMobileReturnTo(verifiedState.returnTo, handoff);
+}
+
+export function createRefreshedAccountSessionInput(input: {
+  session: MobileCustomerAccountSessionPayload;
+  handoff: string;
+}) {
+  const verifiedHandoff = verifyMobileWalletLinkHandoff(input.handoff);
+  if (verifiedHandoff.accountId !== input.session.accountId) {
+    throw new InvalidAuthError("Mobile wallet link handoff does not match JAOTHUI account");
+  }
+
+  return {
+    accountId: input.session.accountId,
+    primaryProvider: input.session.primaryProvider,
+    providerUserId: input.session.providerUserId,
+    email: input.session.email,
+    displayName: input.session.displayName,
+    avatarUrl: input.session.avatarUrl,
+    linkedWallet: verifiedHandoff.linkedWallet,
+  };
+}
+
+export const createRefreshedLineSessionInput = createRefreshedAccountSessionInput;
+
+export function toMobileWalletLinkErrorCode(error: unknown) {
+  if (error instanceof WalletLinkConflictError) {
+    return "WALLET_ALREADY_LINKED";
+  }
+  if (error instanceof InvalidAuthError) {
+    return "INVALID_WALLET_LINK_HANDOFF";
+  }
+  return "MOBILE_WALLET_LINK_FAILED";
+}

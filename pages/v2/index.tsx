@@ -1,0 +1,228 @@
+import Image from "next/image";
+import { PHOTO_METADATA_QUERY_POLICY } from "../../utils/photo-contract";
+import type { GetStaticProps, InferGetStaticPropsType } from "next";
+import { useRouter } from "next/router";
+import { motion } from "framer-motion";
+import { BsGem } from "react-icons/bs";
+import type { NewsEventHomeItem } from "../../interfaces/NewsEvent";
+import { getHomeNewsEvents } from "../../server/services/news-event.service";
+import { getHomeStats, type HomeStat } from "../../server/services/home-stats.service";
+import { trpc } from "../../utils/trpc";
+import {
+  V2Layout,
+  Button,
+  BuffaloCard,
+  BuffaloPhoto,
+  NewsEventRail,
+  formatThaiBirthdate,
+} from "../../components/v2";
+import { HomeEventZone } from "../../components/v2/HomeEventZone";
+import { HomeStatsGrid } from "../../components/v2/HomeStatsGrid";
+import { HomeAppDownload } from "../../components/v2/HomeAppDownload";
+import { HomeAppDownloadPrompt } from "../../components/v2/HomeAppDownloadPrompt";
+import { PhotoRefreshButton } from "../../components/v2/PhotoRefresh";
+
+/** Featured buffalo — same real microchips the legacy Home rail uses (metadata.getBatch). */
+const FEATURED_MICROCHIPS = [
+  "764040226300035",
+  "764040226600001",
+  "933004022017321",
+  "900115003414178",
+  "900115003414472",
+  "764040226600008",
+];
+
+/** manual fade-up (reliable stagger via incremental delay) */
+const fadeUp = (delay: number) => ({
+  initial: { opacity: 0, y: 22 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] as const },
+});
+
+function Hero() {
+  const router = useRouter();
+  return (
+    <section className="relative overflow-hidden rounded-b-[32px]">
+      <div className="absolute inset-0">
+        <Image
+          src="/images/jaothui-v2-hero-image.png"
+          alt="กระบือไทยยามอาทิตย์อัสดง"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-right"
+        />
+        {/* left→right scrim for headline legibility + bottom fade into the page */}
+        <div className="absolute inset-0 bg-gradient-hero-scrim" />
+        <div className="absolute inset-0 bg-gradient-hero-fade" />
+      </div>
+
+      <div className="relative z-10 flex min-h-[460px] flex-col justify-between px-6 pb-8 pt-7 tabletS:min-h-[560px] tabletS:px-10 labtop:px-14">
+        <motion.div {...fadeUp(0.15)} className="flex items-center gap-2">
+          <Image src="/images/thuiLogo.png" alt="เจ้าทุย" width={36} height={36} className="h-9 w-9 object-contain" />
+          <div className="leading-tight">
+            <p className="text-lg font-bold tracking-wide text-accent">JAOTHUI</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-muted">Thai Buffalo Platform</p>
+          </div>
+        </motion.div>
+
+        <div className="max-w-[15rem] tabletS:max-w-md labtop:max-w-xl">
+          <motion.h1
+            {...fadeUp(0.3)}
+            className="text-[clamp(1.9rem,6vw,3.5rem)] font-bold leading-[1.08] text-foreground"
+          >
+            PRESERVING <span className="text-accent">THAI BUFFALO</span> HERITAGE
+            <span className="block text-[clamp(1rem,2.6vw,1.5rem)] font-semibold text-muted">
+              THROUGH TECHNOLOGY
+            </span>
+          </motion.h1>
+          <motion.p {...fadeUp(0.45)} className="mt-3 text-sm text-muted tabletS:text-base">
+            &ldquo;อนุรักษ์สายพันธุ์ไทย<br />ด้วยเทคโนโลยี เพื่ออนาคตที่ยั่งยืน&rdquo;
+          </motion.p>
+          <motion.div {...fadeUp(0.6)} className="mt-5 flex flex-wrap gap-3">
+            <Button variant="gold-fill" onClick={() => router.push("/v2/buffalo")}>
+              ค้นหาควาย
+            </Button>
+
+            {/* NFT button: flip-in on load + repeating gold shimmer sweep (option A) */}
+            <motion.div
+              initial={{ rotateY: -90, opacity: 0 }}
+              animate={{ rotateY: 0, opacity: 1 }}
+              transition={{ delay: 0.95, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformPerspective: 800 }}
+            >
+              <Button
+                variant="gold-outline"
+                onClick={() => router.push("/v2/buffalo")}
+                className="relative overflow-hidden"
+              >
+                <motion.span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-y-0 left-0 w-1/3 -skew-x-[20deg] bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.28)] to-transparent"
+                  initial={{ x: "-140%" }}
+                  animate={{ x: "460%" }}
+                  transition={{ duration: 1.25, ease: "easeInOut", repeat: Infinity, repeatDelay: 2.8, delay: 1.7 }}
+                />
+                <BsGem className="h-4 w-4" /> NFT เพชรดีกรี
+              </Button>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FeaturedSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-3 mobileS:grid-cols-2 tabletS:grid-cols-4">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div
+          key={i}
+          className="flex animate-pulse flex-col overflow-hidden rounded-photo border border-photo-hairline bg-surface"
+        >
+          <div className="aspect-[3/2] w-full bg-surface" />
+          <div className="space-y-2 p-3">
+            <div className="flex justify-between gap-2"><div className="h-12 w-2/3 rounded bg-surface-raised" /><div className="h-4 w-8 rounded bg-surface-raised" /></div>
+            <div className="h-3 w-1/2 rounded bg-surface-raised" />
+            <div className="h-3 w-2/3 rounded bg-surface-raised" /><div className="h-11 w-full" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Featured() {
+  const router = useRouter();
+  const { data, isLoading } = trpc.metadata.getBatch.useQuery(FEATURED_MICROCHIPS, PHOTO_METADATA_QUERY_POLICY);
+
+  return (
+    <section className="mx-auto w-full max-w-5xl px-5 py-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-base font-semibold text-foreground">กระบือแนะนำ</h2>
+        <PhotoRefreshButton />
+        <button
+          type="button"
+          onClick={() => router.push("/v2/buffalo")}
+          className="text-sm font-semibold text-accent transition-colors hover:text-accent-hover"
+        >
+          ดูทั้งหมด ›
+        </button>
+      </div>
+
+      {isLoading ? (
+        <FeaturedSkeleton />
+      ) : data && data.length > 0 ? (
+        <div className="grid grid-cols-1 gap-3 mobileS:grid-cols-2 tabletS:grid-cols-4">
+          {data.slice(0, 4).map((item) => (
+            <BuffaloCard
+              key={item.microchip}
+              name={item.name}
+              sex={item.sex}
+              chip={item.microchip}
+              microchip={item.microchip}
+              birthdate={formatThaiBirthdate(item.birthdate)}
+              ageMonths={item.calculatedAge}
+              image={
+                <BuffaloPhoto
+                  src={item.image}
+                  photoTokenId={item.photoTokenId} microchip={item.microchip}
+                  alt={item.name}
+                  sizes="(max-width: 767px) 50vw, 250px"
+                />
+              }
+              onClick={() => router.push(`/cert/${item.microchip}`)}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-card border border-dashed border-border-soft px-4 py-8 text-center text-sm text-muted">
+          ยังไม่มีข้อมูลกระบือ
+        </p>
+      )}
+    </section>
+  );
+}
+
+interface V2HomePageProps {
+  newsEvents: NewsEventHomeItem[];
+  stats: HomeStat[];
+  eventsEnabled: boolean;
+}
+
+export const getStaticProps: GetStaticProps<V2HomePageProps> = async () => {
+  const [newsEvents, stats] = await Promise.all([getHomeNewsEvents(), getHomeStats()]);
+
+  return {
+    props: {
+      newsEvents,
+      stats,
+      eventsEnabled: process.env.JAOTHUI_EVENT_SSO_ENABLED === "true",
+    },
+    revalidate: 60,
+  };
+};
+
+export default function V2HomePage({
+  newsEvents,
+  stats,
+  eventsEnabled,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
+  return (
+    <V2Layout activeTab="home">
+      <HomeAppDownloadPrompt />
+      <Hero />
+
+      <HomeStatsGrid stats={stats} />
+
+      {eventsEnabled ? <HomeEventZone /> : null}
+
+      <HomeAppDownload />
+
+      <Featured />
+
+      <NewsEventRail items={newsEvents} />
+    </V2Layout>
+  );
+}
