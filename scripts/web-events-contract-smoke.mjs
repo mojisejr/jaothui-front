@@ -5,6 +5,7 @@ import { renderToString } from "react-dom/server";
 import { mock } from "bun:test";
 import { MobileEventService } from "../server/mobile/events/service.ts";
 import { createWebEventsHandler } from "../server/web/events.ts";
+import { liquidShape, clampLiquidProgress, scrollLiquidProgress } from "../utils/liquid-pagination.ts";
 import { validateEventDates, uniqueOpenEvents, eventEntryHref } from "../utils/web-events.ts";
 
 let count = 0;
@@ -49,6 +50,47 @@ await check("calendar validation rejects impossible/reversed/BE dates; clear and
   const a = { id: "e", publicRegistration: "open" }; assert.equal(uniqueOpenEvents([a, a, { id: "closed", publicRegistration: "closed-date" }]).length, 1);
   assert.equal(eventEntryHref("event.x"), "/v2/event-entry?eventId=event.x");
 });
+// Sample the actual cubic outline, independently of the helper's lobe metadata.
+function outline(path) {
+  const tokens = path.match(/[MCZ]|-?\d+(?:\.\d+)?/g); let i = 0, x = 0, y = 0; const points = [];
+  while (i < tokens.length) {
+    const command = tokens[i++];
+    if (command === "M") { x = Number(tokens[i++]); y = Number(tokens[i++]); points.push([x, y]); }
+    else if (command === "C") {
+      const v = tokens.slice(i, i + 6).map(Number); i += 6;
+      for (let step = 1; step <= 24; step++) {
+        const t = step / 24, u = 1 - t;
+        points.push([u*u*u*x + 3*u*u*t*v[0] + 3*u*t*t*v[2] + t*t*t*v[4], u*u*u*y + 3*u*u*t*v[1] + 3*u*t*t*v[3] + t*t*t*v[5]]);
+      }
+      x = v[4]; y = v[5];
+    }
+  }
+  return points;
+}
+function bounds(points) { return { left: Math.min(...points.map(p => p[0])), right: Math.max(...points.map(p => p[0])), top: Math.min(...points.map(p => p[1])), bottom: Math.max(...points.map(p => p[1])) }; }
+await check("liquid outline has full anchor capsules and a real concave neck, not an elongated pill", () => {
+  for (const count of [1, 2, 5]) for (let anchor = 0; anchor < count; anchor++) {
+    const b = bounds(outline(liquidShape(anchor, count).path)); assert(Math.abs(b.right - b.left - 26) < 0.001); assert(Math.abs(b.bottom - b.top - 8) < 0.001); assert.equal((b.left + b.right) / 2, 22 + anchor * 44);
+  }
+  const points = outline(liquidShape(0.5, 5).path), upper = points.slice(0, 97);
+  const middleX = (Math.min(...points.map(p => p[0])) + Math.max(...points.map(p => p[0]))) / 2;
+  const waist = upper.filter(p => Math.abs(p[0] - middleX) < 0.5); assert(waist.length); assert(Math.min(...waist.map(p => p[1])) > 20, "upper waist bends inward >2px from the lobe tops at18");
+  assert(points.some(p => p[0] < middleX - 8 && p[1] < 18.1)); assert(points.some(p => p[0] > middleX + 8 && p[1] < 18.1));
+  for (let i = 1; i < upper.length; i++) assert(upper[i][0] >= upper[i - 1][0] - 0.001, "upper contour never folds over itself");
+});
+await check("liquid reverse symmetry, multiple anchors, bounded overscroll and continuous mass transfer", () => {
+  let previousCenter = -Infinity;
+  for (let i = 0; i <= 100; i++) {
+    const p = i / 100, forward = bounds(outline(liquidShape(p, 5).path)), reverse = bounds(outline(liquidShape(1 - p, 5).path));
+    assert(Math.abs(forward.left - (88 - reverse.right)) < 0.002); assert(Math.abs(forward.right - (88 - reverse.left)) < 0.002);
+    const center = (forward.left + forward.right) / 2; assert(center >= previousCenter - 0.01); previousCenter = center;
+    assert(forward.top >= 17.999 && forward.bottom <= 26.001); assert(forward.right - forward.left < 65);
+    const shifted = bounds(outline(liquidShape(2 + p, 5).path)); assert(Math.abs(shifted.left - forward.left - 88) < 0.002); assert(Math.abs(shifted.right - forward.right - 88) < 0.002);
+  }
+  assert.equal(clampLiquidProgress(-20, 5), 0); assert.equal(clampLiquidProgress(10, 5), 4); assert.equal(clampLiquidProgress(NaN, 5), 0);
+  assert.equal(scrollLiquidProgress(900, 300, 5), 3); assert.equal(scrollLiquidProgress(900, 0, 5), 0);
+  for (const value of [-1, 0, 0.3, 0.65, 1, 4, 999, NaN]) assert(!/NaN|Infinity/.test(liquidShape(value, 5).path));
+});
 mock.module("next/link", () => ({ default: ({ href, children, ...props }) => React.createElement("a", { href, ...props }, children) }));
 mock.module("next/image", () => ({ default: ({ fill, priority, ...props }) => React.createElement("img", props) }));
 const { HomeEventZone } = await import("../components/v2/HomeEventZone.tsx");
@@ -87,5 +129,7 @@ await check("Home keeps public SSG60 and original editorial/download/photo surfa
   assert(source.indexOf("<HomeStatsGrid") < source.indexOf("<HomeEventZone")); assert(source.indexOf("<HomeEventZone") < source.indexOf("<HomeAppDownload />"));
   for (const value of ["revalidate: 60", "<NewsEventRail items={newsEvents}", "<HomeAppDownloadPrompt", "<Featured />", 'eventsEnabled: process.env.JAOTHUI_EVENT_SSO_ENABLED === "true"']) assert(source.includes(value));
   assert(!source.includes("getServerSideProps"));
+  const css = readFileSync(new URL("../styles/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.scrollbar-none\s*\{[^}]*scrollbar-width:\s*none/s); assert.match(css, /\.scrollbar-none::?-webkit-scrollbar\s*\{[^}]*display:\s*none/s);
 });
 console.log(`WEB_EVENTS_CONTRACT_OK ${count} API/model/SSR cases; no browser/provider proof claimed`);

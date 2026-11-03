@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
-import { EventSsoError, exchangeGrant, introspectSession, noStore, requireClient, revokeEventSession, ssoFailure } from "./event-sso";
+import { recordEventSsoFailure } from "./event-sso-diagnostics";
+import { EventSsoError, exchangeGrant, introspectSession, noStore, requireClient, revokeEventSession } from "./event-sso";
 const tokenBody = z.object({ sessionToken: z.string().max(128) }).strict();
 const exchangeBody = z.object({ code: z.string().max(128), codeVerifier: z.string().max(128), redirectUri: z.string().max(512) }).strict();
 export function eventSsoHandler(action: "exchange" | "introspect" | "revoke") {
@@ -20,7 +21,7 @@ export function eventSsoHandler(action: "exchange" | "introspect" | "revoke") {
       if (action === "revoke") { await revokeEventSession(parsed.data.sessionToken); return res.status(200).json({ ok: true, data: { revoked: true } }); }
       return res.status(200).json({ ok: true, data: await introspectSession(parsed.data.sessionToken) });
     } catch (error) {
-      const failure = ssoFailure(error); return res.status(failure.status).json({ ok: false, error: { code: failure.code } });
+      const { failure } = recordEventSsoFailure({ req, res }, action, error); return res.status(failure.status).json({ ok: false, error: { code: failure.code } });
     }
   };
 }
