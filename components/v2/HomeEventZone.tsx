@@ -147,7 +147,7 @@ export function HomeEventZone() {
 
   if (page && page.items.length === 0 && !error) return null;
   return (
-    <section ref={sectionRef} className="mx-auto w-full max-w-5xl px-5 py-6" aria-labelledby="home-events-title" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onFocusCapture={() => setFocus(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocus(false); }}>
+    <section ref={sectionRef} className="mx-auto w-full max-w-[760px] px-5 py-6" aria-labelledby="home-events-title" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onFocusCapture={() => setFocus(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocus(false); }}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div><p className="mb-1 text-xs font-semibold tracking-wide text-accent">JAOTHUI COMPETITION</p><h2 id="home-events-title" className="text-lg font-semibold text-foreground">งานประกวดที่เปิดรับสมัคร</h2></div>
         {page && page.totalOpen > 5 ? <Link href="/v2/events" className="inline-flex min-h-[44px] items-center text-sm font-semibold text-accent hover:text-accent-hover">ดูทั้งหมด ›</Link> : null}
