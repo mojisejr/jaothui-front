@@ -9,7 +9,7 @@ export function EventPreviewCard({ event }: { event: WebEvent }) {
   return (
     <article className="overflow-hidden rounded-[18px] border border-border-soft bg-surface">
       <div className="relative aspect-video w-full bg-surface">
-        <RemoteImage key={event.imageUrl} src={event.imageUrl} alt={`โปสเตอร์ ${event.name}`} className="object-contain" sizes="(max-width: 767px) 90vw, 640px" />
+        <RemoteImage key={event.imageUrl} src={event.imageUrl} alt={`โปสเตอร์ ${event.name}`} className="object-contain" sizes="(max-width: 767px) 90vw, 720px" />
       </div>
       <div className="space-y-2 p-4 tabletS:p-5">
         <p className="text-sm font-semibold leading-6 text-accent">{eventDayLabel(event.competitionStartDay)}{event.competitionEndDay && event.competitionEndDay !== event.competitionStartDay ? ` – ${eventDayLabel(event.competitionEndDay)}` : ""}</p>
