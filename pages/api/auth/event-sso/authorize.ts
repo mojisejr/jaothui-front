@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { authorizeGrant, EventSsoError, noStore, ssoConfig, ssoFailure, validEventId } from "../../../../server/auth/event-sso";
+import { recordEventSsoFailure } from "../../../../server/auth/event-sso-diagnostics";
+import { authorizeGrant, EventSsoError, noStore, ssoConfig, validEventId } from "../../../../server/auth/event-sso";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   noStore(res);
   try {
@@ -11,9 +12,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try { return res.redirect(302, await authorizeGrant({ req, res }, { eventId, state, challenge })); }
     catch (error) {
       if (error instanceof EventSsoError && ["LOGIN_REQUIRED", "LINE_LINK_REQUIRED", "BROWSER_SESSION_INVALID"].includes(error.code)) {
+        recordEventSsoFailure({ req, res }, "authorize", error, true);
         return res.redirect(302, `/v2/event-entry?${new URLSearchParams({ eventId, state, code_challenge: challenge })}`);
       }
       throw error;
     }
-  } catch (error) { const failure = ssoFailure(error); return res.status(failure.status).json({ ok: false, error: { code: failure.code } }); }
+  } catch (error) { const { failure } = recordEventSsoFailure({ req, res }, "authorize", error); return res.status(failure.status).json({ ok: false, error: { code: failure.code } }); }
 }

@@ -12,7 +12,7 @@ export const BROWSER_COOKIE = "jaothui_browser_sid";
 export type CookieContext = { req: NextApiRequest | GetServerSidePropsContext["req"]; res: NextApiResponse | GetServerSidePropsContext["res"] };
 type Db = PrismaClient | Prisma.TransactionClient;
 export class EventSsoError extends Error {
-  constructor(public status: number, public code: string) { super(code); this.name = "EventSsoError"; }
+  constructor(public status: number, public code: string, public missingVariables?: readonly string[]) { super(code); this.name = "EventSsoError"; }
 }
 export const hash = (value: string) => createHash("sha256").update(value).digest("hex");
 export const randomToken = () => randomBytes(32).toString("base64url");
@@ -20,7 +20,9 @@ export const pkceChallenge = (value: string) => createHash("sha256").update(valu
 export const ssoEnabled = () => process.env.JAOTHUI_EVENT_SSO_ENABLED === "true";
 export function ssoConfig() {
   if (!ssoEnabled()) throw new EventSsoError(404, "SSO_DISABLED");
-  try { assertEventIdentityNamespace(); } catch { throw new EventSsoError(503, "IDENTITY_MAPPING_UNVERIFIED"); }
+  try { assertEventIdentityNamespace(); } catch { throw new EventSsoError(503, "IDENTITY_MAPPING_UNVERIFIED", process.env.JAOTHUI_LINE_LOGIN_CHANNEL_ID ? [] : ["JAOTHUI_LINE_LOGIN_CHANNEL_ID"]); }
+  const missingVariables = ["JAOTHUI_FRONT_ORIGIN", "JAOTHUI_EVENT_ORIGIN", "JAOTHUI_EVENT_SSO_CLIENT_SECRET", "JAOTHUI_EVENT_SSO_STATE_SECRET"].filter(name => !process.env[name]?.trim());
+  if (missingVariables.length) throw new EventSsoError(503, "SSO_CONFIGURATION_UNAVAILABLE", missingVariables);
   const clientSecret = process.env.JAOTHUI_EVENT_SSO_CLIENT_SECRET ?? "";
   const stateSecret = process.env.JAOTHUI_EVENT_SSO_STATE_SECRET ?? "";
   function origin(raw: string | undefined) {
