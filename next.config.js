@@ -2,6 +2,8 @@ const homeVersion = process.env.JAOTHUI_HOME_VERSION?.toLowerCase();
 const shouldRouteHomeToV2 = homeVersion !== "v1";
 const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const sanityDataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+const eventSanityProjectId = process.env.JAOTHUI_EVENT_SANITY_PROJECT_ID;
+const eventSanityDataset = process.env.JAOTHUI_EVENT_SANITY_DATASET;
 
 // News covers come from this configured Sanity project/dataset only. Keep the
 // optimizer closed to other CDN tenants, file assets and non-HTTPS endpoints.
@@ -16,6 +18,21 @@ const sanityImagePatterns = sanityProjectId && sanityDataset ? [{
   hostname: "cdn.sanity.io",
   port: "",
   pathname: `/images/${sanityProjectId}/${sanityDataset}/*`,
+}] : [];
+
+// Competition posters use the existing Event catalogue's public tenant metadata.
+// No Event credential is needed or exposed by the image optimizer allowlist.
+if (eventSanityProjectId && !/^[a-z0-9]+$/.test(eventSanityProjectId)) {
+  throw new Error("Invalid JAOTHUI_EVENT_SANITY_PROJECT_ID for image allowlist");
+}
+if (eventSanityDataset && !/^[a-zA-Z0-9_-]+$/.test(eventSanityDataset)) {
+  throw new Error("Invalid JAOTHUI_EVENT_SANITY_DATASET for image allowlist");
+}
+const eventSanityImagePatterns = eventSanityProjectId && eventSanityDataset ? [{
+  protocol: "https",
+  hostname: "cdn.sanity.io",
+  port: "",
+  pathname: `/images/${eventSanityProjectId}/${eventSanityDataset}/*`,
 }] : [];
 
 /** @type {import('next').NextConfig} */
@@ -61,6 +78,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       ...sanityImagePatterns,
+      ...eventSanityImagePatterns,
       {
         protocol: "https",
         hostname: "wtnqjxerhmdnqszkhbvs.supabase.co",
