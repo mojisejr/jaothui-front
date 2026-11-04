@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
 import React, { act } from "react";
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "https://www.jaothui.com/v2/profile" });
-Object.assign(globalThis, { window: dom.window, document: dom.window.document, navigator: dom.window.navigator, localStorage: dom.window.localStorage, HTMLElement: dom.window.HTMLElement, IS_REACT_ACT_ENVIRONMENT: true });
+Object.assign(globalThis, { window: dom.window, document: dom.window.document, navigator: dom.window.navigator, localStorage: dom.window.localStorage, sessionStorage: dom.window.sessionStorage, HTMLElement: dom.window.HTMLElement, IS_REACT_ACT_ENVIRONMENT: true });
 Object.defineProperty(navigator, "userAgent", { configurable: true, value: "Chrome" });
 Object.defineProperty(window, "isSecureContext", { value: true });
 window.matchMedia = () => ({ matches: false });
@@ -15,18 +15,46 @@ Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: {
 const { createRoot } = await import("react-dom/client");
 const { CompetitionNotifications } = await import("../components/v2/CompetitionNotifications.tsx");
 const helpers = await import("../utils/web-push.ts");
+const intent = await import("../utils/notification-settings-intent.ts");
 let calls = [], fetcher;
 globalThis.fetch = async (url, options = {}) => { calls.push({ url, ...options }); return fetcher(url, options); };
 const ok = data => ({ ok: true, json: async () => ({ ok: true, data }) });
 const key = "B".repeat(87);
 const flush = fn => act(async () => { fn?.(); await Promise.resolve(); await Promise.resolve(); });
 async function mounted(run) {
-  localStorage.clear(); calls = []; permission = "default"; prompts = 0;
+  localStorage.clear(); sessionStorage.clear(); window.history.replaceState({}, "", "/v2/profile"); calls = []; permission = "default"; prompts = 0;
   const host = document.createElement("div"); document.body.append(host); const root = createRoot(host);
   try { await run(host, element => flush(() => root.render(element))); }
   finally { await flush(() => root.unmount()); host.remove(); }
 }
 const click = (host, text) => flush(() => [...host.querySelectorAll("button")].find(button => button.textContent.includes(text)).click());
+await mounted(async (host, render) => {
+  window.history.replaceState({}, "", "/v2/profile#competition-notifications");
+  fetcher = async () => ok({ available: false, vapidPublicKey: null });
+  await render(React.createElement(CompetitionNotifications, { accountKey: "anchor-off" }));
+  const section = host.querySelector("#competition-notifications");
+  assert(section); assert.equal(document.activeElement, section); assert(host.textContent.includes("ระบบแจ้งเตือนยังไม่เปิดใช้งาน"));
+  assert.equal(prompts, 0); assert(!host.textContent.includes("เปิดการแจ้งเตือน"));
+});
+await mounted(async (host, render) => {
+  window.history.replaceState({}, "", "/v2/profile#competition-notifications");
+  permission = "denied";
+  fetcher = async () => ok({ available: true, vapidPublicKey: key });
+  await render(React.createElement(CompetitionNotifications, { accountKey: "anchor-denied" }));
+  assert(host.textContent.includes("ถูกบล็อกในการตั้งค่า")); assert.equal(prompts, 0);
+  assert(![...host.querySelectorAll("button")].some(button => button.textContent === "เปิดการแจ้งเตือน"));
+});
+await mounted(async (host, render) => {
+  window.history.replaceState({}, "", "/v2/profile#competition-notifications");
+  intent.rememberNotificationSettingsIntent(); window.history.replaceState({}, "", "/v2/profile");
+  fetcher = async (url) => url.endsWith("/config") ? ok({ available: true, vapidPublicKey: key }) : ok({ enabled: false, bindingGeneration: null });
+  await render(React.createElement(CompetitionNotifications, { accountKey: "after-login" }));
+  assert.equal(document.activeElement, host.querySelector("#competition-notifications"));
+  assert(host.textContent.includes("แจ้งเตือนบนอุปกรณ์นี้")); assert.equal(prompts, 0);
+  assert.equal(intent.consumeNotificationSettingsIntent(), false, "login panel intent is one-use");
+  window.history.replaceState({}, "", "/v2/profile#competition-notifications"); intent.rememberNotificationSettingsIntent(Date.now() - 11 * 60000); window.history.replaceState({}, "", "/v2/profile");
+  assert.equal(intent.consumeNotificationSettingsIntent(), false, "old panel intent expires without opening permission");
+});
 await mounted(async (host, render) => {
   fetcher = async (url, options) => url.endsWith("/config") ? ok({ available: true, vapidPublicKey: key }) : options.method === "PUT" ? { ok: false, json: async () => ({ ok: false, error: { code: "FAILED" } }) } : ok({ enabled: false, bindingGeneration: null });
   await render(React.createElement(CompetitionNotifications, { accountKey: "A" })); assert.equal(prompts, 0);

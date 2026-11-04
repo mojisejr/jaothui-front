@@ -59,7 +59,7 @@
     "test:push-source-query": "bun scripts/push-source-query-contract.mjs",
     "test:push": "bun scripts/notifications-contract.mjs",
     "test:push-db": "bun scripts/notifications-db-fixture.mjs && bun scripts/notifications-engine-fixture.mjs && bun scripts/notifications-http-fixture.mjs",
-    "test:web-push": "bun scripts/web-push-contract.mjs && bun scripts/web-push-mounted.mjs && bun scripts/web-history-sso-contract.mjs && bun scripts/web-push-logout-contract.mjs"
+    "test:web-push": "bun scripts/web-push-contract.mjs && bun scripts/web-push-mounted.mjs && bun scripts/web-history-sso-contract.mjs && bun scripts/web-push-logout-contract.mjs && bun scripts/notifications-public-config-contract.mjs"
   },
   "dependencies": {
     "@bitkub-blockchain/react-bitkubnext-oauth2": "^0.0.15",

@@ -18,6 +18,7 @@ import { trpc } from "../../utils/trpc";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import { calculateBuffaloAge } from "../../utils/age-calculator";
 import { CompetitionNotifications } from "../../components/v2/CompetitionNotifications";
+import { rememberNotificationSettingsIntent } from "../../utils/notification-settings-intent";
 import {
   V2Layout,
   Avatar,
@@ -248,6 +249,12 @@ function SettingsList({ onLogout }: { onLogout: () => void }) {
 }
 
 export default function V2ProfilePage() {
+  useEffect(() => {
+    const remember = () => rememberNotificationSettingsIntent();
+    remember();
+    window.addEventListener("hashchange", remember);
+    return () => window.removeEventListener("hashchange", remember);
+  }, []);
   const router = useRouter();
   const { isConnected, walletAddress, disconnect, logoutError } = useBitkubNext();
   const [lineAccount, setLineAccount] = useState<LineAccount | null>(null);

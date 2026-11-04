@@ -12,6 +12,10 @@ This feature is delivered with sending **off**. Merging its source does not auth
 
 ## Components and ownership
 
+Invitation cards appear after confirmed competition signup and on owned registration history. They reuse the existing opt-in/settings flow and never request OS permission on mount. “Later” dismisses the invitation for seven days on this device/account across those placements; profile settings remain available. Native invitations hide when notifications are enabled, denied, unsupported or unavailable. Storage/availability failures must not block signup.
+
+Event links to the fixed `https://www.jaothui.com/v2/profile#competition-notifications` destination. Browser permission belongs to WWW, so Event cannot claim to know its permission state or request it on WWW's behalf. The destination opens the settings panel, then the user explicitly presses the enable control. Event may read only the existing public config via GET CORS for the exact configured Event origin, without credentials; this adds no new identity endpoint or paid service. These config reads consume ordinary hosting requests, not Sanity audience queries. Shared generic success pages must not show competition invitations after unrelated member/vote/admin actions.
+
 Sanity remains the competition/application authority. Existing Front/Postgres owns installation bindings, delivery deduplication, leases/checkpoints and usage counters. Expo Push handles native transport; standard Web Push/VAPID handles browser transport. No new database project, broker, campaign provider, paid Firebase service or runtime AI is required.
 
 The browser origin is `https://www.jaothui.com`. Web subscriptions belong to that origin and are not silently shared with an apex domain or Event. The Service Worker handles push/click events only; it does not introduce offline caching. Supported iPhone/iPad web push requires an installed Home Screen web app and explicit permission; a LINE WebView is not an equivalent installation.

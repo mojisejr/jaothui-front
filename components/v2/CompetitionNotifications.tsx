@@ -3,6 +3,7 @@ import { FiBell } from "react-icons/fi";
 import { Button } from "./Button";
 import { SettingsRow } from "./SettingsRow";
 import { disableStoredWebPush, disableWebPush, enableWebPush, flushWebPushRevocations, loadWebPushState, pushApi, storedWebPushBinding, type PushConfig, type PushState } from "../../utils/web-push";
+import { consumeNotificationSettingsIntent, NOTIFICATION_SETTINGS_ID } from "../../utils/notification-settings-intent";
 
 const labels: Record<PushState, string> = {
   idle: "ยังไม่เปิด", enabled: "เปิดแล้ว", blocked: "ถูกบล็อกในการตั้งค่า",
@@ -17,6 +18,9 @@ export function CompetitionNotifications({ accountKey }: { accountKey: string })
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [hasBinding, setHasBinding] = useState(false);
+  const [requested, setRequested] = useState(false);
+  const section = useRef<HTMLElement>(null);
+  const focused = useRef(false);
   const generation = useRef(0);
   const accountGeneration = useRef(0);
   const changing = useRef(false);
@@ -40,14 +44,26 @@ export function CompetitionNotifications({ accountKey }: { accountKey: string })
   }, []);
   useEffect(() => {
     invalidate(); changing.current = false;
+    const reveal = () => {
+      if (consumeNotificationSettingsIntent()) { focused.current = false; setRequested(true); setExpanded(true); }
+    };
+    reveal();
     setConfig(undefined); setError(""); setBusy(false);
     void refresh();
     const visible = () => { if (!changing.current && document.visibilityState === "visible") void refresh(); };
     window.addEventListener("focus", visible);
+    window.addEventListener("hashchange", reveal);
     document.addEventListener("visibilitychange", visible);
-    return () => { invalidate(); window.removeEventListener("focus", visible); document.removeEventListener("visibilitychange", visible); };
+    return () => { invalidate(); window.removeEventListener("focus", visible); window.removeEventListener("hashchange", reveal); document.removeEventListener("visibilitychange", visible); };
   }, [accountKey, refresh, invalidate]);
-  if (!config || (!config.available && !hasBinding)) return null;
+  const ready = Boolean(config);
+  useEffect(() => {
+    if (!requested || !ready || focused.current) return;
+    focused.current = true;
+    section.current?.focus({ preventScroll: true });
+    section.current?.scrollIntoView?.({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }, [requested, ready]);
+  if (!config || (!config.available && !hasBinding && !requested)) return null;
   const change = async () => {
     const current = accountGeneration.current;
     changing.current = true; setBusy(true); setError("");
@@ -74,12 +90,12 @@ export function CompetitionNotifications({ accountKey }: { accountKey: string })
     const confirmed = await disableStoredWebPush(() => current === accountGeneration.current);
     if (current === accountGeneration.current) { changing.current = false; setHasBinding(Boolean(storedWebPushBinding())); setBusy(false); if (!confirmed) setError("รอยืนยันการปิดเมื่อเชื่อมต่ออินเทอร์เน็ต กรุณาลองอีกครั้ง"); }
   };
-  return <section aria-label="การแจ้งเตือนการแข่งขัน" className="overflow-hidden rounded-card border border-border-soft bg-surface">
+  return <section ref={section} id={NOTIFICATION_SETTINGS_ID} tabIndex={-1} aria-label="การแจ้งเตือนการแข่งขัน" className="scroll-mt-6 overflow-hidden rounded-card border border-border-soft bg-surface">
     <SettingsRow icon={<FiBell className="h-5 w-5" />} label="การแจ้งเตือนการแข่งขัน" onClick={() => setExpanded(value => !value)} right={<span className={config.available && state === "enabled" ? "text-sm text-success" : "text-sm text-muted"}>{config.available ? labels[state] : "พักการเปิดรับชั่วคราว"}</span>} />
     {expanded && <div className="space-y-3 border-t border-border-soft px-4 py-4">
       <p className="font-medium text-foreground">แจ้งเตือนบนอุปกรณ์นี้</p>
       <p className="text-sm leading-relaxed text-muted">เตือนงานที่คุณสมัครและเข้าเกณฑ์ ก่อนวันงาน 1 วัน เวลา 09:00 น. เปิดได้แยกกันบนแต่ละอุปกรณ์</p>
-      {!config.available ? <><p className="text-sm text-muted">ระบบพักการเปิดรับใหม่ คุณยังปิดการรับแจ้งเตือนเดิมบนอุปกรณ์นี้ได้</p><Button type="button" variant="gold-outline" loading={busy} onClick={() => void change()}>ปิดบนอุปกรณ์นี้</Button></> : state === "install-required" ? <p className="text-sm text-muted">บน iPhone หรือ iPad ให้เปิดเว็บไซต์นี้ด้วย Safari เลือกแชร์ → เพิ่มไปยังหน้าจอโฮม แล้วเปิดจากไอคอนเพื่ออนุญาตการแจ้งเตือน</p>
+      {!config.available ? <><p className="text-sm text-muted">{hasBinding ? "ระบบพักการเปิดรับใหม่ คุณยังปิดการรับแจ้งเตือนเดิมบนอุปกรณ์นี้ได้" : "ระบบแจ้งเตือนยังไม่เปิดใช้งาน กรุณาลองใหม่ภายหลัง"}</p>{hasBinding && <Button type="button" variant="gold-outline" loading={busy} onClick={() => void change()}>ปิดบนอุปกรณ์นี้</Button>}</> : state === "install-required" ? <p className="text-sm text-muted">บน iPhone หรือ iPad ให้เปิดเว็บไซต์นี้ด้วย Safari เลือกแชร์ → เพิ่มไปยังหน้าจอโฮม แล้วเปิดจากไอคอนเพื่ออนุญาตการแจ้งเตือน</p>
         : state === "blocked" ? <p className="text-sm text-muted">อนุญาตการแจ้งเตือนให้เว็บไซต์นี้ในการตั้งค่าเบราว์เซอร์ แล้วกลับมาเปิดอีกครั้ง</p>
         : state === "unsupported" ? <p className="text-sm text-muted">เปิด https://www.jaothui.com ด้วยเบราว์เซอร์ที่รองรับ แทนหน้าต่างภายใน LINE หรือใช้แอปเจ้าทุย</p>
         : <Button type="button" variant={state === "enabled" ? "gold-outline" : "gold-fill"} loading={busy} onClick={() => void change()}>{state === "enabled" ? "ปิดบนอุปกรณ์นี้" : "เปิดการแจ้งเตือน"}</Button>}
