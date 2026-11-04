@@ -1,0 +1,12 @@
+{
+  "id": "/v2",
+  "name": "JAOTHUI เจ้าทุย",
+  "short_name": "JAOTHUI",
+  "lang": "th",
+  "start_url": "/v2",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#070707",
+  "theme_color": "#070707",
+  "icons": [{ "src": "/images/logo.png", "sizes": "593x593", "type": "image/png", "purpose": "any" }]
+}

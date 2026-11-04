@@ -14,7 +14,7 @@ const applicant = z.object({
   checkInEligibility: z.object({ eligible: z.boolean(), reason: z.string().nullable() }),
 });
 export type SourceApplicant = z.infer<typeof applicant>;
-export type ApplicantHistoryInput = { limit?: number; cursor?: string; period?: "active" | "past" | "all"; q?: string };
+export type ApplicantHistoryInput = { limit?: number; cursor?: string; period?: "active" | "past" | "all"; q?: string; eventId?: string };
 export interface ApplicantBridgeClient {
   history(owner: string, input: ApplicantHistoryInput): Promise<{ items: SourceApplicant[]; eventNames: string[]; nextCursor: string | null }>;
   status(owner: string, registrationId: string): Promise<SourceApplicant>;

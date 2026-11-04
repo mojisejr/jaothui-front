@@ -131,8 +131,8 @@ export class MobileEventService {
       checkInVersion: row.checkInVersion, checkInStatus: row.checkInStatus, checkedInAt: row.checkedInAt,
       qrAvailable: row.qrAvailable, checkInEligibility: row.checkInEligibility };
   }
-  async history(lineId: string, input: { limit?: number; cursor?: string; period?: "active" | "past" | "all"; q?: string } = {}) {
-    const args = z.object({ limit: z.number().int().min(1).max(20).default(20), cursor: z.string().max(500).optional(), period: z.enum(["active", "past", "all"]).default("all"), q: z.string().max(2000).default("") }).strict().safeParse(input);
+  async history(lineId: string, input: { limit?: number; cursor?: string; period?: "active" | "past" | "all"; q?: string; eventId?: string } = {}) {
+    const args = z.object({ limit: z.number().int().min(1).max(20).default(20), cursor: z.string().max(500).optional(), period: z.enum(["active", "past", "all"]).default("all"), q: z.string().max(2000).default(""), eventId: docId.refine(v => !reservedId(v)).optional() }).strict().safeParse(input);
     if (!args.success) return invalidFields();
     const history = await this.applicant.history(lineId, args.data);
     return { ...history, items: history.items.map(row => this.registrationSummary(row)) };

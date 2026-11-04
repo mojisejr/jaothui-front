@@ -55,7 +55,11 @@
     "e2e:local:mobile-events": "bun scripts/mobile-events-dev-e2e.mjs",
     "test:mobile-applicant-bridge": "bun scripts/mobile-applicant-bridge-contract.mjs",
     "test:web-event-sso": "bun scripts/web-event-sso-contract.mjs",
-    "test:web-events": "bun scripts/web-events-contract-smoke.mjs && bun scripts/web-events-mounted.mjs"
+    "test:web-events": "bun scripts/web-events-contract-smoke.mjs && bun scripts/web-events-mounted.mjs",
+    "test:push-source-query": "bun scripts/push-source-query-contract.mjs",
+    "test:push": "bun scripts/notifications-contract.mjs",
+    "test:push-db": "bun scripts/notifications-db-fixture.mjs && bun scripts/notifications-engine-fixture.mjs && bun scripts/notifications-http-fixture.mjs",
+    "test:web-push": "bun scripts/web-push-contract.mjs && bun scripts/web-push-mounted.mjs && bun scripts/web-history-sso-contract.mjs && bun scripts/web-push-logout-contract.mjs && bun scripts/notifications-public-config-contract.mjs"
   },
   "dependencies": {
     "@bitkub-blockchain/react-bitkubnext-oauth2": "^0.0.15",
@@ -83,6 +87,7 @@
     "cookies-next": "^2.1.1",
     "dayjs": "^1.11.9",
     "ethers": "^5",
+    "expo-server-sdk": "^8.0.0",
     "framer-motion": "^10.12.4",
     "html2canvas": "^1.4.1",
     "jsonwebtoken": "^9.0.2",
@@ -114,6 +119,7 @@
     "tailwind-merge": "^3.6.0",
     "viem": "^2.17.3",
     "wagmi": "^0.12.9",
+    "web-push": "^3.6.7",
     "zod": "^3.21.4"
   },
   "devDependencies": {
@@ -123,10 +129,12 @@
     "@types/qs": "^6.9.15",
     "@types/react": "^18.2.74",
     "@types/react-dom": "^18.2.24",
+    "@types/web-push": "^3.6.4",
     "autoprefixer": "^10.4.14",
     "daisyui": "^3.6.4",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
+    "groq-js": "1.9.0",
     "jsdom": "23.2.0",
     "postcss": "^8.4.21",
     "prisma": "^5.14.0",

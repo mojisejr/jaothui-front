@@ -6,6 +6,8 @@ class MyDocument extends Document {
       <Html lang={this.props.__NEXT_DATA__.page === "/download" ? "th" : undefined}>
         <Head>
           <link rel="shortcut icon" href="/favicon.ico" />
+          <link rel="manifest" href="/manifest.webmanifest" />
+          <meta name="theme-color" content="#070707" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
             rel="preconnect"

@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { prisma } from "../prisma";
 import { verifyAuthJwt } from "./errors";
 import { buildLineWebAuthorizeUrl, exchangeLineAuthorizationCode, verifyLineIdToken } from "./line-web-auth";
+import { eventEntryParams } from "../../utils/event-entry-intent";
 import { activeBrowser, CookieContext, EventSsoError, freshAccount, hash, lockActiveBrowser, randomToken, ssoConfig } from "./event-sso";
 const TYPE = "jaothui-web-event-line-attach";
 export function attachStateHint(state: string) {
@@ -11,7 +12,10 @@ export function attachStateHint(state: string) {
 function safeReturnTo(returnTo: string) {
   const parsed = new URL(returnTo, "https://local.invalid");
   if (parsed.origin !== "https://local.invalid" || parsed.pathname !== "/v2/event-entry" || parsed.hash) throw new EventSsoError(400, "INVALID_RETURN_INTENT");
-  return parsed.pathname + parsed.search;
+  try {
+    if (new Set(parsed.searchParams.keys()).size !== Array.from(parsed.searchParams.keys()).length) throw new Error();
+    return `${parsed.pathname}?${eventEntryParams(Object.fromEntries(parsed.searchParams))}`;
+  } catch { throw new EventSsoError(400, "INVALID_RETURN_INTENT"); }
 }
 export async function beginLineAttach(ctx: CookieContext, returnTo: string, db: PrismaClient = prisma) {
   const config = ssoConfig(); const browser = await activeBrowser(ctx, db);

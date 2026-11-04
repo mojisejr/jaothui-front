@@ -46,7 +46,7 @@ export function eventHandler(operation: Operation) {
       else if (operation === "member") {
         if (write) result = await service.enroll(actor!.lineId, req.body);
         else { const member = await service.member(actor!.lineId); result = { member: service.memberSummary(member), capability: { canRegister: !!member, reason: member ? null : "MEMBER_REQUIRED" } }; }
-      } else if (operation === "history") result = await service.history(actor!.lineId, { period: value("period") as "active" | "past" | "all" | undefined, q: value("q"), cursor: value("cursor"), ...(value("limit") ? { limit: Number(value("limit")) } : {}) });
+      } else if (operation === "history") result = await service.history(actor!.lineId, { eventId: value("eventId"), period: value("period") as "active" | "past" | "all" | undefined, q: value("q"), cursor: value("cursor"), ...(value("limit") ? { limit: Number(value("limit")) } : {}) });
       else if (operation === "registration") result = await service.registration(value("id") ?? "", actor!.lineId);
       else if (operation === "pass") {
         if (req.body && Object.keys(req.body).length) return invalidFields();

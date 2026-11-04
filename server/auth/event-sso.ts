@@ -71,8 +71,9 @@ export async function freshAccount(accountId: string, lineId?: string, db: Db = 
   if (lineId && line?.providerUserId !== lineId) throw new EventSsoError(409, "LINE_IDENTITY_CHANGED");
   return { accountId: account.id, lineId: line?.providerUserId ?? null, displayName: line?.displayName ?? account.displayName, avatarUrl: line?.avatarUrl ?? account.avatarUrl, email: line?.email ?? account.email };
 }
-export async function resolvePrincipal(ctx: CookieContext, db: PrismaClient = prisma): Promise<Principal> {
-  ssoConfig();
+export async function resolvePrincipal(ctx: CookieContext, db: PrismaClient = prisma, options: { requireSso?: boolean } = {}): Promise<Principal> {
+  // Device consent uses the same verified account credentials independently of Event SSO.
+  if (options.requireSso !== false) ssoConfig();
   const lineToken = cookie(ctx, LINE_WEB_SESSION_COOKIE);
   const walletToken = cookie(ctx, "session_token");
   const candidates: Principal[] = [];
