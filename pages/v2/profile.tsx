@@ -17,6 +17,7 @@ import { ReactBitkubNextOauth2 } from "@bitkub-blockchain/react-bitkubnext-oauth
 import { trpc } from "../../utils/trpc";
 import { useBitkubNext } from "../../contexts/bitkubNextContext";
 import { calculateBuffaloAge } from "../../utils/age-calculator";
+import { CompetitionNotifications } from "../../components/v2/CompetitionNotifications";
 import {
   V2Layout,
   Avatar,
@@ -495,6 +496,7 @@ export default function V2ProfilePage() {
           )}
 
           {logoutError && <p role="alert" className="text-sm text-foreground">{logoutError}</p>}
+          <CompetitionNotifications accountKey={lineAccount.accountId} />
           <SettingsList onLogout={logout} />
         </div>
       )}

@@ -19,6 +19,7 @@ model Account {
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   mobileLineLinkIntents MobileLineLinkIntent[]
+  notificationInstallations NotificationInstallation[]
   browserSessions       WebBrowserSession[]
   identities            AccountIdentity[]
   walletLinks           WalletLink[]
@@ -297,4 +298,67 @@ model WebLineAttachIntent {
   browser         WebBrowserSession @relation(fields: [browserId], references: [id])
 
   @@index([browserId])
+}
+
+// Server-owned, device-scoped notification consent. Never expose via public DB APIs.
+model NotificationInstallation {
+  id               String   @id
+  accountId        String
+  platform         String
+  target           Json
+  targetHash       String   @unique
+  generation       Int      @default(1)
+  revocationHash   String
+  enabled          Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  account          Account  @relation(fields: [accountId], references: [id])
+  deliveries       NotificationDelivery[]
+  @@index([accountId, enabled])
+}
+
+model NotificationDelivery {
+  id               String   @id @default(cuid())
+  accountId        String
+  installationId   String
+  generation       Int
+  eventId          String
+  slot             String
+  schedule         String
+  sourceLineId     String
+  startDay         String
+  eventTitle       String
+  dueAt            DateTime
+  expiresAt        DateTime
+  status           String   @default("pending")
+  attempts         Int      @default(0)
+  nextAttemptAt    DateTime  @default(now())
+  claimToken       String?
+  leaseUntil       DateTime?
+  ticketId         String?
+  receiptDueAt     DateTime?
+  lastError        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  installation     NotificationInstallation @relation(fields: [installationId], references: [id])
+  @@unique([accountId, eventId, slot, schedule, installationId], map: "NotificationDelivery_logical_endpoint_key")
+  @@index([status, nextAttemptAt, leaseUntil])
+  @@index([receiptDueAt])
+}
+
+model NotificationScanState {
+  id          String   @id
+  cursor      Json
+  leaseToken  String?
+  leaseUntil  DateTime?
+  lastSucceededAt DateTime?
+  lastReport Json?
+  updatedAt   DateTime @updatedAt
+}
+
+model NotificationUsageDay {
+  id             String   @id
+  sourceRequests Int      @default(0)
+  sendAttempts   Int      @default(0)
+  updatedAt      DateTime @updatedAt
 }

@@ -52,6 +52,7 @@ export type AccountServiceClient = {
 
 type AccountDeletionTransactionClient = {
   $queryRaw?: (query: TemplateStringsArray, ...values: unknown[]) => Promise<unknown>;
+  notificationInstallation?: { updateMany: (args: Prisma.NotificationInstallationUpdateManyArgs) => Promise<{ count: number }> };
   mobileLineLinkIntent?: { updateMany: (args: any) => Promise<{ count: number }> };
   account: {
     findUnique: (args: any) => Promise<any>;
@@ -523,6 +524,11 @@ export async function softDeleteAccount(
     if (transaction.mobileLineLinkIntent) await transaction.mobileLineLinkIntent.updateMany({
       where: { accountId: normalizedAccountId },
       data: { consumedAt: deletedAt, verifiedProfile: Prisma.DbNull, linkedIdentityHash: null },
+    });
+    const pushTable = transaction.notificationInstallation && (!transaction.$queryRaw || (await transaction.$queryRaw`SELECT to_regclass('"NotificationInstallation"')::text AS name` as {name:string|null}[])?.[0]?.name);
+    if (pushTable) await transaction.notificationInstallation!.updateMany({
+      where: { accountId: normalizedAccountId, enabled: true },
+      data: { enabled: false, generation: { increment: 1 } },
     });
     const removedWalletLinks = await transaction.walletLink.deleteMany({
       where: { accountId: normalizedAccountId },
