@@ -28,6 +28,7 @@
     "test:account-service-contract": "bun scripts/account-service-contract-smoke.mjs",
     "test:account-deletion-contract": "bun scripts/account-deletion-contract-smoke.mjs",
     "test:delete-account-page-contract": "node scripts/delete-account-page-contract-check.mjs",
+    "test:mobile-cert-sections": "bun scripts/mobile-cert-sections-smoke.mjs",
     "test:mobile-auth-contract": "bun scripts/mobile-auth-contract-smoke.mjs",
     "test:mobile-apple-auth-contract": "bun scripts/mobile-apple-auth-contract-smoke.mjs",
     "test:mobile-account-profile-contract": "bun scripts/mobile-account-profile-contract-smoke.mjs",

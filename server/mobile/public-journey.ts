@@ -1,10 +1,10 @@
-import { renderPedigree } from "../renderer";
 import {
   getAllMetadata,
   getMetadataBatch,
   getMetadataByMicrochip,
+  getPedigreeSummary,
 } from "../services/metadata.service";
-import { gerRewardByMicrochip, getRewardById } from "../services/reward.service";
+import { gerRewardByMicrochip, getRewardById, readRewardsByMicrochip } from "../services/reward.service";
 import { FEATURED_MICROCHIPS } from "./constants";
 import { getHomeStats } from "../services/home-stats.service";
 import {
@@ -58,6 +58,16 @@ export async function getMobileBuffalos(query: {
   };
 }
 
+export async function getMobileCertSummary(microchip: string) {
+  const detail = await getPedigreeSummary(microchip);
+  return { buffalo: toMobileBuffaloDetail(detail) };
+}
+
+export async function getMobileRewards(microchip: string) {
+  const rewards = await readRewardsByMicrochip(microchip);
+  return { rewards: rewards.map(toMobileReward) };
+}
+
 export async function getMobileCertDetail(microchip: string) {
   const detail = await getMetadataByMicrochip(microchip);
   const rewards = await gerRewardByMicrochip(microchip);
@@ -74,6 +84,7 @@ export async function getMobileCertificate(microchip: string) {
 
   if (!tokenId) return null;
 
+  const { renderPedigree } = await import("../renderer");
   const imageBase64 = await renderPedigree(microchip, tokenId);
   if (!imageBase64) return null;
 
