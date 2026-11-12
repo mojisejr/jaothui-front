@@ -26,11 +26,14 @@ const requiredFiles = [
   "pages/api/mobile/v1/buffalos/index.ts",
   "pages/api/mobile/v1/buffalos/featured.ts",
   "pages/api/mobile/v1/certs/[microchip]/index.ts",
+  "pages/api/mobile/v1/certs/[microchip]/summary.ts",
+  "pages/api/mobile/v1/certs/[microchip]/rewards/index.ts",
   "pages/api/mobile/v1/certs/[microchip]/certificate.ts",
   "pages/api/mobile/v1/certs/[microchip]/rewards/[rewardId].ts",
 ];
 
 const failures = [];
+const authFailure = readFileSync(path.join(root, "server/mobile/auth-failure.ts"), "utf8");
 
 for (const file of requiredFiles) {
   const fullPath = path.join(root, file);
@@ -48,7 +51,8 @@ for (const file of requiredFiles) {
       failures.push(`route exposes forbidden mobile tRPC bridge: ${file}`);
     }
     if (file.includes("/auth/") || file.endsWith("/me.ts") || file.endsWith("/profile.ts")) {
-      if (!content.includes("UNAUTHORIZED")) {
+      const sharedAuthError = content.includes("return sendMobileAuthFailure(") && authFailure.includes('failure.status === 401 ? "UNAUTHORIZED"');
+      if (!content.includes("UNAUTHORIZED") && !sharedAuthError) {
         failures.push(`auth route does not expose mobile unauthorized envelope: ${file}`);
       }
     }
@@ -61,6 +65,8 @@ const expectedExports = [
   "getMobileFeaturedBuffalos",
   "getMobileBuffalos",
   "getMobileCertDetail",
+  "getMobileCertSummary",
+  "getMobileRewards",
   "getMobileCertificate",
   "getMobileRewardDetail",
 ];
