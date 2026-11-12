@@ -240,6 +240,17 @@ export const getAllMetadata = async ({
   }
 };
 
+export class PedigreeNotFoundError extends Error {}
+
+export async function getPedigreeSummary(microchip: string) {
+  const [pedigree, certificate] = await Promise.all([
+    prisma.pedigree.findUnique({ where: { microchip } }),
+    prisma.certificate.findUnique({ where: { microchip, isActive: true }, select: { microchip: true } }),
+  ]);
+  if (!pedigree) throw new PedigreeNotFoundError(`Pedigree not found for microchip: ${microchip}`);
+  return { ...mapPedigreeToMetadata(pedigree), certificate };
+}
+
 export const getMetadataByMicrochip = async (microchip: string) => {
   try {
     // Fetch from database only
@@ -248,7 +259,7 @@ export const getMetadataByMicrochip = async (microchip: string) => {
     });
 
     if (!pedigree) {
-      throw new Error(`Pedigree not found for microchip: ${microchip}`);
+      throw new PedigreeNotFoundError(`Pedigree not found for microchip: ${microchip}`);
     }
 
     // Get certificate info
